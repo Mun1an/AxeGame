@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "Plugins/UnLua/Intermediate/IntelliSense"
+		},
+		{
+			"path": "Content/Script"
+		},
+		{
+			"path": "Saved/Logs"
+		}
+	],
+	"settings": {}
+}
