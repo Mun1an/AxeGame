@@ -9,7 +9,9 @@
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
-				"Engine"
+				"Engine",
+				"GameplayAbilities",
+				"EnhancedInput"
 			]
 		}
 	],
@@ -31,6 +33,10 @@
 		},
 		{
 			"Name": "VRM4U",
+			"Enabled": true
+		},
+		{
+			"Name": "GameplayAbilities",
 			"Enabled": true
 		}
 	]
