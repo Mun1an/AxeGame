@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "AxeCharacterBase.generated.h"
 
+class UComboActionComponent;
+class UComboDataAsset;
 class UGameplayAbility;
 
 UCLASS()
@@ -31,6 +33,8 @@ public:
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
+
 	UPROPERTY(EditAnywhere, Category="Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
+
 };

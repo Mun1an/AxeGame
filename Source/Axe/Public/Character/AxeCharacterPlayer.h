@@ -23,8 +23,9 @@ class AAxeCharacterPlayer : public AAxeCharacterBase
 public:
 	AAxeCharacterPlayer();
 
-	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	FORCEINLINE UComboActionComponent* GetComboActionComponent() const { return ComboActionComponent; }
 
 	//
 	virtual void PossessedBy(AController* NewController) override;
@@ -32,7 +33,7 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-	
+
 	void InitAbility();
 
 private:
@@ -41,4 +42,19 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	FName WeaponTipSocketName = FName("WeaponHandSocket");
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	TObjectPtr<USkeletalMeshComponent> WeaponComponent;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	FName WeaponSecondaryTipSocketName = FName("WeaponSecondaryHandSocket");
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	TObjectPtr<USkeletalMeshComponent> WeaponSecondaryComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UComboActionComponent> ComboActionComponent;
 };

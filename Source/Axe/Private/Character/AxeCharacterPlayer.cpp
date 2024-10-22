@@ -4,6 +4,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
+#include "ActionSystem/ComboActionComponent.h"
 #include "Engine/LocalPlayer.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -49,11 +50,18 @@ AAxeCharacterPlayer::AAxeCharacterPlayer()
 	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
-	// Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
-	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
-	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+	WeaponComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon"));
+	WeaponComponent->SetupAttachment(GetMesh(), WeaponTipSocketName);
+	WeaponComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	WeaponSecondaryComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponSecondary"));
+	WeaponSecondaryComponent->SetupAttachment(GetMesh(), WeaponSecondaryTipSocketName);
+	WeaponSecondaryComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	// ComboActionComponent
+	ComboActionComponent = CreateDefaultSubobject<UComboActionComponent>(TEXT("ComboActionComponent"));
+	
 }
 
 void AAxeCharacterPlayer::PossessedBy(AController* NewController)

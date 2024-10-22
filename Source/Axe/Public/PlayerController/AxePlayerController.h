@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "AxePlayerController.generated.h"
 
+class UComboActionComponent;
 struct FGameplayTag;
 class UAxeInputDataAsset;
 struct FInputActionValue;
@@ -18,6 +19,9 @@ UCLASS()
 class AXE_API AAxePlayerController : public APlayerController
 {
 	GENERATED_BODY()
+
+public:
+	AAxePlayerController();
 
 protected:
 	virtual void BeginPlay() override;
@@ -41,7 +45,7 @@ private:
 
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputAction> JumpAction;
-	
+
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UAxeInputDataAsset> AbilityInputDataAsset;
 

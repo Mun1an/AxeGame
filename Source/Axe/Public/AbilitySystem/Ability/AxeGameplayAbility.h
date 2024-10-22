@@ -13,5 +13,5 @@ UCLASS(Blueprintable)
 class AXE_API UAxeGameplayAbility : public UGameplayAbility
 {
 	GENERATED_BODY()
-	
+
 };

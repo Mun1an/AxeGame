@@ -6,6 +6,8 @@
 #include "AbilitySystemComponent.h"
 #include "AxeAbilitySystemComponent.generated.h"
 
+class UComboTreeNode;
+class UComboHandle;
 /**
  * 
  */
@@ -14,15 +16,20 @@ class AXE_API UAxeAbilitySystemComponent : public UAbilitySystemComponent
 {
 	GENERATED_BODY()
 
-
 public:
 	//
-	void AbilityInputTagPressed(const FGameplayTag& AbilityTag);
-	void AbilityInputTagHeld(const FGameplayTag& AbilityTag);
-	void AbilityInputTagReleased(const FGameplayTag& AbilityTag);
+	void AbilityInputTagPressed(FGameplayTag& AbilityTag);
+	void AbilityInputTagHeld(FGameplayTag& AbilityTag);
+	void AbilityInputTagReleased(FGameplayTag& AbilityTag);
 
 	//
 	void GiveAbilityByAbilityAndLevel(const TSubclassOf<UGameplayAbility>& Ability, const int32 AbilityLevel);
-	
-	
+
+protected:
+	void SetLastAbilityTag(const FGameplayTag& Tag) { LastAbilityTag = Tag; }
+
+private:
+	UPROPERTY()
+	FGameplayTag LastAbilityTag = FGameplayTag::EmptyTag;
+
 };
