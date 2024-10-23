@@ -7,6 +7,7 @@
 #include "ActionSystem/AxeBaseActionComponent.h"
 #include "ComboActionComponent.generated.h"
 
+class UAxeAbilitySystemComponent;
 class UAxeGameplayAbility;
 class UGameplayAbility;
 class AAxeCharacterPlayer;
@@ -24,20 +25,20 @@ class AXE_API UComboActionComponent : public UAxeBaseActionComponent
 public:
 	UComboActionComponent();
 
-	UFUNCTION()
-	void InitComboAbilityTree();
-	//
 	UPROPERTY(EditAnywhere, Category="Abilities|Combo")
 	TObjectPtr<UComboDataAsset> ComboDataAsset;
 
-	UComboTree* GetComboAbilityTree() const { return ComboAbilityTree; }
-
+	UFUNCTION()
+	void InitComboAbilityTree();
 	//
-	UPROPERTY()
-	UComboTreeNode* LastComboTreeNode = nullptr;
-
+	UComboTree* GetComboAbilityTree() const { return ComboAbilityTree; }
+	UFUNCTION()
+	UAxeGameplayAbility* GetActivatedComboAbility();
 	TSubclassOf<UAxeGameplayAbility>* GetComboAbilityByInputTag(const FGameplayTag& NextInputAbilityTag);
-
+	UFUNCTION()
+	UAxeAbilitySystemComponent* GetAxeAbilitySystemComponent() const;
+	//
+	void OnComboAbilityActivated(UGameplayAbility* Ability);
 	//
 	UFUNCTION()
 	void ComboSwitchWindowStart();
@@ -49,11 +50,13 @@ public:
 	void ComboSwitchWindowEnd();
 
 protected:
+	UPROPERTY()
+	UComboTreeNode* LastComboTreeNode = nullptr;
+
 	virtual void BeginPlay() override;
-	
+
 	void OnAbilityInitOver();
 	void OnNotifyAbilityActivated(UGameplayAbility* Ability);
-	
 
 private:
 	UPROPERTY()
@@ -64,4 +67,9 @@ private:
 
 	UPROPERTY()
 	bool bIsInComboWindow = false;
+	UPROPERTY()
+	TObjectPtr<UAxeGameplayAbility> ComboSwitchWindowStartAbility = nullptr;
+
+	UPROPERTY()
+	TObjectPtr<UAxeGameplayAbility> ActivatedComboAbility = nullptr;
 };

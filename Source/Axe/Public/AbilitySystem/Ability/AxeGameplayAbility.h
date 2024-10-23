@@ -7,6 +7,8 @@
 #include "AxeGameplayAbility.generated.h"
 
 
+class UAxeAbilitySystemComponent;
+
 UENUM(BlueprintType)
 enum class EAxeAbilityActivationGroup : uint8
 {
@@ -36,6 +38,14 @@ public:
 
 	EAxeAbilityActivationGroup GetActivationGroup() const { return ActivationGroup; }
 
+	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category = "Ability",
+		Meta = (ExpandBoolAsExecs = "ReturnValue"))
+	bool CanChangeActivationGroup(EAxeAbilityActivationGroup NewGroup) const;
+	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category = "Ability",
+		Meta = (ExpandBoolAsExecs = "ReturnValue"))
+	bool ChangeActivationGroup(EAxeAbilityActivationGroup NewGroup);
+
+	//
 	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	                                const FGameplayTagContainer* SourceTags = nullptr,
 	                                const FGameplayTagContainer* TargetTags = nullptr,
@@ -51,4 +61,6 @@ public:
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ability Activation")
 	EAxeAbilityActivationGroup ActivationGroup;
+
+	TObjectPtr<UAxeAbilitySystemComponent> GetAxeAbilitySystemComponentFromActorInfo() const;
 };

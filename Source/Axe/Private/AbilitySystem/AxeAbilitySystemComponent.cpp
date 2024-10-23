@@ -32,14 +32,6 @@ void UAxeAbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& Inpu
 
 void UAxeAbilitySystemComponent::AbilityInputTagHeld(const FGameplayTag& InputTag)
 {
-	// TArray<FGameplayAbilitySpec> GameplayAbilitySpecList = GetActivatableAbilities();
-	// for (FGameplayAbilitySpec& AbilitySpec : GameplayAbilitySpecList)
-	// {
-	// 	if (!AbilitySpec.IsActive() && AbilitySpec.Ability->AbilityTags.HasTagExact(AbilityTag))
-	// 	{
-	// 		TryActivateAbilitiesByTag(AbilitySpec.Handle);
-	// 	}
-	// }
 }
 
 void UAxeAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag& InputTag)
@@ -47,14 +39,14 @@ void UAxeAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag& Inp
 	//
 }
 
-void UAxeAbilitySystemComponent::TryActivateAbilityAndCheck(FGameplayAbilitySpecHandle AbilityToActivate,
+void UAxeAbilitySystemComponent::TryActivateAbilityAndCheck(FGameplayAbilitySpecHandle AbilitySpecHandle,
                                                             bool bAllowRemoteActivation)
 {
-	FGameplayAbilitySpec* Spec = FindAbilitySpecFromHandle(AbilityToActivate);
+	const FGameplayAbilitySpec* AbilitySpec = FindAbilitySpecFromHandle(AbilitySpecHandle);
+	const FGameplayTag InputTag = Cast<UAxeGameplayAbility>(AbilitySpec->Ability)->InputTag;
+	const AAxeCharacterPlayer* AxeCharacterPlayer = Cast<AAxeCharacterPlayer>(GetAvatarActor());
 
-	FGameplayTag InputTag = Cast<UAxeGameplayAbility>(Spec->Ability)->InputTag;
-	AAxeCharacterPlayer* AxeCharacterPlayer = Cast<AAxeCharacterPlayer>(GetAvatarActor());
-	// combo
+	// Combo
 	if (InputTag.IsValid() && IsValid(AxeCharacterPlayer))
 	{
 		UComboActionComponent* ComboActionComponent = AxeCharacterPlayer->GetComboActionComponent();
@@ -64,11 +56,12 @@ void UAxeAbilitySystemComponent::TryActivateAbilityAndCheck(FGameplayAbilitySpec
 			FGameplayAbilitySpec* NewAbilitySpec = FindAbilitySpecFromClass(*AbilityClass);
 			if (NewAbilitySpec != nullptr)
 			{
-				AbilityToActivate = NewAbilitySpec->Handle;
+				AbilitySpecHandle = NewAbilitySpec->Handle;
 			}
 		}
 	}
-	TryActivateAbility(AbilityToActivate, bAllowRemoteActivation);
+
+	TryActivateAbility(AbilitySpecHandle, bAllowRemoteActivation);
 }
 
 void UAxeAbilitySystemComponent::GiveAbilityByAbilityAndLevel(const TSubclassOf<UGameplayAbility>& Ability,
@@ -94,7 +87,7 @@ bool UAxeAbilitySystemComponent::IsActivationGroupBlocked(EAxeAbilityActivationG
 	case EAxeAbilityActivationGroup::Exclusive_Blocking:
 		// Exclusive abilities can activate if nothing is blocking.
 		Abilities = ActivationGroupMap.Find(EAxeAbilityActivationGroup::Exclusive_Blocking);
-		if (Abilities != nullptr)
+		if (Abilities)
 		{
 			bBlocked = Abilities->Num() > 0;
 		}
@@ -111,21 +104,24 @@ void UAxeAbilitySystemComponent::AddAbilityToActivationGroup(EAxeAbilityActivati
 {
 	ActivationGroupMap.FindOrAdd(Group).AddUnique(AxeAbility);
 
-	TArray<UGameplayAbility*> Abilities = TArray<UGameplayAbility*>();
+	TArray<UGameplayAbility*>* Abilities = nullptr;
 	switch (Group)
 	{
 	case EAxeAbilityActivationGroup::Independent:
 		break;
 	case EAxeAbilityActivationGroup::Exclusive_Replaceable:
 	case EAxeAbilityActivationGroup::Exclusive_Blocking:
-		Abilities = ActivationGroupMap.FindOrAdd(EAxeAbilityActivationGroup::Exclusive_Replaceable);
-		for (UGameplayAbility* Ability : Abilities)
+		Abilities = ActivationGroupMap.Find(EAxeAbilityActivationGroup::Exclusive_Replaceable);
+		if (Abilities)
 		{
-			if (Ability == AxeAbility)
+			for (UGameplayAbility* Ability : *Abilities)
 			{
-				continue;
+				if (Ability == AxeAbility)
+				{
+					continue;
+				}
+				CancelAbility(Ability);
 			}
-			CancelAbility(Ability);
 		}
 		break;
 	default:
@@ -169,4 +165,6 @@ void UAxeAbilitySystemComponent::NotifyAbilityEnded(FGameplayAbilitySpecHandle H
 	Super::NotifyAbilityEnded(Handle, Ability, bWasCancelled);
 	UAxeGameplayAbility* AxeGameplayAbility = Cast<UAxeGameplayAbility>(Ability);
 	RemoveAbilityFromActivationGroup(AxeGameplayAbility->GetActivationGroup(), AxeGameplayAbility);
+
+	OnNotifyAbilityEndedDelegate.Broadcast(Ability);
 }

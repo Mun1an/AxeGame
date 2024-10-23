@@ -31,34 +31,6 @@ void UComboActionComponent::BeginPlay()
 	LastComboTreeNode = ComboAbilityTree->Root;
 }
 
-void UComboActionComponent::OnAbilityInitOver()
-{
-	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(AxeCharacterPlayer->AbilitySystemComponent);
-	AxeASC->OnNotifyAbilityActivatedDelegate.AddUObject(this, &UComboActionComponent::OnNotifyAbilityActivated);
-}
-
-void UComboActionComponent::OnNotifyAbilityActivated(UGameplayAbility* Ability)
-{
-	if (UComboTreeNode* NextComboTreeNode = LastComboTreeNode->FindChildByRealAbilityClass(Ability->GetClass()))
-	{
-		// 连招
-		LastComboTreeNode = NextComboTreeNode;
-	}
-	else
-	{
-		// 未连招
-		if (UComboTreeNode* NewNextComboTreeNode = ComboAbilityTree->Root->FindChildByRealAbilityClass(
-			Ability->GetClass()))
-		{
-			LastComboTreeNode = NewNextComboTreeNode;
-		}
-		else
-		{
-			LastComboTreeNode = ComboAbilityTree->Root;
-		}
-	}
-}
-
 void UComboActionComponent::InitComboAbilityTree()
 {
 	if (!IsValid(ComboDataAsset))
@@ -86,11 +58,23 @@ void UComboActionComponent::InitComboAbilityTree()
 	}
 }
 
+void UComboActionComponent::OnAbilityInitOver()
+{
+	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(AxeCharacterPlayer->AbilitySystemComponent);
+	AxeASC->OnNotifyAbilityActivatedDelegate.AddUObject(this, &UComboActionComponent::OnNotifyAbilityActivated);
+}
+
+void UComboActionComponent::OnNotifyAbilityActivated(UGameplayAbility* Ability)
+{
+	OnComboAbilityActivated(Ability);
+}
+
 
 /**
  * Combo
  */
-TSubclassOf<UAxeGameplayAbility>* UComboActionComponent::GetComboAbilityByInputTag(const FGameplayTag& NextInputAbilityTag)
+TSubclassOf<UAxeGameplayAbility>* UComboActionComponent::GetComboAbilityByInputTag(
+	const FGameplayTag& NextInputAbilityTag)
 {
 	if (!IsValid(ComboAbilityTree))
 	{
@@ -102,14 +86,74 @@ TSubclassOf<UAxeGameplayAbility>* UComboActionComponent::GetComboAbilityByInputT
 		// 连招
 		return &NextComboTreeNode->AbilityClass;
 	}
+	else
+	{
+		// 不是连招
+		// 从根节点开始查找新的连招
+		if (UComboTreeNode* NewNextComboTreeNode = ComboAbilityTree->Root->FindChild(NextInputAbilityTag))
+		{
+			return &NewNextComboTreeNode->AbilityClass;
+		}
+	}
+	return nullptr;
+}
+
+UAxeAbilitySystemComponent* UComboActionComponent::GetAxeAbilitySystemComponent() const
+{
+	return Cast<UAxeAbilitySystemComponent>(AxeCharacterPlayer->AbilitySystemComponent);
+}
+
+void UComboActionComponent::OnComboAbilityActivated(UGameplayAbility* Ability)
+{
+	// LastComboTreeNode
+	if (UComboTreeNode* NextComboTreeNode = LastComboTreeNode->FindChildByAbilityClass(Ability->GetClass()))
+	{
+		// 是连招
+		LastComboTreeNode = NextComboTreeNode;
+	}
+	else
+	{
+		// 不是连招
+		if (UComboTreeNode* NewNextComboTreeNode = ComboAbilityTree->Root->FindChildByAbilityClass(
+			Ability->GetClass()))
+		{
+			LastComboTreeNode = NewNextComboTreeNode;
+		}
+		else
+		{
+			LastComboTreeNode = ComboAbilityTree->Root;
+		}
+	}
+	// ActivatedComboAbility
+	if (LastComboTreeNode->AbilityClass)
+	{
+		ActivatedComboAbility = Cast<UAxeGameplayAbility>(Ability);
+	}
+	else
+	{
+		ActivatedComboAbility = nullptr;
+	}
+}
+
+UAxeGameplayAbility* UComboActionComponent::GetActivatedComboAbility()
+{
+	if (ActivatedComboAbility && ActivatedComboAbility->IsActive())
+	{
+		return ActivatedComboAbility;
+	}
 	return nullptr;
 }
 
 
 void UComboActionComponent::ComboSwitchWindowStart()
 {
-	UE_LOG(LogTemp, Warning, TEXT("ComboWindowStart"));
 	bIsInComboWindow = true;
+
+	if (UAxeGameplayAbility* ActivatedAbility = GetActivatedComboAbility())
+	{
+		ActivatedAbility->ChangeActivationGroup(EAxeAbilityActivationGroup::Exclusive_Replaceable);
+		ComboSwitchWindowStartAbility = ActivatedAbility;
+	}
 }
 
 void UComboActionComponent::ComboSwitchWindowTick()
@@ -119,4 +163,15 @@ void UComboActionComponent::ComboSwitchWindowTick()
 void UComboActionComponent::ComboSwitchWindowEnd()
 {
 	bIsInComboWindow = false;
+	//
+	if (UAxeGameplayAbility* ActivatedAbility = GetActivatedComboAbility())
+	{
+		ActivatedAbility->ChangeActivationGroup(EAxeAbilityActivationGroup::Exclusive_Blocking);
+
+		// 重置连招树
+		if (LastComboTreeNode->AbilityClass == ComboSwitchWindowStartAbility->GetClass())
+		{
+			LastComboTreeNode = ComboAbilityTree->Root;
+		}
+	}
 }

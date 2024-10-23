@@ -3,7 +3,67 @@
 
 #include "AbilitySystem/Ability/AxeGameplayAbility.h"
 
+#include "AbilitySystemLog.h"
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
+
+#define ENSURE_ABILITY_IS_INSTANTIATED_OR_RETURN(FunctionName, ReturnValue)																				\
+{																																						\
+	if (!ensure(IsInstantiated()))																														\
+	{																																					\
+		ABILITY_LOG(Error, TEXT("%s: " #FunctionName " cannot be called on a non-instanced ability. Check the instancing policy."), *GetPathName());	\
+		return ReturnValue;																																\
+	}																																					\
+}
+
+bool UAxeGameplayAbility::CanChangeActivationGroup(EAxeAbilityActivationGroup NewGroup) const
+{
+	if (!IsInstantiated() || !IsActive())
+	{
+		return false;
+	}
+
+	if (ActivationGroup == NewGroup)
+	{
+		return true;
+	}
+
+	UAxeAbilitySystemComponent* AxeASC = GetAxeAbilitySystemComponentFromActorInfo();
+	check(AxeASC);
+
+	if ((ActivationGroup != EAxeAbilityActivationGroup::Exclusive_Blocking) && AxeASC->
+		IsActivationGroupBlocked(NewGroup))
+	{
+		return false;
+	}
+
+	if ((NewGroup == EAxeAbilityActivationGroup::Exclusive_Replaceable) && !CanBeCanceled())
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool UAxeGameplayAbility::ChangeActivationGroup(EAxeAbilityActivationGroup NewGroup)
+{
+	ENSURE_ABILITY_IS_INSTANTIATED_OR_RETURN(ChangeActivationGroup, false);
+
+	if (!CanChangeActivationGroup(NewGroup))
+	{
+		return false;
+	}
+
+	if (ActivationGroup != NewGroup)
+	{
+		UAxeAbilitySystemComponent* AxeASC = GetAxeAbilitySystemComponentFromActorInfo();
+
+		AxeASC->RemoveAbilityFromActivationGroup(ActivationGroup, this);
+		AxeASC->AddAbilityToActivationGroup(NewGroup, this);
+		ActivationGroup = NewGroup;
+	}
+
+	return true;
+}
 
 bool UAxeGameplayAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                              const FGameplayAbilityActorInfo* ActorInfo,
@@ -17,7 +77,7 @@ bool UAxeGameplayAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Ha
 	}
 
 	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(ActorInfo->AbilitySystemComponent.Get());
-	if (IsValid(AxeASC) and AxeASC->IsActivationGroupBlocked(ActivationGroup))
+	if (AxeASC->IsActivationGroupBlocked(ActivationGroup))
 	{
 		return false;
 	}
@@ -40,4 +100,13 @@ void UAxeGameplayAbility::PreActivate(const FGameplayAbilitySpecHandle Handle,
                                       const FGameplayEventData* TriggerEventData)
 {
 	Super::PreActivate(Handle, ActorInfo, ActivationInfo, OnGameplayAbilityEndedDelegate, TriggerEventData);
+}
+//
+TObjectPtr<UAxeAbilitySystemComponent> UAxeGameplayAbility::GetAxeAbilitySystemComponentFromActorInfo() const
+{
+	if (CurrentActorInfo)
+	{
+		return Cast<UAxeAbilitySystemComponent>(CurrentActorInfo->AbilitySystemComponent.Get());
+	}
+	return nullptr;
 }

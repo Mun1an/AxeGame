@@ -72,7 +72,7 @@ public:
 		}
 		return nullptr;
 	}
-	UComboTreeNode* FindChildByRealAbilityClass(const TSubclassOf<UAxeGameplayAbility>& AbilityCls)
+	UComboTreeNode* FindChildByAbilityClass(const TSubclassOf<UAxeGameplayAbility>& AbilityCls)
 	{
 		for (UComboTreeNode* Child : ChildrenList)
 		{

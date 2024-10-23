@@ -13,5 +13,4 @@ UCLASS()
 class AXE_API UComboGameplayAbility : public UAxeGameplayAbility
 {
 	GENERATED_BODY()
-	
 };
