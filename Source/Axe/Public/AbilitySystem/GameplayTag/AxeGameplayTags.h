@@ -16,6 +16,12 @@ static TArray<FName> NativeGameplayTagNames = {
 	"InputTag.2",
 	"InputTag.3",
 	"InputTag.4",
+	"InputTag.LightAttack",
+	"InputTag.HeavyAttack",
+	"InputTag.Skill.1",
+	"InputTag.Skill.2",
+	"InputTag.Skill.3",
+	"InputTag.Skill.4",
 	//Ability
 	"Ability.LightAttack",
 	"Ability.HeavyAttack",

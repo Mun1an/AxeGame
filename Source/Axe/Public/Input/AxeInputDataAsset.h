@@ -17,9 +17,6 @@ struct FAxeInputActionStruct
 
 	UPROPERTY(EditDefaultsOnly)
 	FGameplayTag InputTag = FGameplayTag();
-
-	UPROPERTY(EditDefaultsOnly)
-	FGameplayTag AbilityTag = FGameplayTag();
 };
 
 /**
@@ -32,7 +29,6 @@ class AXE_API UAxeInputDataAsset : public UDataAsset
 
 public:
 	const UInputAction* FindInputActionByInputTag(const FGameplayTag& Tag, bool bLogNotFound = false) const;
-	FGameplayTag FindAbilityTagByInputTag(const FGameplayTag& Tag, bool bLogNotFound = false) const;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TArray<FAxeInputActionStruct> AbilityInputActionList;

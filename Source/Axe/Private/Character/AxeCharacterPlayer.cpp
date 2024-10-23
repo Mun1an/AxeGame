@@ -12,10 +12,6 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Controller.h"
 #include "PlayerState/AxePlayerState.h"
-
-DEFINE_LOG_CATEGORY(LogTemplateCharacter);
-
-//////////////////////////////////////////////////////////////////////////
 // AAxeCharacter
 
 AAxeCharacterPlayer::AAxeCharacterPlayer()
@@ -61,7 +57,6 @@ AAxeCharacterPlayer::AAxeCharacterPlayer()
 	WeaponSecondaryComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	// ComboActionComponent
 	ComboActionComponent = CreateDefaultSubobject<UComboActionComponent>(TEXT("ComboActionComponent"));
-	
 }
 
 void AAxeCharacterPlayer::PossessedBy(AController* NewController)
@@ -103,4 +98,7 @@ void AAxeCharacterPlayer::InitAbility()
 			AxeASC->GiveAbilityByAbilityAndLevel(Ability, 1);
 		}
 	}
+
+	OnAbilityInitOverDelegate.Broadcast();
+	bIsAbilityInitOver = true;
 }

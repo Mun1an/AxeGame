@@ -24,25 +24,3 @@ const UInputAction* UAxeInputDataAsset::FindInputActionByInputTag(const FGamepla
 
 	return nullptr;
 }
-
-FGameplayTag UAxeInputDataAsset::FindAbilityTagByInputTag(const FGameplayTag& InputTag, bool bLogNotFound) const
-{
-	for (const FAxeInputActionStruct& InputStruct : AbilityInputActionList)
-	{
-		if (InputTag == InputStruct.InputTag && InputStruct.AbilityTag.IsValid())
-		{
-			return InputStruct.AbilityTag;
-		}
-	}
-
-	if (bLogNotFound)
-	{
-		UE_LOG(
-			LogTemp, Error, TEXT("AbilityTag for tag [%s] not found in [%s]"),
-			*InputTag.ToString(),
-			*GetNameSafe(this)
-		);
-	}
-
-	return FGameplayTag();
-}

@@ -6,7 +6,9 @@
 #include "Anim/AxeAnimNotifyState.h"
 #include "ComboAnimNotifyState.generated.h"
 
+class UComboActionComponent;
 class AAxePlayerController;
+
 /**
  * 
  */
@@ -14,7 +16,6 @@ UCLASS()
 class AXE_API UComboAnimNotifyState : public UAxeAnimNotifyState
 {
 	GENERATED_BODY()
-
 
 	virtual void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration,
 	                         const FAnimNotifyEventReference& EventReference) override;
@@ -26,5 +27,6 @@ class AXE_API UComboAnimNotifyState : public UAxeAnimNotifyState
 	                       const FAnimNotifyEventReference& EventReference) override;
 
 protected:
-	AAxePlayerController* GetPlayerControllerByMeshComp(const USkeletalMeshComponent* MeshComp);
+	AAxePlayerController* GetPlayerController(const USkeletalMeshComponent* MeshComp);
+	UComboActionComponent* GetPlayerComboActionComponent(const USkeletalMeshComponent* MeshComp);
 };

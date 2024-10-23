@@ -7,6 +7,9 @@
 #include "ActionSystem/AxeBaseActionComponent.h"
 #include "ComboActionComponent.generated.h"
 
+class UAxeGameplayAbility;
+class UGameplayAbility;
+class AAxeCharacterPlayer;
 class UComboTreeNode;
 class UComboTree;
 class UComboDataAsset;
@@ -28,28 +31,37 @@ public:
 	TObjectPtr<UComboDataAsset> ComboDataAsset;
 
 	UComboTree* GetComboAbilityTree() const { return ComboAbilityTree; }
-	
+
 	//
 	UPROPERTY()
 	UComboTreeNode* LastComboTreeNode = nullptr;
 
-	FGameplayTag GetCombo(FGameplayTag& NextInputAbilityTag);
+	TSubclassOf<UAxeGameplayAbility>* GetComboAbilityByInputTag(const FGameplayTag& NextInputAbilityTag);
 
-	
 	//
 	UFUNCTION()
-	void CombatWindowStart();
+	void ComboSwitchWindowStart();
 
 	UFUNCTION()
-	void CombatWindowUpdate();
+	void ComboSwitchWindowTick();
 
 	UFUNCTION()
-	void CombatWindowEnd();
+	void ComboSwitchWindowEnd();
 
 protected:
 	virtual void BeginPlay() override;
+	
+	void OnAbilityInitOver();
+	void OnNotifyAbilityActivated(UGameplayAbility* Ability);
+	
 
 private:
 	UPROPERTY()
+	TObjectPtr<AAxeCharacterPlayer> AxeCharacterPlayer;
+
+	UPROPERTY()
 	TObjectPtr<UComboTree> ComboAbilityTree;
+
+	UPROPERTY()
+	bool bIsInComboWindow = false;
 };

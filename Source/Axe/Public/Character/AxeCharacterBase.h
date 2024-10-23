@@ -6,9 +6,10 @@
 #include "GameFramework/Character.h"
 #include "AxeCharacterBase.generated.h"
 
-class UComboActionComponent;
 class UComboDataAsset;
 class UGameplayAbility;
+
+DECLARE_MULTICAST_DELEGATE(FOnAbilityInitOverDelegate);
 
 UCLASS()
 class AXE_API AAxeCharacterBase : public ACharacter, public IAbilitySystemInterface
@@ -33,8 +34,13 @@ public:
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
-
 	UPROPERTY(EditAnywhere, Category="Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
 
+	//
+	FOnAbilityInitOverDelegate OnAbilityInitOverDelegate;
+	bool IsAbilityInitOver() const { return bIsAbilityInitOver; }
+
+protected:
+	bool bIsAbilityInitOver = false;
 };

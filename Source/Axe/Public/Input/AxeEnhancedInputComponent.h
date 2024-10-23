@@ -27,24 +27,24 @@ void UAxeEnhancedInputComponent::BindAbilityActions(const UAxeInputDataAsset* In
                                                     PressedFuncType PressedFunc, ReleasedFuncType ReleasedFunc,
                                                     HeldFuncType HeldFunc)
 {
-	for (const FAxeInputActionStruct& InputAction : InputConfig->AbilityInputActionList)
+	for (const FAxeInputActionStruct& InputActionStruct : InputConfig->AbilityInputActionList)
 	{
-		if (InputAction.InputTag.IsValid() && InputAction.InputAction)
+		if (InputActionStruct.InputTag.IsValid() && InputActionStruct.InputAction)
 		{
 			if (PressedFunc)
 			{
 				BindAction(
-					InputAction.InputAction, ETriggerEvent::Started, UserObject, PressedFunc, InputAction.InputTag);
+					InputActionStruct.InputAction, ETriggerEvent::Started, UserObject, PressedFunc, InputActionStruct.InputTag);
 			}
 			if (ReleasedFunc)
 			{
 				BindAction(
-					InputAction.InputAction, ETriggerEvent::Completed, UserObject, ReleasedFunc, InputAction.InputTag);
+					InputActionStruct.InputAction, ETriggerEvent::Completed, UserObject, ReleasedFunc, InputActionStruct.InputTag);
 			}
 			if (HeldFunc)
 			{
 				BindAction(
-					InputAction.InputAction, ETriggerEvent::Triggered, UserObject, HeldFunc, InputAction.InputTag);
+					InputActionStruct.InputAction, ETriggerEvent::Triggered, UserObject, HeldFunc, InputActionStruct.InputTag);
 			}
 		}
 	}

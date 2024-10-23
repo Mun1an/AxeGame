@@ -6,7 +6,6 @@
 #include "GameFramework/PlayerController.h"
 #include "AxePlayerController.generated.h"
 
-class UComboActionComponent;
 struct FGameplayTag;
 class UAxeInputDataAsset;
 struct FInputActionValue;

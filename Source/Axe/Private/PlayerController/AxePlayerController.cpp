@@ -93,33 +93,30 @@ void AAxePlayerController::StopJumping(const FInputActionValue& Value)
 
 void AAxePlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 {
-	FGameplayTag AbilityTag = AbilityInputDataAsset->FindAbilityTagByInputTag(InputTag);
 	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(
 		UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetCharacter()));
 	if (AxeASC)
 	{
-		AxeASC->AbilityInputTagPressed(AbilityTag);
+		AxeASC->AbilityInputTagPressed(InputTag);
 	}
 }
 
 void AAxePlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 {
-	FGameplayTag AbilityTag = AbilityInputDataAsset->FindAbilityTagByInputTag(InputTag);
 	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(
 		UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetCharacter()));
 	if (AxeASC)
 	{
-		AxeASC->AbilityInputTagReleased(AbilityTag);
+		AxeASC->AbilityInputTagReleased(InputTag);
 	}
 }
 
 void AAxePlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 {
-	FGameplayTag AbilityTag = AbilityInputDataAsset->FindAbilityTagByInputTag(InputTag);
 	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(
 		UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetCharacter()));
 	if (AxeASC)
 	{
-		AxeASC->AbilityInputTagHeld(AbilityTag);
+		AxeASC->AbilityInputTagHeld(InputTag);
 	}
 }

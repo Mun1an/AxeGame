@@ -4,8 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
+#include "Abilities/GameplayAbility.h"
+#include "AbilitySystem/Ability/AxeGameplayAbility.h"
 #include "Engine/DataAsset.h"
 #include "ComboDataAsset.generated.h"
+
 
 USTRUCT()
 struct FComboAbilityInfo
@@ -13,9 +16,10 @@ struct FComboAbilityInfo
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere)
-	FGameplayTag InputAbilityTag;
+	FGameplayTag InputTag;
+
 	UPROPERTY(EditAnywhere)
-	FGameplayTag RealAbilityTag;
+	TSubclassOf<UAxeGameplayAbility> AbilityClass;
 };
 
 USTRUCT()
@@ -45,7 +49,7 @@ public:
 	FGameplayTag IndexTag;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Tree")
-	FGameplayTag ValueTag;
+	TSubclassOf<UAxeGameplayAbility> AbilityClass;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Tree")
 	TArray<UComboTreeNode*> ChildrenList;
@@ -62,6 +66,17 @@ public:
 		for (UComboTreeNode* Child : ChildrenList)
 		{
 			if (Child->IndexTag == ChildIndex)
+			{
+				return Child;
+			}
+		}
+		return nullptr;
+	}
+	UComboTreeNode* FindChildByRealAbilityClass(const TSubclassOf<UAxeGameplayAbility>& AbilityCls)
+	{
+		for (UComboTreeNode* Child : ChildrenList)
+		{
+			if (Child->AbilityClass == AbilityCls)
 			{
 				return Child;
 			}
