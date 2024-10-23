@@ -41,13 +41,18 @@ public:
 	void OnComboAbilityActivated(UGameplayAbility* Ability);
 	//
 	UFUNCTION()
-	void ComboSwitchWindowStart();
-
+	void AnsComboSwitchWindowStart();
 	UFUNCTION()
-	void ComboSwitchWindowTick();
-
+	void AnsComboSwitchWindowTick();
 	UFUNCTION()
-	void ComboSwitchWindowEnd();
+	void AnsComboSwitchWindowEnd();
+	//
+	UFUNCTION()
+	void AnsComboInputCacheStart();
+	UFUNCTION()
+	void AnsComboInputCacheTick();
+	UFUNCTION()
+	void AnsComboInputCacheEnd();
 
 protected:
 	UPROPERTY()
@@ -57,6 +62,7 @@ protected:
 
 	void OnAbilityInitOver();
 	void OnNotifyAbilityActivated(UGameplayAbility* Ability);
+	void OnAbilityInputTagPressed(const FGameplayTag InputTag);
 
 private:
 	UPROPERTY()
@@ -72,4 +78,7 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<UAxeGameplayAbility> ActivatedComboAbility = nullptr;
+
+	bool bSaveComboInputAbilityTagCache = false;
+	TArray<FGameplayTag> ComboInputAbilityTagCache;
 };

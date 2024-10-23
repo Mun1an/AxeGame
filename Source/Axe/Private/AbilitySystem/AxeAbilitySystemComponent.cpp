@@ -28,6 +28,7 @@ void UAxeAbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& Inpu
 			}
 		}
 	}
+	OnAbilityInputTagPressedDelegate.Broadcast(InputTag);
 }
 
 void UAxeAbilitySystemComponent::AbilityInputTagHeld(const FGameplayTag& InputTag)

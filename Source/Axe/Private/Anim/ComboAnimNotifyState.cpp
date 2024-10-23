@@ -8,24 +8,7 @@
 #include "GameFramework/Character.h"
 #include "PlayerController/AxePlayerController.h"
 
-AAxePlayerController* UComboAnimNotifyState::GetPlayerController(const USkeletalMeshComponent* MeshComp)
-{
-	APawn* Owner = MeshComp->GetAnimInstance()->TryGetPawnOwner();
-	AController* Controller = Cast<ACharacter>(Owner)->GetController();
-	AAxePlayerController* AxePlayerController = Cast<AAxePlayerController>(Controller);
-	return AxePlayerController;
-}
 
-UComboActionComponent* UComboAnimNotifyState::GetPlayerComboActionComponent(const USkeletalMeshComponent* MeshComp)
-{
-	APawn* Pawn = MeshComp->GetAnimInstance()->TryGetPawnOwner();
-	if (IsValid(Pawn))
-	{
-		const AAxeCharacterPlayer* CharacterPlayer = Cast<AAxeCharacterPlayer>(Pawn);
-		return CharacterPlayer->GetComboActionComponent();
-	}
-	return nullptr;
-}
 
 void UComboAnimNotifyState::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
                                         float TotalDuration, const FAnimNotifyEventReference& EventReference)
@@ -34,7 +17,7 @@ void UComboAnimNotifyState::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimS
 
 	if (UComboActionComponent* ComboActionComponent = GetPlayerComboActionComponent(MeshComp))
 	{
-		ComboActionComponent->ComboSwitchWindowStart();
+		ComboActionComponent->AnsComboSwitchWindowStart();
 	}
 }
 
@@ -51,6 +34,6 @@ void UComboAnimNotifyState::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSeq
 
 	if (UComboActionComponent* ComboActionComponent = GetPlayerComboActionComponent(MeshComp))
 	{
-		ComboActionComponent->ComboSwitchWindowEnd();
+		ComboActionComponent->AnsComboSwitchWindowEnd();
 	}
 }

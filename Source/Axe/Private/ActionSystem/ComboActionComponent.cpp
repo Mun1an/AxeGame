@@ -62,6 +62,8 @@ void UComboActionComponent::OnAbilityInitOver()
 {
 	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(AxeCharacterPlayer->AbilitySystemComponent);
 	AxeASC->OnNotifyAbilityActivatedDelegate.AddUObject(this, &UComboActionComponent::OnNotifyAbilityActivated);
+	
+	AxeASC->OnAbilityInputTagPressedDelegate.AddUObject(this, &UComboActionComponent::OnAbilityInputTagPressed);
 }
 
 void UComboActionComponent::OnNotifyAbilityActivated(UGameplayAbility* Ability)
@@ -69,6 +71,14 @@ void UComboActionComponent::OnNotifyAbilityActivated(UGameplayAbility* Ability)
 	OnComboAbilityActivated(Ability);
 }
 
+void UComboActionComponent::OnAbilityInputTagPressed(const FGameplayTag InputTag)
+{
+	//
+	if (bSaveComboInputAbilityTagCache && InputTag.IsValid())
+	{
+		ComboInputAbilityTagCache.Add(InputTag);
+	}
+}
 
 /**
  * Combo
@@ -145,7 +155,7 @@ UAxeGameplayAbility* UComboActionComponent::GetActivatedComboAbility()
 }
 
 
-void UComboActionComponent::ComboSwitchWindowStart()
+void UComboActionComponent::AnsComboSwitchWindowStart()
 {
 	bIsInComboWindow = true;
 
@@ -156,11 +166,11 @@ void UComboActionComponent::ComboSwitchWindowStart()
 	}
 }
 
-void UComboActionComponent::ComboSwitchWindowTick()
+void UComboActionComponent::AnsComboSwitchWindowTick()
 {
 }
 
-void UComboActionComponent::ComboSwitchWindowEnd()
+void UComboActionComponent::AnsComboSwitchWindowEnd()
 {
 	bIsInComboWindow = false;
 	//
@@ -173,5 +183,27 @@ void UComboActionComponent::ComboSwitchWindowEnd()
 		{
 			LastComboTreeNode = ComboAbilityTree->Root;
 		}
+	}
+}
+
+void UComboActionComponent::AnsComboInputCacheStart()
+{
+	ComboInputAbilityTagCache.Reset();
+	bSaveComboInputAbilityTagCache = true;
+}
+
+void UComboActionComponent::AnsComboInputCacheTick()
+{
+}
+
+void UComboActionComponent::AnsComboInputCacheEnd()
+{
+	bSaveComboInputAbilityTagCache = false;
+	UAxeAbilitySystemComponent* AxeASC = GetAxeAbilitySystemComponent();
+	if (ComboInputAbilityTagCache.Num() > 0 && AxeASC)
+	{
+	// 	//TODO 也许需要从最后找一个合适的tag
+		FGameplayTag InputAbilityTag = ComboInputAbilityTagCache.Pop();
+		AxeASC->AbilityInputTagPressed(InputAbilityTag);
 	}
 }

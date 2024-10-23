@@ -11,6 +11,7 @@ class UAxeGameplayAbility;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnNotifyAbilityActivatedDelegate, UGameplayAbility*)
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnNotifyAbilityEndedDelegate, UGameplayAbility*)
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnAbilityInputTagPressed, const FGameplayTag)
 /**
  * 
  */
@@ -43,6 +44,7 @@ public:
 
 	FOnNotifyAbilityActivatedDelegate OnNotifyAbilityActivatedDelegate;
 	FOnNotifyAbilityEndedDelegate OnNotifyAbilityEndedDelegate;
+	FOnAbilityInputTagPressed OnAbilityInputTagPressedDelegate;
 
 protected:
 	
