@@ -28,6 +28,8 @@ static TArray<FName> NativeGameplayTagNames = {
 	"Ability.MeleeCombo.B1",
 	"Ability.MeleeCombo.B2",
 	"Ability.MeleeCombo.B3",
+	
+	"Ability.Skill.LeapAttack",
 };
 
 struct FAxeGameplayTags

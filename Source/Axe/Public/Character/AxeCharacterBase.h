@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "AxeCharacterBase.generated.h"
 
+enum class ELaunchCharacterDirection : uint8;
 class UComboDataAsset;
 class UGameplayAbility;
 
@@ -40,6 +41,11 @@ public:
 	//
 	FOnAbilityInitOverDelegate OnAbilityInitOverDelegate;
 	bool IsAbilityInitOver() const { return bIsAbilityInitOver; }
+
+	//
+	UFUNCTION(BlueprintCallable)
+	void SetCustomLaunchCharacter(float LaunchSpeed, ELaunchCharacterDirection LaunchDirection, bool bXYOverride,
+	                              bool bZOverride);
 
 protected:
 	bool bIsAbilityInitOver = false;
