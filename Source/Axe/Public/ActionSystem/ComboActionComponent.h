@@ -44,6 +44,7 @@ public:
 	UAxeAbilitySystemComponent* GetAxeAbilitySystemComponent() const;
 	//
 	void OnComboAbilityActivated(UGameplayAbility* Ability);
+	void OnComboAbilityEnded(UGameplayAbility* Ability);
 	//
 	UFUNCTION()
 	void AnsComboSwitchWindowStart();
@@ -69,6 +70,7 @@ protected:
 
 	void OnAbilityInitOver();
 	void OnNotifyAbilityActivated(UGameplayAbility* Ability);
+	void OnNotifyAbilityEnded(UGameplayAbility* Ability);
 	void OnAbilityInputTagPressed(const FGameplayTag InputTag);
 
 private:

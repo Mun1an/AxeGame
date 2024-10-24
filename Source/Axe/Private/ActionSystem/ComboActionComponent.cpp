@@ -62,6 +62,7 @@ void UComboActionComponent::OnAbilityInitOver()
 {
 	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(AxeCharacterPlayer->AbilitySystemComponent);
 	AxeASC->OnNotifyAbilityActivatedDelegate.AddUObject(this, &UComboActionComponent::OnNotifyAbilityActivated);
+	AxeASC->OnNotifyAbilityEndedDelegate.AddUObject(this, &UComboActionComponent::OnNotifyAbilityEnded);
 
 	AxeASC->OnAbilityInputTagPressedDelegate.AddUObject(this, &UComboActionComponent::OnAbilityInputTagPressed);
 }
@@ -69,6 +70,11 @@ void UComboActionComponent::OnAbilityInitOver()
 void UComboActionComponent::OnNotifyAbilityActivated(UGameplayAbility* Ability)
 {
 	OnComboAbilityActivated(Ability);
+}
+
+void UComboActionComponent::OnNotifyAbilityEnded(UGameplayAbility* Ability)
+{
+	OnComboAbilityEnded(Ability);
 }
 
 void UComboActionComponent::OnAbilityInputTagPressed(const FGameplayTag InputTag)
@@ -150,6 +156,12 @@ void UComboActionComponent::OnComboAbilityActivated(UGameplayAbility* Ability)
 	}
 }
 
+void UComboActionComponent::OnComboAbilityEnded(UGameplayAbility* Ability)
+{
+	bIsInComboWindow = false;
+	bSaveComboInputAbilityTagCache = false;
+}
+
 UAxeGameplayAbility* UComboActionComponent::GetActivatedComboAbility()
 {
 	if (ActivatedComboAbility && ActivatedComboAbility->IsActive())
@@ -204,12 +216,16 @@ void UComboActionComponent::AnsComboInputCacheTick()
 void UComboActionComponent::AnsComboInputCacheEnd()
 {
 	bSaveComboInputAbilityTagCache = false;
-	
+
 	PressedComboInputInCache();
 }
 
 void UComboActionComponent::PressedComboInputInCache()
 {
+	if (!bIsInComboWindow)
+	{
+		return;
+	}
 	UAxeAbilitySystemComponent* AxeASC = GetAxeAbilitySystemComponent();
 	if (ComboInputAbilityTagCache.Num() > 0 && AxeASC)
 	{
