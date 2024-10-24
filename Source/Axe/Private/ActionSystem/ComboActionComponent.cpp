@@ -62,7 +62,7 @@ void UComboActionComponent::OnAbilityInitOver()
 {
 	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(AxeCharacterPlayer->AbilitySystemComponent);
 	AxeASC->OnNotifyAbilityActivatedDelegate.AddUObject(this, &UComboActionComponent::OnNotifyAbilityActivated);
-	
+
 	AxeASC->OnAbilityInputTagPressedDelegate.AddUObject(this, &UComboActionComponent::OnAbilityInputTagPressed);
 }
 
@@ -73,8 +73,7 @@ void UComboActionComponent::OnNotifyAbilityActivated(UGameplayAbility* Ability)
 
 void UComboActionComponent::OnAbilityInputTagPressed(const FGameplayTag InputTag)
 {
-	//
-	if (bSaveComboInputAbilityTagCache && InputTag.IsValid())
+	if (bSaveComboInputAbilityTagCache && !bIsInComboWindow && InputTag.IsValid())
 	{
 		ComboInputAbilityTagCache.Add(InputTag);
 	}
@@ -106,6 +105,12 @@ TSubclassOf<UAxeGameplayAbility>* UComboActionComponent::GetComboAbilityByInputT
 		}
 	}
 	return nullptr;
+}
+
+bool UComboActionComponent::IsNextComboAbility(const UGameplayAbility* Ability)
+{
+	UComboTreeNode* ChildNode = LastComboTreeNode->FindChildByAbilityClass(Ability->GetClass());
+	return ChildNode != nullptr;
 }
 
 UAxeAbilitySystemComponent* UComboActionComponent::GetAxeAbilitySystemComponent() const
@@ -161,7 +166,7 @@ void UComboActionComponent::AnsComboSwitchWindowStart()
 
 	if (UAxeGameplayAbility* ActivatedAbility = GetActivatedComboAbility())
 	{
-		ActivatedAbility->ChangeActivationGroup(EAxeAbilityActivationGroup::Exclusive_Replaceable);
+		// ActivatedAbility->ChangeActivationGroup(EAxeAbilityActivationGroup::Exclusive_Replaceable);
 		ComboSwitchWindowStartAbility = ActivatedAbility;
 	}
 }
@@ -176,7 +181,7 @@ void UComboActionComponent::AnsComboSwitchWindowEnd()
 	//
 	if (UAxeGameplayAbility* ActivatedAbility = GetActivatedComboAbility())
 	{
-		ActivatedAbility->ChangeActivationGroup(EAxeAbilityActivationGroup::Exclusive_Blocking);
+		// ActivatedAbility->ChangeActivationGroup(EAxeAbilityActivationGroup::Exclusive_Blocking);
 
 		// 重置连招树
 		if (LastComboTreeNode->AbilityClass == ComboSwitchWindowStartAbility->GetClass())
@@ -199,10 +204,16 @@ void UComboActionComponent::AnsComboInputCacheTick()
 void UComboActionComponent::AnsComboInputCacheEnd()
 {
 	bSaveComboInputAbilityTagCache = false;
+	
+	PressedComboInputInCache();
+}
+
+void UComboActionComponent::PressedComboInputInCache()
+{
 	UAxeAbilitySystemComponent* AxeASC = GetAxeAbilitySystemComponent();
 	if (ComboInputAbilityTagCache.Num() > 0 && AxeASC)
 	{
-	// 	//TODO 也许需要从最后找一个合适的tag
+		//TODO 也许需要从最后找一个合适的tag
 		FGameplayTag InputAbilityTag = ComboInputAbilityTagCache.Pop();
 		AxeASC->AbilityInputTagPressed(InputAbilityTag);
 	}

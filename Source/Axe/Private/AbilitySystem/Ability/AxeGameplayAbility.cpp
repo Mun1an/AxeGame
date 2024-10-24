@@ -30,13 +30,18 @@ bool UAxeGameplayAbility::CanChangeActivationGroup(EAxeAbilityActivationGroup Ne
 	UAxeAbilitySystemComponent* AxeASC = GetAxeAbilitySystemComponentFromActorInfo();
 	check(AxeASC);
 
-	if ((ActivationGroup != EAxeAbilityActivationGroup::Exclusive_Blocking) && AxeASC->
-		IsActivationGroupBlocked(NewGroup))
+	if ((ActivationGroup != EAxeAbilityActivationGroup::Exclusive_Blocking) &&
+		AxeASC->IsActivationGroupBlocked(NewGroup, this)
+	)
 	{
 		return false;
 	}
 
 	if ((NewGroup == EAxeAbilityActivationGroup::Exclusive_Replaceable) && !CanBeCanceled())
+	{
+		return false;
+	}
+	if ((NewGroup == EAxeAbilityActivationGroup::Exclusive_ReplaceableByCondition) && !CanBeCanceled())
 	{
 		return false;
 	}
@@ -65,6 +70,11 @@ bool UAxeGameplayAbility::ChangeActivationGroup(EAxeAbilityActivationGroup NewGr
 	return true;
 }
 
+bool UAxeGameplayAbility::CanReplaceAbilityByCondition(const UAxeGameplayAbility* NewAbility, AActor* Actor) const
+{
+	return true;
+}
+
 bool UAxeGameplayAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                              const FGameplayAbilityActorInfo* ActorInfo,
                                              const FGameplayTagContainer* SourceTags,
@@ -77,7 +87,7 @@ bool UAxeGameplayAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Ha
 	}
 
 	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(ActorInfo->AbilitySystemComponent.Get());
-	if (AxeASC->IsActivationGroupBlocked(ActivationGroup))
+	if (AxeASC->IsActivationGroupBlocked(ActivationGroup, this))
 	{
 		return false;
 	}
@@ -101,6 +111,7 @@ void UAxeGameplayAbility::PreActivate(const FGameplayAbilitySpecHandle Handle,
 {
 	Super::PreActivate(Handle, ActorInfo, ActivationInfo, OnGameplayAbilityEndedDelegate, TriggerEventData);
 }
+
 //
 TObjectPtr<UAxeAbilitySystemComponent> UAxeGameplayAbility::GetAxeAbilitySystemComponentFromActorInfo() const
 {

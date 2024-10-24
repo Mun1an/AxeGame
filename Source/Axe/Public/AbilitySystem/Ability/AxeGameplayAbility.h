@@ -18,6 +18,9 @@ enum class EAxeAbilityActivationGroup : uint8
 	// Ability is canceled and replaced by other exclusive abilities.
 	Exclusive_Replaceable,
 
+	// 只能在条件下被Exclusive_ReplaceableByCondition或直接被Exclusive_Blocking打断和取消
+	Exclusive_ReplaceableByCondition,
+
 	// Ability blocks all other exclusive abilities from activating.
 	Exclusive_Blocking,
 
@@ -45,6 +48,8 @@ public:
 		Meta = (ExpandBoolAsExecs = "ReturnValue"))
 	bool ChangeActivationGroup(EAxeAbilityActivationGroup NewGroup);
 
+	virtual bool CanReplaceAbilityByCondition(const UAxeGameplayAbility* NewAbility, AActor* Actor) const;
+	
 	//
 	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	                                const FGameplayTagContainer* SourceTags = nullptr,

@@ -77,6 +77,37 @@ void AAxeCharacterPlayer::BeginPlay()
 {
 	// Call the base class  
 	Super::BeginPlay();
+	PrimaryActorTick.bCanEverTick = true;
+}
+
+void AAxeCharacterPlayer::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(AbilitySystemComponent);
+	if (AxeASC)
+	{
+		TMap<EAxeAbilityActivationGroup, TArray<FGameplayAbilitySpecHandle>> ActivationGroupMap = AxeASC->
+			GetActivationGroupMap();
+
+		FString Msg = "";
+		for (TTuple<EAxeAbilityActivationGroup, TArray<FGameplayAbilitySpecHandle>>
+		     GroupMap : ActivationGroupMap)
+		{
+			Msg += FString::Printf(TEXT("Group: %d"), GroupMap.Key);
+
+			if (GroupMap.Value.Num() > 0)
+			{
+				for (FGameplayAbilitySpecHandle SpecHandle : GroupMap.Value)
+				{
+					UGameplayAbility* GameplayAbility = AxeASC->FindAbilitySpecFromHandle(SpecHandle)->Ability;
+					Msg += FString::Printf(TEXT("  %s  "), *GameplayAbility->GetName());
+				}
+			}
+			Msg += "\n";
+		}
+		GEngine->AddOnScreenDebugMessage(1, 3.0f, FColor::Orange, Msg);
+	}
 }
 
 void AAxeCharacterPlayer::InitAbility()

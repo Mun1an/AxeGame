@@ -34,7 +34,12 @@ public:
 	UComboTree* GetComboAbilityTree() const { return ComboAbilityTree; }
 	UFUNCTION()
 	UAxeGameplayAbility* GetActivatedComboAbility();
+
 	TSubclassOf<UAxeGameplayAbility>* GetComboAbilityByInputTag(const FGameplayTag& NextInputAbilityTag);
+	bool IsNextComboAbility(const UGameplayAbility* Ability);
+
+	bool IsInComboSwitchWindow() const { return bIsInComboWindow; }
+
 	UFUNCTION()
 	UAxeAbilitySystemComponent* GetAxeAbilitySystemComponent() const;
 	//
@@ -54,6 +59,8 @@ public:
 	UFUNCTION()
 	void AnsComboInputCacheEnd();
 
+	void PressedComboInputInCache();
+	
 protected:
 	UPROPERTY()
 	UComboTreeNode* LastComboTreeNode = nullptr;

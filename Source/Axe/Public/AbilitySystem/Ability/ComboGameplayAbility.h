@@ -13,4 +13,6 @@ UCLASS()
 class AXE_API UComboGameplayAbility : public UAxeGameplayAbility
 {
 	GENERATED_BODY()
+
+	virtual bool CanReplaceAbilityByCondition(const UAxeGameplayAbility* NewAbility, AActor* Actor) const;
 };

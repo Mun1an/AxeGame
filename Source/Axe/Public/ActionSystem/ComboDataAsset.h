@@ -61,17 +61,18 @@ public:
 	}
 
 	UFUNCTION(BlueprintCallable, Category = "Tree")
-	UComboTreeNode* FindChild(const FGameplayTag& ChildIndex)
+	UComboTreeNode* FindChild(const FGameplayTag& ChildIndexTag)
 	{
 		for (UComboTreeNode* Child : ChildrenList)
 		{
-			if (Child->IndexTag == ChildIndex)
+			if (Child->IndexTag.IsValid() && ChildIndexTag.IsValid() && Child->IndexTag.MatchesTagExact(ChildIndexTag))
 			{
 				return Child;
 			}
 		}
 		return nullptr;
 	}
+
 	UComboTreeNode* FindChildByAbilityClass(const TSubclassOf<UAxeGameplayAbility>& AbilityCls)
 	{
 		for (UComboTreeNode* Child : ChildrenList)

@@ -30,9 +30,14 @@ public:
 	void TryActivateAbilityAndCheck(FGameplayAbilitySpecHandle AbilitySpecHandle, bool bAllowRemoteActivation = true);
 	//
 	void GiveAbilityByAbilityAndLevel(const TSubclassOf<UGameplayAbility>& Ability, const int32 AbilityLevel);
+	//
+	TMap<EAxeAbilityActivationGroup, TArray<FGameplayAbilitySpecHandle>> GetActivationGroupMap() const
+	{
+		return ActivationGroupMap;
+	}
 
 	//
-	bool IsActivationGroupBlocked(EAxeAbilityActivationGroup Group) const;
+	bool IsActivationGroupBlocked(EAxeAbilityActivationGroup Group, const UAxeGameplayAbility* NewAxeAbility) const;
 	void AddAbilityToActivationGroup(EAxeAbilityActivationGroup Group, UAxeGameplayAbility* AxeAbility);
 	void RemoveAbilityFromActivationGroup(EAxeAbilityActivationGroup Group, UAxeGameplayAbility* AxeAbility);
 
@@ -47,8 +52,7 @@ public:
 	FOnAbilityInputTagPressed OnAbilityInputTagPressedDelegate;
 
 protected:
-	
-private:
-	TMap<EAxeAbilityActivationGroup, TArray<UGameplayAbility*>> ActivationGroupMap;
 
+private:
+	TMap<EAxeAbilityActivationGroup, TArray<FGameplayAbilitySpecHandle>> ActivationGroupMap;
 };

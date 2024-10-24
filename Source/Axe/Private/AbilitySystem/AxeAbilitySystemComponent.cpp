@@ -63,6 +63,13 @@ void UAxeAbilitySystemComponent::TryActivateAbilityAndCheck(FGameplayAbilitySpec
 	}
 
 	TryActivateAbility(AbilitySpecHandle, bAllowRemoteActivation);
+	//
+	GEngine->AddOnScreenDebugMessage(
+		-1, 3.0f, FColor::Blue,
+		FString::Printf(
+			TEXT("Ability TryActivate: %s"), *FindAbilitySpecFromHandle(AbilitySpecHandle)->Ability->GetName()
+		)
+	);
 }
 
 void UAxeAbilitySystemComponent::GiveAbilityByAbilityAndLevel(const TSubclassOf<UGameplayAbility>& Ability,
@@ -72,11 +79,12 @@ void UAxeAbilitySystemComponent::GiveAbilityByAbilityAndLevel(const TSubclassOf<
 	GiveAbility(AbilitySpec);
 }
 
-bool UAxeAbilitySystemComponent::IsActivationGroupBlocked(EAxeAbilityActivationGroup Group) const
+bool UAxeAbilitySystemComponent::IsActivationGroupBlocked(EAxeAbilityActivationGroup Group,
+                                                          const UAxeGameplayAbility* NewAxeAbility) const
 {
 	bool bBlocked = false;
 
-	const TArray<UGameplayAbility*>* Abilities = nullptr;
+
 	switch (Group)
 	{
 	case EAxeAbilityActivationGroup::Independent:
@@ -85,14 +93,42 @@ bool UAxeAbilitySystemComponent::IsActivationGroupBlocked(EAxeAbilityActivationG
 		break;
 
 	case EAxeAbilityActivationGroup::Exclusive_Replaceable:
-	case EAxeAbilityActivationGroup::Exclusive_Blocking:
-		// Exclusive abilities can activate if nothing is blocking.
-		Abilities = ActivationGroupMap.Find(EAxeAbilityActivationGroup::Exclusive_Blocking);
-		if (Abilities)
+	case EAxeAbilityActivationGroup::Exclusive_ReplaceableByCondition:
 		{
-			bBlocked = Abilities->Num() > 0;
+			const TArray<FGameplayAbilitySpecHandle>* SpecHandles = ActivationGroupMap.Find(
+				EAxeAbilityActivationGroup::Exclusive_ReplaceableByCondition
+			);
+			if (SpecHandles)
+			{
+				for (const FGameplayAbilitySpecHandle& SpecHandle : *SpecHandles)
+				{
+					FGameplayAbilitySpec* GameplayAbilitySpec = FindAbilitySpecFromHandle(SpecHandle);
+					UAxeGameplayAbility* AxeGameplayAbility = Cast<UAxeGameplayAbility>(GameplayAbilitySpec->Ability);
+					if (!AxeGameplayAbility)
+					{
+						continue;
+					}
+					bool bReplaceByCondition = AxeGameplayAbility->CanReplaceAbilityByCondition(
+						NewAxeAbility, GetAvatarActor()
+					);
+					if (!bReplaceByCondition)
+					{
+						bBlocked = true;
+					}
+				}
+			}
 		}
-		break;
+	case EAxeAbilityActivationGroup::Exclusive_Blocking:
+		{
+			const TArray<FGameplayAbilitySpecHandle>* SpecHandles = ActivationGroupMap.Find(
+				EAxeAbilityActivationGroup::Exclusive_Blocking
+			);
+			if (SpecHandles && !bBlocked)
+			{
+				bBlocked = SpecHandles->Num() > 0;
+			}
+			break;
+		}
 	default:
 		break;
 	}
@@ -103,28 +139,46 @@ bool UAxeAbilitySystemComponent::IsActivationGroupBlocked(EAxeAbilityActivationG
 void UAxeAbilitySystemComponent::AddAbilityToActivationGroup(EAxeAbilityActivationGroup Group,
                                                              UAxeGameplayAbility* AxeAbility)
 {
-	ActivationGroupMap.FindOrAdd(Group).AddUnique(AxeAbility);
+	FGameplayAbilitySpec* AbilitySpec = FindAbilitySpecFromClass(AxeAbility->GetClass());
+	if (!AbilitySpec)
+	{
+		return;
+	}
+	FGameplayAbilitySpecHandle AxeAbilitySpecHandle = AbilitySpec->Handle;
+	ActivationGroupMap.FindOrAdd(Group).AddUnique(AxeAbilitySpecHandle);
 
-	TArray<UGameplayAbility*>* Abilities = nullptr;
 	switch (Group)
 	{
 	case EAxeAbilityActivationGroup::Independent:
 		break;
 	case EAxeAbilityActivationGroup::Exclusive_Replaceable:
+	case EAxeAbilityActivationGroup::Exclusive_ReplaceableByCondition:
 	case EAxeAbilityActivationGroup::Exclusive_Blocking:
-		Abilities = ActivationGroupMap.Find(EAxeAbilityActivationGroup::Exclusive_Replaceable);
-		if (Abilities)
 		{
-			for (UGameplayAbility* Ability : *Abilities)
+			TArray<FGameplayAbilitySpecHandle> CancelAbilityHandles;
+			if (TArray<FGameplayAbilitySpecHandle>* AbilitySpecHandles = ActivationGroupMap.Find(
+				EAxeAbilityActivationGroup::Exclusive_Replaceable))
 			{
-				if (Ability == AxeAbility)
-				{
-					continue;
-				}
-				CancelAbility(Ability);
+				CancelAbilityHandles.Append(*AbilitySpecHandles);
 			}
+			if (TArray<FGameplayAbilitySpecHandle>* AbilitySpecHandles = ActivationGroupMap.Find(
+				EAxeAbilityActivationGroup::Exclusive_ReplaceableByCondition))
+			{
+				CancelAbilityHandles.Append(*AbilitySpecHandles);
+			}
+			if (CancelAbilityHandles.Num() > 0)
+			{
+				for (const FGameplayAbilitySpecHandle& Handle : CancelAbilityHandles)
+				{
+					if (Handle == AxeAbilitySpecHandle)
+					{
+						continue;
+					}
+					CancelAbilityHandle(Handle);
+				}
+			}
+			break;
 		}
-		break;
 	default:
 		break;
 	}
@@ -133,7 +187,13 @@ void UAxeAbilitySystemComponent::AddAbilityToActivationGroup(EAxeAbilityActivati
 void UAxeAbilitySystemComponent::RemoveAbilityFromActivationGroup(EAxeAbilityActivationGroup Group,
                                                                   UAxeGameplayAbility* AxeAbility)
 {
-	ActivationGroupMap.FindOrAdd(Group).Remove(AxeAbility);
+	FGameplayAbilitySpec* AbilitySpec = FindAbilitySpecFromClass(AxeAbility->GetClass());
+	if (!AbilitySpec)
+	{
+		return;
+	}
+	FGameplayAbilitySpecHandle AxeAbilitySpecHandle = AbilitySpec->Handle;
+	ActivationGroupMap.FindOrAdd(Group).Remove(AxeAbilitySpecHandle);
 }
 
 void UAxeAbilitySystemComponent::OnGiveAbility(FGameplayAbilitySpec& AbilitySpec)
@@ -158,6 +218,9 @@ void UAxeAbilitySystemComponent::NotifyAbilityActivated(const FGameplayAbilitySp
 	AddAbilityToActivationGroup(AxeGameplayAbility->GetActivationGroup(), AxeGameplayAbility);
 
 	OnNotifyAbilityActivatedDelegate.Broadcast(Ability);
+
+	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Blue, FString::Printf(TEXT("Ability Activated: %s"),
+	                                                                         *Ability->GetName()));
 }
 
 void UAxeAbilitySystemComponent::NotifyAbilityEnded(FGameplayAbilitySpecHandle Handle, UGameplayAbility* Ability,
