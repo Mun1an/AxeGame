@@ -7,6 +7,7 @@
 #include "Ability/AxeGameplayAbility.h"
 #include "AxeAbilitySystemComponent.generated.h"
 
+class AAxeCharacterBase;
 class UAxeGameplayAbility;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnNotifyAbilityActivatedDelegate, UGameplayAbility*)
@@ -22,6 +23,13 @@ class AXE_API UAxeAbilitySystemComponent : public UAbilitySystemComponent
 
 public:
 	UAxeAbilitySystemComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
+	FOnNotifyAbilityActivatedDelegate OnNotifyAbilityActivatedDelegate;
+	FOnNotifyAbilityEndedDelegate OnNotifyAbilityEndedDelegate;
+	FOnAbilityInputTagPressed OnAbilityInputTagPressedDelegate;
+	//
+	// 获取角色
+	AAxeCharacterBase* GetAxeCharacterOwner() const;
 	//
 	void AbilityInputTagPressed(const FGameplayTag& InputTag);
 	void AbilityInputTagHeld(const FGameplayTag& InputTag);
@@ -46,10 +54,9 @@ public:
 	virtual void NotifyAbilityActivated(const FGameplayAbilitySpecHandle Handle, UGameplayAbility* Ability) override;
 	virtual void NotifyAbilityEnded(FGameplayAbilitySpecHandle Handle, UGameplayAbility* Ability,
 	                                bool bWasCancelled) override;
-
-	FOnNotifyAbilityActivatedDelegate OnNotifyAbilityActivatedDelegate;
-	FOnNotifyAbilityEndedDelegate OnNotifyAbilityEndedDelegate;
-	FOnAbilityInputTagPressed OnAbilityInputTagPressedDelegate;
+	//
+	FActiveGameplayEffectHandle ApplyEffectToSelfByClass(const TSubclassOf<UGameplayEffect>& EffectClass,
+	                                                     const float Level);
 
 protected:
 

@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "AxeCharacterBase.generated.h"
 
+class UGameplayEffect;
+class UAttributeSet;
 enum class ELaunchCharacterDirection : uint8;
 class UComboDataAsset;
 class UGameplayAbility;
@@ -27,16 +29,24 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
 
 	/*
 	 * AbilitySystemComponent
 	 */
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
-	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+
+	UPROPERTY()
+	TObjectPtr<UAttributeSet> AttributeSet;
 
 	UPROPERTY(EditAnywhere, Category="Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
+
+	// Attributes
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Attributes")
+	TSubclassOf<UGameplayEffect> DefaultAttributesEffect;
 
 	//
 	FOnAbilityInitOverDelegate OnAbilityInitOverDelegate;
@@ -49,4 +59,6 @@ public:
 
 protected:
 	bool bIsAbilityInitOver = false;
+
+	void InitDefaultAttributes();
 };

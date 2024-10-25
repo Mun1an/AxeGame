@@ -3,6 +3,8 @@
 
 #include "Character/AxeCharacterBase.h"
 
+#include "AbilitySystemComponent.h"
+#include "AbilitySystem/AxeAbilitySystemComponent.h"
 #include "Enum/AxeEnum.h"
 
 // Sets default values
@@ -66,4 +68,11 @@ void AAxeCharacterBase::SetCustomLaunchCharacter(float LaunchSpeed, ELaunchChara
 
 	LaunchVelocity *= LaunchSpeed;
 	LaunchCharacter(LaunchVelocity, bXYOverride, bZOverride);
+}
+
+void AAxeCharacterBase::InitDefaultAttributes()
+{
+	UAbilitySystemComponent* ASC = GetAbilitySystemComponent();
+	check(ASC);
+	Cast<UAxeAbilitySystemComponent>(ASC)->ApplyEffectToSelfByClass(DefaultAttributesEffect, 1.f);
 }

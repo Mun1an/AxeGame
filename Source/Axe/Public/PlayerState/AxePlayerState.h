@@ -7,6 +7,7 @@
 #include "GameFramework/PlayerState.h"
 #include "AxePlayerState.generated.h"
 
+class UAttributeSet;
 /**
  * 
  */
@@ -19,8 +20,12 @@ public:
 	AAxePlayerState();
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
 
 protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UAttributeSet> AttributeSet;
 };

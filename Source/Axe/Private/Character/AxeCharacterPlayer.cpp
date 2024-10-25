@@ -117,7 +117,7 @@ void AAxeCharacterPlayer::InitAbility()
 	check(AxePlayerState);
 
 	AxePlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(AxePlayerState, this);
-
+	// AbilitySystemComponent
 	AbilitySystemComponent = AxePlayerState->GetAbilitySystemComponent();
 
 	// Give Startup Abilities
@@ -129,7 +129,13 @@ void AAxeCharacterPlayer::InitAbility()
 			AxeASC->GiveAbilityByAbilityAndLevel(Ability, 1);
 		}
 	}
+	// AttributeSet
+	AttributeSet = AxePlayerState->GetAttributeSet();
 
+	// init default attributes
+	InitDefaultAttributes();
+
+	// Over
 	OnAbilityInitOverDelegate.Broadcast();
 	bIsAbilityInitOver = true;
 }

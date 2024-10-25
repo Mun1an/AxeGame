@@ -13,6 +13,26 @@ UAxeAbilitySystemComponent::UAxeAbilitySystemComponent(const FObjectInitializer&
 {
 }
 
+AAxeCharacterBase* UAxeAbilitySystemComponent::GetAxeCharacterOwner() const
+{
+	if (AActor* LocalAvatarActor = GetAvatarActor())
+	{
+		if (AAxeCharacterBase* AxeCharacterBase = Cast<AAxeCharacterBase>(LocalAvatarActor))
+		{
+			return AxeCharacterBase;
+		}
+	}
+	else
+	{
+		AActor* LocalOwnerActor = GetOwner();
+		if (AAxeCharacterBase* AxeCharacterBase = Cast<AAxeCharacterBase>(LocalOwnerActor))
+		{
+			return AxeCharacterBase;
+		}
+	}
+	return nullptr;
+}
+
 void UAxeAbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& InputTag)
 {
 	TArray<FGameplayAbilitySpec> GameplayAbilitySpecList = GetActivatableAbilities();
@@ -45,7 +65,7 @@ void UAxeAbilitySystemComponent::TryActivateAbilityAndCheck(FGameplayAbilitySpec
 {
 	const FGameplayAbilitySpec* AbilitySpec = FindAbilitySpecFromHandle(AbilitySpecHandle);
 	const FGameplayTag InputTag = Cast<UAxeGameplayAbility>(AbilitySpec->Ability)->InputTag;
-	const AAxeCharacterPlayer* AxeCharacterPlayer = Cast<AAxeCharacterPlayer>(GetAvatarActor());
+	const AAxeCharacterPlayer* AxeCharacterPlayer = Cast<AAxeCharacterPlayer>(GetAxeCharacterOwner());
 
 	// Combo
 	if (InputTag.IsValid() && IsValid(AxeCharacterPlayer))
@@ -109,7 +129,7 @@ bool UAxeAbilitySystemComponent::IsActivationGroupBlocked(EAxeAbilityActivationG
 						continue;
 					}
 					bool bReplaceByCondition = AxeGameplayAbility->CanReplaceAbilityByCondition(
-						NewAxeAbility, GetAvatarActor()
+						NewAxeAbility, GetAxeCharacterOwner()
 					);
 					if (!bReplaceByCondition)
 					{
@@ -231,4 +251,16 @@ void UAxeAbilitySystemComponent::NotifyAbilityEnded(FGameplayAbilitySpecHandle H
 	RemoveAbilityFromActivationGroup(AxeGameplayAbility->GetActivationGroup(), AxeGameplayAbility);
 
 	OnNotifyAbilityEndedDelegate.Broadcast(Ability);
+}
+
+FActiveGameplayEffectHandle UAxeAbilitySystemComponent::ApplyEffectToSelfByClass(
+	const TSubclassOf<UGameplayEffect>& EffectClass, const float Level)
+{
+	check(EffectClass);
+	FGameplayEffectContextHandle ContextHandle = MakeEffectContext();
+	ContextHandle.AddSourceObject(GetAxeCharacterOwner());
+	const FGameplayEffectSpecHandle SpecHandle = MakeOutgoingSpec(
+		EffectClass, Level, ContextHandle
+	);
+	return ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), this);
 }
