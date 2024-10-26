@@ -3,10 +3,20 @@
 
 #include "AbilitySystem/AttributeSet/AxeAttributeSet.h"
 
+#include "AbilitySystem/AxeAbilitySystemComponent.h"
+#include "Character/AxeCharacterBase.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Net/UnrealNetwork.h"
 
 UAxeAttributeSet::UAxeAttributeSet()
 {
+}
+
+AAxeCharacterBase* UAxeAttributeSet::GetAxeCharacterOwner() const
+{
+	UAbilitySystemComponent* ASC = GetOwningAbilitySystemComponentChecked();
+	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(ASC);
+	return AxeASC->GetAxeCharacterOwner();
 }
 
 void UAxeAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -47,6 +57,17 @@ void UAxeAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, f
 void UAxeAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
 {
 	Super::PostAttributeChange(Attribute, OldValue, NewValue);
+
+	//
+	if (Attribute == GetMovementSpeedAttribute())
+	{
+		AAxeCharacterBase* AxeCharacterBase = GetAxeCharacterOwner();
+		if (AxeCharacterBase)
+		{
+			AxeCharacterBase->SetWalkSpeed(NewValue);
+			AxeCharacterBase->SetRotationRateByWalkSpeed();
+		}
+	}
 }
 
 void UAxeAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)

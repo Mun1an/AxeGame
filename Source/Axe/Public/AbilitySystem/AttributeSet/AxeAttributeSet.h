@@ -12,6 +12,7 @@
 	GAMEPLAYATTRIBUTE_VALUE_GETTER(PropertyName) \
 	GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName) \
 	GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
+class AAxeCharacterBase;
 /**
  * 
  */
@@ -22,6 +23,8 @@ class AXE_API UAxeAttributeSet : public UAttributeSet
 
 public:
 	UAxeAttributeSet();
+
+	AAxeCharacterBase* GetAxeCharacterOwner() const;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;

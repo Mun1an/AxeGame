@@ -3,6 +3,7 @@
 
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystem/Ability/AxeGameplayAbility.h"
 #include "ActionSystem/ComboActionComponent.h"
 #include "ActionSystem/ComboDataAsset.h"
@@ -263,4 +264,22 @@ FActiveGameplayEffectHandle UAxeAbilitySystemComponent::ApplyEffectToSelfByClass
 		EffectClass, Level, ContextHandle
 	);
 	return ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), this);
+}
+
+UAxeGameplayAbility* UAxeAbilitySystemComponent::GetActivationAbilityByAbilityMontage(const UAnimMontage* Montage) const
+{
+	TArray<FGameplayAbilitySpec> GameplayAbilitySpecs = GetActivatableAbilities();
+	for (const FGameplayAbilitySpec& AbilitySpec : GameplayAbilitySpecs)
+	{
+		if (!AbilitySpec.Ability->IsActive())
+		{
+			continue;
+		}
+		UAxeGameplayAbility* AxeGameplayAbility = Cast<UAxeGameplayAbility>(AbilitySpec.Ability);
+		if (AxeGameplayAbility && AxeGameplayAbility->GetAbilityMontage() == Montage)
+		{
+			return AxeGameplayAbility;
+		}
+	}
+	return nullptr;
 }

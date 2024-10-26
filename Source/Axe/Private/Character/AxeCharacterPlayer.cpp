@@ -12,6 +12,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Controller.h"
 #include "PlayerState/AxePlayerState.h"
+#include "MotionWarpingComponent.h"
+
 // AAxeCharacter
 
 AAxeCharacterPlayer::AAxeCharacterPlayer()
@@ -28,8 +30,6 @@ AAxeCharacterPlayer::AAxeCharacterPlayer()
 	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f); // ...at this rotation rate
 
-	// Note: For faster iteration times these variables, and many more, can be tweaked in the Character Blueprint
-	// instead of recompiling to adjust them
 	GetCharacterMovement()->JumpZVelocity = 700.f;
 	GetCharacterMovement()->AirControl = 0.35f;
 	GetCharacterMovement()->MaxWalkSpeed = 500.f;
@@ -57,6 +57,9 @@ AAxeCharacterPlayer::AAxeCharacterPlayer()
 	WeaponSecondaryComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	// ComboActionComponent
 	ComboActionComponent = CreateDefaultSubobject<UComboActionComponent>(TEXT("ComboActionComponent"));
+
+	// MotionWarpingComponent
+	MotionWarpingComponent = CreateDefaultSubobject<UMotionWarpingComponent>(TEXT("MotionWarpingComponent"));
 }
 
 void AAxeCharacterPlayer::PossessedBy(AController* NewController)
@@ -73,6 +76,7 @@ void AAxeCharacterPlayer::OnRep_PlayerState()
 	InitAbility();
 }
 
+
 void AAxeCharacterPlayer::BeginPlay()
 {
 	// Call the base class  
@@ -84,30 +88,30 @@ void AAxeCharacterPlayer::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(AbilitySystemComponent);
-	if (AxeASC)
-	{
-		TMap<EAxeAbilityActivationGroup, TArray<FGameplayAbilitySpecHandle>> ActivationGroupMap = AxeASC->
-			GetActivationGroupMap();
-
-		FString Msg = "";
-		for (TTuple<EAxeAbilityActivationGroup, TArray<FGameplayAbilitySpecHandle>>
-		     GroupMap : ActivationGroupMap)
-		{
-			Msg += FString::Printf(TEXT("Group: %d"), GroupMap.Key);
-
-			if (GroupMap.Value.Num() > 0)
-			{
-				for (FGameplayAbilitySpecHandle SpecHandle : GroupMap.Value)
-				{
-					UGameplayAbility* GameplayAbility = AxeASC->FindAbilitySpecFromHandle(SpecHandle)->Ability;
-					Msg += FString::Printf(TEXT("  %s  "), *GameplayAbility->GetName());
-				}
-			}
-			Msg += "\n";
-		}
-		GEngine->AddOnScreenDebugMessage(1, 3.0f, FColor::Orange, Msg);
-	}
+	// UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(AbilitySystemComponent);
+	// if (AxeASC)
+	// {
+	// 	TMap<EAxeAbilityActivationGroup, TArray<FGameplayAbilitySpecHandle>> ActivationGroupMap = AxeASC->
+	// 		GetActivationGroupMap();
+	//
+	// 	FString Msg = "";
+	// 	for (TTuple<EAxeAbilityActivationGroup, TArray<FGameplayAbilitySpecHandle>>
+	// 	     GroupMap : ActivationGroupMap)
+	// 	{
+	// 		Msg += FString::Printf(TEXT("Group: %d"), GroupMap.Key);
+	//
+	// 		if (GroupMap.Value.Num() > 0)
+	// 		{
+	// 			for (FGameplayAbilitySpecHandle SpecHandle : GroupMap.Value)
+	// 			{
+	// 				UGameplayAbility* GameplayAbility = AxeASC->FindAbilitySpecFromHandle(SpecHandle)->Ability;
+	// 				Msg += FString::Printf(TEXT("  %s  "), *GameplayAbility->GetName());
+	// 			}
+	// 		}
+	// 		Msg += "\n";
+	// 	}
+	// 	GEngine->AddOnScreenDebugMessage(1, 3.0f, FColor::Orange, Msg);
+	// }
 }
 
 void AAxeCharacterPlayer::InitAbility()

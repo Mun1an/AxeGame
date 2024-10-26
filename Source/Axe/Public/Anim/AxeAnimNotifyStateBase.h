@@ -6,6 +6,7 @@
 #include "Animation/AnimNotifies/AnimNotifyState.h"
 #include "AxeAnimNotifyStateBase.generated.h"
 
+class UAxeAbilitySystemComponent;
 class AAxeCharacterPlayer;
 class UComboActionComponent;
 class AAxePlayerController;
@@ -25,4 +26,6 @@ protected:
 	AAxePlayerController* GetPlayerController(const USkeletalMeshComponent* MeshComp);
 	UFUNCTION()
 	UComboActionComponent* GetPlayerComboActionComponent(const USkeletalMeshComponent* MeshComp);
+	UFUNCTION()
+	UAxeAbilitySystemComponent* GetAxeAbilitySystemComponent(const USkeletalMeshComponent* MeshComp);
 };

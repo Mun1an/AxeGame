@@ -46,7 +46,10 @@ public:
 
 	// Attributes
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Attributes")
-	TSubclassOf<UGameplayEffect> DefaultAttributesEffect;
+	TSubclassOf<UGameplayEffect> DefaultPrimaryAttributesEffect;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Attributes")
+	TSubclassOf<UGameplayEffect> DefaultSecondaryAttributesEffect;
 
 	//
 	FOnAbilityInitOverDelegate OnAbilityInitOverDelegate;
@@ -57,8 +60,25 @@ public:
 	void SetCustomLaunchCharacter(float LaunchSpeed, ELaunchCharacterDirection LaunchDirection, bool bXYOverride,
 	                              bool bZOverride);
 
+	//
+	UFUNCTION()
+	void SetWalkSpeed(float NewMaxWalkSpeed);
+	UFUNCTION()
+	void SetRotationRateZ(float NewRotationRateZ);
+	UFUNCTION()
+	void SetRotationRateByWalkSpeed();
+
 protected:
 	bool bIsAbilityInitOver = false;
 
 	void InitDefaultAttributes();
+
+	UPROPERTY()
+	float MaxWalkSpeed = 1500.0f;
+	UPROPERTY()
+	float MinWalkSpeed = 0.0f;
+	UPROPERTY()
+	float MaxRotationRateZ = 800.0f;
+	UPROPERTY()
+	float MinRotationRateZ = 0.0f;
 };

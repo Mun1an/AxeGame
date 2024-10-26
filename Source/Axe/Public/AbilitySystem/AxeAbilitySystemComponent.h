@@ -55,9 +55,15 @@ public:
 	virtual void NotifyAbilityEnded(FGameplayAbilitySpecHandle Handle, UGameplayAbility* Ability,
 	                                bool bWasCancelled) override;
 	//
+	UFUNCTION(BlueprintCallable)
 	FActiveGameplayEffectHandle ApplyEffectToSelfByClass(const TSubclassOf<UGameplayEffect>& EffectClass,
 	                                                     const float Level);
 
+	//
+	UFUNCTION()
+	UAxeGameplayAbility* GetActivationAbilityByAbilityMontage(const UAnimMontage* Montage) const;
+
+	//
 protected:
 
 private:

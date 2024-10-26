@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
 #include "Enum/AxeEnum.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 AAxeCharacterBase::AAxeCharacterBase()
@@ -70,9 +71,31 @@ void AAxeCharacterBase::SetCustomLaunchCharacter(float LaunchSpeed, ELaunchChara
 	LaunchCharacter(LaunchVelocity, bXYOverride, bZOverride);
 }
 
+void AAxeCharacterBase::SetWalkSpeed(float NewMaxWalkSpeed)
+{
+	GetCharacterMovement()->MaxWalkSpeed = FMath::Clamp(NewMaxWalkSpeed, MinWalkSpeed, MaxWalkSpeed);
+}
+
+void AAxeCharacterBase::SetRotationRateZ(float NewRotationRateZ)
+{
+	GetCharacterMovement()->RotationRate.Yaw = FMath::Clamp(NewRotationRateZ, MinRotationRateZ, MaxRotationRateZ);
+}
+
+void AAxeCharacterBase::SetRotationRateByWalkSpeed()
+{
+	float NewRotationRateZ = FMath::GetMappedRangeValueClamped(
+		FVector2D(MinWalkSpeed, MaxWalkSpeed),
+		FVector2D(MinRotationRateZ, MaxRotationRateZ),
+		GetCharacterMovement()->MaxWalkSpeed
+	);
+	SetRotationRateZ(NewRotationRateZ);
+}
+
 void AAxeCharacterBase::InitDefaultAttributes()
 {
 	UAbilitySystemComponent* ASC = GetAbilitySystemComponent();
 	check(ASC);
-	Cast<UAxeAbilitySystemComponent>(ASC)->ApplyEffectToSelfByClass(DefaultAttributesEffect, 1.f);
+	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(ASC);
+	AxeASC->ApplyEffectToSelfByClass(DefaultPrimaryAttributesEffect, 1.f);
+	AxeASC->ApplyEffectToSelfByClass(DefaultSecondaryAttributesEffect, 1.f);
 }

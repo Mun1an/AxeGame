@@ -3,6 +3,7 @@
 
 #include "Anim/AxeAnimNotifyStateBase.h"
 
+#include "AbilitySystem/AxeAbilitySystemComponent.h"
 #include "Character/AxeCharacterPlayer.h"
 #include "PlayerController/AxePlayerController.h"
 
@@ -34,6 +35,16 @@ UComboActionComponent* UAxeAnimNotifyStateBase::GetPlayerComboActionComponent(co
 	if (AAxeCharacterPlayer* AxeCharacterPlayer = GetPlayerCharacter(MeshComp))
 	{
 		return AxeCharacterPlayer->GetComboActionComponent();
+	}
+	return nullptr;
+}
+
+UAxeAbilitySystemComponent* UAxeAnimNotifyStateBase::GetAxeAbilitySystemComponent(
+	const USkeletalMeshComponent* MeshComp)
+{
+	if (AAxeCharacterPlayer* AxeCharacterPlayer = GetPlayerCharacter(MeshComp))
+	{
+		return Cast<UAxeAbilitySystemComponent>(AxeCharacterPlayer->GetAbilitySystemComponent());
 	}
 	return nullptr;
 }

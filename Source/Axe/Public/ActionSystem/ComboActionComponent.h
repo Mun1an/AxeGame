@@ -3,10 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ActiveGameplayEffectHandle.h"
 #include "GameplayTagContainer.h"
 #include "ActionSystem/AxeBaseActionComponent.h"
 #include "ComboActionComponent.generated.h"
 
+class UGameplayEffect;
 class UAxeAbilitySystemComponent;
 class UAxeGameplayAbility;
 class UGameplayAbility;
@@ -61,7 +63,14 @@ public:
 	void AnsComboInputCacheEnd();
 
 	void PressedComboInputInCache();
-	
+
+	//
+	FActiveGameplayEffectHandle ApplyMovementSlowEffectInAbilityUse(const float Level, const float Duration);
+	void RemoveMovementSlowEffectInAbilityUse();
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UGameplayEffect> MovementSlowEffectClass;
+	FActiveGameplayEffectHandle MovementSlowEffectHandle;
+
 protected:
 	UPROPERTY()
 	UComboTreeNode* LastComboTreeNode = nullptr;

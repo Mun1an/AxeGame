@@ -3,6 +3,7 @@
 
 #include "ActionSystem/ComboActionComponent.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
 #include "ActionSystem/ComboDataAsset.h"
 #include "Character/AxeCharacterPlayer.h"
@@ -232,5 +233,31 @@ void UComboActionComponent::PressedComboInputInCache()
 		//TODO 也许需要从最后找一个合适的tag
 		FGameplayTag InputAbilityTag = ComboInputAbilityTagCache.Pop();
 		AxeASC->AbilityInputTagPressed(InputAbilityTag);
+	}
+}
+
+FActiveGameplayEffectHandle UComboActionComponent::ApplyMovementSlowEffectInAbilityUse(const float Level,
+	const float Duration)
+{
+	UAxeAbilitySystemComponent* AxeASC = GetAxeAbilitySystemComponent();
+	FGameplayEffectContextHandle ContextHandle = AxeASC->MakeEffectContext();
+	ContextHandle.AddSourceObject(GetOwner());
+	const FGameplayEffectSpecHandle SpecHandle = AxeASC->MakeOutgoingSpec(
+		MovementSlowEffectClass, Level, ContextHandle
+	);
+	SpecHandle.Data->SetDuration(Duration, true);
+	FActiveGameplayEffectHandle EffectHandle = AxeASC->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), AxeASC);
+
+	MovementSlowEffectHandle = EffectHandle;
+
+	return EffectHandle;
+}
+
+void UComboActionComponent::RemoveMovementSlowEffectInAbilityUse()
+{
+	if (MovementSlowEffectHandle.IsValid())
+	{
+		UAxeAbilitySystemComponent* AxeASC = GetAxeAbilitySystemComponent();
+		AxeASC->RemoveActiveGameplayEffect(MovementSlowEffectHandle);
 	}
 }

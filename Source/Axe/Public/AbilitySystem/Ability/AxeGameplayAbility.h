@@ -36,21 +36,39 @@ class AXE_API UAxeGameplayAbility : public UGameplayAbility
 	GENERATED_BODY()
 
 public:
+	/**
+	 * Ability Props
+	 */
+	UFUNCTION()
+	UAnimMontage* GetAbilityMontage() const { return AbilityMontage; }
+
+	UFUNCTION()
+	float GetAbilityUsingMovementSlowEffectMagnitude() const { return AbilityUsingMovementSlowEffectMagnitude; }
+
+	/**
+	 * InputTag
+	 */
 	UPROPERTY(EditDefaultsOnly, Category="Input")
 	FGameplayTag InputTag;
 
+	/**
+	 * ActivationGroup
+	 */
 	EAxeAbilityActivationGroup GetActivationGroup() const { return ActivationGroup; }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category = "Ability",
 		Meta = (ExpandBoolAsExecs = "ReturnValue"))
 	bool CanChangeActivationGroup(EAxeAbilityActivationGroup NewGroup) const;
+
 	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category = "Ability",
 		Meta = (ExpandBoolAsExecs = "ReturnValue"))
 	bool ChangeActivationGroup(EAxeAbilityActivationGroup NewGroup);
 
 	virtual bool CanReplaceAbilityByCondition(const UAxeGameplayAbility* NewAbility, AActor* Actor) const;
-	
-	//
+
+	/**
+	 * virtual
+	 */
 	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	                                const FGameplayTagContainer* SourceTags = nullptr,
 	                                const FGameplayTagContainer* TargetTags = nullptr,
@@ -64,6 +82,15 @@ public:
 	                         const FGameplayEventData* TriggerEventData) override;
 
 protected:
+	/**
+	 * Ability Props
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ability Props")
+	TObjectPtr<UAnimMontage> AbilityMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Ability Props")
+	float AbilityUsingMovementSlowEffectMagnitude = 10.f;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ability Activation")
 	EAxeAbilityActivationGroup ActivationGroup;
 

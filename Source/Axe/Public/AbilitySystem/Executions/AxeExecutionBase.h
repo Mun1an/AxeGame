@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameplayEffectExecutionCalculation.h"
+#include "AbilitySystem/AttributeSet/AxeAttributeSet.h"
 #include "AxeExecutionBase.generated.h"
 
 /**
@@ -13,8 +14,13 @@ UCLASS()
 class AXE_API UAxeExecutionBase : public UGameplayEffectExecutionCalculation
 {
 	GENERATED_BODY()
+
 public:
 	UAxeExecutionBase();
 
-	virtual void Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams, FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const override;
+	void GetEvaluateParam(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
+	                      FAggregatorEvaluateParameters& EvaluateParameters) const;
+
+	virtual void Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
+	                                    FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const override;
 };

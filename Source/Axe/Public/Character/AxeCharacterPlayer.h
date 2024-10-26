@@ -7,6 +7,7 @@
 #include "Logging/LogMacros.h"
 #include "AxeCharacterPlayer.generated.h"
 
+class UMotionWarpingComponent;
 class UComboActionComponent;
 class USpringArmComponent;
 class UCameraComponent;
@@ -33,7 +34,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
-	
+
 	void InitAbility();
 
 private:
@@ -57,4 +58,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UComboActionComponent> ComboActionComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UMotionWarpingComponent> MotionWarpingComponent;
 };

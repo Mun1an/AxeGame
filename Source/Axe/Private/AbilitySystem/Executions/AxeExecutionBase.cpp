@@ -5,25 +5,19 @@
 
 #include "AbilitySystem/AttributeSet/AxeAttributeSet.h"
 
-struct FAttrDefStatics
-{
-	FGameplayEffectAttributeCaptureDefinition BaseHealDef;
-
-	FAttrDefStatics()
-	{
-		BaseHealDef = FGameplayEffectAttributeCaptureDefinition(
-			UAxeAttributeSet::GetHealthAttribute(), EGameplayEffectAttributeCaptureSource::Source, true);
-	}
-};
-
-static FAttrDefStatics& AttrDefStatics()
-{
-	static FAttrDefStatics Statics;
-	return Statics;
-}
 
 UAxeExecutionBase::UAxeExecutionBase()
 {
+}
+
+void UAxeExecutionBase::GetEvaluateParam(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
+                                           FAggregatorEvaluateParameters& EvaluateParameters) const
+{
+	const FGameplayEffectSpec& Spec = ExecutionParams.GetOwningSpec();
+	const FGameplayTagContainer* SourceTags = Spec.CapturedSourceTags.GetAggregatedTags();
+	const FGameplayTagContainer* TargetTags = Spec.CapturedTargetTags.GetAggregatedTags();
+	EvaluateParameters.SourceTags = SourceTags;
+	EvaluateParameters.TargetTags = TargetTags;
 }
 
 void UAxeExecutionBase::Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
