@@ -11,6 +11,8 @@ class AAxeCharacterPlayer;
 class UComboActionComponent;
 class AAxePlayerController;
 class USkeletalMeshComponent;
+
+DECLARE_MULTICAST_DELEGATE(FAnimNotifyStateDelegate);
 /**
  * 
  */
@@ -18,6 +20,20 @@ UCLASS()
 class AXE_API UAxeAnimNotifyStateBase : public UAnimNotifyState
 {
 	GENERATED_BODY()
+
+public:
+	FAnimNotifyStateDelegate AnimNotifyStateBeginDelegate;
+	FAnimNotifyStateDelegate AnimNotifyStateTickDelegate;
+	FAnimNotifyStateDelegate AnimNotifyStateEndDelegate;
+
+	virtual void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration,
+	                         const FAnimNotifyEventReference& EventReference) override;
+
+	virtual void NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float FrameDeltaTime,
+	                        const FAnimNotifyEventReference& EventReference) override;
+
+	virtual void NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
+	                       const FAnimNotifyEventReference& EventReference) override;
 
 protected:
 	UFUNCTION()

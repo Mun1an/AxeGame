@@ -4,6 +4,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
+#include "ActionSystem/ActionCombatComponent.h"
 #include "ActionSystem/ComboActionComponent.h"
 #include "Engine/LocalPlayer.h"
 #include "Camera/CameraComponent.h"
@@ -12,7 +13,6 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Controller.h"
 #include "PlayerState/AxePlayerState.h"
-#include "MotionWarpingComponent.h"
 
 // AAxeCharacter
 
@@ -58,8 +58,8 @@ AAxeCharacterPlayer::AAxeCharacterPlayer()
 	// ComboActionComponent
 	ComboActionComponent = CreateDefaultSubobject<UComboActionComponent>(TEXT("ComboActionComponent"));
 
-	// MotionWarpingComponent
-	MotionWarpingComponent = CreateDefaultSubobject<UMotionWarpingComponent>(TEXT("MotionWarpingComponent"));
+	//
+	ActionCombatComponent = CreateDefaultSubobject<UActionCombatComponent>(TEXT("ActionCombatComponent"));
 }
 
 void AAxeCharacterPlayer::PossessedBy(AController* NewController)
@@ -87,31 +87,6 @@ void AAxeCharacterPlayer::BeginPlay()
 void AAxeCharacterPlayer::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-
-	// UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(AbilitySystemComponent);
-	// if (AxeASC)
-	// {
-	// 	TMap<EAxeAbilityActivationGroup, TArray<FGameplayAbilitySpecHandle>> ActivationGroupMap = AxeASC->
-	// 		GetActivationGroupMap();
-	//
-	// 	FString Msg = "";
-	// 	for (TTuple<EAxeAbilityActivationGroup, TArray<FGameplayAbilitySpecHandle>>
-	// 	     GroupMap : ActivationGroupMap)
-	// 	{
-	// 		Msg += FString::Printf(TEXT("Group: %d"), GroupMap.Key);
-	//
-	// 		if (GroupMap.Value.Num() > 0)
-	// 		{
-	// 			for (FGameplayAbilitySpecHandle SpecHandle : GroupMap.Value)
-	// 			{
-	// 				UGameplayAbility* GameplayAbility = AxeASC->FindAbilitySpecFromHandle(SpecHandle)->Ability;
-	// 				Msg += FString::Printf(TEXT("  %s  "), *GameplayAbility->GetName());
-	// 			}
-	// 		}
-	// 		Msg += "\n";
-	// 	}
-	// 	GEngine->AddOnScreenDebugMessage(1, 3.0f, FColor::Orange, Msg);
-	// }
 }
 
 void AAxeCharacterPlayer::InitAbility()

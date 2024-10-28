@@ -4,6 +4,7 @@
 #include "Anim/MovementSlowAnimNotifyState.h"
 
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
+#include "ActionSystem/ActionCombatComponent.h"
 #include "ActionSystem/ComboActionComponent.h"
 #include "Character/AxeCharacterPlayer.h"
 
@@ -13,8 +14,13 @@ void UMovementSlowAnimNotifyState::NotifyBegin(USkeletalMeshComponent* MeshComp,
 	Super::NotifyBegin(MeshComp, Animation, TotalDuration, EventReference);
 
 	UAxeAbilitySystemComponent* AxeASC = GetAxeAbilitySystemComponent(MeshComp);
-	UComboActionComponent* PlayerComboActionComponent = GetPlayerComboActionComponent(MeshComp);
-	if (AxeASC == nullptr || PlayerComboActionComponent == nullptr)
+	AAxeCharacterPlayer* AxeCharacterPlayer = GetPlayerCharacter(MeshComp);
+	if (AxeCharacterPlayer == nullptr)
+	{
+		return;
+	}
+	UActionCombatComponent* ActionCombatComponent = AxeCharacterPlayer->GetActionCombatComponent();
+	if (AxeASC == nullptr || ActionCombatComponent == nullptr)
 	{
 		return;
 	}
@@ -23,7 +29,7 @@ void UMovementSlowAnimNotifyState::NotifyBegin(USkeletalMeshComponent* MeshComp,
 	if (GameplayAbility)
 	{
 		const float EffectMagnitude = GameplayAbility->GetAbilityUsingMovementSlowEffectMagnitude();
-		PlayerComboActionComponent->ApplyMovementSlowEffectInAbilityUse(EffectMagnitude, TotalDuration);
+		ActionCombatComponent->ApplyMovementSlowEffectInAbilityUse(EffectMagnitude, TotalDuration);
 	}
 }
 
@@ -32,8 +38,14 @@ void UMovementSlowAnimNotifyState::NotifyEnd(USkeletalMeshComponent* MeshComp, U
 {
 	Super::NotifyEnd(MeshComp, Animation, EventReference);
 
-	if (UComboActionComponent* PlayerComboActionComponent = GetPlayerComboActionComponent(MeshComp))
+	AAxeCharacterPlayer* AxeCharacterPlayer = GetPlayerCharacter(MeshComp);
+	if (AxeCharacterPlayer == nullptr)
 	{
-		PlayerComboActionComponent->RemoveMovementSlowEffectInAbilityUse();
+		return;
+	}
+	UActionCombatComponent* ActionCombatComponent = AxeCharacterPlayer->GetActionCombatComponent();
+	if (ActionCombatComponent)
+	{
+		ActionCombatComponent->RemoveMovementSlowEffectInAbilityUse();
 	}
 }

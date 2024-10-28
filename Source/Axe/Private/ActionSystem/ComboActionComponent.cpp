@@ -16,17 +16,6 @@ void UComboActionComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	AActor* Owner = GetOwner();
-	AxeCharacterPlayer = Cast<AAxeCharacterPlayer>(Owner);
-
-	if (!AxeCharacterPlayer->IsAbilityInitOver())
-	{
-		AxeCharacterPlayer->OnAbilityInitOverDelegate.AddUObject(this, &UComboActionComponent::OnAbilityInitOver);
-	}
-	else
-	{
-		OnAbilityInitOver();
-	}
 
 	InitComboAbilityTree();
 	LastComboTreeNode = ComboAbilityTree->Root;
@@ -61,11 +50,14 @@ void UComboActionComponent::InitComboAbilityTree()
 
 void UComboActionComponent::OnAbilityInitOver()
 {
-	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(AxeCharacterPlayer->AbilitySystemComponent);
-	AxeASC->OnNotifyAbilityActivatedDelegate.AddUObject(this, &UComboActionComponent::OnNotifyAbilityActivated);
-	AxeASC->OnNotifyAbilityEndedDelegate.AddUObject(this, &UComboActionComponent::OnNotifyAbilityEnded);
+	Super::OnAbilityInitOver();
 
-	AxeASC->OnAbilityInputTagPressedDelegate.AddUObject(this, &UComboActionComponent::OnAbilityInputTagPressed);
+	AxeAbilitySystemComponent->OnNotifyAbilityActivatedDelegate.AddUObject(
+		this, &UComboActionComponent::OnNotifyAbilityActivated);
+	AxeAbilitySystemComponent->OnNotifyAbilityEndedDelegate.AddUObject(
+		this, &UComboActionComponent::OnNotifyAbilityEnded);
+	AxeAbilitySystemComponent->OnAbilityInputTagPressedDelegate.AddUObject(
+		this, &UComboActionComponent::OnAbilityInputTagPressed);
 }
 
 void UComboActionComponent::OnNotifyAbilityActivated(UGameplayAbility* Ability)
@@ -120,10 +112,6 @@ bool UComboActionComponent::IsNextComboAbility(const UGameplayAbility* Ability)
 	return ChildNode != nullptr;
 }
 
-UAxeAbilitySystemComponent* UComboActionComponent::GetAxeAbilitySystemComponent() const
-{
-	return Cast<UAxeAbilitySystemComponent>(AxeCharacterPlayer->AbilitySystemComponent);
-}
 
 void UComboActionComponent::OnComboAbilityActivated(UGameplayAbility* Ability)
 {
@@ -227,37 +215,11 @@ void UComboActionComponent::PressedComboInputInCache()
 	{
 		return;
 	}
-	UAxeAbilitySystemComponent* AxeASC = GetAxeAbilitySystemComponent();
-	if (ComboInputAbilityTagCache.Num() > 0 && AxeASC)
+	if (ComboInputAbilityTagCache.Num() > 0 && AxeAbilitySystemComponent)
 	{
 		//TODO 也许需要从最后找一个合适的tag
 		FGameplayTag InputAbilityTag = ComboInputAbilityTagCache.Pop();
-		AxeASC->AbilityInputTagPressed(InputAbilityTag);
+		AxeAbilitySystemComponent->AbilityInputTagPressed(InputAbilityTag);
 	}
 }
 
-FActiveGameplayEffectHandle UComboActionComponent::ApplyMovementSlowEffectInAbilityUse(const float Level,
-	const float Duration)
-{
-	UAxeAbilitySystemComponent* AxeASC = GetAxeAbilitySystemComponent();
-	FGameplayEffectContextHandle ContextHandle = AxeASC->MakeEffectContext();
-	ContextHandle.AddSourceObject(GetOwner());
-	const FGameplayEffectSpecHandle SpecHandle = AxeASC->MakeOutgoingSpec(
-		MovementSlowEffectClass, Level, ContextHandle
-	);
-	SpecHandle.Data->SetDuration(Duration, true);
-	FActiveGameplayEffectHandle EffectHandle = AxeASC->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), AxeASC);
-
-	MovementSlowEffectHandle = EffectHandle;
-
-	return EffectHandle;
-}
-
-void UComboActionComponent::RemoveMovementSlowEffectInAbilityUse()
-{
-	if (MovementSlowEffectHandle.IsValid())
-	{
-		UAxeAbilitySystemComponent* AxeASC = GetAxeAbilitySystemComponent();
-		AxeASC->RemoveActiveGameplayEffect(MovementSlowEffectHandle);
-	}
-}

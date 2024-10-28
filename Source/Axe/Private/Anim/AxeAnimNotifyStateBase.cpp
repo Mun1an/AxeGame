@@ -7,6 +7,27 @@
 #include "Character/AxeCharacterPlayer.h"
 #include "PlayerController/AxePlayerController.h"
 
+void UAxeAnimNotifyStateBase::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
+                                          float TotalDuration, const FAnimNotifyEventReference& EventReference)
+{
+	Super::NotifyBegin(MeshComp, Animation, TotalDuration, EventReference);
+	AnimNotifyStateBeginDelegate.Broadcast();
+}
+
+void UAxeAnimNotifyStateBase::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
+                                         float FrameDeltaTime, const FAnimNotifyEventReference& EventReference)
+{
+	Super::NotifyTick(MeshComp, Animation, FrameDeltaTime, EventReference);
+	AnimNotifyStateTickDelegate.Broadcast();
+}
+
+void UAxeAnimNotifyStateBase::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
+                                        const FAnimNotifyEventReference& EventReference)
+{
+	Super::NotifyEnd(MeshComp, Animation, EventReference);
+	AnimNotifyStateEndDelegate.Broadcast();
+}
+
 AAxeCharacterPlayer* UAxeAnimNotifyStateBase::GetPlayerCharacter(const USkeletalMeshComponent* MeshComp)
 {
 	APawn* Pawn = MeshComp->GetAnimInstance()->TryGetPawnOwner();

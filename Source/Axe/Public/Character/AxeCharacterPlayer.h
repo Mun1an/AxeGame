@@ -7,7 +7,7 @@
 #include "Logging/LogMacros.h"
 #include "AxeCharacterPlayer.generated.h"
 
-class UMotionWarpingComponent;
+class UActionCombatComponent;
 class UComboActionComponent;
 class USpringArmComponent;
 class UCameraComponent;
@@ -26,6 +26,7 @@ public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 	FORCEINLINE UComboActionComponent* GetComboActionComponent() const { return ComboActionComponent; }
+	FORCEINLINE UActionCombatComponent* GetActionCombatComponent() const { return ActionCombatComponent; }
 
 	//
 	virtual void PossessedBy(AController* NewController) override;
@@ -60,5 +61,5 @@ private:
 	TObjectPtr<UComboActionComponent> ComboActionComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UMotionWarpingComponent> MotionWarpingComponent;
+	TObjectPtr<UActionCombatComponent> ActionCombatComponent;
 };

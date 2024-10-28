@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "ActiveGameplayEffectHandle.h"
 #include "GameplayTagContainer.h"
-#include "ActionSystem/AxeBaseActionComponent.h"
+#include "ActionSystem/AxeActionComponentBase.h"
 #include "ComboActionComponent.generated.h"
 
 class UGameplayEffect;
@@ -20,7 +20,7 @@ class UComboDataAsset;
  * 
  */
 UCLASS()
-class AXE_API UComboActionComponent : public UAxeBaseActionComponent
+class AXE_API UComboActionComponent : public UAxeActionComponentBase
 {
 	GENERATED_BODY()
 
@@ -42,8 +42,6 @@ public:
 
 	bool IsInComboSwitchWindow() const { return bIsInComboWindow; }
 
-	UFUNCTION()
-	UAxeAbilitySystemComponent* GetAxeAbilitySystemComponent() const;
 	//
 	void OnComboAbilityActivated(UGameplayAbility* Ability);
 	void OnComboAbilityEnded(UGameplayAbility* Ability);
@@ -64,12 +62,8 @@ public:
 
 	void PressedComboInputInCache();
 
+
 	//
-	FActiveGameplayEffectHandle ApplyMovementSlowEffectInAbilityUse(const float Level, const float Duration);
-	void RemoveMovementSlowEffectInAbilityUse();
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UGameplayEffect> MovementSlowEffectClass;
-	FActiveGameplayEffectHandle MovementSlowEffectHandle;
 
 protected:
 	UPROPERTY()
@@ -77,15 +71,12 @@ protected:
 
 	virtual void BeginPlay() override;
 
-	void OnAbilityInitOver();
+	virtual void OnAbilityInitOver() override;
 	void OnNotifyAbilityActivated(UGameplayAbility* Ability);
 	void OnNotifyAbilityEnded(UGameplayAbility* Ability);
 	void OnAbilityInputTagPressed(const FGameplayTag InputTag);
 
 private:
-	UPROPERTY()
-	TObjectPtr<AAxeCharacterPlayer> AxeCharacterPlayer;
-
 	UPROPERTY()
 	TObjectPtr<UComboTree> ComboAbilityTree;
 

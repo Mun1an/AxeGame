@@ -95,6 +95,20 @@ bool UAxeGameplayAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Ha
 	return true;
 }
 
+void UAxeGameplayAbility::PreActivate(const FGameplayAbilitySpecHandle Handle,
+                                      const FGameplayAbilityActorInfo* ActorInfo,
+                                      const FGameplayAbilityActivationInfo ActivationInfo,
+                                      FOnGameplayAbilityEnded::FDelegate* OnGameplayAbilityEndedDelegate,
+                                      const FGameplayEventData* TriggerEventData)
+{
+	Super::PreActivate(Handle, ActorInfo, ActivationInfo, OnGameplayAbilityEndedDelegate, TriggerEventData);
+	TArray<FAnimNotifyEvent> AnimNotifyEvents = AbilityMontage->Notifies;
+	for (FAnimNotifyEvent& AnimNotifyEvent : AnimNotifyEvents)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AnimNotifyEvent: %s"), *AnimNotifyEvent.NotifyName.ToString());
+	}
+}
+
 void UAxeGameplayAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                           const FGameplayAbilityActorInfo* ActorInfo,
                                           const FGameplayAbilityActivationInfo ActivationInfo,
@@ -103,14 +117,6 @@ void UAxeGameplayAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 }
 
-void UAxeGameplayAbility::PreActivate(const FGameplayAbilitySpecHandle Handle,
-                                      const FGameplayAbilityActorInfo* ActorInfo,
-                                      const FGameplayAbilityActivationInfo ActivationInfo,
-                                      FOnGameplayAbilityEnded::FDelegate* OnGameplayAbilityEndedDelegate,
-                                      const FGameplayEventData* TriggerEventData)
-{
-	Super::PreActivate(Handle, ActorInfo, ActivationInfo, OnGameplayAbilityEndedDelegate, TriggerEventData);
-}
 
 //
 TObjectPtr<UAxeAbilitySystemComponent> UAxeGameplayAbility::GetAxeAbilitySystemComponentFromActorInfo() const
