@@ -21,9 +21,6 @@ public:
 	UActionCombatComponent();
 
 
-	// Hit Trace
-	void BeginHitTrace();
-
 	// MovementSlowEffect
 	FActiveGameplayEffectHandle ApplyMovementSlowEffectInAbilityUse(const float Level, const float Duration);
 	bool RemoveMovementSlowEffectInAbilityUse();

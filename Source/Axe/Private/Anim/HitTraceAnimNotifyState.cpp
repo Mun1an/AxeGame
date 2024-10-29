@@ -3,5 +3,3 @@
 
 #include "Anim/HitTraceAnimNotifyState.h"
 
-#include "Character/AxeCharacterPlayer.h"
-

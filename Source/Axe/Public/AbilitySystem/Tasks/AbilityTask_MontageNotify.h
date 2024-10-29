@@ -8,6 +8,7 @@
 
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMontageNotifyDelegate, UAnimNotifyState*, AnimNotifyState);
+
 // DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FMontageNotifyEndDelegate, UAnimNotifyState*, AnimNotifyState, bool, IsInterrupted);
 
 /**
@@ -21,10 +22,10 @@ class AXE_API UAbilityTask_MontageNotify : public UAbilityTask
 public:
 	UPROPERTY(BlueprintAssignable)
 	FMontageNotifyDelegate MontageNotifyStartDelegate;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FMontageNotifyDelegate MontageNotifyTickDelegate;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FMontageNotifyDelegate MontageNotifyEndDelegate;
 
@@ -36,11 +37,11 @@ public:
 		TSubclassOf<UAnimNotifyState> NotifyStateClass
 	);
 
+protected:
 	virtual void Activate() override;
 
 	virtual void OnDestroy(bool AbilityEnded) override;
 
-protected:
 	UPROPERTY()
 	TObjectPtr<UAnimMontage> AbilityMontage;
 	UPROPERTY()

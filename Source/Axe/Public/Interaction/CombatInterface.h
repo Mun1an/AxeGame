@@ -25,4 +25,7 @@ class AXE_API ICombatInterface
 public:
 	virtual UComboActionComponent* GetComboActionComponent() const = 0;
 	virtual UActionCombatComponent* GetActionCombatComponent() const = 0;
+
+	virtual UStaticMeshComponent* GetWeaponComponent() const = 0;
+	virtual UStaticMeshComponent* GetWeaponSecondaryComponent() const = 0;
 };

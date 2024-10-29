@@ -14,8 +14,4 @@ class AXE_API UHitTraceAnimNotifyState : public UAxeAnimNotifyStateBase
 {
 	GENERATED_BODY()
 
-public:
-	FName BeginSocketName;
-	FName EndSocketName;
-
 };

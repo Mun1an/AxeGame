@@ -37,6 +37,14 @@ public:
 	{
 		return ActionCombatComponent;
 	}
+	virtual FORCEINLINE UStaticMeshComponent* GetWeaponComponent() const override
+	{
+		return Weapon;
+	}
+	virtual FORCEINLINE UStaticMeshComponent* GetWeaponSecondaryComponent() const override
+	{
+		return WeaponSecondary;
+	}
 
 	//
 	virtual void PossessedBy(AController* NewController) override;
@@ -59,13 +67,13 @@ private:
 	FName WeaponTipSocketName = FName("WeaponHandSocket");
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
-	TObjectPtr<USkeletalMeshComponent> WeaponComponent;
+	TObjectPtr<UStaticMeshComponent> Weapon;
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	FName WeaponSecondaryTipSocketName = FName("WeaponSecondaryHandSocket");
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
-	TObjectPtr<USkeletalMeshComponent> WeaponSecondaryComponent;
+	TObjectPtr<UStaticMeshComponent> WeaponSecondary;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UComboActionComponent> ComboActionComponent;

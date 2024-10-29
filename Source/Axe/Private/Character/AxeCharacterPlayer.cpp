@@ -48,16 +48,15 @@ AAxeCharacterPlayer::AAxeCharacterPlayer()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
-	WeaponComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon"));
-	WeaponComponent->SetupAttachment(GetMesh(), WeaponTipSocketName);
-	WeaponComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	Weapon = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Weapon"));
+	Weapon->SetupAttachment(GetMesh(), WeaponTipSocketName);
+	Weapon->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	WeaponSecondaryComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponSecondary"));
-	WeaponSecondaryComponent->SetupAttachment(GetMesh(), WeaponSecondaryTipSocketName);
-	WeaponSecondaryComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	WeaponSecondary = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponSecondary"));
+	WeaponSecondary->SetupAttachment(GetMesh(), WeaponSecondaryTipSocketName);
+	WeaponSecondary->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	// ComboActionComponent
 	ComboActionComponent = CreateDefaultSubobject<UComboActionComponent>(TEXT("ComboActionComponent"));
-
 	//
 	ActionCombatComponent = CreateDefaultSubobject<UActionCombatComponent>(TEXT("ActionCombatComponent"));
 }
