@@ -14,11 +14,6 @@ void UComboAnimNotifyState::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimS
                                         float TotalDuration, const FAnimNotifyEventReference& EventReference)
 {
 	Super::NotifyBegin(MeshComp, Animation, TotalDuration, EventReference);
-
-	if (UComboActionComponent* ComboActionComponent = GetPlayerComboActionComponent(MeshComp))
-	{
-		ComboActionComponent->AnsComboSwitchWindowStart();
-	}
 }
 
 void UComboAnimNotifyState::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
@@ -31,9 +26,4 @@ void UComboAnimNotifyState::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSeq
                                       const FAnimNotifyEventReference& EventReference)
 {
 	Super::NotifyEnd(MeshComp, Animation, EventReference);
-
-	if (UComboActionComponent* ComboActionComponent = GetPlayerComboActionComponent(MeshComp))
-	{
-		ComboActionComponent->AnsComboSwitchWindowEnd();
-	}
 }

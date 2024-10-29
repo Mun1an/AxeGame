@@ -5,6 +5,8 @@
 
 #include "GameplayEffectTypes.h"
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
+#include "Enum/AxeEnum.h"
+#include "GameFramework/Character.h"
 
 UActionCombatComponent::UActionCombatComponent()
 {
@@ -26,17 +28,50 @@ FActiveGameplayEffectHandle UActionCombatComponent::ApplyMovementSlowEffectInAbi
 	FActiveGameplayEffectHandle EffectHandle = AxeAbilitySystemComponent->ApplyGameplayEffectSpecToTarget(
 		*SpecHandle.Data.Get(), AxeAbilitySystemComponent
 	);
-	MovementSlowEffectHandle = EffectHandle;
 
 	return EffectHandle;
 }
 
-void UActionCombatComponent::RemoveMovementSlowEffectInAbilityUse()
+bool UActionCombatComponent::RemoveMovementSlowEffectInAbilityUse()
 {
-	if (MovementSlowEffectHandle.IsValid())
+	AxeAbilitySystemComponent->RemoveActiveGameplayEffectBySourceEffect(
+		MovementSlowEffectClass, AxeAbilitySystemComponent, 1
+	);
+	return true;
+}
+
+void UActionCombatComponent::SetCustomLaunchCharacter(float LaunchSpeed, ELaunchCharacterDirection LaunchDirection,
+                                                      bool bXYOverride, bool bZOverride)
+
+{
+	FVector LaunchVelocity = FVector::ZeroVector;
+	ACharacter* Character = Cast<ACharacter>(GetOwner());
+
+	switch (LaunchDirection)
 	{
-		AxeAbilitySystemComponent->RemoveActiveGameplayEffect(MovementSlowEffectHandle);
+	case ELaunchCharacterDirection::Lc_Forward:
+		LaunchVelocity = Character->GetActorForwardVector();
+		break;
+	case ELaunchCharacterDirection::Lc_Backward:
+		LaunchVelocity = Character->GetActorForwardVector() * -1;
+		break;
+	case ELaunchCharacterDirection::Lc_Left:
+		LaunchVelocity = Character->GetActorRightVector() * -1;
+		break;
+	case ELaunchCharacterDirection::Lc_Right:
+		LaunchVelocity = Character->GetActorRightVector();
+		break;
+	case ELaunchCharacterDirection::Lc_Up:
+		LaunchVelocity = Character->GetActorUpVector();
+		break;
+	case ELaunchCharacterDirection::Lc_Down:
+		LaunchVelocity = Character->GetActorUpVector() * -1;
+		break;
+	default:
+		break;
 	}
+	LaunchVelocity *= LaunchSpeed;
+	Character->LaunchCharacter(LaunchVelocity, bXYOverride, bZOverride);
 }
 
 void UActionCombatComponent::TickComponent(float DeltaTime, enum ELevelTick TickType,

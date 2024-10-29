@@ -7,25 +7,33 @@
 #include "Character/AxeCharacterPlayer.h"
 #include "PlayerController/AxePlayerController.h"
 
+UAxeAnimNotifyStateBase::UAxeAnimNotifyStateBase()
+{
+}
+
 void UAxeAnimNotifyStateBase::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
                                           float TotalDuration, const FAnimNotifyEventReference& EventReference)
 {
 	Super::NotifyBegin(MeshComp, Animation, TotalDuration, EventReference);
-	AnimNotifyStateBeginDelegate.Broadcast();
-}
-
-void UAxeAnimNotifyStateBase::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
-                                         float FrameDeltaTime, const FAnimNotifyEventReference& EventReference)
-{
-	Super::NotifyTick(MeshComp, Animation, FrameDeltaTime, EventReference);
-	AnimNotifyStateTickDelegate.Broadcast();
+	if (GetPlayerCharacter(MeshComp))
+	{
+		AnimNotifyStateBeginDelegate.Broadcast(this);
+	}
+	bIsNotifyStateEnded = false;
+	bIsInterrupted = false;
 }
 
 void UAxeAnimNotifyStateBase::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
                                         const FAnimNotifyEventReference& EventReference)
 {
 	Super::NotifyEnd(MeshComp, Animation, EventReference);
-	AnimNotifyStateEndDelegate.Broadcast();
+
+	if (GetPlayerCharacter(MeshComp))
+	{
+		AnimNotifyStateEndDelegate.Broadcast(this);
+	}
+	bIsNotifyStateEnded = true;
+	bIsInterrupted = false;
 }
 
 AAxeCharacterPlayer* UAxeAnimNotifyStateBase::GetPlayerCharacter(const USkeletalMeshComponent* MeshComp)

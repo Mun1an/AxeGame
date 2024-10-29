@@ -56,9 +56,7 @@ public:
 	bool IsAbilityInitOver() const { return bIsAbilityInitOver; }
 
 	//
-	UFUNCTION(BlueprintCallable)
-	void SetCustomLaunchCharacter(float LaunchSpeed, ELaunchCharacterDirection LaunchDirection, bool bXYOverride,
-	                              bool bZOverride);
+	
 
 	//
 	UFUNCTION()

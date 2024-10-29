@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AxeCharacterBase.h"
+#include "Interaction/CombatInterface.h"
 #include "Logging/LogMacros.h"
 #include "AxeCharacterPlayer.generated.h"
 
@@ -16,7 +17,7 @@ class UInputAction;
 struct FInputActionValue;
 
 UCLASS(config=Game)
-class AAxeCharacterPlayer : public AAxeCharacterBase
+class AAxeCharacterPlayer : public AAxeCharacterBase, public ICombatInterface
 {
 	GENERATED_BODY()
 
@@ -25,8 +26,17 @@ public:
 
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
-	FORCEINLINE UComboActionComponent* GetComboActionComponent() const { return ComboActionComponent; }
-	FORCEINLINE UActionCombatComponent* GetActionCombatComponent() const { return ActionCombatComponent; }
+
+	// ICombatInterface
+	virtual FORCEINLINE UComboActionComponent* GetComboActionComponent() const override
+	{
+		return ComboActionComponent;
+	}
+
+	virtual FORCEINLINE UActionCombatComponent* GetActionCombatComponent() const override
+	{
+		return ActionCombatComponent;
+	}
 
 	//
 	virtual void PossessedBy(AController* NewController) override;

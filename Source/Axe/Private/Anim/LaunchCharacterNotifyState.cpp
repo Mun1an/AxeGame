@@ -9,14 +9,6 @@ void ULaunchCharacterNotifyState::NotifyBegin(USkeletalMeshComponent* MeshComp, 
                                               float TotalDuration, const FAnimNotifyEventReference& EventReference)
 {
 	Super::NotifyBegin(MeshComp, Animation, TotalDuration, EventReference);
-
-	AAxeCharacterPlayer* AxeCharacterPlayer = GetPlayerCharacter(MeshComp);
-	if (AxeCharacterPlayer)
-	{
-		AxeCharacterPlayer->SetCustomLaunchCharacter(
-			LaunchSpeed, LaunchDirection, bXYOverride, bZOverride
-		);
-	}
 }
 
 void ULaunchCharacterNotifyState::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,

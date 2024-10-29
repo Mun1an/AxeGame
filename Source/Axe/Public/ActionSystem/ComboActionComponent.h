@@ -47,22 +47,20 @@ public:
 	void OnComboAbilityEnded(UGameplayAbility* Ability);
 	//
 	UFUNCTION()
-	void AnsComboSwitchWindowStart();
+	void AnsComboSwitchWindowStart(UAnimNotifyState* NotifyState);
+	// UFUNCTION()
+	// void AnsComboSwitchWindowTick();
 	UFUNCTION()
-	void AnsComboSwitchWindowTick();
-	UFUNCTION()
-	void AnsComboSwitchWindowEnd();
+	void AnsComboSwitchWindowEnd(UAnimNotifyState* NotifyState);
 	//
 	UFUNCTION()
 	void AnsComboInputCacheStart();
-	UFUNCTION()
-	void AnsComboInputCacheTick();
+	// UFUNCTION()
+	// void AnsComboInputCacheTick();
 	UFUNCTION()
 	void AnsComboInputCacheEnd();
 
 	void PressedComboInputInCache();
-
-
 	//
 
 protected:
@@ -82,8 +80,6 @@ private:
 
 	UPROPERTY()
 	bool bIsInComboWindow = false;
-	UPROPERTY()
-	TObjectPtr<UAxeGameplayAbility> ComboSwitchWindowStartAbility = nullptr;
 
 	UPROPERTY()
 	TObjectPtr<UAxeGameplayAbility> ActivatedComboAbility = nullptr;

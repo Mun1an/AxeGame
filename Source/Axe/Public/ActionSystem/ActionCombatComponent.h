@@ -7,6 +7,7 @@
 #include "ActionSystem/AxeActionComponentBase.h"
 #include "ActionCombatComponent.generated.h"
 
+enum class ELaunchCharacterDirection : uint8;
 class UGameplayEffect;
 /**
  * 
@@ -25,12 +26,17 @@ public:
 
 	// MovementSlowEffect
 	FActiveGameplayEffectHandle ApplyMovementSlowEffectInAbilityUse(const float Level, const float Duration);
-	void RemoveMovementSlowEffectInAbilityUse();
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UGameplayEffect> MovementSlowEffectClass;
-	FActiveGameplayEffectHandle MovementSlowEffectHandle;
+	bool RemoveMovementSlowEffectInAbilityUse();
+
+	UFUNCTION(BlueprintCallable)
+	void SetCustomLaunchCharacter(float LaunchSpeed, ELaunchCharacterDirection LaunchDirection, bool bXYOverride,
+	                              bool bZOverride);
 
 protected:
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
+
+	// MovementSlowEffect
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UGameplayEffect> MovementSlowEffectClass;
 };

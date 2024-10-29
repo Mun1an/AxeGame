@@ -6,6 +6,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
 #include "ActionSystem/ComboDataAsset.h"
+#include "Anim/AxeAnimNotifyStateBase.h"
 #include "Character/AxeCharacterPlayer.h"
 
 UComboActionComponent::UComboActionComponent()
@@ -161,31 +162,26 @@ UAxeGameplayAbility* UComboActionComponent::GetActivatedComboAbility()
 }
 
 
-void UComboActionComponent::AnsComboSwitchWindowStart()
+void UComboActionComponent::AnsComboSwitchWindowStart(UAnimNotifyState* NotifyState)
 {
 	bIsInComboWindow = true;
-
-	if (UAxeGameplayAbility* ActivatedAbility = GetActivatedComboAbility())
-	{
-		// ActivatedAbility->ChangeActivationGroup(EAxeAbilityActivationGroup::Exclusive_Replaceable);
-		ComboSwitchWindowStartAbility = ActivatedAbility;
-	}
 }
 
-void UComboActionComponent::AnsComboSwitchWindowTick()
-{
-}
+// void UComboActionComponent::AnsComboSwitchWindowTick()
+// {
+// }
 
-void UComboActionComponent::AnsComboSwitchWindowEnd()
+void UComboActionComponent::AnsComboSwitchWindowEnd(UAnimNotifyState* NotifyState)
 {
 	bIsInComboWindow = false;
-	//
-	if (UAxeGameplayAbility* ActivatedAbility = GetActivatedComboAbility())
+
+	if (UAxeAnimNotifyStateBase* AxeAnimNotifyStateBase = Cast<UAxeAnimNotifyStateBase>(NotifyState))
 	{
-		// ActivatedAbility->ChangeActivationGroup(EAxeAbilityActivationGroup::Exclusive_Blocking);
+		// 是否被打断
+		bool bIsInterrupted = AxeAnimNotifyStateBase->GetIsInterrupted();
 
 		// 重置连招树
-		if (LastComboTreeNode->AbilityClass == ComboSwitchWindowStartAbility->GetClass())
+		if (!bIsInterrupted && LastComboTreeNode->AbilityClass == ActivatedComboAbility->GetClass())
 		{
 			LastComboTreeNode = ComboAbilityTree->Root;
 		}
@@ -198,9 +194,9 @@ void UComboActionComponent::AnsComboInputCacheStart()
 	bSaveComboInputAbilityTagCache = true;
 }
 
-void UComboActionComponent::AnsComboInputCacheTick()
-{
-}
+// void UComboActionComponent::AnsComboInputCacheTick()
+// {
+// }
 
 void UComboActionComponent::AnsComboInputCacheEnd()
 {
@@ -222,4 +218,3 @@ void UComboActionComponent::PressedComboInputInCache()
 		AxeAbilitySystemComponent->AbilityInputTagPressed(InputAbilityTag);
 	}
 }
-

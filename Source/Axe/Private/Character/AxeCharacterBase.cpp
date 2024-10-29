@@ -38,38 +38,6 @@ UAbilitySystemComponent* AAxeCharacterBase::GetAbilitySystemComponent() const
 	return AbilitySystemComponent;
 }
 
-void AAxeCharacterBase::SetCustomLaunchCharacter(float LaunchSpeed, ELaunchCharacterDirection LaunchDirection,
-                                                 bool bXYOverride, bool bZOverride)
-{
-	FVector LaunchVelocity = FVector::ZeroVector;
-
-	switch (LaunchDirection)
-	{
-	case ELaunchCharacterDirection::Lc_Forward:
-		LaunchVelocity = GetActorForwardVector();
-		break;
-	case ELaunchCharacterDirection::Lc_Backward:
-		LaunchVelocity = GetActorForwardVector() * -1;
-		break;
-	case ELaunchCharacterDirection::Lc_Left:
-		LaunchVelocity = GetActorRightVector() * -1;
-		break;
-	case ELaunchCharacterDirection::Lc_Right:
-		LaunchVelocity = GetActorRightVector();
-		break;
-	case ELaunchCharacterDirection::Lc_Up:
-		LaunchVelocity = GetActorUpVector();
-		break;
-	case ELaunchCharacterDirection::Lc_Down:
-		LaunchVelocity = GetActorUpVector() * -1;
-		break;
-	default:
-		break;
-	}
-
-	LaunchVelocity *= LaunchSpeed;
-	LaunchCharacter(LaunchVelocity, bXYOverride, bZOverride);
-}
 
 void AAxeCharacterBase::SetWalkSpeed(float NewMaxWalkSpeed)
 {

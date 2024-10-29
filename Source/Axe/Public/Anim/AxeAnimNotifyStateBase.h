@@ -12,7 +12,7 @@ class UComboActionComponent;
 class AAxePlayerController;
 class USkeletalMeshComponent;
 
-DECLARE_MULTICAST_DELEGATE(FAnimNotifyStateDelegate);
+DECLARE_MULTICAST_DELEGATE_OneParam(FAnimNotifyStateDelegate, UAnimNotifyState*);
 /**
  * 
  */
@@ -22,20 +22,26 @@ class AXE_API UAxeAnimNotifyStateBase : public UAnimNotifyState
 	GENERATED_BODY()
 
 public:
+	UAxeAnimNotifyStateBase();
+
 	FAnimNotifyStateDelegate AnimNotifyStateBeginDelegate;
-	FAnimNotifyStateDelegate AnimNotifyStateTickDelegate;
 	FAnimNotifyStateDelegate AnimNotifyStateEndDelegate;
 
 	virtual void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration,
 	                         const FAnimNotifyEventReference& EventReference) override;
 
-	virtual void NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float FrameDeltaTime,
-	                        const FAnimNotifyEventReference& EventReference) override;
-
 	virtual void NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
 	                       const FAnimNotifyEventReference& EventReference) override;
 
+	bool GetIsNotifyStateEnded() const { return bIsNotifyStateEnded; }
+	bool GetIsInterrupted() const { return bIsInterrupted; }
+	void SetIsInterrupted(bool bInterrupted) { bIsInterrupted = bInterrupted; }
+
 protected:
+	bool bIsInterrupted = false;
+
+	bool bIsNotifyStateEnded = true;
+
 	UFUNCTION()
 	AAxeCharacterPlayer* GetPlayerCharacter(const USkeletalMeshComponent* MeshComp);
 	UFUNCTION()

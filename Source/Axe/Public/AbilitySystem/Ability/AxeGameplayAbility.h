@@ -7,6 +7,10 @@
 #include "AxeGameplayAbility.generated.h"
 
 
+class UComboActionComponent;
+class UActionCombatComponent;
+class ICombatInterface;
+class AAxeCharacterBase;
 class UAxeAbilitySystemComponent;
 
 UENUM(BlueprintType)
@@ -45,6 +49,9 @@ public:
 	UFUNCTION()
 	float GetAbilityUsingMovementSlowEffectMagnitude() const { return AbilityUsingMovementSlowEffectMagnitude; }
 
+	UFUNCTION()
+	AAxeCharacterBase* GetAxeCharacterOwner() const;
+
 	/**
 	 * InputTag
 	 */
@@ -73,7 +80,6 @@ public:
 	                                const FGameplayTagContainer* SourceTags = nullptr,
 	                                const FGameplayTagContainer* TargetTags = nullptr,
 	                                OUT FGameplayTagContainer* OptionalRelevantTags = nullptr) const;
-
 	virtual void PreActivate(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	                         const FGameplayAbilityActivationInfo ActivationInfo,
 	                         FOnGameplayAbilityEnded::FDelegate* OnGameplayAbilityEndedDelegate,
@@ -81,6 +87,9 @@ public:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	                             const FGameplayAbilityActivationInfo ActivationInfo,
 	                             const FGameplayEventData* TriggerEventData) override;
+	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+	                        const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility,
+	                        bool bWasCancelled);
 
 protected:
 	/**
@@ -95,5 +104,34 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ability Activation")
 	EAxeAbilityActivationGroup ActivationGroup;
 
-	TObjectPtr<UAxeAbilitySystemComponent> GetAxeAbilitySystemComponentFromActorInfo() const;
+	UFUNCTION()
+	UAxeAbilitySystemComponent* GetAxeAbilitySystemComponentFromActorInfo() const;
+	UFUNCTION()
+	UActionCombatComponent* GetActionCombatComponent() const;
+	UFUNCTION()
+	UComboActionComponent* GetComboActionComponent() const;
+
+	// Task
+	void AddTask();
+
+	// ANS
+	UFUNCTION()
+	void Ans_MovementSlow_NotifyBegin(UAnimNotifyState* AnimNotifyState);
+	UFUNCTION()
+	void Ans_MovementSlow_NotifyEnd(UAnimNotifyState* AnimNotifyState);
+
+	UFUNCTION()
+	void Ans_LaunchCharacter_NotifyBegin(UAnimNotifyState* AnimNotifyState);
+	UFUNCTION()
+	void Ans_LaunchCharacter_NotifyEnd(UAnimNotifyState* AnimNotifyState);
+
+	UFUNCTION()
+	void Ans_ComboInputCache_NotifyBegin(UAnimNotifyState* AnimNotifyState);
+	UFUNCTION()
+	void Ans_ComboInputCache_NotifyEnd(UAnimNotifyState* AnimNotifyState);
+
+	UFUNCTION()
+	void Ans_Combo_NotifyBegin(UAnimNotifyState* AnimNotifyState);
+	UFUNCTION()
+	void Ans_Combo_NotifyEnd(UAnimNotifyState* AnimNotifyState);
 };

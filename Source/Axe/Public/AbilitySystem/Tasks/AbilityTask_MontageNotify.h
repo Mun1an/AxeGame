@@ -7,7 +7,8 @@
 #include "AbilityTask_MontageNotify.generated.h"
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMontageNotifyDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMontageNotifyDelegate, UAnimNotifyState*, AnimNotifyState);
+// DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FMontageNotifyEndDelegate, UAnimNotifyState*, AnimNotifyState, bool, IsInterrupted);
 
 /**
  * 
@@ -20,8 +21,10 @@ class AXE_API UAbilityTask_MontageNotify : public UAbilityTask
 public:
 	UPROPERTY(BlueprintAssignable)
 	FMontageNotifyDelegate MontageNotifyStartDelegate;
+	
 	UPROPERTY(BlueprintAssignable)
 	FMontageNotifyDelegate MontageNotifyTickDelegate;
+	
 	UPROPERTY(BlueprintAssignable)
 	FMontageNotifyDelegate MontageNotifyEndDelegate;
 
@@ -47,4 +50,8 @@ protected:
 	TArray<UAnimNotifyState*> NotifyStateList;
 
 	TMap<UAnimNotifyState*, TArray<FDelegateHandle>> DelegateHandleMap;
+
+	void AnimNotifyStateBegin(UAnimNotifyState* AnimNotifyState);
+	void AnimNotifyStateTick(UAnimNotifyState* AnimNotifyState);
+	void AnimNotifyStateEnd(UAnimNotifyState* AnimNotifyState);
 };
