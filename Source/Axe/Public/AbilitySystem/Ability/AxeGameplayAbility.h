@@ -115,9 +115,6 @@ protected:
 	// Task
 	void AddTask();
 
-	UPROPERTY()
-	UAbilityTask_HitTrace* AbilityTask_HitTrace;
-
 	// ANS
 	UFUNCTION()
 	void Ans_MovementSlow_NotifyBegin(UAnimNotifyState* AnimNotifyState);
@@ -129,18 +126,18 @@ protected:
 	UFUNCTION()
 	void Ans_LaunchCharacter_NotifyEnd(UAnimNotifyState* AnimNotifyState);
 
-	UFUNCTION()
-	void Ans_ComboInputCache_NotifyBegin(UAnimNotifyState* AnimNotifyState);
-	UFUNCTION()
-	void Ans_ComboInputCache_NotifyEnd(UAnimNotifyState* AnimNotifyState);
+	// UFUNCTION()
+	// void Ans_ComboInputCache_NotifyBegin(UAnimNotifyState* AnimNotifyState);
+	// UFUNCTION()
+	// void Ans_ComboInputCache_NotifyEnd(UAnimNotifyState* AnimNotifyState);
+	
+	// UFUNCTION()
+	// void Ans_Combo_NotifyBegin(UAnimNotifyState* AnimNotifyState);
+	// UFUNCTION()
+	// void Ans_Combo_NotifyEnd(UAnimNotifyState* AnimNotifyState);
 
-	UFUNCTION()
-	void Ans_Combo_NotifyBegin(UAnimNotifyState* AnimNotifyState);
-	UFUNCTION()
-	void Ans_Combo_NotifyEnd(UAnimNotifyState* AnimNotifyState);
-
-	UFUNCTION()
-	void Ans_HitTrace_NotifyBegin(UAnimNotifyState* AnimNotifyState);
-	UFUNCTION()
-	void Ans_HitTrace_NotifyEnd(UAnimNotifyState* AnimNotifyState);
+	// UFUNCTION() 
+	// void Ans_HitTrace_NotifyBegin(UAnimNotifyState* AnimNotifyState);
+	// UFUNCTION()
+	// void Ans_HitTrace_NotifyEnd(UAnimNotifyState* AnimNotifyState);
 };

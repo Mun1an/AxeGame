@@ -23,7 +23,9 @@ public:
 		FName BeginSocketName,
 		FName EndSocketName,
 		float Radius,
-		bool bIgnoreSelf
+		TArray<TEnumAsByte<EObjectTypeQuery>>& ObjectTypes,
+		bool bIgnoreSelf,
+		TArray<AActor*>& IgnoreActors
 	);
 
 protected:
@@ -49,7 +51,13 @@ protected:
 	float Radius;
 
 	UPROPERTY()
+	TArray<TEnumAsByte<EObjectTypeQuery>> HitObjectTypes;
+
+	UPROPERTY()
 	bool bIgnoreSelf;
+
+	UPROPERTY()
+	TArray<AActor*> IgnoreActors;
 
 	FVector BeginSocketLocation;
 	FVector EndSocketLocation;

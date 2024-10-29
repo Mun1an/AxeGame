@@ -5,6 +5,8 @@
 
 #include "AbilitySystemLog.h"
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
+#include "AbilitySystem/Interaction/ComboAbilityInterface.h"
+#include "AbilitySystem/Interaction/HitTraceAbilityInterface.h"
 #include "AbilitySystem/Tasks/AbilityTask_HitTrace.h"
 #include "AbilitySystem/Tasks/AbilityTask_MontageNotify.h"
 #include "ActionSystem/ActionCombatComponent.h"
@@ -221,34 +223,45 @@ void UAxeGameplayAbility::AddTask()
 		this, &UAxeGameplayAbility::Ans_LaunchCharacter_NotifyEnd);
 	AT_LaunchCharacter_Ans->ReadyForActivation();
 
-	// ComboInputCache
-	UAbilityTask_MontageNotify* AT_ComboInputCache_Ans = UAbilityTask_MontageNotify::CreateMontageNotifyStateTask(
-		this, AbilityMontage,
-		UComboInputCacheAnimNotifyState::StaticClass()
-	);
-	AT_ComboInputCache_Ans->MontageNotifyStartDelegate.AddDynamic(
-		this, &UAxeGameplayAbility::Ans_ComboInputCache_NotifyBegin);
-	AT_ComboInputCache_Ans->MontageNotifyEndDelegate.AddDynamic(
-		this, &UAxeGameplayAbility::Ans_ComboInputCache_NotifyEnd);
-	AT_ComboInputCache_Ans->ReadyForActivation();
+	// Combo by IComboAbilityInterface
+	if (IComboAbilityInterface* ComboAbility = Cast<IComboAbilityInterface>(this))
+	{
+		// ComboInputCache
+		UAbilityTask_MontageNotify* AT_ComboInputCache_Ans = UAbilityTask_MontageNotify::CreateMontageNotifyStateTask(
+			this, AbilityMontage,
+			UComboInputCacheAnimNotifyState::StaticClass()
+		);
+		AT_ComboInputCache_Ans->MontageNotifyStartDelegate.AddDynamic(
+			ComboAbility, &IComboAbilityInterface::Ans_ComboInputCache_NotifyBegin);
+		AT_ComboInputCache_Ans->MontageNotifyEndDelegate.AddDynamic(
+			ComboAbility, &IComboAbilityInterface::Ans_ComboInputCache_NotifyEnd);
+		AT_ComboInputCache_Ans->ReadyForActivation();
 
-	// Combo
-	UAbilityTask_MontageNotify* AT_Combo_Ans = UAbilityTask_MontageNotify::CreateMontageNotifyStateTask(
-		this, AbilityMontage,
-		UComboAnimNotifyState::StaticClass()
-	);
-	AT_Combo_Ans->MontageNotifyStartDelegate.AddDynamic(this, &UAxeGameplayAbility::Ans_Combo_NotifyBegin);
-	AT_Combo_Ans->MontageNotifyEndDelegate.AddDynamic(this, &UAxeGameplayAbility::Ans_Combo_NotifyEnd);
-	AT_Combo_Ans->ReadyForActivation();
+		// Combo
+		UAbilityTask_MontageNotify* AT_Combo_Ans = UAbilityTask_MontageNotify::CreateMontageNotifyStateTask(
+			this, AbilityMontage,
+			UComboAnimNotifyState::StaticClass()
+		);
+		AT_Combo_Ans->MontageNotifyStartDelegate.AddDynamic(
+			ComboAbility, &IComboAbilityInterface::Ans_Combo_NotifyBegin);
+		AT_Combo_Ans->MontageNotifyEndDelegate.AddDynamic(
+			ComboAbility, &IComboAbilityInterface::Ans_Combo_NotifyEnd);
+		AT_Combo_Ans->ReadyForActivation();
+	}
 
-	// HitTrace
-	UAbilityTask_MontageNotify* AT_HitTrace_Ans = UAbilityTask_MontageNotify::CreateMontageNotifyStateTask(
-		this, AbilityMontage,
-		UHitTraceAnimNotifyState::StaticClass()
-	);
-	AT_HitTrace_Ans->MontageNotifyStartDelegate.AddDynamic(this, &UAxeGameplayAbility::Ans_HitTrace_NotifyBegin);
-	AT_HitTrace_Ans->MontageNotifyEndDelegate.AddDynamic(this, &UAxeGameplayAbility::Ans_HitTrace_NotifyEnd);
-	AT_HitTrace_Ans->ReadyForActivation();
+	// HitTrace by IHitTraceAbilityInterface
+	if (IHitTraceAbilityInterface* HitTraceAbility = Cast<IHitTraceAbilityInterface>(this))
+	{
+		UAbilityTask_MontageNotify* AT_HitTrace_Ans = UAbilityTask_MontageNotify::CreateMontageNotifyStateTask(
+			this, AbilityMontage,
+			UHitTraceAnimNotifyState::StaticClass()
+		);
+		AT_HitTrace_Ans->MontageNotifyStartDelegate.AddDynamic(HitTraceAbility,
+		                                                       &IHitTraceAbilityInterface::Ans_HitTrace_NotifyBegin);
+		AT_HitTrace_Ans->MontageNotifyEndDelegate.AddDynamic(HitTraceAbility,
+		                                                     &IHitTraceAbilityInterface::Ans_HitTrace_NotifyEnd);
+		AT_HitTrace_Ans->ReadyForActivation();
+	}
 }
 
 void UAxeGameplayAbility::Ans_MovementSlow_NotifyBegin(UAnimNotifyState* AnimNotifyState)
@@ -292,67 +305,3 @@ void UAxeGameplayAbility::Ans_LaunchCharacter_NotifyEnd(UAnimNotifyState* AnimNo
 {
 }
 
-void UAxeGameplayAbility::Ans_ComboInputCache_NotifyBegin(UAnimNotifyState* AnimNotifyState)
-{
-	UComboActionComponent* ComboActionComponent = GetComboActionComponent();
-	if (ComboActionComponent)
-	{
-		ComboActionComponent->AnsComboInputCacheStart();
-	}
-}
-
-void UAxeGameplayAbility::Ans_ComboInputCache_NotifyEnd(UAnimNotifyState* AnimNotifyState)
-{
-	UComboActionComponent* ComboActionComponent = GetComboActionComponent();
-	if (ComboActionComponent)
-	{
-		ComboActionComponent->AnsComboInputCacheEnd();
-	}
-}
-
-void UAxeGameplayAbility::Ans_Combo_NotifyBegin(UAnimNotifyState* AnimNotifyState)
-{
-	UComboActionComponent* ComboActionComponent = GetComboActionComponent();
-	if (ComboActionComponent)
-	{
-		ComboActionComponent->AnsComboSwitchWindowStart(AnimNotifyState);
-	}
-}
-
-void UAxeGameplayAbility::Ans_Combo_NotifyEnd(UAnimNotifyState* AnimNotifyState)
-{
-	UComboActionComponent* ComboActionComponent = GetComboActionComponent();
-	if (ComboActionComponent)
-	{
-		ComboActionComponent->AnsComboSwitchWindowEnd(AnimNotifyState);
-	}
-}
-
-void UAxeGameplayAbility::Ans_HitTrace_NotifyBegin(UAnimNotifyState* AnimNotifyState)
-{
-	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
-	ICombatInterface* CombatInterface = Cast<ICombatInterface>(AxeCharacterOwner);
-	if (!CombatInterface)
-	{
-		return;
-	}
-
-	UStaticMeshComponent* WeaponMeshComponent = CombatInterface->GetWeaponComponent();
-	AbilityTask_HitTrace = UAbilityTask_HitTrace::CreateHitTraceTask(
-		this, AxeCharacterOwner,
-		WeaponMeshComponent,
-		FName("Top"),
-		FName("Bottom"),
-		1.f,
-		true
-	);
-	AbilityTask_HitTrace->ReadyForActivation();
-}
-
-void UAxeGameplayAbility::Ans_HitTrace_NotifyEnd(UAnimNotifyState* AnimNotifyState)
-{
-	if (IsValid(AbilityTask_HitTrace))
-	{
-		AbilityTask_HitTrace->EndTask();
-	}
-}

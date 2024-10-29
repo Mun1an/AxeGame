@@ -3,13 +3,19 @@
 
 #include "AbilitySystem/Tasks/AbilityTask_HitTrace.h"
 
-#include "Engine/StaticMeshSocket.h"
+#include "Character/AxeCharacterBase.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 UAbilityTask_HitTrace* UAbilityTask_HitTrace::CreateHitTraceTask(UGameplayAbility* OwningAbility,
                                                                  AAxeCharacterBase* Character,
                                                                  UStaticMeshComponent* TraceMeshComponent,
-                                                                 FName BeginSocketName, FName EndSocketName,
-                                                                 float Radius, bool bIgnoreSelf)
+                                                                 FName BeginSocketName,
+                                                                 FName EndSocketName,
+                                                                 float Radius,
+                                                                 TArray<TEnumAsByte<EObjectTypeQuery>>& ObjectTypes,
+                                                                 bool bIgnoreSelf,
+                                                                 TArray<AActor*>& IgnoreActors
+)
 {
 	UAbilityTask_HitTrace* MyObj = NewAbilityTask<UAbilityTask_HitTrace>(OwningAbility);
 
@@ -18,7 +24,9 @@ UAbilityTask_HitTrace* UAbilityTask_HitTrace::CreateHitTraceTask(UGameplayAbilit
 	MyObj->BeginSocketName = BeginSocketName;
 	MyObj->EndSocketName = EndSocketName;
 	MyObj->Radius = Radius;
+	MyObj->HitObjectTypes = ObjectTypes;
 	MyObj->bIgnoreSelf = bIgnoreSelf;
+	MyObj->IgnoreActors = IgnoreActors;
 
 	return MyObj;
 }
@@ -32,19 +40,31 @@ void UAbilityTask_HitTrace::Activate()
 
 void UAbilityTask_HitTrace::OnDestroy(bool AbilityEnded)
 {
+	bTickingTask = false;
 	Super::OnDestroy(AbilityEnded);
 }
 
 void UAbilityTask_HitTrace::TickTask(float DeltaTime)
 {
 	Super::TickTask(DeltaTime);
-	UE_LOG(LogTemp, Warning, TEXT("HitTrace Task Tick"));
 
 	BeginSocketLocation = TraceMeshComponent->GetSocketLocation(BeginSocketName);
 	EndSocketLocation = TraceMeshComponent->GetSocketLocation(EndSocketName);
 
-	DrawDebugLine(
-		GetWorld(), BeginSocketLocation, EndSocketLocation,
-		FColor::Red, false, 0.3f, 0, 10.f
+	TArray<FHitResult> HitResults;
+	UKismetSystemLibrary::SphereTraceMultiForObjects(
+		Character,
+		BeginSocketLocation,
+		EndSocketLocation,
+		Radius,
+		HitObjectTypes,
+		false,
+		IgnoreActors,
+		EDrawDebugTrace::ForDuration,
+		HitResults,
+		bIgnoreSelf,
+		FLinearColor::Red,
+		FLinearColor::Green,
+		3.f
 	);
 }

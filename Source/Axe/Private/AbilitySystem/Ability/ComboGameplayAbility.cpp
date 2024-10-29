@@ -3,6 +3,7 @@
 
 #include "AbilitySystem/Ability/ComboGameplayAbility.h"
 
+#include "AbilitySystem/Tasks/AbilityTask_HitTrace.h"
 #include "ActionSystem/ComboActionComponent.h"
 #include "Character/AxeCharacterPlayer.h"
 
@@ -22,4 +23,89 @@ bool UComboGameplayAbility::CanReplaceAbilityByCondition(const UAxeGameplayAbili
 		return bIsNextComboAbility && bIsInComboSwitchWindow;
 	}
 	return true;
+}
+
+void UComboGameplayAbility::Ans_ComboInputCache_NotifyBegin(UAnimNotifyState* AnimNotifyState)
+{
+	UComboActionComponent* ComboActionComponent = GetComboActionComponent();
+	if (ComboActionComponent)
+	{
+		ComboActionComponent->AnsComboInputCacheStart();
+	}
+}
+
+void UComboGameplayAbility::Ans_ComboInputCache_NotifyEnd(UAnimNotifyState* AnimNotifyState)
+{
+	UComboActionComponent* ComboActionComponent = GetComboActionComponent();
+	if (ComboActionComponent)
+	{
+		ComboActionComponent->AnsComboInputCacheEnd();
+	}
+}
+
+void UComboGameplayAbility::Ans_Combo_NotifyBegin(UAnimNotifyState* AnimNotifyState)
+{
+	UComboActionComponent* ComboActionComponent = GetComboActionComponent();
+	if (ComboActionComponent)
+	{
+		ComboActionComponent->AnsComboSwitchWindowStart(AnimNotifyState);
+	}
+}
+
+void UComboGameplayAbility::Ans_Combo_NotifyEnd(UAnimNotifyState* AnimNotifyState)
+{
+	UComboActionComponent* ComboActionComponent = GetComboActionComponent();
+	if (ComboActionComponent)
+	{
+		ComboActionComponent->AnsComboSwitchWindowEnd(AnimNotifyState);
+	}
+}
+
+
+void UComboGameplayAbility::Ans_HitTrace_NotifyBegin(UAnimNotifyState* AnimNotifyState)
+{
+	SetHitTraceDefaultValue();
+
+	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
+	ICombatInterface* CombatInterface = Cast<ICombatInterface>(AxeCharacterOwner);
+	if (!CombatInterface)
+	{
+		return;
+	}
+	AbilityTask_HitTrace = UAbilityTask_HitTrace::CreateHitTraceTask(
+		this,
+		AxeCharacterOwner,
+		HitTraceMeshComponent,
+		HitTraceStartSocketName,
+		HitTraceEndSocketName,
+		HitTraceRadius,
+		HitTraceObjectTypes,
+		bHitTraceIgnoreSelf,
+		IgnoreActors
+	);
+	AbilityTask_HitTrace->ReadyForActivation();
+}
+
+void UComboGameplayAbility::Ans_HitTrace_NotifyEnd(UAnimNotifyState* AnimNotifyState)
+{
+	if (IsValid(AbilityTask_HitTrace))
+	{
+		AbilityTask_HitTrace->EndTask();
+	}
+}
+
+void UComboGameplayAbility::SetHitTraceDefaultValue()
+{
+	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
+	if (IsValid(AxeCharacterOwner))
+	{
+		ICombatInterface* CombatInterface = Cast<ICombatInterface>(AxeCharacterOwner);
+		if (!HitTraceMeshComponent)
+		{
+			if (CombatInterface)
+			{
+				HitTraceMeshComponent = CombatInterface->GetWeaponComponent();
+			}
+		}
+	}
 }
