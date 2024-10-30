@@ -8,18 +8,32 @@
 #include "ActionSystem/ComboDataAsset.h"
 #include "Anim/AxeAnimNotifyStateBase.h"
 #include "Character/AxeCharacterPlayer.h"
+#include "Net/UnrealNetwork.h"
 
 UComboActionComponent::UComboActionComponent()
 {
+}
+
+void UComboActionComponent::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 }
 
 void UComboActionComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-
 	InitComboAbilityTree();
 	LastComboTreeNode = ComboAbilityTree->Root;
+
+	if (AxeCharacterPlayer->IsLocallyControlled())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("IsLocallyControlled"));
+	}
+	if (AxeCharacterPlayer->HasAuthority())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("HasAuthority"));
+	}
 }
 
 void UComboActionComponent::InitComboAbilityTree()
@@ -52,13 +66,15 @@ void UComboActionComponent::InitComboAbilityTree()
 void UComboActionComponent::OnAbilityInitOver()
 {
 	Super::OnAbilityInitOver();
-
-	AxeAbilitySystemComponent->OnNotifyAbilityActivatedDelegate.AddUObject(
-		this, &UComboActionComponent::OnNotifyAbilityActivated);
-	AxeAbilitySystemComponent->OnNotifyAbilityEndedDelegate.AddUObject(
-		this, &UComboActionComponent::OnNotifyAbilityEnded);
-	AxeAbilitySystemComponent->OnAbilityInputTagPressedDelegate.AddUObject(
-		this, &UComboActionComponent::OnAbilityInputTagPressed);
+	if (AxeCharacterPlayer && AxeCharacterPlayer->IsLocallyControlled())
+	{
+		AxeAbilitySystemComponent->OnNotifyAbilityActivatedDelegate.AddUObject(
+			this, &UComboActionComponent::OnNotifyAbilityActivated);
+		AxeAbilitySystemComponent->OnNotifyAbilityEndedDelegate.AddUObject(
+			this, &UComboActionComponent::OnNotifyAbilityEnded);
+		AxeAbilitySystemComponent->OnAbilityInputTagPressedDelegate.AddUObject(
+			this, &UComboActionComponent::OnAbilityInputTagPressed);
+	}
 }
 
 void UComboActionComponent::OnNotifyAbilityActivated(UGameplayAbility* Ability)

@@ -13,51 +13,64 @@ bool UComboGameplayAbility::CanReplaceAbilityByCondition(const UAxeGameplayAbili
 	{
 		return false;
 	}
-
 	if (AAxeCharacterPlayer* CharacterPlayer = Cast<AAxeCharacterPlayer>(Actor))
 	{
-		UComboActionComponent* ComboActionComponent = CharacterPlayer->GetComboActionComponent();
-		bool bIsNextComboAbility = ComboActionComponent->IsNextComboAbility(NewAbility);
-		bool bIsInComboSwitchWindow = ComboActionComponent->IsInComboSwitchWindow();
-
-		return bIsNextComboAbility && bIsInComboSwitchWindow;
+		if (CharacterPlayer->IsLocallyControlled())
+		{
+			UComboActionComponent* ComboActionComponent = CharacterPlayer->GetComboActionComponent();
+			bool bIsNextComboAbility = ComboActionComponent->IsNextComboAbility(NewAbility);
+			bool bIsInComboSwitchWindow = ComboActionComponent->IsInComboSwitchWindow();
+			return bIsNextComboAbility && bIsInComboSwitchWindow;
+		}
 	}
 	return true;
 }
 
 void UComboGameplayAbility::Ans_ComboInputCache_NotifyBegin(UAnimNotifyState* AnimNotifyState)
 {
-	UComboActionComponent* ComboActionComponent = GetComboActionComponent();
-	if (ComboActionComponent)
+	if (IsLocallyControlled())
 	{
-		ComboActionComponent->AnsComboInputCacheStart();
+		UComboActionComponent* ComboActionComponent = GetComboActionComponent();
+		if (ComboActionComponent)
+		{
+			ComboActionComponent->AnsComboInputCacheStart();
+		}
 	}
 }
 
 void UComboGameplayAbility::Ans_ComboInputCache_NotifyEnd(UAnimNotifyState* AnimNotifyState)
 {
-	UComboActionComponent* ComboActionComponent = GetComboActionComponent();
-	if (ComboActionComponent)
+	if (IsLocallyControlled())
 	{
-		ComboActionComponent->AnsComboInputCacheEnd();
+		UComboActionComponent* ComboActionComponent = GetComboActionComponent();
+		if (ComboActionComponent)
+		{
+			ComboActionComponent->AnsComboInputCacheEnd();
+		}
 	}
 }
 
 void UComboGameplayAbility::Ans_Combo_NotifyBegin(UAnimNotifyState* AnimNotifyState)
 {
-	UComboActionComponent* ComboActionComponent = GetComboActionComponent();
-	if (ComboActionComponent)
+	if (IsLocallyControlled())
 	{
-		ComboActionComponent->AnsComboSwitchWindowStart(AnimNotifyState);
+		UComboActionComponent* ComboActionComponent = GetComboActionComponent();
+		if (ComboActionComponent)
+		{
+			ComboActionComponent->AnsComboSwitchWindowStart(AnimNotifyState);
+		}
 	}
 }
 
 void UComboGameplayAbility::Ans_Combo_NotifyEnd(UAnimNotifyState* AnimNotifyState)
 {
-	UComboActionComponent* ComboActionComponent = GetComboActionComponent();
-	if (ComboActionComponent)
+	if (IsLocallyControlled())
 	{
-		ComboActionComponent->AnsComboSwitchWindowEnd(AnimNotifyState);
+		UComboActionComponent* ComboActionComponent = GetComboActionComponent();
+		if (ComboActionComponent)
+		{
+			ComboActionComponent->AnsComboSwitchWindowEnd(AnimNotifyState);
+		}
 	}
 }
 
@@ -65,32 +78,40 @@ void UComboGameplayAbility::Ans_Combo_NotifyEnd(UAnimNotifyState* AnimNotifyStat
 void UComboGameplayAbility::Ans_HitTrace_NotifyBegin(UAnimNotifyState* AnimNotifyState)
 {
 	SetHitTraceDefaultValue();
-
-	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
-	ICombatInterface* CombatInterface = Cast<ICombatInterface>(AxeCharacterOwner);
-	if (!CombatInterface)
+	
+	if (HasAuthority(&CurrentActivationInfo))
 	{
-		return;
+		AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
+		ICombatInterface* CombatInterface = Cast<ICombatInterface>(AxeCharacterOwner);
+		if (!CombatInterface)
+		{
+			return;
+		}
+		AbilityTask_HitTrace = UAbilityTask_HitTrace::CreateHitTraceTask(
+			this,
+			AxeCharacterOwner,
+			HitTraceMeshComponent,
+			HitTraceStartSocketName,
+			HitTraceEndSocketName,
+			HitTraceRadius,
+			HitTraceObjectTypes,
+			bHitTraceIgnoreSelf,
+			IgnoreActors
+		);
+		AbilityTask_HitTrace->HitTraceDelegate.AddDynamic(this, &UComboGameplayAbility::OnHitTrace);
+		AbilityTask_HitTrace->ReadyForActivation();
 	}
-	AbilityTask_HitTrace = UAbilityTask_HitTrace::CreateHitTraceTask(
-		this,
-		AxeCharacterOwner,
-		HitTraceMeshComponent,
-		HitTraceStartSocketName,
-		HitTraceEndSocketName,
-		HitTraceRadius,
-		HitTraceObjectTypes,
-		bHitTraceIgnoreSelf,
-		IgnoreActors
-	);
-	AbilityTask_HitTrace->ReadyForActivation();
+	
 }
 
 void UComboGameplayAbility::Ans_HitTrace_NotifyEnd(UAnimNotifyState* AnimNotifyState)
 {
-	if (IsValid(AbilityTask_HitTrace))
+	if (HasAuthority(&CurrentActivationInfo))
 	{
-		AbilityTask_HitTrace->EndTask();
+		if (IsValid(AbilityTask_HitTrace))
+		{
+			AbilityTask_HitTrace->EndTask();
+		}
 	}
 }
 
@@ -108,4 +129,9 @@ void UComboGameplayAbility::SetHitTraceDefaultValue()
 			}
 		}
 	}
+}
+
+void UComboGameplayAbility::OnHitTrace(TArray<FHitResult> HitResults)
+{
+	// UE_LOG(LogTemp, Warning, TEXT("UComboGameplayAbility::OnHitTrace"));
 }

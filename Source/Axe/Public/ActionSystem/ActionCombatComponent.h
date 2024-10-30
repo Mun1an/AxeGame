@@ -20,7 +20,6 @@ class AXE_API UActionCombatComponent : public UAxeActionComponentBase
 public:
 	UActionCombatComponent();
 
-
 	// MovementSlowEffect
 	FActiveGameplayEffectHandle ApplyMovementSlowEffectInAbilityUse(const float Level, const float Duration);
 	bool RemoveMovementSlowEffectInAbilityUse();

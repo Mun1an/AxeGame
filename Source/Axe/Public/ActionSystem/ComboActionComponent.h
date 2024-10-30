@@ -17,7 +17,7 @@ class UComboTreeNode;
 class UComboTree;
 class UComboDataAsset;
 /**
- * 
+ * 客户端逻辑
  */
 UCLASS()
 class AXE_API UComboActionComponent : public UAxeActionComponentBase
@@ -26,6 +26,7 @@ class AXE_API UComboActionComponent : public UAxeActionComponentBase
 
 public:
 	UComboActionComponent();
+	void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
 	UPROPERTY(EditAnywhere, Category="Abilities|Combo")
 	TObjectPtr<UComboDataAsset> ComboDataAsset;
@@ -70,6 +71,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	virtual void OnAbilityInitOver() override;
+	
 	void OnNotifyAbilityActivated(UGameplayAbility* Ability);
 	void OnNotifyAbilityEnded(UGameplayAbility* Ability);
 	void OnAbilityInputTagPressed(const FGameplayTag InputTag);
@@ -84,6 +86,9 @@ private:
 	UPROPERTY()
 	TObjectPtr<UAxeGameplayAbility> ActivatedComboAbility = nullptr;
 
+	UPROPERTY()
 	bool bSaveComboInputAbilityTagCache = false;
+
+	UPROPERTY()
 	TArray<FGameplayTag> ComboInputAbilityTagCache;
 };

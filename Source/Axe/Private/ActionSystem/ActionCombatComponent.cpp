@@ -13,7 +13,6 @@ UActionCombatComponent::UActionCombatComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
-
 FActiveGameplayEffectHandle UActionCombatComponent::ApplyMovementSlowEffectInAbilityUse(const float Level,
 	const float Duration)
 {

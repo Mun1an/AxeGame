@@ -18,6 +18,8 @@
 
 AAxeCharacterPlayer::AAxeCharacterPlayer()
 {
+	bReplicates = true;
+
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
@@ -111,7 +113,10 @@ void AAxeCharacterPlayer::InitAbility()
 	AttributeSet = AxePlayerState->GetAttributeSet();
 
 	// init default attributes
-	InitDefaultAttributes();
+	if (HasAuthority())
+	{
+		InitDefaultAttributes();
+	}
 
 	// Over
 	OnAbilityInitOverDelegate.Broadcast();

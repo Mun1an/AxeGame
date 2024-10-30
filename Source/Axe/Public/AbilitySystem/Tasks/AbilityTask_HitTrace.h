@@ -7,6 +7,9 @@
 #include "AbilityTask_HitTrace.generated.h"
 
 class AAxeCharacterBase;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHitTraceDelegate, TArray<FHitResult>, HitResults);
+
 /**
  * 
  */
@@ -16,6 +19,8 @@ class AXE_API UAbilityTask_HitTrace : public UAbilityTask
 	GENERATED_BODY()
 
 public:
+	FHitTraceDelegate HitTraceDelegate;
+
 	static UAbilityTask_HitTrace* CreateHitTraceTask(
 		UGameplayAbility* OwningAbility,
 		AAxeCharacterBase* Character,

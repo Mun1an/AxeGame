@@ -36,7 +36,7 @@ AAxeCharacterBase* UAxeAbilitySystemComponent::GetAxeCharacterOwner() const
 
 void UAxeAbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& InputTag)
 {
-	TArray<FGameplayAbilitySpec> GameplayAbilitySpecList = GetActivatableAbilities();
+	TArray<FGameplayAbilitySpec>& GameplayAbilitySpecList = GetActivatableAbilities();
 	for (FGameplayAbilitySpec& AbilitySpec : GameplayAbilitySpecList)
 	{
 		if (AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag))
@@ -85,12 +85,12 @@ void UAxeAbilitySystemComponent::TryActivateAbilityAndCheck(FGameplayAbilitySpec
 
 	TryActivateAbility(AbilitySpecHandle, bAllowRemoteActivation);
 	//
-	GEngine->AddOnScreenDebugMessage(
-		-1, 3.0f, FColor::Blue,
-		FString::Printf(
-			TEXT("Ability TryActivate: %s"), *FindAbilitySpecFromHandle(AbilitySpecHandle)->Ability->GetName()
-		)
-	);
+	// GEngine->AddOnScreenDebugMessage(
+	// 	-1, 3.0f, FColor::Blue,
+	// 	FString::Printf(
+	// 		TEXT("Ability TryActivate: %s"), *FindAbilitySpecFromHandle(AbilitySpecHandle)->Ability->GetName()
+	// 	)
+	// );
 }
 
 void UAxeAbilitySystemComponent::GiveAbilityByAbilityAndLevel(const TSubclassOf<UGameplayAbility>& Ability,
@@ -238,7 +238,10 @@ void UAxeAbilitySystemComponent::NotifyAbilityActivated(const FGameplayAbilitySp
 	UAxeGameplayAbility* AxeGameplayAbility = Cast<UAxeGameplayAbility>(Ability);
 	AddAbilityToActivationGroup(AxeGameplayAbility->GetActivationGroup(), AxeGameplayAbility);
 
-	OnNotifyAbilityActivatedDelegate.Broadcast(Ability);
+	if (GetAxeCharacterOwner()->IsLocallyControlled())
+	{
+		OnNotifyAbilityActivatedDelegate.Broadcast(Ability);
+	}
 
 	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Blue, FString::Printf(TEXT("Ability Activated: %s"),
 	                                                                         *Ability->GetName()));
@@ -251,7 +254,10 @@ void UAxeAbilitySystemComponent::NotifyAbilityEnded(FGameplayAbilitySpecHandle H
 	UAxeGameplayAbility* AxeGameplayAbility = Cast<UAxeGameplayAbility>(Ability);
 	RemoveAbilityFromActivationGroup(AxeGameplayAbility->GetActivationGroup(), AxeGameplayAbility);
 
-	OnNotifyAbilityEndedDelegate.Broadcast(Ability);
+	if (GetAxeCharacterOwner()->IsLocallyControlled())
+	{
+		OnNotifyAbilityEndedDelegate.Broadcast(Ability);
+	}
 }
 
 FActiveGameplayEffectHandle UAxeAbilitySystemComponent::ApplyEffectToSelfByClass(
@@ -264,22 +270,4 @@ FActiveGameplayEffectHandle UAxeAbilitySystemComponent::ApplyEffectToSelfByClass
 		EffectClass, Level, ContextHandle
 	);
 	return ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), this);
-}
-
-UAxeGameplayAbility* UAxeAbilitySystemComponent::GetActivationAbilityByAbilityMontage(const UAnimMontage* Montage) const
-{
-	TArray<FGameplayAbilitySpec> GameplayAbilitySpecs = GetActivatableAbilities();
-	for (const FGameplayAbilitySpec& AbilitySpec : GameplayAbilitySpecs)
-	{
-		if (!AbilitySpec.Ability->IsActive())
-		{
-			continue;
-		}
-		UAxeGameplayAbility* AxeGameplayAbility = Cast<UAxeGameplayAbility>(AbilitySpec.Ability);
-		if (AxeGameplayAbility && AxeGameplayAbility->GetAbilityMontage() == Montage)
-		{
-			return AxeGameplayAbility;
-		}
-	}
-	return nullptr;
 }

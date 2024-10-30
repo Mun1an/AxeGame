@@ -67,4 +67,5 @@ void UAbilityTask_HitTrace::TickTask(float DeltaTime)
 		FLinearColor::Green,
 		3.f
 	);
+	HitTraceDelegate.Broadcast(HitResults);
 }

@@ -60,8 +60,6 @@ public:
 	                                                     const float Level);
 
 	//
-	UFUNCTION()
-	UAxeGameplayAbility* GetActivationAbilityByAbilityMontage(const UAnimMontage* Montage) const;
 
 	//
 protected:

@@ -143,9 +143,12 @@ void UAxeGameplayAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handl
                                           const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-
 	// Tasks
-	AddTask();
+	// if (IsLocallyControlled())
+	// {
+	// 	AddMontageNotifyStateTask();
+	// }
+	AddMontageNotifyStateTask();
 }
 
 void UAxeGameplayAbility::EndAbility(const FGameplayAbilitySpecHandle Handle,
@@ -195,7 +198,7 @@ UComboActionComponent* UAxeGameplayAbility::GetComboActionComponent() const
 	return nullptr;
 }
 
-void UAxeGameplayAbility::AddTask()
+void UAxeGameplayAbility::AddMontageNotifyStateTask()
 {
 	//AddTask
 
@@ -266,42 +269,53 @@ void UAxeGameplayAbility::AddTask()
 
 void UAxeGameplayAbility::Ans_MovementSlow_NotifyBegin(UAnimNotifyState* AnimNotifyState)
 {
-	UActionCombatComponent* ActionCombatComponent = GetActionCombatComponent();
-	if (ActionCombatComponent)
+	if (HasAuthority(&CurrentActivationInfo))
 	{
-		ActionCombatComponent->ApplyMovementSlowEffectInAbilityUse(
-			AbilityUsingMovementSlowEffectMagnitude,
-			// fixme 不太优雅
-			AbilityMontage->GetPlayLength()
-		);
+		UActionCombatComponent* ActionCombatComponent = GetActionCombatComponent();
+		if (ActionCombatComponent)
+		{
+			ActionCombatComponent->ApplyMovementSlowEffectInAbilityUse(
+				AbilityUsingMovementSlowEffectMagnitude,
+				// fixme 不太优雅
+				AbilityMontage->GetPlayLength()
+			);
+		}
 	}
+	
 }
 
 void UAxeGameplayAbility::Ans_MovementSlow_NotifyEnd(UAnimNotifyState* AnimNotifyState)
 {
-	UActionCombatComponent* ActionCombatComponent = GetActionCombatComponent();
-	if (ActionCombatComponent)
+	if (HasAuthority(&CurrentActivationInfo))
 	{
-		ActionCombatComponent->RemoveMovementSlowEffectInAbilityUse();
+		UActionCombatComponent* ActionCombatComponent = GetActionCombatComponent();
+		if (ActionCombatComponent)
+		{
+			ActionCombatComponent->RemoveMovementSlowEffectInAbilityUse();
+		}
 	}
+	
 }
 
 void UAxeGameplayAbility::Ans_LaunchCharacter_NotifyBegin(UAnimNotifyState* AnimNotifyState)
 {
-	UActionCombatComponent* ActionCombatComponent = GetActionCombatComponent();
-	ULaunchCharacterNotifyState* LaunchCharacterNotifyState = Cast<ULaunchCharacterNotifyState>(AnimNotifyState);
-	if (ActionCombatComponent && LaunchCharacterNotifyState)
+	if (HasAuthority(&CurrentActivationInfo))
 	{
-		ActionCombatComponent->SetCustomLaunchCharacter(
-			LaunchCharacterNotifyState->LaunchSpeed,
-			LaunchCharacterNotifyState->LaunchDirection,
-			LaunchCharacterNotifyState->bXYOverride,
-			LaunchCharacterNotifyState->bZOverride
-		);
+		UActionCombatComponent* ActionCombatComponent = GetActionCombatComponent();
+        	ULaunchCharacterNotifyState* LaunchCharacterNotifyState = Cast<ULaunchCharacterNotifyState>(AnimNotifyState);
+        	if (ActionCombatComponent && LaunchCharacterNotifyState)
+        	{
+        		ActionCombatComponent->SetCustomLaunchCharacter(
+        			LaunchCharacterNotifyState->LaunchSpeed,
+        			LaunchCharacterNotifyState->LaunchDirection,
+        			LaunchCharacterNotifyState->bXYOverride,
+        			LaunchCharacterNotifyState->bZOverride
+        		);
+        	}
 	}
+	
 }
 
 void UAxeGameplayAbility::Ans_LaunchCharacter_NotifyEnd(UAnimNotifyState* AnimNotifyState)
 {
 }
-

@@ -25,11 +25,13 @@ public:
 	virtual void Ans_Combo_NotifyEnd(UAnimNotifyState* AnimNotifyState) override;
 	virtual void Ans_ComboInputCache_NotifyBegin(UAnimNotifyState* AnimNotifyState) override;
 	virtual void Ans_ComboInputCache_NotifyEnd(UAnimNotifyState* AnimNotifyState) override;
-	
+
 	// IHitTraceInterface 
 	virtual void Ans_HitTrace_NotifyBegin(UAnimNotifyState* AnimNotifyState) override;
 	virtual void Ans_HitTrace_NotifyEnd(UAnimNotifyState* AnimNotifyState) override;
 	virtual void SetHitTraceDefaultValue();
+	UFUNCTION()
+	virtual void OnHitTrace(TArray<FHitResult> HitResults) override;
 
 protected:
 	// HitTrace

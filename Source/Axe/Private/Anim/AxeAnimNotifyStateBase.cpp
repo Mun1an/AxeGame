@@ -15,12 +15,19 @@ void UAxeAnimNotifyStateBase::NotifyBegin(USkeletalMeshComponent* MeshComp, UAni
                                           float TotalDuration, const FAnimNotifyEventReference& EventReference)
 {
 	Super::NotifyBegin(MeshComp, Animation, TotalDuration, EventReference);
-	if (GetPlayerCharacter(MeshComp))
+
+	AAxeCharacterPlayer* AxeCharacterPlayer = GetPlayerCharacter(MeshComp);
+
+	if (AxeCharacterPlayer)
 	{
 		AnimNotifyStateBeginDelegate.Broadcast(this);
+
+		if (AxeCharacterPlayer->IsLocallyControlled())
+		{
+			bIsNotifyStateEnded = false;
+			bIsInterrupted = false;
+		}
 	}
-	bIsNotifyStateEnded = false;
-	bIsInterrupted = false;
 }
 
 void UAxeAnimNotifyStateBase::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
@@ -28,12 +35,18 @@ void UAxeAnimNotifyStateBase::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimS
 {
 	Super::NotifyEnd(MeshComp, Animation, EventReference);
 
-	if (GetPlayerCharacter(MeshComp))
+	AAxeCharacterPlayer* AxeCharacterPlayer = GetPlayerCharacter(MeshComp);
+
+	if (AxeCharacterPlayer && AxeCharacterPlayer->IsLocallyControlled())
 	{
 		AnimNotifyStateEndDelegate.Broadcast(this);
+
+		if (AxeCharacterPlayer->IsLocallyControlled())
+		{
+			bIsNotifyStateEnded = true;
+			bIsInterrupted = false;
+		}
 	}
-	bIsNotifyStateEnded = true;
-	bIsInterrupted = false;
 }
 
 AAxeCharacterPlayer* UAxeAnimNotifyStateBase::GetPlayerCharacter(const USkeletalMeshComponent* MeshComp)
