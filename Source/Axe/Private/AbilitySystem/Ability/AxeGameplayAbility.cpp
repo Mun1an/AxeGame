@@ -7,7 +7,6 @@
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
 #include "AbilitySystem/Interaction/ComboAbilityInterface.h"
 #include "AbilitySystem/Interaction/HitTraceAbilityInterface.h"
-#include "AbilitySystem/Tasks/AbilityTask_HitTrace.h"
 #include "AbilitySystem/Tasks/AbilityTask_MontageNotify.h"
 #include "ActionSystem/ActionCombatComponent.h"
 #include "ActionSystem/ComboActionComponent.h"
@@ -144,11 +143,8 @@ void UAxeGameplayAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	// Tasks
-	// if (IsLocallyControlled())
-	// {
-	// 	AddMontageNotifyStateTask();
-	// }
 	AddMontageNotifyStateTask();
+	// AddMontageNotifyStateTask();
 }
 
 void UAxeGameplayAbility::EndAbility(const FGameplayAbilitySpecHandle Handle,
@@ -281,7 +277,6 @@ void UAxeGameplayAbility::Ans_MovementSlow_NotifyBegin(UAnimNotifyState* AnimNot
 			);
 		}
 	}
-	
 }
 
 void UAxeGameplayAbility::Ans_MovementSlow_NotifyEnd(UAnimNotifyState* AnimNotifyState)
@@ -294,7 +289,6 @@ void UAxeGameplayAbility::Ans_MovementSlow_NotifyEnd(UAnimNotifyState* AnimNotif
 			ActionCombatComponent->RemoveMovementSlowEffectInAbilityUse();
 		}
 	}
-	
 }
 
 void UAxeGameplayAbility::Ans_LaunchCharacter_NotifyBegin(UAnimNotifyState* AnimNotifyState)
@@ -302,18 +296,17 @@ void UAxeGameplayAbility::Ans_LaunchCharacter_NotifyBegin(UAnimNotifyState* Anim
 	if (HasAuthority(&CurrentActivationInfo))
 	{
 		UActionCombatComponent* ActionCombatComponent = GetActionCombatComponent();
-        	ULaunchCharacterNotifyState* LaunchCharacterNotifyState = Cast<ULaunchCharacterNotifyState>(AnimNotifyState);
-        	if (ActionCombatComponent && LaunchCharacterNotifyState)
-        	{
-        		ActionCombatComponent->SetCustomLaunchCharacter(
-        			LaunchCharacterNotifyState->LaunchSpeed,
-        			LaunchCharacterNotifyState->LaunchDirection,
-        			LaunchCharacterNotifyState->bXYOverride,
-        			LaunchCharacterNotifyState->bZOverride
-        		);
-        	}
+		ULaunchCharacterNotifyState* LaunchCharacterNotifyState = Cast<ULaunchCharacterNotifyState>(AnimNotifyState);
+		if (ActionCombatComponent && LaunchCharacterNotifyState)
+		{
+			ActionCombatComponent->SetCustomLaunchCharacter(
+				LaunchCharacterNotifyState->LaunchSpeed,
+				LaunchCharacterNotifyState->LaunchDirection,
+				LaunchCharacterNotifyState->bXYOverride,
+				LaunchCharacterNotifyState->bZOverride
+			);
+		}
 	}
-	
 }
 
 void UAxeGameplayAbility::Ans_LaunchCharacter_NotifyEnd(UAnimNotifyState* AnimNotifyState)

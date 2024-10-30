@@ -36,6 +36,7 @@ public:
 		UAnimMontage* AbilityMontage,
 		TSubclassOf<UAnimNotifyState> NotifyStateClass
 	);
+	bool HasAuthorityTask();
 
 protected:
 	virtual void Activate() override;

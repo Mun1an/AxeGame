@@ -24,8 +24,8 @@ class AXE_API UAxeAnimNotifyStateBase : public UAnimNotifyState
 public:
 	UAxeAnimNotifyStateBase();
 
-	FAnimNotifyStateDelegate AnimNotifyStateBeginDelegate;
-	FAnimNotifyStateDelegate AnimNotifyStateEndDelegate;
+	FAnimNotifyStateDelegate LocalAnimNotifyStateBeginDelegate;
+	FAnimNotifyStateDelegate LocalAnimNotifyStateEndDelegate;
 
 	virtual void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration,
 	                         const FAnimNotifyEventReference& EventReference) override;

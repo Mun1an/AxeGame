@@ -47,6 +47,10 @@ void UAbilityTask_HitTrace::OnDestroy(bool AbilityEnded)
 void UAbilityTask_HitTrace::TickTask(float DeltaTime)
 {
 	Super::TickTask(DeltaTime);
+	if (!bTickingTask)
+	{
+		return;
+	}
 
 	BeginSocketLocation = TraceMeshComponent->GetSocketLocation(BeginSocketName);
 	EndSocketLocation = TraceMeshComponent->GetSocketLocation(EndSocketName);

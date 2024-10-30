@@ -20,7 +20,10 @@ void UAxeAnimNotifyStateBase::NotifyBegin(USkeletalMeshComponent* MeshComp, UAni
 
 	if (AxeCharacterPlayer)
 	{
-		AnimNotifyStateBeginDelegate.Broadcast(this);
+		if (AxeCharacterPlayer->IsLocallyControlled())
+		{
+			LocalAnimNotifyStateBeginDelegate.Broadcast(this);
+		}
 
 		if (AxeCharacterPlayer->IsLocallyControlled())
 		{
@@ -39,7 +42,10 @@ void UAxeAnimNotifyStateBase::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimS
 
 	if (AxeCharacterPlayer && AxeCharacterPlayer->IsLocallyControlled())
 	{
-		AnimNotifyStateEndDelegate.Broadcast(this);
+		if (AxeCharacterPlayer->IsLocallyControlled())
+		{
+			LocalAnimNotifyStateEndDelegate.Broadcast(this);
+		}
 
 		if (AxeCharacterPlayer->IsLocallyControlled())
 		{

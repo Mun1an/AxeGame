@@ -79,9 +79,9 @@ void UComboGameplayAbility::Ans_HitTrace_NotifyBegin(UAnimNotifyState* AnimNotif
 {
 	SetHitTraceDefaultValue();
 	
-	if (HasAuthority(&CurrentActivationInfo))
+	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
+	if (AxeCharacterOwner->IsLocallyControlled())
 	{
-		AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
 		ICombatInterface* CombatInterface = Cast<ICombatInterface>(AxeCharacterOwner);
 		if (!CombatInterface)
 		{
@@ -106,7 +106,8 @@ void UComboGameplayAbility::Ans_HitTrace_NotifyBegin(UAnimNotifyState* AnimNotif
 
 void UComboGameplayAbility::Ans_HitTrace_NotifyEnd(UAnimNotifyState* AnimNotifyState)
 {
-	if (HasAuthority(&CurrentActivationInfo))
+	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
+	if (AxeCharacterOwner->IsLocallyControlled())
 	{
 		if (IsValid(AbilityTask_HitTrace))
 		{
