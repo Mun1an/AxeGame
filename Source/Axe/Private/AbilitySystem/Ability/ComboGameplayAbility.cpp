@@ -3,6 +3,8 @@
 
 #include "AbilitySystem/Ability/ComboGameplayAbility.h"
 
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "AbilitySystem/Tasks/AbilityTask_HitTrace.h"
 #include "ActionSystem/ComboActionComponent.h"
 #include "Character/AxeCharacterPlayer.h"
@@ -135,9 +137,33 @@ void UComboGameplayAbility::SetHitTraceDefaultValue()
 	}
 }
 
+void UComboGameplayAbility::CreateHitParticle(FHitResult HitResult)
+{
+	// fixme 同时攻击多个目标时
+	if (bIsFirstHit)
+	{
+		SpawnedNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+			GetWorld(), WeaponHitParticle, HitResult.Location,
+			FRotator::ZeroRotator, FVector(1.f),
+			true, true, ENCPoolMethod::AutoRelease,
+			true
+		);
+		if (SpawnedNiagaraComponent)
+		{
+			SpawnedNiagaraComponent->SetVariablePosition(FName("BeamStart"), HitResult.Location);
+		}
+	}
+	if (SpawnedNiagaraComponent)
+	{
+		SpawnedNiagaraComponent->SetVariablePosition(FName("BeamEnd"), HitResult.Location);
+	}
+}
+
 void UComboGameplayAbility::OnHitTrace(TArray<FHitResult> HitResults)
 {
-	// UE_LOG(LogTemp, Warning, TEXT("UComboGameplayAbility::OnHitTrace"));
+	OnHitTraceBP(HitResults[0]);
+
+	CreateHitParticle(HitResults[0]);
 
 	if (bIsFirstHit)
 	{

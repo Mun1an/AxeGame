@@ -8,7 +8,6 @@
 #include "Logging/LogMacros.h"
 #include "AxeCharacterPlayer.generated.h"
 
-class UNiagaraComponent;
 class UActionCombatComponent;
 class UComboActionComponent;
 class USpringArmComponent;

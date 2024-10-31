@@ -8,6 +8,8 @@
 #include "AbilitySystem/Interaction/HitTraceAbilityInterface.h"
 #include "ComboGameplayAbility.generated.h"
 
+class UNiagaraComponent;
+class UNiagaraSystem;
 /**
  * 
  */
@@ -30,9 +32,21 @@ public:
 	virtual void Ans_HitTrace_NotifyBegin(UAnimNotifyState* AnimNotifyState) override;
 	virtual void Ans_HitTrace_NotifyEnd(UAnimNotifyState* AnimNotifyState) override;
 	virtual void SetHitTraceDefaultValue();
+
+	//
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UNiagaraSystem> WeaponHitParticle;
+	
+	TObjectPtr<UNiagaraComponent> SpawnedNiagaraComponent;
 	
 	UFUNCTION()
+	void CreateHitParticle(FHitResult HitResult);
+
+	UFUNCTION()
 	virtual void OnHitTrace(TArray<FHitResult> HitResults) override;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnHitTraceBP(FHitResult HitResult);
 
 protected:
 	// HitTrace
@@ -40,10 +54,10 @@ protected:
 	UStaticMeshComponent* HitTraceMeshComponent;
 
 	UPROPERTY(EditAnywhere, Category="HitTrace")
-	FName HitTraceStartSocketName = FName("Top");
+	FName HitTraceStartSocketName = FName("Bottom");
 
 	UPROPERTY(EditAnywhere, Category="HitTrace")
-	FName HitTraceEndSocketName = FName("Bottom");
+	FName HitTraceEndSocketName = FName("Top");
 
 	UPROPERTY(EditAnywhere, Category="HitTrace")
 	float HitTraceRadius = 15.f;
