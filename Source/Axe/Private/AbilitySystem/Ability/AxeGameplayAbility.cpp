@@ -194,6 +194,37 @@ UComboActionComponent* UAxeGameplayAbility::GetComboActionComponent() const
 	return nullptr;
 }
 
+void UAxeGameplayAbility::SetActiveAnimMontageLowRate(float LowRate, float Duration)
+{
+	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
+	FAnimMontageInstance* ActiveMontageInstance = AxeCharacterOwner->GetMesh()->GetAnimInstance()->
+	                                                                 GetActiveInstanceForMontage(AbilityMontage);
+	if (ActiveMontageInstance)
+	{
+		if (ActiveAnimMontageLowRateTimerHandle.IsValid())
+		{
+			GetWorld()->GetTimerManager().ClearTimer(ActiveAnimMontageLowRateTimerHandle);
+		}
+		ActiveAnimMontageInstance = ActiveMontageInstance;
+		ActiveMontageInstance->SetPlayRate(LowRate);
+		GetWorld()->GetTimerManager().SetTimer(
+			ActiveAnimMontageLowRateTimerHandle,
+			this,
+			&UAxeGameplayAbility::ActiveAnimMontageLowRateEnd,
+			Duration,
+			false
+		);
+	}
+}
+
+void UAxeGameplayAbility::ActiveAnimMontageLowRateEnd()
+{
+	if (ActiveAnimMontageInstance && ActiveAnimMontageInstance->bPlaying)
+	{
+		ActiveAnimMontageInstance->SetPlayRate(1.0);
+	}
+}
+
 void UAxeGameplayAbility::AddMontageNotifyStateTask()
 {
 	//AddTask

@@ -112,6 +112,12 @@ protected:
 	UFUNCTION()
 	UComboActionComponent* GetComboActionComponent() const;
 
+	// Montage
+	void SetActiveAnimMontageLowRate(float LowRate, float Duration);
+	FTimerHandle ActiveAnimMontageLowRateTimerHandle;
+	FAnimMontageInstance* ActiveAnimMontageInstance;
+	void ActiveAnimMontageLowRateEnd();
+
 	// Task
 	void AddMontageNotifyStateTask();
 
@@ -130,7 +136,7 @@ protected:
 	// void Ans_ComboInputCache_NotifyBegin(UAnimNotifyState* AnimNotifyState);
 	// UFUNCTION()
 	// void Ans_ComboInputCache_NotifyEnd(UAnimNotifyState* AnimNotifyState);
-	
+
 	// UFUNCTION()
 	// void Ans_Combo_NotifyBegin(UAnimNotifyState* AnimNotifyState);
 	// UFUNCTION()

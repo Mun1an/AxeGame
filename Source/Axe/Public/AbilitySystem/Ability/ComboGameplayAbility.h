@@ -45,7 +45,7 @@ protected:
 	FName HitTraceEndSocketName = FName("Bottom");
 
 	UPROPERTY(EditAnywhere, Category="HitTrace")
-	float HitTraceRadius = 20.f;
+	float HitTraceRadius = 15.f;
 
 	UPROPERTY(EditAnywhere, Category="HitTrace")
 	TArray<TEnumAsByte<EObjectTypeQuery>> HitTraceObjectTypes = {UEngineTypes::ConvertToObjectType(ECC_Pawn)};
@@ -62,4 +62,6 @@ protected:
 
 	void ActiveWeaponTrailParticle();
 	void DeactiveWeaponTrailParticle();
+
+	bool bIsFirstHit = true;
 };

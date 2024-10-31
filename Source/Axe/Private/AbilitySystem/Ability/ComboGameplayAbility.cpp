@@ -138,6 +138,12 @@ void UComboGameplayAbility::SetHitTraceDefaultValue()
 void UComboGameplayAbility::OnHitTrace(TArray<FHitResult> HitResults)
 {
 	// UE_LOG(LogTemp, Warning, TEXT("UComboGameplayAbility::OnHitTrace"));
+
+	if (bIsFirstHit)
+	{
+		SetActiveAnimMontageLowRate(0.08, 0.07);
+		bIsFirstHit = false;
+	}
 }
 
 void UComboGameplayAbility::ActiveWeaponTrailParticle()
