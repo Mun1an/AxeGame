@@ -47,10 +47,6 @@ void UAbilityTask_HitTrace::OnDestroy(bool AbilityEnded)
 void UAbilityTask_HitTrace::TickTask(float DeltaTime)
 {
 	Super::TickTask(DeltaTime);
-	if (!bTickingTask)
-	{
-		return;
-	}
 
 	BeginSocketLocation = TraceMeshComponent->GetSocketLocation(BeginSocketName);
 	EndSocketLocation = TraceMeshComponent->GetSocketLocation(EndSocketName);
@@ -64,12 +60,15 @@ void UAbilityTask_HitTrace::TickTask(float DeltaTime)
 		HitObjectTypes,
 		false,
 		IgnoreActors,
-		EDrawDebugTrace::ForDuration,
+		EDrawDebugTrace::None,
 		HitResults,
 		bIgnoreSelf,
 		FLinearColor::Red,
 		FLinearColor::Green,
 		3.f
 	);
-	HitTraceDelegate.Broadcast(HitResults);
+	if (HitResults.Num() > 0)
+	{
+		HitTraceDelegate.Broadcast(HitResults);
+	}
 }

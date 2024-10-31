@@ -28,4 +28,5 @@ public:
 
 	virtual UStaticMeshComponent* GetWeaponComponent() const = 0;
 	virtual UStaticMeshComponent* GetWeaponSecondaryComponent() const = 0;
+
 };

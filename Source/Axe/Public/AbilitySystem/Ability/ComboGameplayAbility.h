@@ -59,4 +59,7 @@ protected:
 	//
 	UPROPERTY()
 	UAbilityTask_HitTrace* AbilityTask_HitTrace;
+
+	void ActiveWeaponTrailParticle();
+	void DeactiveWeaponTrailParticle();
 };

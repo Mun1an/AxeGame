@@ -3,6 +3,7 @@
 #include "Character/AxeCharacterPlayer.h"
 
 #include "AbilitySystemComponent.h"
+#include "NiagaraComponent.h"
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
 #include "ActionSystem/ActionCombatComponent.h"
 #include "ActionSystem/ComboActionComponent.h"
@@ -61,6 +62,8 @@ AAxeCharacterPlayer::AAxeCharacterPlayer()
 	ComboActionComponent = CreateDefaultSubobject<UComboActionComponent>(TEXT("ComboActionComponent"));
 	//
 	ActionCombatComponent = CreateDefaultSubobject<UActionCombatComponent>(TEXT("ActionCombatComponent"));
+
+	//
 }
 
 void AAxeCharacterPlayer::PossessedBy(AController* NewController)

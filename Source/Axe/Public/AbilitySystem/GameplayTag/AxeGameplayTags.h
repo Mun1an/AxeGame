@@ -31,6 +31,8 @@ struct FAxeGameplayTags
 
 	FGameplayTag Ability_Skill_LeapAttack;
 
+	FGameplayTag GameplayCue_WeaponTrail;
+
 	static void InitNativeGameplayTags();
 
 	static FAxeGameplayTags& Get()
@@ -44,4 +46,5 @@ protected:
 
 private:
 	static FAxeGameplayTags Instance;
+
 };

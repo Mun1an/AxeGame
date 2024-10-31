@@ -78,7 +78,7 @@ void UComboGameplayAbility::Ans_Combo_NotifyEnd(UAnimNotifyState* AnimNotifyStat
 void UComboGameplayAbility::Ans_HitTrace_NotifyBegin(UAnimNotifyState* AnimNotifyState)
 {
 	SetHitTraceDefaultValue();
-	
+
 	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
 	if (AxeCharacterOwner->IsLocallyControlled())
 	{
@@ -101,7 +101,8 @@ void UComboGameplayAbility::Ans_HitTrace_NotifyBegin(UAnimNotifyState* AnimNotif
 		AbilityTask_HitTrace->HitTraceDelegate.AddDynamic(this, &UComboGameplayAbility::OnHitTrace);
 		AbilityTask_HitTrace->ReadyForActivation();
 	}
-	
+
+	ActiveWeaponTrailParticle();
 }
 
 void UComboGameplayAbility::Ans_HitTrace_NotifyEnd(UAnimNotifyState* AnimNotifyState)
@@ -114,6 +115,8 @@ void UComboGameplayAbility::Ans_HitTrace_NotifyEnd(UAnimNotifyState* AnimNotifyS
 			AbilityTask_HitTrace->EndTask();
 		}
 	}
+
+	DeactiveWeaponTrailParticle();
 }
 
 void UComboGameplayAbility::SetHitTraceDefaultValue()
@@ -135,4 +138,22 @@ void UComboGameplayAbility::SetHitTraceDefaultValue()
 void UComboGameplayAbility::OnHitTrace(TArray<FHitResult> HitResults)
 {
 	// UE_LOG(LogTemp, Warning, TEXT("UComboGameplayAbility::OnHitTrace"));
+}
+
+void UComboGameplayAbility::ActiveWeaponTrailParticle()
+{
+	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
+	ICombatInterface* CombatInterface = Cast<ICombatInterface>(AxeCharacterOwner);
+	if (CombatInterface)
+	{
+	}
+}
+
+void UComboGameplayAbility::DeactiveWeaponTrailParticle()
+{
+	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
+	ICombatInterface* CombatInterface = Cast<ICombatInterface>(AxeCharacterOwner);
+	if (CombatInterface)
+	{
+	}
 }

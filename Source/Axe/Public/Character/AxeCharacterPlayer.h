@@ -8,6 +8,7 @@
 #include "Logging/LogMacros.h"
 #include "AxeCharacterPlayer.generated.h"
 
+class UNiagaraComponent;
 class UActionCombatComponent;
 class UComboActionComponent;
 class USpringArmComponent;
@@ -37,10 +38,12 @@ public:
 	{
 		return ActionCombatComponent;
 	}
+
 	virtual FORCEINLINE UStaticMeshComponent* GetWeaponComponent() const override
 	{
 		return Weapon;
 	}
+
 	virtual FORCEINLINE UStaticMeshComponent* GetWeaponSecondaryComponent() const override
 	{
 		return WeaponSecondary;
@@ -66,13 +69,13 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	FName WeaponTipSocketName = FName("WeaponHandSocket");
 
-	UPROPERTY(EditAnywhere, Category = "Combat")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Combat")
 	TObjectPtr<UStaticMeshComponent> Weapon;
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	FName WeaponSecondaryTipSocketName = FName("WeaponSecondaryHandSocket");
 
-	UPROPERTY(EditAnywhere, Category = "Combat")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Combat")
 	TObjectPtr<UStaticMeshComponent> WeaponSecondary;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))

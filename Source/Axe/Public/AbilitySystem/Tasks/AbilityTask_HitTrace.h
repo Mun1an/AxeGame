@@ -21,6 +21,8 @@ class AXE_API UAbilityTask_HitTrace : public UAbilityTask
 public:
 	FHitTraceDelegate HitTraceDelegate;
 
+	UFUNCTION(BlueprintCallable, Category="Ability|Tasks",
+		meta = (HidePin = "OwningAbility", DefaultToSelf = "OwningAbility", BlueprintInternalUseOnly = "TRUE"))
 	static UAbilityTask_HitTrace* CreateHitTraceTask(
 		UGameplayAbility* OwningAbility,
 		AAxeCharacterBase* Character,
