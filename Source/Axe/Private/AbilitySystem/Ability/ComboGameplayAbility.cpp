@@ -141,7 +141,7 @@ void UComboGameplayAbility::OnHitTrace(TArray<FHitResult> HitResults)
 
 	if (bIsFirstHit)
 	{
-		SetActiveAnimMontageLowRate(0.08, 0.07);
+		SetActiveMontagePauseFrame(0.08, 0.1);
 		bIsFirstHit = false;
 	}
 }

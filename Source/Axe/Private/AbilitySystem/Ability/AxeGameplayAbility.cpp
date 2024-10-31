@@ -194,34 +194,36 @@ UComboActionComponent* UAxeGameplayAbility::GetComboActionComponent() const
 	return nullptr;
 }
 
-void UAxeGameplayAbility::SetActiveAnimMontageLowRate(float LowRate, float Duration)
+void UAxeGameplayAbility::SetActiveMontagePauseFrame(float LowRate, float Duration)
 {
 	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
 	FAnimMontageInstance* ActiveMontageInstance = AxeCharacterOwner->GetMesh()->GetAnimInstance()->
 	                                                                 GetActiveInstanceForMontage(AbilityMontage);
 	if (ActiveMontageInstance)
 	{
-		if (ActiveAnimMontageLowRateTimerHandle.IsValid())
+		if (ActiveMontagePauseFrameTimerHandle.IsValid())
 		{
-			GetWorld()->GetTimerManager().ClearTimer(ActiveAnimMontageLowRateTimerHandle);
+			GetWorld()->GetTimerManager().ClearTimer(ActiveMontagePauseFrameTimerHandle);
 		}
-		ActiveAnimMontageInstance = ActiveMontageInstance;
-		ActiveMontageInstance->SetPlayRate(LowRate);
+		ActiveMontagePauseFrameInstance = ActiveMontageInstance;
+		const float PlayRate = LowRate * ActiveMontagePauseFrameRateMagnitude;
+		const float PlayDuration = Duration * ActiveMontagePauseFrameDurationMagnitude;
+		ActiveMontageInstance->SetPlayRate(PlayRate);
 		GetWorld()->GetTimerManager().SetTimer(
-			ActiveAnimMontageLowRateTimerHandle,
+			ActiveMontagePauseFrameTimerHandle,
 			this,
-			&UAxeGameplayAbility::ActiveAnimMontageLowRateEnd,
-			Duration,
+			&UAxeGameplayAbility::ActiveMontagePauseFrameEnd,
+			PlayDuration,
 			false
 		);
 	}
 }
 
-void UAxeGameplayAbility::ActiveAnimMontageLowRateEnd()
+void UAxeGameplayAbility::ActiveMontagePauseFrameEnd()
 {
-	if (ActiveAnimMontageInstance && ActiveAnimMontageInstance->bPlaying)
+	if (ActiveMontagePauseFrameInstance && ActiveMontagePauseFrameInstance->bPlaying)
 	{
-		ActiveAnimMontageInstance->SetPlayRate(1.0);
+		ActiveMontagePauseFrameInstance->SetPlayRate(1.0);
 	}
 }
 

@@ -113,10 +113,14 @@ protected:
 	UComboActionComponent* GetComboActionComponent() const;
 
 	// Montage
-	void SetActiveAnimMontageLowRate(float LowRate, float Duration);
-	FTimerHandle ActiveAnimMontageLowRateTimerHandle;
-	FAnimMontageInstance* ActiveAnimMontageInstance;
-	void ActiveAnimMontageLowRateEnd();
+	UPROPERTY(EditDefaultsOnly, Category = "AnimMontage|PauseFrame")
+	float ActiveMontagePauseFrameRateMagnitude = 1.0f;
+	UPROPERTY(EditDefaultsOnly, Category = "AnimMontage|PauseFrame")
+	float ActiveMontagePauseFrameDurationMagnitude = 1.0f;
+	void SetActiveMontagePauseFrame(float LowRate, float Duration);
+	FTimerHandle ActiveMontagePauseFrameTimerHandle;
+	FAnimMontageInstance* ActiveMontagePauseFrameInstance;
+	void ActiveMontagePauseFrameEnd();
 
 	// Task
 	void AddMontageNotifyStateTask();
