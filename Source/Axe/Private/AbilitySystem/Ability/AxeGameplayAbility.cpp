@@ -227,6 +227,23 @@ void UAxeGameplayAbility::ActiveMontagePauseFrameEnd()
 	}
 }
 
+void UAxeGameplayAbility::ShakeCamera()
+{
+	if (!CameraShakeClass)
+	{
+		return;
+	}
+	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
+	if (AxeCharacterOwner)
+	{
+		APlayerController* PlayerController = AxeCharacterOwner->GetLocalViewingPlayerController();
+		if (PlayerController)
+		{
+			PlayerController->PlayerCameraManager->StartCameraShake(CameraShakeClass, 1.0f);
+		}
+	}
+}
+
 void UAxeGameplayAbility::AddMontageNotifyStateTask()
 {
 	//AddTask

@@ -117,11 +117,17 @@ protected:
 	float ActiveMontagePauseFrameRateMagnitude = 1.0f;
 	UPROPERTY(EditDefaultsOnly, Category = "AnimMontage|PauseFrame")
 	float ActiveMontagePauseFrameDurationMagnitude = 1.0f;
+	UFUNCTION(BlueprintCallable)
 	void SetActiveMontagePauseFrame(float LowRate, float Duration);
 	FTimerHandle ActiveMontagePauseFrameTimerHandle;
 	FAnimMontageInstance* ActiveMontagePauseFrameInstance;
 	void ActiveMontagePauseFrameEnd();
 
+	// Camera
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UCameraShakeBase> CameraShakeClass;
+	void ShakeCamera();
+	
 	// Task
 	void AddMontageNotifyStateTask();
 

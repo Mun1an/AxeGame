@@ -30,6 +30,7 @@ public:
 	virtual void Ans_HitTrace_NotifyBegin(UAnimNotifyState* AnimNotifyState) override;
 	virtual void Ans_HitTrace_NotifyEnd(UAnimNotifyState* AnimNotifyState) override;
 	virtual void SetHitTraceDefaultValue();
+	
 	UFUNCTION()
 	virtual void OnHitTrace(TArray<FHitResult> HitResults) override;
 

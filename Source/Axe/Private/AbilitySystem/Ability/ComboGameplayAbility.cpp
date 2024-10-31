@@ -141,8 +141,13 @@ void UComboGameplayAbility::OnHitTrace(TArray<FHitResult> HitResults)
 
 	if (bIsFirstHit)
 	{
-		SetActiveMontagePauseFrame(0.08, 0.1);
 		bIsFirstHit = false;
+		SetActiveMontagePauseFrame(0.08, 0.1);
+
+		if (IsLocallyControlled())
+		{
+			ShakeCamera();
+		}
 	}
 }
 
