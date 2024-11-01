@@ -14,12 +14,23 @@ UAbilityTask_MontageNotify* UAbilityTask_MontageNotify::CreateMontageNotifyState
 {
 	UAbilityTask_MontageNotify* MyObj = NewAbilityTask<UAbilityTask_MontageNotify>(OwningAbility);
 
+	const UAxeGameplayAbility* AxeGameplayAbility = Cast<UAxeGameplayAbility>(OwningAbility);
+
+	MyObj->AxeCharacter = AxeGameplayAbility->GetAxeCharacterOwner();
 	MyObj->AbilityMontage = AbilityMontage;
 	MyObj->NotifyStateClass = NotifyStateClass;
 
 	return MyObj;
 }
 
+void UAbilityTask_MontageNotify::InitTaskAuthority()
+{
+	if (Ability)
+	{
+		const FGameplayAbilityActivationInfo ActivationInfo = Ability->GetCurrentActivationInfo();
+		bHasAuthority = Ability->HasAuthority(&ActivationInfo);
+	}
+}
 
 void UAbilityTask_MontageNotify::Activate()
 {
@@ -29,6 +40,8 @@ void UAbilityTask_MontageNotify::Activate()
 	{
 		return;
 	}
+
+	InitTaskAuthority();
 
 	TArray<FAnimNotifyEvent> AnimNotifyEvents = AbilityMontage->Notifies;
 	for (FAnimNotifyEvent& AnimNotifyEvent : AnimNotifyEvents)
@@ -43,8 +56,6 @@ void UAbilityTask_MontageNotify::Activate()
 		return;
 	}
 
-	bool bHasAuthorityTask = HasAuthorityTask();
-
 	for (UAnimNotifyState* AnimNotifyState : NotifyStateList)
 	{
 		UAxeAnimNotifyStateBase* AnimNotifyStateBase = Cast<UAxeAnimNotifyStateBase>(AnimNotifyState);
@@ -52,14 +63,14 @@ void UAbilityTask_MontageNotify::Activate()
 		{
 			continue;
 		}
-		
-		FDelegateHandle BeginDelegateHandle = AnimNotifyStateBase->LocalAnimNotifyStateBeginDelegate.AddUObject(
+
+		FDelegateHandle BeginDelegateHandle = AnimNotifyStateBase->AnimNotifyStateBeginDelegate.AddUObject(
 			this, &UAbilityTask_MontageNotify::AnimNotifyStateBegin
 		);
-		FDelegateHandle EndDelegateHandle = AnimNotifyStateBase->LocalAnimNotifyStateEndDelegate.AddUObject(
+		FDelegateHandle EndDelegateHandle = AnimNotifyStateBase->AnimNotifyStateEndDelegate.AddUObject(
 			this, &UAbilityTask_MontageNotify::AnimNotifyStateEnd
 		);
-		
+
 		TArray<FDelegateHandle>& DelegateHandleList = DelegateHandleMap.FindOrAdd(AnimNotifyState);
 		DelegateHandleList.AddUnique(BeginDelegateHandle);
 		DelegateHandleList.AddUnique(EndDelegateHandle);
@@ -87,7 +98,7 @@ void UAbilityTask_MontageNotify::OnDestroy(bool AbilityEnded)
 			// remove delegate
 			for (FDelegateHandle DelegateHandle : *DelegateHandleList)
 			{
-				AnimNotifyStateBase->LocalAnimNotifyStateBeginDelegate.Remove(DelegateHandle);
+				AnimNotifyStateBase->AnimNotifyStateBeginDelegate.Remove(DelegateHandle);
 			}
 			// 被打断
 			// 如果在NotifyStateEnded的广播到达前，Task因为Ability的结束而被销毁, 那么NotifyStateEnded的广播不会到达，需要手动调用
@@ -102,25 +113,24 @@ void UAbilityTask_MontageNotify::OnDestroy(bool AbilityEnded)
 	Super::OnDestroy(AbilityEnded);
 }
 
-bool UAbilityTask_MontageNotify::HasAuthorityTask()
-{
-	UAxeGameplayAbility* AxeGameplayAbility = Cast<UAxeGameplayAbility>(GetTaskOwner());
-	AAxeCharacterBase* AxeCharacterOwner = AxeGameplayAbility->GetAxeCharacterOwner();
-	bool bHasAuthority = AxeCharacterOwner->HasAuthority();
-	return bHasAuthority;
-}
-
 void UAbilityTask_MontageNotify::AnimNotifyStateBegin(UAnimNotifyState* AnimNotifyState)
 {
-	MontageNotifyStartDelegate.Broadcast(AnimNotifyState);
-}
+	// fixme 单进程多人有bug 先这样移除
+	if (!HasBeginNotifyStateList.Contains(AnimNotifyState))
+	{
+		MontageNotifyStartDelegate.Broadcast(AnimNotifyState);
 
-void UAbilityTask_MontageNotify::AnimNotifyStateTick(UAnimNotifyState* AnimNotifyState)
-{
-	MontageNotifyTickDelegate.Broadcast(AnimNotifyState);
+		HasBeginNotifyStateList.AddUnique(AnimNotifyState);
+	}
 }
 
 void UAbilityTask_MontageNotify::AnimNotifyStateEnd(UAnimNotifyState* AnimNotifyState)
 {
-	MontageNotifyEndDelegate.Broadcast(AnimNotifyState);
+	// fixme 单进程多人有bug 先这样移除
+	if (!HasEndNotifyStateList.Contains(AnimNotifyState))
+	{
+		MontageNotifyEndDelegate.Broadcast(AnimNotifyState);
+
+		HasEndNotifyStateList.AddUnique(AnimNotifyState);
+	}
 }

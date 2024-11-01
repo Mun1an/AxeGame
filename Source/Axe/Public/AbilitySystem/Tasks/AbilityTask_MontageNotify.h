@@ -7,6 +7,7 @@
 #include "AbilityTask_MontageNotify.generated.h"
 
 
+class AAxeCharacterBase;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMontageNotifyDelegate, UAnimNotifyState*, AnimNotifyState);
 
 // DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FMontageNotifyEndDelegate, UAnimNotifyState*, AnimNotifyState, bool, IsInterrupted);
@@ -24,9 +25,6 @@ public:
 	FMontageNotifyDelegate MontageNotifyStartDelegate;
 
 	UPROPERTY(BlueprintAssignable)
-	FMontageNotifyDelegate MontageNotifyTickDelegate;
-
-	UPROPERTY(BlueprintAssignable)
 	FMontageNotifyDelegate MontageNotifyEndDelegate;
 
 	UFUNCTION(BlueprintCallable, Category="Ability|Tasks",
@@ -36,12 +34,17 @@ public:
 		UAnimMontage* AbilityMontage,
 		TSubclassOf<UAnimNotifyState> NotifyStateClass
 	);
-	bool HasAuthorityTask();
+	void InitTaskAuthority();
 
 protected:
 	virtual void Activate() override;
 
 	virtual void OnDestroy(bool AbilityEnded) override;
+
+	bool bHasAuthority = false;
+
+	UPROPERTY()
+	TObjectPtr<AAxeCharacterBase> AxeCharacter;
 
 	UPROPERTY()
 	TObjectPtr<UAnimMontage> AbilityMontage;
@@ -54,6 +57,8 @@ protected:
 	TMap<UAnimNotifyState*, TArray<FDelegateHandle>> DelegateHandleMap;
 
 	void AnimNotifyStateBegin(UAnimNotifyState* AnimNotifyState);
-	void AnimNotifyStateTick(UAnimNotifyState* AnimNotifyState);
 	void AnimNotifyStateEnd(UAnimNotifyState* AnimNotifyState);
+
+	TArray<UAnimNotifyState*> HasBeginNotifyStateList;
+	TArray<UAnimNotifyState*> HasEndNotifyStateList;
 };

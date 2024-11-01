@@ -12,9 +12,9 @@ UAbilityTask_HitTrace* UAbilityTask_HitTrace::CreateHitTraceTask(UGameplayAbilit
                                                                  FName BeginSocketName,
                                                                  FName EndSocketName,
                                                                  float Radius,
-                                                                 TArray<TEnumAsByte<EObjectTypeQuery>>& ObjectTypes,
+                                                                 const TArray<TEnumAsByte<EObjectTypeQuery>>& ObjectTypes,
                                                                  bool bIgnoreSelf,
-                                                                 TArray<AActor*>& IgnoreActors
+                                                                 const TArray<AActor*>& IgnoreActors
 )
 {
 	UAbilityTask_HitTrace* MyObj = NewAbilityTask<UAbilityTask_HitTrace>(OwningAbility);

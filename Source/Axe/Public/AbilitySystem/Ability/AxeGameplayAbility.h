@@ -7,6 +7,7 @@
 #include "AxeGameplayAbility.generated.h"
 
 
+enum class ELaunchCharacterDirection : uint8;
 class UAbilityTask_HitTrace;
 class UComboActionComponent;
 class UActionCombatComponent;
@@ -127,15 +128,17 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UCameraShakeBase> CameraShakeClass;
 	void ShakeCamera();
-	
+
 	// Task
-	void AddMontageNotifyStateTask();
+	UFUNCTION(BlueprintCallable)
+	void AddMontageNotifyStateTask(UAnimMontage* LocalAnimMontage);
 
 	// ANS
 	UFUNCTION()
 	void Ans_MovementSlow_NotifyBegin(UAnimNotifyState* AnimNotifyState);
 	UFUNCTION()
 	void Ans_MovementSlow_NotifyEnd(UAnimNotifyState* AnimNotifyState);
+
 
 	UFUNCTION()
 	void Ans_LaunchCharacter_NotifyBegin(UAnimNotifyState* AnimNotifyState);

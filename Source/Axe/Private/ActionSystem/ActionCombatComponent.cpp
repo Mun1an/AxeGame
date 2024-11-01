@@ -73,6 +73,12 @@ void UActionCombatComponent::SetCustomLaunchCharacter(float LaunchSpeed, ELaunch
 	Character->LaunchCharacter(LaunchVelocity, bXYOverride, bZOverride);
 }
 
+void UActionCombatComponent::BeginPlay()
+{
+	Super::BeginPlay();
+	SetIsReplicated(true);
+}
+
 void UActionCombatComponent::TickComponent(float DeltaTime, enum ELevelTick TickType,
                                            FActorComponentTickFunction* ThisTickFunction)
 {

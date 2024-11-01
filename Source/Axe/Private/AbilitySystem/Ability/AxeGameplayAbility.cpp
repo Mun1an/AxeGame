@@ -143,8 +143,10 @@ void UAxeGameplayAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	// Tasks
-	AddMontageNotifyStateTask();
-	// AddMontageNotifyStateTask();
+	if (AbilityMontage)
+	{
+		AddMontageNotifyStateTask(AbilityMontage);
+	}
 }
 
 void UAxeGameplayAbility::EndAbility(const FGameplayAbilitySpecHandle Handle,
@@ -197,8 +199,8 @@ UComboActionComponent* UAxeGameplayAbility::GetComboActionComponent() const
 void UAxeGameplayAbility::SetActiveMontagePauseFrame(float LowRate, float Duration)
 {
 	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
-	FAnimMontageInstance* ActiveMontageInstance = AxeCharacterOwner->GetMesh()->GetAnimInstance()->
-	                                                                 GetActiveInstanceForMontage(AbilityMontage);
+	UAnimInstance* AnimInstance = AxeCharacterOwner->GetMesh()->GetAnimInstance();
+	FAnimMontageInstance* ActiveMontageInstance = AnimInstance->GetActiveInstanceForMontage(AbilityMontage);
 	if (ActiveMontageInstance)
 	{
 		if (ActiveMontagePauseFrameTimerHandle.IsValid())
@@ -244,7 +246,7 @@ void UAxeGameplayAbility::ShakeCamera()
 	}
 }
 
-void UAxeGameplayAbility::AddMontageNotifyStateTask()
+void UAxeGameplayAbility::AddMontageNotifyStateTask(UAnimMontage* LocalAnimMontage)
 {
 	//AddTask
 
@@ -252,7 +254,7 @@ void UAxeGameplayAbility::AddMontageNotifyStateTask()
 
 	// MovementSlow
 	UAbilityTask_MontageNotify* AT_MovementSlow_Ans = UAbilityTask_MontageNotify::CreateMontageNotifyStateTask(
-		this, AbilityMontage,
+		this, LocalAnimMontage,
 		UMovementSlowAnimNotifyState::StaticClass()
 	);
 	AT_MovementSlow_Ans->MontageNotifyStartDelegate.AddDynamic(
@@ -263,7 +265,7 @@ void UAxeGameplayAbility::AddMontageNotifyStateTask()
 
 	// LaunchCharacter
 	UAbilityTask_MontageNotify* AT_LaunchCharacter_Ans = UAbilityTask_MontageNotify::CreateMontageNotifyStateTask(
-		this, AbilityMontage,
+		this, LocalAnimMontage,
 		ULaunchCharacterNotifyState::StaticClass()
 	);
 	AT_LaunchCharacter_Ans->MontageNotifyStartDelegate.AddDynamic(
@@ -277,7 +279,7 @@ void UAxeGameplayAbility::AddMontageNotifyStateTask()
 	{
 		// ComboInputCache
 		UAbilityTask_MontageNotify* AT_ComboInputCache_Ans = UAbilityTask_MontageNotify::CreateMontageNotifyStateTask(
-			this, AbilityMontage,
+			this, LocalAnimMontage,
 			UComboInputCacheAnimNotifyState::StaticClass()
 		);
 		AT_ComboInputCache_Ans->MontageNotifyStartDelegate.AddDynamic(
@@ -288,7 +290,7 @@ void UAxeGameplayAbility::AddMontageNotifyStateTask()
 
 		// Combo
 		UAbilityTask_MontageNotify* AT_Combo_Ans = UAbilityTask_MontageNotify::CreateMontageNotifyStateTask(
-			this, AbilityMontage,
+			this, LocalAnimMontage,
 			UComboAnimNotifyState::StaticClass()
 		);
 		AT_Combo_Ans->MontageNotifyStartDelegate.AddDynamic(
@@ -302,7 +304,7 @@ void UAxeGameplayAbility::AddMontageNotifyStateTask()
 	if (IHitTraceAbilityInterface* HitTraceAbility = Cast<IHitTraceAbilityInterface>(this))
 	{
 		UAbilityTask_MontageNotify* AT_HitTrace_Ans = UAbilityTask_MontageNotify::CreateMontageNotifyStateTask(
-			this, AbilityMontage,
+			this, LocalAnimMontage,
 			UHitTraceAnimNotifyState::StaticClass()
 		);
 		AT_HitTrace_Ans->MontageNotifyStartDelegate.AddDynamic(HitTraceAbility,
@@ -313,6 +315,7 @@ void UAxeGameplayAbility::AddMontageNotifyStateTask()
 	}
 }
 
+//
 void UAxeGameplayAbility::Ans_MovementSlow_NotifyBegin(UAnimNotifyState* AnimNotifyState)
 {
 	if (HasAuthority(&CurrentActivationInfo))
@@ -329,6 +332,7 @@ void UAxeGameplayAbility::Ans_MovementSlow_NotifyBegin(UAnimNotifyState* AnimNot
 	}
 }
 
+
 void UAxeGameplayAbility::Ans_MovementSlow_NotifyEnd(UAnimNotifyState* AnimNotifyState)
 {
 	if (HasAuthority(&CurrentActivationInfo))
@@ -340,6 +344,7 @@ void UAxeGameplayAbility::Ans_MovementSlow_NotifyEnd(UAnimNotifyState* AnimNotif
 		}
 	}
 }
+
 
 void UAxeGameplayAbility::Ans_LaunchCharacter_NotifyBegin(UAnimNotifyState* AnimNotifyState)
 {
@@ -358,6 +363,7 @@ void UAxeGameplayAbility::Ans_LaunchCharacter_NotifyBegin(UAnimNotifyState* Anim
 		}
 	}
 }
+
 
 void UAxeGameplayAbility::Ans_LaunchCharacter_NotifyEnd(UAnimNotifyState* AnimNotifyState)
 {
