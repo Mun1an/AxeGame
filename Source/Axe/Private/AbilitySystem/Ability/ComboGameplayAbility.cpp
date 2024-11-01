@@ -137,10 +137,10 @@ void UComboGameplayAbility::SetHitTraceDefaultValue()
 	}
 }
 
-void UComboGameplayAbility::CreateHitParticle(FHitResult HitResult)
+void UComboGameplayAbility::CreateHitParticle(FHitResult& HitResult)
 {
 	// fixme 同时攻击多个目标时
-	if (bIsFirstHit)
+	if (bIsFirstHit && WeaponHitParticle)
 	{
 		SpawnedNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
 			GetWorld(), WeaponHitParticle, HitResult.Location,
@@ -159,7 +159,7 @@ void UComboGameplayAbility::CreateHitParticle(FHitResult HitResult)
 	}
 }
 
-void UComboGameplayAbility::OnHitTrace(TArray<FHitResult> HitResults)
+void UComboGameplayAbility::OnHitTrace(TArray<FHitResult>& HitResults)
 {
 	OnHitTraceBP(HitResults[0]);
 
@@ -170,10 +170,12 @@ void UComboGameplayAbility::OnHitTrace(TArray<FHitResult> HitResults)
 		bIsFirstHit = false;
 		SetActiveMontagePauseFrame(0.08, 0.1);
 
+		//
 		if (IsLocallyControlled())
 		{
 			ShakeCamera();
 		}
+		
 	}
 }
 

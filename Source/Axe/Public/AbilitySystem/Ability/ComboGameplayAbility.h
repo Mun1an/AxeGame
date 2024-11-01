@@ -40,10 +40,10 @@ public:
 	TObjectPtr<UNiagaraComponent> SpawnedNiagaraComponent;
 	
 	UFUNCTION()
-	void CreateHitParticle(FHitResult HitResult);
+	void CreateHitParticle(FHitResult& HitResult);
 
 	UFUNCTION()
-	virtual void OnHitTrace(TArray<FHitResult> HitResults) override;
+	virtual void OnHitTrace(TArray<FHitResult>& HitResults) override;
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnHitTraceBP(FHitResult HitResult);

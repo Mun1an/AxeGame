@@ -27,5 +27,5 @@ public:
 	UFUNCTION()
 	virtual void Ans_HitTrace_NotifyEnd(UAnimNotifyState* AnimNotifyState) = 0;
 	UFUNCTION()
-	virtual void OnHitTrace(TArray<FHitResult> HitResults) = 0;
+	virtual void OnHitTrace(TArray<FHitResult>& HitResults) = 0;
 };

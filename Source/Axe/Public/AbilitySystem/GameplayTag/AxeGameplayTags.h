@@ -31,6 +31,9 @@ struct FAxeGameplayTags
 
 	FGameplayTag Ability_Skill_LeapAttack;
 
+	FGameplayTag Ability_HitReact_Light;
+	FGameplayTag Ability_HitReact_Heavy;
+
 	FGameplayTag GameplayCue_WeaponTrail;
 
 	static void InitNativeGameplayTags();
