@@ -27,8 +27,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetCustomLaunchCharacter(float LaunchSpeed, ELaunchCharacterDirection LaunchDirection, bool bXYOverride,
 	                              bool bZOverride);
+	FVector GetLaunchDirectionByEnum(AActor* Actor, ELaunchCharacterDirection LaunchDirectionEnum);
 
-	
 protected:
 	virtual void BeginPlay() override;
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType,

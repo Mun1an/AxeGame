@@ -43,34 +43,40 @@ void UActionCombatComponent::SetCustomLaunchCharacter(float LaunchSpeed, ELaunch
                                                       bool bXYOverride, bool bZOverride)
 
 {
-	FVector LaunchVelocity = FVector::ZeroVector;
 	ACharacter* Character = Cast<ACharacter>(GetOwner());
+	FVector LaunchVelocity = GetLaunchDirectionByEnum(Character, LaunchDirection);
 
-	switch (LaunchDirection)
+	LaunchVelocity *= LaunchSpeed;
+	Character->LaunchCharacter(LaunchVelocity, bXYOverride, bZOverride);
+}
+
+FVector UActionCombatComponent::GetLaunchDirectionByEnum(AActor* Actor, ELaunchCharacterDirection LaunchDirectionEnum)
+{
+	FVector LaunchDir = FVector::ZeroVector;
+	switch (LaunchDirectionEnum)
 	{
 	case ELaunchCharacterDirection::Lc_Forward:
-		LaunchVelocity = Character->GetActorForwardVector();
+		LaunchDir = Actor->GetActorForwardVector();
 		break;
 	case ELaunchCharacterDirection::Lc_Backward:
-		LaunchVelocity = Character->GetActorForwardVector() * -1;
+		LaunchDir = Actor->GetActorForwardVector() * -1;
 		break;
 	case ELaunchCharacterDirection::Lc_Left:
-		LaunchVelocity = Character->GetActorRightVector() * -1;
+		LaunchDir = Actor->GetActorRightVector() * -1;
 		break;
 	case ELaunchCharacterDirection::Lc_Right:
-		LaunchVelocity = Character->GetActorRightVector();
+		LaunchDir = Actor->GetActorRightVector();
 		break;
 	case ELaunchCharacterDirection::Lc_Up:
-		LaunchVelocity = Character->GetActorUpVector();
+		LaunchDir = Actor->GetActorUpVector();
 		break;
 	case ELaunchCharacterDirection::Lc_Down:
-		LaunchVelocity = Character->GetActorUpVector() * -1;
+		LaunchDir = Actor->GetActorUpVector() * -1;
 		break;
 	default:
 		break;
 	}
-	LaunchVelocity *= LaunchSpeed;
-	Character->LaunchCharacter(LaunchVelocity, bXYOverride, bZOverride);
+	return LaunchDir;
 }
 
 void UActionCombatComponent::BeginPlay()

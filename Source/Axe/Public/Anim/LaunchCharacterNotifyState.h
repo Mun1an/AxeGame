@@ -20,9 +20,11 @@ public:
 	float LaunchSpeed = 1000;
 	UPROPERTY(EditAnywhere)
 	ELaunchCharacterDirection LaunchDirection = ELaunchCharacterDirection::Lc_Forward;
-	UPROPERTY(EditAnywhere)
 	bool bXYOverride = false;
-	UPROPERTY(EditAnywhere)
 	bool bZOverride = false;
 
+	float StateDuration = 0.0f;
+
+	virtual void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration,
+							 const FAnimNotifyEventReference& EventReference) override;
 };
