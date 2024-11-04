@@ -38,6 +38,29 @@ void UAbilityTask_HitTrace::Activate()
 	Super::Activate();
 
 	bTickingTask = true;
+
+	if (IsLocallyControlled())
+	{
+		// SendTargetDataToServer_Client();
+	}
+	else
+	{
+		// FScopedPredictionWindow ScopedPrediction(AbilitySystemComponent.Get());
+		// Server
+		const FGameplayAbilitySpecHandle SpecHandle = GetAbilitySpecHandle();
+		const FPredictionKey ActivationPredictionKey = GetActivationPredictionKey();
+		FAbilityTargetDataSetDelegate& AbilityTargetDataSetDelegate = AbilitySystemComponent.Get()->
+			AbilityTargetDataSetDelegate(SpecHandle, ActivationPredictionKey);
+
+		AbilityTargetDataSetDelegate.AddUObject(this, &UAbilityTask_HitTrace::OnHitDataReplicatedCallback_Server);
+
+		bool bCalledDelegate = AbilitySystemComponent.Get()->CallReplicatedTargetDataDelegatesIfSet(
+			SpecHandle, ActivationPredictionKey);
+		if (!bCalledDelegate)
+		{
+			SetWaitingOnRemotePlayerData();
+		}
+	}
 }
 
 void UAbilityTask_HitTrace::OnDestroy(bool AbilityEnded)
@@ -50,22 +73,13 @@ void UAbilityTask_HitTrace::TickTask(float DeltaTime)
 {
 	Super::TickTask(DeltaTime);
 
-	bool bIsLocallyControlled = IsLocallyControlled();
-
-	if (bIsLocallyControlled)
+	if (IsLocallyControlled())
 	{
 		// Client
 		SendTargetDataToServer_Client();
 	}
 	else
 	{
-		// Server
-		const FGameplayAbilitySpecHandle SpecHandle = GetAbilitySpecHandle();
-		const FPredictionKey ActivationPredictionKey = GetActivationPredictionKey();
-		AbilitySystemComponent.Get()->AbilityTargetDataSetDelegate(
-			GetAbilitySpecHandle(),
-			GetActivationPredictionKey()
-		).AddUObject(this, &UAbilityTask_HitTrace::OnHitDataReplicatedCallback_Server);
 	}
 }
 
@@ -93,25 +107,34 @@ void UAbilityTask_HitTrace::SendTargetDataToServer_Client()
 	{
 		return;
 	}
+	const FHitResult& FirstHitResult = HitResultList[0];
+	if (HasHitActors.Contains(FirstHitResult.GetActor()))
+	{
+		return;
+	}
+	HasHitActors.Add(FirstHitResult.GetActor());
 
 	// Window
 	FScopedPredictionWindow ScopedPrediction(AbilitySystemComponent.Get());
 
 	FGameplayAbilityTargetDataHandle DataHandle;
-	FGameplayAbilityTargetData_SingleTargetHit* Data = new FGameplayAbilityTargetData_SingleTargetHit(HitResultList[0]);
+	FGameplayAbilityTargetData_SingleTargetHit* Data = new FGameplayAbilityTargetData_SingleTargetHit(FirstHitResult);
 	DataHandle.Add(Data);
 
+	const FGameplayAbilitySpecHandle GameplayAbilitySpecHandle = GetAbilitySpecHandle();
+	const FPredictionKey ActivationPredictionKey = GetActivationPredictionKey();
+	FPredictionKey ScopedPredictionKey = AbilitySystemComponent->ScopedPredictionKey;
 	AbilitySystemComponent->ServerSetReplicatedTargetData(
-		GetAbilitySpecHandle(),
-		GetActivationPredictionKey(),
+		GameplayAbilitySpecHandle,
+		ActivationPredictionKey,
 		DataHandle,
 		FGameplayTag(),
-		AbilitySystemComponent->ScopedPredictionKey
+		ScopedPredictionKey
 	);
 
 	if (ShouldBroadcastAbilityTaskDelegates())
 	{
-		HitTraceDelegate.Broadcast(HitResultList[0]);
+		HitTraceDelegate.Broadcast(FirstHitResult);
 	}
 }
 
@@ -120,10 +143,15 @@ void UAbilityTask_HitTrace::OnHitDataReplicatedCallback_Server(const FGameplayAb
 {
 	// Consume
 	AbilitySystemComponent->ConsumeClientReplicatedTargetData(GetAbilitySpecHandle(), GetActivationPredictionKey());
+
 	if (ShouldBroadcastAbilityTaskDelegates())
 	{
 		const FGameplayAbilityTargetData* GameplayAbilityTargetData = DataHandle.Get(0);
-		const FHitResult* HitResult = GameplayAbilityTargetData->GetHitResult();
-		HitTraceDelegate.Broadcast(*HitResult);
+
+		if (GameplayAbilityTargetData && GameplayAbilityTargetData->HasHitResult())
+		{
+			const FHitResult* HitResult = GameplayAbilityTargetData->GetHitResult();
+			HitTraceDelegate.Broadcast(*HitResult);
+		}
 	}
 }

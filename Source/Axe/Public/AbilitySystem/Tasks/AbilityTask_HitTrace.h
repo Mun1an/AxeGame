@@ -44,8 +44,9 @@ protected:
 
 	void SendTargetDataToServer_Client();
 
-	void OnHitDataReplicatedCallback_Server(const FGameplayAbilityTargetDataHandle& DataHandle, FGameplayTag ActivationTag);
-	
+	void OnHitDataReplicatedCallback_Server(const FGameplayAbilityTargetDataHandle& DataHandle,
+	                                        FGameplayTag ActivationTag);
+
 	UPROPERTY()
 	AAxeCharacterBase* Character;
 
@@ -72,4 +73,7 @@ protected:
 
 	FVector BeginSocketLocation;
 	FVector EndSocketLocation;
+
+private:
+	TArray<AActor*> HasHitActors;
 };
