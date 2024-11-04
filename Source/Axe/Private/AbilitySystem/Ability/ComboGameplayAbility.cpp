@@ -5,6 +5,7 @@
 
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "AbilitySystem/GameplayTag/AxeGameplayTags.h"
 #include "AbilitySystem/Tasks/AbilityTask_HitTrace.h"
 #include "ActionSystem/ComboActionComponent.h"
 #include "Character/AxeCharacterPlayer.h"
@@ -82,29 +83,24 @@ void UComboGameplayAbility::Ans_HitTrace_NotifyBegin(UAnimNotifyState* AnimNotif
 	SetHitTraceDefaultValue();
 
 	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
-	if (AxeCharacterOwner->IsLocallyControlled())
+	ICombatInterface* CombatInterface = Cast<ICombatInterface>(AxeCharacterOwner);
+	if (!CombatInterface)
 	{
-		ICombatInterface* CombatInterface = Cast<ICombatInterface>(AxeCharacterOwner);
-		if (!CombatInterface)
-		{
-			return;
-		}
-		AbilityTask_HitTrace = UAbilityTask_HitTrace::CreateHitTraceTask(
-			this,
-			AxeCharacterOwner,
-			HitTraceMeshComponent,
-			HitTraceStartSocketName,
-			HitTraceEndSocketName,
-			HitTraceRadius,
-			HitTraceObjectTypes,
-			bHitTraceIgnoreSelf,
-			IgnoreActors
-		);
-		AbilityTask_HitTrace->HitTraceDelegate.AddDynamic(this, &UComboGameplayAbility::OnHitTrace);
-		AbilityTask_HitTrace->ReadyForActivation();
+		return;
 	}
-
-	ActiveWeaponTrailParticle();
+	AbilityTask_HitTrace = UAbilityTask_HitTrace::CreateHitTraceTask(
+		this,
+		AxeCharacterOwner,
+		HitTraceMeshComponent,
+		HitTraceStartSocketName,
+		HitTraceEndSocketName,
+		HitTraceRadius,
+		HitTraceObjectTypes,
+		bHitTraceIgnoreSelf,
+		IgnoreActors
+	);
+	AbilityTask_HitTrace->HitTraceDelegate.AddDynamic(this, &UComboGameplayAbility::OnHitTrace);
+	AbilityTask_HitTrace->ReadyForActivation();
 }
 
 void UComboGameplayAbility::Ans_HitTrace_NotifyEnd(UAnimNotifyState* AnimNotifyState)
@@ -117,8 +113,6 @@ void UComboGameplayAbility::Ans_HitTrace_NotifyEnd(UAnimNotifyState* AnimNotifyS
 			AbilityTask_HitTrace->EndTask();
 		}
 	}
-
-	DeactiveWeaponTrailParticle();
 }
 
 void UComboGameplayAbility::SetHitTraceDefaultValue()
@@ -137,62 +131,39 @@ void UComboGameplayAbility::SetHitTraceDefaultValue()
 	}
 }
 
-void UComboGameplayAbility::CreateHitParticle(FHitResult& HitResult)
+void UComboGameplayAbility::CreateHitParticle(const FHitResult& HitResult)
 {
 	// fixme 同时攻击多个目标时
-	if (bIsFirstHit && WeaponHitParticle)
+	if (WeaponHit_GC_Tag.IsValid())
 	{
-		SpawnedNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-			GetWorld(), WeaponHitParticle, HitResult.Location,
-			FRotator::ZeroRotator, FVector(1.f),
-			true, true, ENCPoolMethod::AutoRelease,
-			true
-		);
-		if (SpawnedNiagaraComponent)
-		{
-			SpawnedNiagaraComponent->SetVariablePosition(FName("BeamStart"), HitResult.Location);
-		}
-	}
-	if (SpawnedNiagaraComponent)
-	{
-		SpawnedNiagaraComponent->SetVariablePosition(FName("BeamEnd"), HitResult.Location);
+		FGameplayCueParameters Parameters;
+		Parameters.Location = HitResult.ImpactPoint;
+		K2_AddGameplayCueWithParams(WeaponHit_GC_Tag, Parameters, true);
 	}
 }
 
-void UComboGameplayAbility::OnHitTrace(TArray<FHitResult>& HitResults)
+void UComboGameplayAbility::OnHitTrace(const FHitResult& HitResults)
 {
-	OnHitTraceBP(HitResults[0]);
+	OnHitTraceBP(HitResults);
 
-	CreateHitParticle(HitResults[0]);
-
-	if (bIsFirstHit)
+	if (IsFirstHitTarget(HitResults.GetActor()))
 	{
-		bIsFirstHit = false;
 		SetActiveMontagePauseFrame(0.08, 0.1);
-
 		//
 		if (IsLocallyControlled())
 		{
 			ShakeCamera();
 		}
-		
+		CreateHitParticle(HitResults);
 	}
 }
 
-void UComboGameplayAbility::ActiveWeaponTrailParticle()
+bool UComboGameplayAbility::IsFirstHitTarget(AActor* Target)
 {
-	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
-	ICombatInterface* CombatInterface = Cast<ICombatInterface>(AxeCharacterOwner);
-	if (CombatInterface)
+	if (HasHitTargetSet.Contains(Target))
 	{
+		return false;
 	}
-}
-
-void UComboGameplayAbility::DeactiveWeaponTrailParticle()
-{
-	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
-	ICombatInterface* CombatInterface = Cast<ICombatInterface>(AxeCharacterOwner);
-	if (CombatInterface)
-	{
-	}
+	HasHitTargetSet.Add(Target);
+	return true;
 }

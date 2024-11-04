@@ -75,6 +75,8 @@ void UAbilityTask_MontageNotify::Activate()
 		DelegateHandleList.AddUnique(BeginDelegateHandle);
 		DelegateHandleList.AddUnique(EndDelegateHandle);
 	}
+
+	// SetWaitingOnAvatar();
 }
 
 void UAbilityTask_MontageNotify::OnDestroy(bool AbilityEnded)

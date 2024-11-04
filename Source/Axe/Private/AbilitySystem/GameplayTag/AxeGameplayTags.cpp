@@ -29,13 +29,14 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(Ability_MeleeCombo_B3, "Ability.MeleeCombo.B3");
 
 	AddTag(Ability_Skill_LeapAttack, "Ability.Skill.LeapAttack");
-	
+
 	AddTag(Ability_HitReact_Light, "Ability.HitReact.Light");
 	AddTag(Ability_HitReact_Heavy, "Ability.HitReact.Heavy");
 
-	AddTag(GameplayCue_WeaponTrail, "GameplayCue.WeaponTrail");
+	AddTag(GameplayCue_WeaponTrail_Axe, "GameplayCue.WeaponTrail.Axe");
+	AddTag(GameplayCue_WeaponHit_Axe, "GameplayCue.WeaponHit.Axe");
+	AddTag(GameplayCue_WeaponHit_Shield, "GameplayCue.WeaponHit.Shield");
 }
-
 
 
 void FAxeGameplayTags::InitNativeGameplayTags()

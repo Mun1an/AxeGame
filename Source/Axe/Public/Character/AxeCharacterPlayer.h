@@ -24,7 +24,7 @@ class AAxeCharacterPlayer : public AAxeCharacterBase, public ICombatInterface
 public:
 	AAxeCharacterPlayer();
 
-	FORCEINLINE USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+	FORCEINLINE USpringArmComponent* GetCameraSpringArm() const { return CameraBoom; }
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
 	// ICombatInterface

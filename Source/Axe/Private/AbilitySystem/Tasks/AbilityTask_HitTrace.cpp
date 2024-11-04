@@ -3,6 +3,7 @@
 
 #include "AbilitySystem/Tasks/AbilityTask_HitTrace.h"
 
+#include "AbilitySystemComponent.h"
 #include "Character/AxeCharacterBase.h"
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -12,7 +13,8 @@ UAbilityTask_HitTrace* UAbilityTask_HitTrace::CreateHitTraceTask(UGameplayAbilit
                                                                  FName BeginSocketName,
                                                                  FName EndSocketName,
                                                                  float Radius,
-                                                                 const TArray<TEnumAsByte<EObjectTypeQuery>>& ObjectTypes,
+                                                                 const TArray<TEnumAsByte<EObjectTypeQuery>>&
+                                                                 ObjectTypes,
                                                                  bool bIgnoreSelf,
                                                                  const TArray<AActor*>& IgnoreActors
 )
@@ -48,10 +50,30 @@ void UAbilityTask_HitTrace::TickTask(float DeltaTime)
 {
 	Super::TickTask(DeltaTime);
 
+	bool bIsLocallyControlled = IsLocallyControlled();
+
+	if (bIsLocallyControlled)
+	{
+		// Client
+		SendTargetDataToServer_Client();
+	}
+	else
+	{
+		// Server
+		const FGameplayAbilitySpecHandle SpecHandle = GetAbilitySpecHandle();
+		const FPredictionKey ActivationPredictionKey = GetActivationPredictionKey();
+		AbilitySystemComponent.Get()->AbilityTargetDataSetDelegate(
+			GetAbilitySpecHandle(),
+			GetActivationPredictionKey()
+		).AddUObject(this, &UAbilityTask_HitTrace::OnHitDataReplicatedCallback_Server);
+	}
+}
+
+void UAbilityTask_HitTrace::SendTargetDataToServer_Client()
+{
 	BeginSocketLocation = TraceMeshComponent->GetSocketLocation(BeginSocketName);
 	EndSocketLocation = TraceMeshComponent->GetSocketLocation(EndSocketName);
-
-	TArray<FHitResult> HitResults;
+	TArray<FHitResult> HitResultList;
 	UKismetSystemLibrary::SphereTraceMultiForObjects(
 		Character,
 		BeginSocketLocation,
@@ -61,14 +83,47 @@ void UAbilityTask_HitTrace::TickTask(float DeltaTime)
 		false,
 		IgnoreActors,
 		EDrawDebugTrace::None,
-		HitResults,
+		HitResultList,
 		bIgnoreSelf,
 		FLinearColor::Red,
 		FLinearColor::Green,
 		3.f
 	);
-	if (HitResults.Num() > 0)
+	if (HitResultList.Num() <= 0)
 	{
-		HitTraceDelegate.Broadcast(HitResults);
+		return;
+	}
+
+	// Window
+	FScopedPredictionWindow ScopedPrediction(AbilitySystemComponent.Get());
+
+	FGameplayAbilityTargetDataHandle DataHandle;
+	FGameplayAbilityTargetData_SingleTargetHit* Data = new FGameplayAbilityTargetData_SingleTargetHit(HitResultList[0]);
+	DataHandle.Add(Data);
+
+	AbilitySystemComponent->ServerSetReplicatedTargetData(
+		GetAbilitySpecHandle(),
+		GetActivationPredictionKey(),
+		DataHandle,
+		FGameplayTag(),
+		AbilitySystemComponent->ScopedPredictionKey
+	);
+
+	if (ShouldBroadcastAbilityTaskDelegates())
+	{
+		HitTraceDelegate.Broadcast(HitResultList[0]);
+	}
+}
+
+void UAbilityTask_HitTrace::OnHitDataReplicatedCallback_Server(const FGameplayAbilityTargetDataHandle& DataHandle,
+                                                               FGameplayTag ActivationTag)
+{
+	// Consume
+	AbilitySystemComponent->ConsumeClientReplicatedTargetData(GetAbilitySpecHandle(), GetActivationPredictionKey());
+	if (ShouldBroadcastAbilityTaskDelegates())
+	{
+		const FGameplayAbilityTargetData* GameplayAbilityTargetData = DataHandle.Get(0);
+		const FHitResult* HitResult = GameplayAbilityTargetData->GetHitResult();
+		HitTraceDelegate.Broadcast(*HitResult);
 	}
 }

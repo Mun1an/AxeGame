@@ -76,7 +76,7 @@ public:
 	virtual bool CanReplaceAbilityByCondition(const UAxeGameplayAbility* NewAbility, AActor* Actor) const;
 
 	/**
-	 * virtual
+	 *  base virtual
 	 */
 	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	                                const FGameplayTagContainer* SourceTags = nullptr,
@@ -113,7 +113,7 @@ protected:
 	UFUNCTION()
 	UComboActionComponent* GetComboActionComponent() const;
 
-	// Montage
+	// Montage PauseFrame
 	UPROPERTY(EditDefaultsOnly, Category = "AnimMontage|PauseFrame")
 	float ActiveMontagePauseFrameRateMagnitude = 1.0f;
 	UPROPERTY(EditDefaultsOnly, Category = "AnimMontage|PauseFrame")
@@ -139,24 +139,13 @@ protected:
 	UFUNCTION()
 	void Ans_MovementSlow_NotifyEnd(UAnimNotifyState* AnimNotifyState);
 
-
 	UFUNCTION()
 	void Ans_LaunchCharacter_NotifyBegin(UAnimNotifyState* AnimNotifyState);
 	UFUNCTION()
 	void Ans_LaunchCharacter_NotifyEnd(UAnimNotifyState* AnimNotifyState);
 
-	// UFUNCTION()
-	// void Ans_ComboInputCache_NotifyBegin(UAnimNotifyState* AnimNotifyState);
-	// UFUNCTION()
-	// void Ans_ComboInputCache_NotifyEnd(UAnimNotifyState* AnimNotifyState);
-
-	// UFUNCTION()
-	// void Ans_Combo_NotifyBegin(UAnimNotifyState* AnimNotifyState);
-	// UFUNCTION()
-	// void Ans_Combo_NotifyEnd(UAnimNotifyState* AnimNotifyState);
-
-	// UFUNCTION() 
-	// void Ans_HitTrace_NotifyBegin(UAnimNotifyState* AnimNotifyState);
-	// UFUNCTION()
-	// void Ans_HitTrace_NotifyEnd(UAnimNotifyState* AnimNotifyState);
+	UFUNCTION()
+	void Ans_MotionWrap_NotifyBegin(UAnimNotifyState* AnimNotifyState);
+	UFUNCTION()
+	void Ans_MotionWrap_NotifyEnd(UAnimNotifyState* AnimNotifyState);
 };

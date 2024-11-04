@@ -34,7 +34,9 @@ struct FAxeGameplayTags
 	FGameplayTag Ability_HitReact_Light;
 	FGameplayTag Ability_HitReact_Heavy;
 
-	FGameplayTag GameplayCue_WeaponTrail;
+	FGameplayTag GameplayCue_WeaponTrail_Axe;
+	FGameplayTag GameplayCue_WeaponHit_Axe;
+	FGameplayTag GameplayCue_WeaponHit_Shield;
 
 	static void InitNativeGameplayTags();
 
@@ -49,5 +51,4 @@ protected:
 
 private:
 	static FAxeGameplayTags Instance;
-
 };

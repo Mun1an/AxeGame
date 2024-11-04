@@ -35,18 +35,16 @@ public:
 
 	//
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<UNiagaraSystem> WeaponHitParticle;
-	
-	TObjectPtr<UNiagaraComponent> SpawnedNiagaraComponent;
-	
-	UFUNCTION()
-	void CreateHitParticle(FHitResult& HitResult);
+	FGameplayTag WeaponHit_GC_Tag;
 
 	UFUNCTION()
-	virtual void OnHitTrace(TArray<FHitResult>& HitResults) override;
+	void CreateHitParticle(const FHitResult& HitResult);
+
+	UFUNCTION()
+	virtual void OnHitTrace(const FHitResult& HitResults) override;
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void OnHitTraceBP(FHitResult HitResult);
+	void OnHitTraceBP(const FHitResult HitResult);
 
 protected:
 	// HitTrace
@@ -75,8 +73,8 @@ protected:
 	UPROPERTY()
 	UAbilityTask_HitTrace* AbilityTask_HitTrace;
 
-	void ActiveWeaponTrailParticle();
-	void DeactiveWeaponTrailParticle();
-
-	bool bIsFirstHit = true;
+	UFUNCTION(BlueprintCallable)
+	bool IsFirstHitTarget(AActor* Target);
+	UPROPERTY()
+	TSet<AActor*> HasHitTargetSet;
 };

@@ -79,4 +79,6 @@ protected:
 	float MaxRotationRateZ = 800.0f;
 	UPROPERTY()
 	float MinRotationRateZ = 0.0f;
+	UPROPERTY()
+	float DefaultWalkSpeed = 600.0f;
 };

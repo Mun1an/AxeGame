@@ -368,3 +368,11 @@ void UAxeGameplayAbility::Ans_LaunchCharacter_NotifyBegin(UAnimNotifyState* Anim
 void UAxeGameplayAbility::Ans_LaunchCharacter_NotifyEnd(UAnimNotifyState* AnimNotifyState)
 {
 }
+
+void UAxeGameplayAbility::Ans_MotionWrap_NotifyBegin(UAnimNotifyState* AnimNotifyState)
+{
+}
+
+void UAxeGameplayAbility::Ans_MotionWrap_NotifyEnd(UAnimNotifyState* AnimNotifyState)
+{
+}
