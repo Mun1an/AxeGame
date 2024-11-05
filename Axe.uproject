@@ -12,7 +12,8 @@
 				"Engine",
 				"GameplayAbilities",
 				"EnhancedInput",
-				"Niagara"
+				"Niagara",
+				"UMG"
 			]
 		}
 	],

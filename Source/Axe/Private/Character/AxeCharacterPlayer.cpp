@@ -13,7 +13,9 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Controller.h"
+#include "PlayerController/AxePlayerController.h"
 #include "PlayerState/AxePlayerState.h"
+#include "UI/HUD/AxeHUD.h"
 
 // AAxeCharacter
 
@@ -119,6 +121,18 @@ void AAxeCharacterPlayer::InitAbility()
 	if (HasAuthority())
 	{
 		InitDefaultAttributes();
+	}
+
+	// init HUD
+
+	AAxePlayerController* PlayerController = Cast<AAxePlayerController>(GetController());
+	if (PlayerController)
+	{
+		AAxeHUD* AxeHUD = Cast<AAxeHUD>(PlayerController->GetHUD());
+		if (AxeHUD)
+		{
+			AxeHUD->InitOverlay(PlayerController, AxePlayerState, AbilitySystemComponent, AttributeSet);
+		}
 	}
 
 	// Over

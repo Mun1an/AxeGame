@@ -320,16 +320,16 @@ void UAxeGameplayAbility::AddMontageNotifyStateTask(UAnimMontage* LocalAnimMonta
 //
 void UAxeGameplayAbility::Ans_MovementSlow_NotifyBegin(UAnimNotifyState* AnimNotifyState)
 {
-	// UActionCombatComponent* ActionCombatComponent = GetActionCombatComponent();
-	// UAxeAnimNotifyStateBase* AxeAnimNotifyStateBase = Cast<UAxeAnimNotifyStateBase>(AnimNotifyState);
-	// AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
-	// UAbilityTask_ApplyEffect* AbilityTask_ApplyEffect = UAbilityTask_ApplyEffect::CreateApplyEffectTask(
-	// 	this, AxeCharacterOwner, AxeCharacterOwner,
-	// 	ActionCombatComponent->GetMovementSlowEffectClass(),
-	// 	AbilityUsingMovementSlowEffectMagnitude,
-	// 	AxeAnimNotifyStateBase->GetNotifyStateDuration()
-	// );
-	// AbilityTask_ApplyEffect->ReadyForActivation();
+	UActionCombatComponent* ActionCombatComponent = GetActionCombatComponent();
+	UAxeAnimNotifyStateBase* AxeAnimNotifyStateBase = Cast<UAxeAnimNotifyStateBase>(AnimNotifyState);
+	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
+	UAbilityTask_ApplyEffect* AbilityTask_ApplyEffect = UAbilityTask_ApplyEffect::CreateApplyEffectTask(
+		this, AxeCharacterOwner, AxeCharacterOwner,
+		ActionCombatComponent->GetMovementSlowEffectClass(),
+		AbilityUsingMovementSlowEffectMagnitude,
+		AxeAnimNotifyStateBase->GetNotifyStateDuration()
+	);
+	AbilityTask_ApplyEffect->ReadyForActivation();
 }
 
 
