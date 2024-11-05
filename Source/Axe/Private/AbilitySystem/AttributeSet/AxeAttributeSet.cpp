@@ -68,6 +68,12 @@ void UAxeAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, 
 			AxeCharacterBase->SetRotationRateByWalkSpeed();
 		}
 	}
+	if (Attribute == GetMaxHealthAttribute())
+	{
+		const float AddedMaxHealth = NewValue - OldValue;
+		const float NewHealth = FMath::Max(GetHealth() + AddedMaxHealth, 1.0f);
+		SetHealth(NewHealth);
+	}
 }
 
 void UAxeAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)

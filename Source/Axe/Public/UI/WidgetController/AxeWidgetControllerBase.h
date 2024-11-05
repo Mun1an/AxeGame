@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
-#include "AxeWidgetController.generated.h"
+#include "AxeWidgetControllerBase.generated.h"
 
 class UAxeAttributeSet;
 class UAxeAbilitySystemComponent;
@@ -45,7 +45,7 @@ struct FWidgetControllerParams
 };
 
 UCLASS()
-class AXE_API UAxeWidgetController : public UObject
+class AXE_API UAxeWidgetControllerBase : public UObject
 {
 	GENERATED_BODY()
 

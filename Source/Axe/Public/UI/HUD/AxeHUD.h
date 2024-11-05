@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
-#include "UI/WidgetController/AxeWidgetController.h"
+#include "UI/WidgetController/AxeWidgetControllerBase.h"
 #include "AxeHUD.generated.h"
 
 class UOverlayWidgetController;

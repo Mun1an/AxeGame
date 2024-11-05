@@ -1,14 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "UI/WidgetController/AxeWidgetController.h"
+#include "UI/WidgetController/AxeWidgetControllerBase.h"
 
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
 #include "AbilitySystem/AttributeSet/AxeAttributeSet.h"
 #include "PlayerController/AxePlayerController.h"
 #include "PlayerState/AxePlayerState.h"
 
-void UAxeWidgetController::SetWidgetControllerParams(const FWidgetControllerParams& Params)
+void UAxeWidgetControllerBase::SetWidgetControllerParams(const FWidgetControllerParams& Params)
 {
 	PlayerController = Params.PlayerController;
 	PlayerState = Params.PlayerState;
@@ -16,15 +16,15 @@ void UAxeWidgetController::SetWidgetControllerParams(const FWidgetControllerPara
 	AttributeSet = Params.AttributeSet;
 }
 
-void UAxeWidgetController::BroadcastInitialValues()
+void UAxeWidgetControllerBase::BroadcastInitialValues()
 {
 }
 
-void UAxeWidgetController::BindCallbacksToDependencies()
+void UAxeWidgetControllerBase::BindCallbacksToDependencies()
 {
 }
 
-AAxePlayerController* UAxeWidgetController::GetAxePlayerController()
+AAxePlayerController* UAxeWidgetControllerBase::GetAxePlayerController()
 {
 	if (AxePlayerController == nullptr)
 	{
@@ -33,7 +33,7 @@ AAxePlayerController* UAxeWidgetController::GetAxePlayerController()
 	return AxePlayerController;
 }
 
-AAxePlayerState* UAxeWidgetController::GetAxePlayerState()
+AAxePlayerState* UAxeWidgetControllerBase::GetAxePlayerState()
 {
 	if (AxePlayerState == nullptr)
 	{
@@ -42,7 +42,7 @@ AAxePlayerState* UAxeWidgetController::GetAxePlayerState()
 	return AxePlayerState;
 }
 
-UAxeAbilitySystemComponent* UAxeWidgetController::GetAxeAbilitySystemComponent()
+UAxeAbilitySystemComponent* UAxeWidgetControllerBase::GetAxeAbilitySystemComponent()
 {
 	if (AxeAbilitySystemComponent == nullptr)
 	{
@@ -51,7 +51,7 @@ UAxeAbilitySystemComponent* UAxeWidgetController::GetAxeAbilitySystemComponent()
 	return AxeAbilitySystemComponent;
 }
 
-UAxeAttributeSet* UAxeWidgetController::GetAxeAttributeSet()
+UAxeAttributeSet* UAxeWidgetControllerBase::GetAxeAttributeSet()
 {
 	if (AxeAttributeSet == nullptr)
 	{

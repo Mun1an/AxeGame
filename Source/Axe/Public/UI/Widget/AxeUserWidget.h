@@ -24,6 +24,5 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnWidgetControllerSet();
 
-
 	//
 };

@@ -6,7 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "PlayerState/AxePlayerState.h"
 #include "UI/Widget/AxeUserWidget.h"
-#include "UI/WidgetController/AxeWidgetController.h"
+#include "UI/WidgetController/AxeWidgetControllerBase.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
 
 void AAxeHUD::InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS)
