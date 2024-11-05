@@ -22,8 +22,6 @@ class AXE_API UAxeAnimNotifyStateBase : public UAnimNotifyState
 	GENERATED_BODY()
 
 public:
-	UAxeAnimNotifyStateBase();
-
 	FAnimNotifyStateDelegate AnimNotifyStateBeginDelegate;
 	FAnimNotifyStateDelegate AnimNotifyStateEndDelegate;
 
@@ -36,10 +34,13 @@ public:
 	bool GetIsNotifyStateEnded() const { return bIsNotifyStateEnded; }
 	bool GetIsInterrupted() const { return bIsInterrupted; }
 	void SetIsInterrupted(bool bInterrupted) { bIsInterrupted = bInterrupted; }
+	float GetNotifyStateDuration() const { return NotifyStateDuration; }
 
 protected:
-	bool bIsInterrupted = false;
+	UPROPERTY()
+	float NotifyStateDuration = 0.f;
 
+	bool bIsInterrupted = false;
 	bool bIsNotifyStateEnded = true;
 
 	UFUNCTION()

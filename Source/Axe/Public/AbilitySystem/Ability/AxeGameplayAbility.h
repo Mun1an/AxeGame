@@ -148,4 +148,5 @@ protected:
 	void Ans_MotionWrap_NotifyBegin(UAnimNotifyState* AnimNotifyState);
 	UFUNCTION()
 	void Ans_MotionWrap_NotifyEnd(UAnimNotifyState* AnimNotifyState);
+
 };

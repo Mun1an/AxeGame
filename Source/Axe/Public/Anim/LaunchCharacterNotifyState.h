@@ -23,8 +23,4 @@ public:
 	bool bXYOverride = false;
 	bool bZOverride = false;
 
-	float StateDuration = 0.0f;
-
-	virtual void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration,
-							 const FAnimNotifyEventReference& EventReference) override;
 };

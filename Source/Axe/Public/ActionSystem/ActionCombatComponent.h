@@ -23,6 +23,7 @@ public:
 	// MovementSlowEffect
 	FActiveGameplayEffectHandle ApplyMovementSlowEffectInAbilityUse(const float Level, const float Duration);
 	bool RemoveMovementSlowEffectInAbilityUse();
+	TSubclassOf<UGameplayEffect> GetMovementSlowEffectClass() const { return MovementSlowEffectClass; }
 
 	UFUNCTION(BlueprintCallable)
 	void SetCustomLaunchCharacter(float LaunchSpeed, ELaunchCharacterDirection LaunchDirection, bool bXYOverride,

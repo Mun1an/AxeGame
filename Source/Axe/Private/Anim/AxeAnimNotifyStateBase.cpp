@@ -7,17 +7,15 @@
 #include "Character/AxeCharacterPlayer.h"
 #include "PlayerController/AxePlayerController.h"
 
-UAxeAnimNotifyStateBase::UAxeAnimNotifyStateBase()
-{
-}
 
 void UAxeAnimNotifyStateBase::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
                                           float TotalDuration, const FAnimNotifyEventReference& EventReference)
 {
 	Super::NotifyBegin(MeshComp, Animation, TotalDuration, EventReference);
+	NotifyStateDuration = TotalDuration;
 
 	AAxeCharacterPlayer* AxeCharacterPlayer = GetPlayerCharacter(MeshComp);
-	
+
 	if (AxeCharacterPlayer)
 	{
 		AnimNotifyStateBeginDelegate.Broadcast(this);
