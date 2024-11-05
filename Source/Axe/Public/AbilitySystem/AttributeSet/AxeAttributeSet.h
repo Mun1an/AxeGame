@@ -89,6 +89,12 @@ public:
 	UPROPERTY(ReplicatedUsing=OnRep_MovementSpeed, BlueprintReadOnly, Category = "Secondary Attributes")
 	FGameplayAttributeData MovementSpeed;
 	ATTRIBUTE_ACCESSORS(UAxeAttributeSet, MovementSpeed);
+	/**
+	 * @brief Meta Attributes
+	 */
+	UPROPERTY(BlueprintReadOnly, Category = "Meta Attributes")
+	FGameplayAttributeData IncomingDamage;
+	ATTRIBUTE_ACCESSORS(UAxeAttributeSet, IncomingDamage);
 
 	/**
 	 * @brief OnRep func

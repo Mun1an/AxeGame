@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AxeDamageGameplayAbility.h"
 #include "AbilitySystem/Ability/AxeGameplayAbility.h"
 #include "AbilitySystem/Interaction/ComboAbilityInterface.h"
 #include "AbilitySystem/Interaction/HitTraceAbilityInterface.h"
@@ -14,7 +15,7 @@ class UNiagaraSystem;
  * 
  */
 UCLASS()
-class AXE_API UComboGameplayAbility : public UAxeGameplayAbility, public IComboAbilityInterface,
+class AXE_API UComboGameplayAbility : public UAxeDamageGameplayAbility, public IComboAbilityInterface,
                                       public IHitTraceAbilityInterface
 {
 	GENERATED_BODY()

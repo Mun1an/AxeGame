@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "FAttributeDef.h"
 #include "GameplayEffectExecutionCalculation.h"
 #include "AbilitySystem/AttributeSet/AxeAttributeSet.h"
 #include "AxeExecutionBase.generated.h"
@@ -17,6 +18,12 @@ class AXE_API UAxeExecutionBase : public UGameplayEffectExecutionCalculation
 
 public:
 	UAxeExecutionBase();
+
+	static FAttributeDef& AttributeDefStatics()
+	{
+		static FAttributeDef AttributeDef;
+		return AttributeDef;
+	}
 
 	void GetEvaluateParam(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
 	                      FAggregatorEvaluateParameters& EvaluateParameters) const;

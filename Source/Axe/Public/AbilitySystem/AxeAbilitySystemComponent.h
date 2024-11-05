@@ -7,6 +7,7 @@
 #include "Ability/AxeGameplayAbility.h"
 #include "AxeAbilitySystemComponent.generated.h"
 
+struct FDamageEffectParams;
 class AAxeCharacterBase;
 class UAxeGameplayAbility;
 
@@ -60,6 +61,7 @@ public:
 	                                                     const float Level);
 
 	//
+	bool ApplyDamageEffect(UAbilitySystemComponent* TargetASC, const FDamageEffectParams& Params);
 
 	//
 protected:

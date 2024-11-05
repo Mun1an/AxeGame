@@ -50,7 +50,11 @@ void UAxeAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, f
 	// Clamp Health
 	if (Attribute == GetHealthAttribute())
 	{
-		NewValue = FMath::Clamp(NewValue, 0.0f, GetMaxHealth());
+		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxHealth());
+	}
+	if (Attribute == GetMaxHealthAttribute())
+	{
+		NewValue = FMath::Max(NewValue, 0.f);
 	}
 }
 
@@ -73,6 +77,16 @@ void UAxeAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, 
 		const float AddedMaxHealth = NewValue - OldValue;
 		const float NewHealth = FMath::Max(GetHealth() + AddedMaxHealth, 1.0f);
 		SetHealth(NewHealth);
+	}
+	if (Attribute == GetIncomingDamageAttribute())
+	{
+		const float LocalIncomingDamage = GetIncomingDamage();
+		if (LocalIncomingDamage > 0)
+		{
+			SetIncomingDamage(0.f);
+			const float NewHealth = GetHealth() - LocalIncomingDamage;
+			SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
+		}
 	}
 }
 

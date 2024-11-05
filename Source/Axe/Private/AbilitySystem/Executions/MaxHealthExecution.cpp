@@ -5,10 +5,7 @@
 
 UMaxHealthExecution::UMaxHealthExecution()
 {
-	RelevantAttributesToCapture.Add(
-		FGameplayEffectAttributeCaptureDefinition(
-			UAxeAttributeSet::GetStrengthAttribute(), EGameplayEffectAttributeCaptureSource::Source, false)
-	);
+	RelevantAttributesToCapture.Add(AttributeDefStatics().StrengthDef);
 }
 
 void UMaxHealthExecution::Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams,

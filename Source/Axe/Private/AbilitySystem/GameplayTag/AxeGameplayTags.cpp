@@ -36,6 +36,26 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(GameplayCue_WeaponTrail_Axe, "GameplayCue.WeaponTrail.Axe");
 	AddTag(GameplayCue_WeaponHit_Axe, "GameplayCue.WeaponHit.Axe");
 	AddTag(GameplayCue_WeaponHit_Shield, "GameplayCue.WeaponHit.Shield");
+
+	AddTag(Attributes_Vital_Health, "Attributes.Vital.Health");
+	AddTag(Attributes_Primary_Strength, "Attributes.Primary.Strength");
+	AddTag(Attributes_Primary_Dexterity, "Attributes.Primary.Dexterity");
+	AddTag(Attributes_Primary_Intelligence, "Attributes.Primary.Intelligence");
+	AddTag(Attributes_Secondary_MaxHealth, "Attributes.Secondary.MaxHealth");
+	AddTag(Attributes_Secondary_Armor, "Attributes.Secondary.Armor");
+	AddTag(Attributes_Secondary_Evasive, "Attributes.Secondary.Evasive");
+	AddTag(Attributes_Secondary_PhysicalResistance, "Attributes.Secondary.PhysicalResistance");
+	AddTag(Attributes_Secondary_MagicResistance, "Attributes.Secondary.MagicResistance");
+	AddTag(Attributes_Secondary_CriticalHitChance, "Attributes.Secondary.CriticalHitChance");
+	AddTag(Attributes_Secondary_CriticalHitDamage, "Attributes.Secondary.CriticalHitDamage");
+	AddTag(Attributes_Secondary_HealthRegeneration, "Attributes.Secondary.HealthRegeneration");
+	AddTag(Attributes_Secondary_MovementSpeed, "Attributes.Secondary.MovementSpeed");
+
+	AddTag(Damage_Physical, "Damage.Physical");
+	AddTag(Damage_Magic, "Damage.Magic");
+
+	DamageTypesToResistances.Add(Damage_Physical, Attributes_Secondary_PhysicalResistance);
+	DamageTypesToResistances.Add(Damage_Magic, Attributes_Secondary_MagicResistance);
 }
 
 

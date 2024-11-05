@@ -8,6 +8,7 @@
 #include "ActionSystem/ComboActionComponent.h"
 #include "ActionSystem/ComboDataAsset.h"
 #include "Character/AxeCharacterPlayer.h"
+#include "Enum/AxeTypes.h"
 
 UAxeAbilitySystemComponent::UAxeAbilitySystemComponent(const FObjectInitializer& ObjectInitializer): Super(
 	ObjectInitializer)
@@ -270,4 +271,22 @@ FActiveGameplayEffectHandle UAxeAbilitySystemComponent::ApplyEffectToSelfByClass
 		EffectClass, Level, ContextHandle
 	);
 	return ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), this);
+}
+
+bool UAxeAbilitySystemComponent::ApplyDamageEffect(UAbilitySystemComponent* TargetASC,
+                                                   const FDamageEffectParams& Params)
+{
+	checkf(Params.DamageEffectClass, TEXT("DamageEffectClass is nullptr"));
+
+	FGameplayEffectContextHandle ContextHandle = MakeEffectContext();
+	ContextHandle.AddSourceObject(GetAxeCharacterOwner());
+
+	const FGameplayEffectSpecHandle SpecHandle = MakeOutgoingSpec(
+		Params.DamageEffectClass, Params.EffectLevel, ContextHandle
+	);
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
+		SpecHandle, Params.DamageType, Params.BaseDamage
+	);
+	ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), TargetASC);
+	return true;
 }

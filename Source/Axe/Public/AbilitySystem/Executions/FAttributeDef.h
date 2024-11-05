@@ -7,11 +7,18 @@ struct FAttributeDef
 	DECLARE_ATTRIBUTE_CAPTUREDEF(Strength);
 	DECLARE_ATTRIBUTE_CAPTUREDEF(Dexterity);
 	DECLARE_ATTRIBUTE_CAPTUREDEF(Intelligence);
+	
+	DECLARE_ATTRIBUTE_CAPTUREDEF(PhysicalResistance);
+	DECLARE_ATTRIBUTE_CAPTUREDEF(MagicResistance);
 
 	FAttributeDef()
 	{
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UAxeAttributeSet, Strength, Source, false);
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UAxeAttributeSet, Dexterity, Source, false);
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UAxeAttributeSet, Intelligence, Source, false);
+		
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UAxeAttributeSet, PhysicalResistance, Target, false);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UAxeAttributeSet, MagicResistance, Target, false);
 	}
+
 };

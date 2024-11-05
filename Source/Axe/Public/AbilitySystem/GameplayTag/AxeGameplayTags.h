@@ -10,6 +10,13 @@
  */
 struct FAxeGameplayTags
 {
+	static void InitNativeGameplayTags();
+
+	static FAxeGameplayTags& Get()
+	{
+		return Instance;
+	}
+
 	FGameplayTag InputTag_LightAttack;
 	FGameplayTag InputTag_HeavyAttack;
 	FGameplayTag InputTag_Skill_1;
@@ -38,12 +45,29 @@ struct FAxeGameplayTags
 	FGameplayTag GameplayCue_WeaponHit_Axe;
 	FGameplayTag GameplayCue_WeaponHit_Shield;
 
-	static void InitNativeGameplayTags();
+	/**
+	 * Attributes
+	 */
+	// Vital
+	FGameplayTag Attributes_Vital_Health;
+	// Primary
+	FGameplayTag Attributes_Primary_Strength;
+	FGameplayTag Attributes_Primary_Dexterity;
+	FGameplayTag Attributes_Primary_Intelligence;
+	// Secondary
+	FGameplayTag Attributes_Secondary_MaxHealth;
+	FGameplayTag Attributes_Secondary_Armor;
+	FGameplayTag Attributes_Secondary_Evasive;
+	FGameplayTag Attributes_Secondary_PhysicalResistance;
+	FGameplayTag Attributes_Secondary_MagicResistance;
+	FGameplayTag Attributes_Secondary_CriticalHitChance;
+	FGameplayTag Attributes_Secondary_CriticalHitDamage;
+	FGameplayTag Attributes_Secondary_HealthRegeneration;
+	FGameplayTag Attributes_Secondary_MovementSpeed;
 
-	static FAxeGameplayTags& Get()
-	{
-		return Instance;
-	}
+	FGameplayTag Damage_Physical;
+	FGameplayTag Damage_Magic;
+	TMap<FGameplayTag, FGameplayTag> DamageTypesToResistances;
 
 protected:
 	void AddTag(FGameplayTag& OutTag, const ANSICHAR* TagName = nullptr, const ANSICHAR* TagComment = nullptr);
