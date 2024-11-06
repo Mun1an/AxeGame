@@ -7,6 +7,7 @@
 #include "ActionSystem/AxeActionComponentBase.h"
 #include "ActionCombatComponent.generated.h"
 
+class UDamageTextWidgetComponent;
 enum class ELaunchCharacterDirection : uint8;
 class UGameplayEffect;
 /**
@@ -29,6 +30,14 @@ public:
 	void SetCustomLaunchCharacter(float LaunchSpeed, ELaunchCharacterDirection LaunchDirection, bool bXYOverride,
 	                              bool bZOverride);
 	FVector GetLaunchDirectionByEnum(AActor* Actor, ELaunchCharacterDirection LaunchDirectionEnum);
+
+	//
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UDamageTextWidgetComponent> DamageTextWidgetComponentClass;
+
+	UFUNCTION(Client, Reliable)
+	void ShowDamageNumber(const float Damage, ACharacter* TargetCharacter, const bool bIsCriticalHit,
+	                      const bool bIsEvasiveHit, const FVector ShowLocation);
 
 protected:
 	virtual void BeginPlay() override;

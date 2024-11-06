@@ -7,6 +7,7 @@
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
 #include "Enum/AxeEnum.h"
 #include "GameFramework/Character.h"
+#include "UI/Widget/DamageTextWidgetComponent.h"
 
 UActionCombatComponent::UActionCombatComponent()
 {
@@ -77,6 +78,38 @@ FVector UActionCombatComponent::GetLaunchDirectionByEnum(AActor* Actor, ELaunchC
 		break;
 	}
 	return LaunchDir;
+}
+
+void UActionCombatComponent::ShowDamageNumber_Implementation(const float Damage, ACharacter* TargetCharacter,
+                                                             const bool bIsCriticalHit, const bool bIsEvasiveHit,
+                                                             const FVector ShowLocation)
+{
+	if (!IsValid(TargetCharacter))
+	{
+		return;
+	}
+	if (DamageTextWidgetComponentClass == nullptr)
+	{
+		return;
+	}
+
+	UDamageTextWidgetComponent* DamageTextComponent = NewObject<UDamageTextWidgetComponent>(
+		TargetCharacter, DamageTextWidgetComponentClass);
+	DamageTextComponent->RegisterComponent();
+
+	if (ShowLocation == FVector::ZeroVector)
+	{
+		DamageTextComponent->AttachToComponent(
+			TargetCharacter->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform
+		);
+		DamageTextComponent->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+	}
+	else
+	{
+		DamageTextComponent->SetWorldLocation(ShowLocation);
+	}
+
+	DamageTextComponent->SetDamageText(Damage, bIsCriticalHit, bIsEvasiveHit);
 }
 
 void UActionCombatComponent::BeginPlay()

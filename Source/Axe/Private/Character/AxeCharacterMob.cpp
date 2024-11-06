@@ -6,7 +6,7 @@
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
 #include "AbilitySystem/AttributeSet/AxeAttributeSet.h"
 
-AAxeCharacterMob::AAxeCharacterMob()
+AAxeCharacterMob::AAxeCharacterMob(): Super()
 {
 	AbilitySystemComponent = CreateDefaultSubobject<UAxeAbilitySystemComponent>("AbilitySystemComponent");
 	AbilitySystemComponent->SetIsReplicated(true);

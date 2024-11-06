@@ -3,6 +3,7 @@
 
 #include "UI/WidgetController/MobOverlayWidgetController.h"
 
+#include "AbilitySystem/AxeAbilitySystemComponent.h"
 #include "AbilitySystem/AttributeSet/AxeAttributeSet.h"
 
 void UMobOverlayWidgetController::BroadcastInitialValues()
@@ -21,12 +22,13 @@ void UMobOverlayWidgetController::BindCallbacksToDependencies()
 	// 绑定委托回调
 	const UAxeAttributeSet* LocalAxeAttributeSet = GetAxeAttributeSet();
 
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
-		LocalAxeAttributeSet->GetHealthAttribute()
-	).AddUObject(this, &UMobOverlayWidgetController::HealthChanged);
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
-		LocalAxeAttributeSet->GetMaxHealthAttribute()
-	).AddUObject(this, &UMobOverlayWidgetController::MaxHealthChanged);
+	FOnGameplayAttributeValueChange& HealthChangeDelegate = AbilitySystemComponent->
+		GetGameplayAttributeValueChangeDelegate(LocalAxeAttributeSet->GetHealthAttribute());
+	HealthChangeDelegate.AddUObject(this, &UMobOverlayWidgetController::HealthChanged);
+
+	FOnGameplayAttributeValueChange& MaxHealthChangeDelegate = AbilitySystemComponent->
+		GetGameplayAttributeValueChangeDelegate(LocalAxeAttributeSet->GetMaxHealthAttribute());
+	MaxHealthChangeDelegate.AddUObject(this, &UMobOverlayWidgetController::MaxHealthChanged);
 }
 
 void UMobOverlayWidgetController::HealthChanged(const FOnAttributeChangeData& Data) const

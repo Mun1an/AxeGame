@@ -3,8 +3,12 @@
 
 #include "AbilitySystem/AttributeSet/AxeAttributeSet.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
+#include "GameplayEffectExtension.h"
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
+#include "ActionSystem/ActionCombatComponent.h"
 #include "Character/AxeCharacterBase.h"
+#include "Character/AxeCharacterPlayer.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Net/UnrealNetwork.h"
 
@@ -80,19 +84,27 @@ void UAxeAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, 
 	}
 	if (Attribute == GetIncomingDamageAttribute())
 	{
-		const float LocalIncomingDamage = GetIncomingDamage();
-		if (LocalIncomingDamage > 0)
-		{
-			SetIncomingDamage(0.f);
-			const float NewHealth = GetHealth() - LocalIncomingDamage;
-			SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
-		}
+		// const float LocalIncomingDamage = GetIncomingDamage();
+		// if (LocalIncomingDamage > 0)
+		// {
+		// 	SetIncomingDamage(0.f);
+		// 	const float NewHealth = GetHealth() - LocalIncomingDamage;
+		// 	SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
+		// }
 	}
 }
 
 void UAxeAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
+
+	FEffectProperties EffectProperties;
+	SetEffectProperties(Data, EffectProperties);
+
+	if (Data.EvaluatedData.Attribute == GetIncomingDamageAttribute())
+	{
+		HandleIncomingDamageEffect(EffectProperties);
+	}
 }
 
 /*
@@ -162,4 +174,78 @@ void UAxeAttributeSet::OnRep_HealthRegeneration(const FGameplayAttributeData& Ol
 void UAxeAttributeSet::OnRep_MovementSpeed(const FGameplayAttributeData& OldValue) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAxeAttributeSet, MovementSpeed, OldValue);
+}
+
+void UAxeAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const
+{
+	Props.EffectContextHandle = Data.EffectSpec.GetContext();
+	Props.SourceASC = Props.EffectContextHandle.GetOriginalInstigatorAbilitySystemComponent();
+	if (Props.SourceASC)
+	{
+		Props.SourceCharacter = Cast<UAxeAbilitySystemComponent>(Props.SourceASC)->GetAxeCharacterOwner();
+	}
+	if (Data.Target.AbilityActorInfo.IsValid())
+	{
+		AActor* AvatarActor = Data.Target.AbilityActorInfo->AvatarActor.Get();
+		AActor* OwnerActor = Data.Target.AbilityActorInfo->OwnerActor.Get();
+		if (AvatarActor && Cast<AAxeCharacterBase>(AvatarActor))
+		{
+			Props.TargetCharacter = Cast<AAxeCharacterBase>(AvatarActor);
+		}
+		if (OwnerActor && Cast<AAxeCharacterBase>(OwnerActor))
+		{
+			Props.TargetCharacter = Cast<AAxeCharacterBase>(OwnerActor);
+		}
+		Props.TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Props.TargetCharacter);
+	}
+}
+
+void UAxeAttributeSet::HandleIncomingDamageEffect(const FEffectProperties& Props)
+{
+	const float LocalIncomingDamage = GetIncomingDamage();
+	SetIncomingDamage(0.f);
+	if (LocalIncomingDamage > 0.f)
+	{
+		const float NewHealth = GetHealth() - LocalIncomingDamage;
+		SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
+		const bool bFatal = NewHealth <= 0.f;
+	}
+
+	bool bIsCriticalHit = false;
+	bool bIsEvasiveHit = false;
+	FVector ShowLocation = FVector::ZeroVector;
+	if (Props.SourceCharacter && Props.TargetCharacter)
+	{
+		ShowDamageFloatingText(
+        		Cast<AAxeCharacterBase>(Props.SourceCharacter),
+        		Cast<AAxeCharacterBase>(Props.TargetCharacter),
+        		LocalIncomingDamage, bIsCriticalHit, bIsEvasiveHit, ShowLocation
+        	);
+	}
+	
+}
+
+//
+void UAxeAttributeSet::ShowDamageFloatingText(AAxeCharacterBase* SourceCharacter, AAxeCharacterBase* TargetCharacter,
+                                              const float Damage, const bool bIsCriticalHit, const bool bIsEvasiveHit,
+                                              const FVector& ShowLocation) const
+{
+	if (SourceCharacter == TargetCharacter)
+	{
+		return;
+	}
+	AAxeCharacterPlayer* AxeCharacterPlayer = nullptr;
+	if (Cast<AAxeCharacterPlayer>(SourceCharacter))
+	{
+		AxeCharacterPlayer = Cast<AAxeCharacterPlayer>(SourceCharacter);
+	}
+	else if (Cast<AAxeCharacterPlayer>(TargetCharacter))
+	{
+		AxeCharacterPlayer = Cast<AAxeCharacterPlayer>(TargetCharacter);
+	}
+	if (AxeCharacterPlayer)
+	{
+		UActionCombatComponent* ActionCombatComponent = AxeCharacterPlayer->GetActionCombatComponent();
+		ActionCombatComponent->ShowDamageNumber(Damage, TargetCharacter, bIsCriticalHit, bIsEvasiveHit, ShowLocation);
+	}
 }

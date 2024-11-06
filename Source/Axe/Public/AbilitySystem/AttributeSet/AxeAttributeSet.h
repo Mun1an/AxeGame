@@ -12,6 +12,32 @@
 	GAMEPLAYATTRIBUTE_VALUE_GETTER(PropertyName) \
 	GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName) \
 	GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
+
+USTRUCT()
+struct FEffectProperties
+{
+	GENERATED_BODY()
+
+	FEffectProperties()
+	{
+	}
+
+	FGameplayEffectContextHandle EffectContextHandle;
+
+	UPROPERTY()
+	UAbilitySystemComponent* SourceASC = nullptr;
+
+	UPROPERTY()
+	ACharacter* SourceCharacter = nullptr;
+
+	UPROPERTY()
+	UAbilitySystemComponent* TargetASC = nullptr;
+
+	UPROPERTY()
+	ACharacter* TargetCharacter = nullptr;
+};
+
+
 class AAxeCharacterBase;
 /**
  * 
@@ -129,4 +155,13 @@ public:
 	void OnRep_HealthRegeneration(const FGameplayAttributeData& OldValue) const;
 	UFUNCTION()
 	void OnRep_MovementSpeed(const FGameplayAttributeData& OldValue) const;
+
+private:
+	void SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const;
+	void HandleIncomingDamageEffect(const FEffectProperties& Props);
+
+
+	void ShowDamageFloatingText(AAxeCharacterBase* SourceCharacter, AAxeCharacterBase* TargetCharacter,
+	                            const float Damage,
+	                            const bool bIsCriticalHit, const bool bIsEvasiveHit, const FVector& ShowLocation) const;
 };

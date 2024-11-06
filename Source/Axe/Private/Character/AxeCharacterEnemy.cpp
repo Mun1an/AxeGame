@@ -3,12 +3,14 @@
 
 #include "Character/AxeCharacterEnemy.h"
 
+#include "AbilitySystem/AxeAbilitySystemComponent.h"
+#include "AbilitySystem/AttributeSet/AxeAttributeSet.h"
 #include "Components/WidgetComponent.h"
 #include "UI/Widget/AxeUserWidget.h"
 #include "UI/WidgetController/AxeWidgetControllerBase.h"
 #include "UI/WidgetController/MobOverlayWidgetController.h"
 
-AAxeCharacterEnemy::AAxeCharacterEnemy()
+AAxeCharacterEnemy::AAxeCharacterEnemy(): Super()
 {
 	// HealthBar
 	HealthBar = CreateDefaultSubobject<UWidgetComponent>("HealthBar");
@@ -25,7 +27,9 @@ void AAxeCharacterEnemy::BeginPlay()
 		if (AbilitySystemComponent && AttributeSet)
 		{
 			const FWidgetControllerParams WidgetControllerParams(
-				nullptr, nullptr, AbilitySystemComponent, AttributeSet
+				nullptr, nullptr,
+				Cast<UAxeAbilitySystemComponent>(AbilitySystemComponent),
+				Cast<UAxeAttributeSet>(AttributeSet)
 			);
 			UMobOverlayWidgetController* WidgetController = GetMobOverlayWidgetController(WidgetControllerParams);
 			AxeUserWidget->SetWidgetController(WidgetController);
@@ -36,11 +40,12 @@ void AAxeCharacterEnemy::BeginPlay()
 
 UMobOverlayWidgetController* AAxeCharacterEnemy::GetMobOverlayWidgetController(const FWidgetControllerParams& Params)
 {
-	if (MobOverlayWidgetController == nullptr && MobOverlayWidgetControllerClass)
-	{
-		MobOverlayWidgetController = NewObject<UMobOverlayWidgetController>(this, MobOverlayWidgetControllerClass);
-		MobOverlayWidgetController->SetWidgetControllerParams(Params);
-		MobOverlayWidgetController->BindCallbacksToDependencies();
-	}
+	// if (MobOverlayWidgetController == nullptr && MobOverlayWidgetControllerClass)
+	// {
+	UMobOverlayWidgetController* MobOverlayWidgetController = NewObject<UMobOverlayWidgetController>(
+		this, MobOverlayWidgetControllerClass);
+	MobOverlayWidgetController->SetWidgetControllerParams(Params);
+	MobOverlayWidgetController->BindCallbacksToDependencies();
+	// }
 	return MobOverlayWidgetController;
 }
