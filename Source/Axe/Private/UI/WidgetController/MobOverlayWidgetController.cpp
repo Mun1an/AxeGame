@@ -1,11 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "UI/WidgetController/OverlayWidgetController.h"
+#include "UI/WidgetController/MobOverlayWidgetController.h"
 
 #include "AbilitySystem/AttributeSet/AxeAttributeSet.h"
 
-void UOverlayWidgetController::BroadcastInitialValues()
+void UMobOverlayWidgetController::BroadcastInitialValues()
 {
 	Super::BroadcastInitialValues();
 	// init
@@ -15,27 +15,26 @@ void UOverlayWidgetController::BroadcastInitialValues()
 	OnMaxHealthChanged.Broadcast(LocalAxeAttributeSet->GetMaxHealth());
 }
 
-void UOverlayWidgetController::BindCallbacksToDependencies()
+void UMobOverlayWidgetController::BindCallbacksToDependencies()
 {
 	Super::BindCallbacksToDependencies();
 	// 绑定委托回调
-	AAxePlayerState* LocalAxePlayerState = GetAxePlayerState();
 	const UAxeAttributeSet* LocalAxeAttributeSet = GetAxeAttributeSet();
 
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
 		LocalAxeAttributeSet->GetHealthAttribute()
-	).AddUObject(this, &UOverlayWidgetController::HealthChanged);
+	).AddUObject(this, &UMobOverlayWidgetController::HealthChanged);
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
 		LocalAxeAttributeSet->GetMaxHealthAttribute()
-	).AddUObject(this, &UOverlayWidgetController::MaxHealthChanged);
+	).AddUObject(this, &UMobOverlayWidgetController::MaxHealthChanged);
 }
 
-void UOverlayWidgetController::HealthChanged(const FOnAttributeChangeData& Data) const
+void UMobOverlayWidgetController::HealthChanged(const FOnAttributeChangeData& Data) const
 {
 	OnHealthChanged.Broadcast(Data.NewValue);
 }
 
-void UOverlayWidgetController::MaxHealthChanged(const FOnAttributeChangeData& Data) const
+void UMobOverlayWidgetController::MaxHealthChanged(const FOnAttributeChangeData& Data) const
 {
 	OnMaxHealthChanged.Broadcast(Data.NewValue);
 }

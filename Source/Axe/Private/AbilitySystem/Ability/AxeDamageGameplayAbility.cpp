@@ -19,7 +19,11 @@ void UAxeDamageGameplayAbility::ApplyDamage(AAxeCharacterBase* TargetCharacter)
 	{
 		return;
 	}
-
+	if (!DamageEffectClass)
+	{
+		UE_LOG(LogTemp, Error, TEXT("DamageEffectClass is not set in %s. Failed to apply damage."), *GetName());
+		return;
+	}
 	FDamageEffectParams DamageEffectParam;
 	DamageEffectParam.BaseDamage = BaseDamage;
 	DamageEffectParam.DamageEffectClass = DamageEffectClass;

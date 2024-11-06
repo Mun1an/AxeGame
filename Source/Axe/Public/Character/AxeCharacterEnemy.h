@@ -6,6 +6,9 @@
 #include "Character/AxeCharacterMob.h"
 #include "AxeCharacterEnemy.generated.h"
 
+class UMobOverlayWidgetController;
+struct FWidgetControllerParams;
+class UWidgetComponent;
 /**
  * 
  */
@@ -13,5 +16,19 @@ UCLASS()
 class AXE_API AAxeCharacterEnemy : public AAxeCharacterMob
 {
 	GENERATED_BODY()
-	
+
+public:
+	AAxeCharacterEnemy();
+
+protected:
+	virtual void BeginPlay() override;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<UWidgetComponent> HealthBar;
+
+	UPROPERTY()
+	TObjectPtr<UMobOverlayWidgetController> MobOverlayWidgetController;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UMobOverlayWidgetController> MobOverlayWidgetControllerClass;
+	UMobOverlayWidgetController* GetMobOverlayWidgetController(const FWidgetControllerParams& Params);
 };

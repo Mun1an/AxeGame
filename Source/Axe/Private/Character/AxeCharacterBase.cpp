@@ -64,6 +64,12 @@ void AAxeCharacterBase::InitDefaultAttributes()
 	UAbilitySystemComponent* ASC = GetAbilitySystemComponent();
 	check(ASC);
 	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(ASC);
-	AxeASC->ApplyEffectToSelfByClass(DefaultPrimaryAttributesEffect, 1.f);
-	AxeASC->ApplyEffectToSelfByClass(DefaultSecondaryAttributesEffect, 1.f);
+	if (DefaultPrimaryAttributesEffect)
+	{
+		AxeASC->ApplyEffectToSelfByClass(DefaultPrimaryAttributesEffect, 1.f);
+	}
+	if (DefaultSecondaryAttributesEffect)
+	{
+		AxeASC->ApplyEffectToSelfByClass(DefaultSecondaryAttributesEffect, 1.f);
+	}
 }

@@ -13,5 +13,8 @@ UCLASS()
 class AXE_API AAxeCharacterMob : public AAxeCharacterBase
 {
 	GENERATED_BODY()
-	
+public:
+	AAxeCharacterMob();
+protected:
+	virtual void BeginPlay() override;
 };
