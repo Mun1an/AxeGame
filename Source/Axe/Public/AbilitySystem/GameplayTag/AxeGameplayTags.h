@@ -64,6 +64,7 @@ struct FAxeGameplayTags
 	FGameplayTag Attributes_Secondary_CriticalHitDamage;
 	FGameplayTag Attributes_Secondary_HealthRegeneration;
 	FGameplayTag Attributes_Secondary_MovementSpeed;
+	FGameplayTag Attributes_Secondary_BaseDamage;
 
 	FGameplayTag Damage_Physical;
 	FGameplayTag Damage_Magic;

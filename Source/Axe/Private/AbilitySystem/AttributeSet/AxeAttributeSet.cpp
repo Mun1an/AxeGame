@@ -178,6 +178,11 @@ void UAxeAttributeSet::OnRep_MovementSpeed(const FGameplayAttributeData& OldValu
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAxeAttributeSet, MovementSpeed, OldValue);
 }
 
+void UAxeAttributeSet::OnRep_BaseDamage(const FGameplayAttributeData& OldValue) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAxeAttributeSet, BaseDamage, OldValue);
+}
+
 void UAxeAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const
 {
 	Props.EffectContextHandle = Data.EffectSpec.GetContext();
@@ -241,18 +246,17 @@ void UAxeAttributeSet::ShowDamageFloatingText(AAxeCharacterBase* SourceCharacter
 	{
 		return;
 	}
-	AAxeCharacterPlayer* AxeCharacterPlayer = nullptr;
 	if (Cast<AAxeCharacterPlayer>(SourceCharacter))
 	{
-		AxeCharacterPlayer = Cast<AAxeCharacterPlayer>(SourceCharacter);
-	}
-	else if (Cast<AAxeCharacterPlayer>(TargetCharacter))
-	{
-		AxeCharacterPlayer = Cast<AAxeCharacterPlayer>(TargetCharacter);
-	}
-	if (AxeCharacterPlayer)
-	{
+		AAxeCharacterPlayer* AxeCharacterPlayer = Cast<AAxeCharacterPlayer>(SourceCharacter);
 		UActionCombatComponent* ActionCombatComponent = AxeCharacterPlayer->GetActionCombatComponent();
 		ActionCombatComponent->ShowDamageNumber(Damage, TargetCharacter, bIsCriticalHit, bIsEvasiveHit, ShowLocation);
 	}
+	if (Cast<AAxeCharacterPlayer>(TargetCharacter))
+	{
+		AAxeCharacterPlayer* AxeCharacterPlayer = Cast<AAxeCharacterPlayer>(TargetCharacter);
+		UActionCombatComponent* ActionCombatComponent = AxeCharacterPlayer->GetActionCombatComponent();
+		ActionCombatComponent->ShowDamageNumber(Damage, TargetCharacter, bIsCriticalHit, bIsEvasiveHit, ShowLocation);
+	}
+	
 }

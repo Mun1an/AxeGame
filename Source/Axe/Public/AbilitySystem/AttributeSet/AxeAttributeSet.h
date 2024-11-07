@@ -115,6 +115,10 @@ public:
 	UPROPERTY(ReplicatedUsing=OnRep_MovementSpeed, BlueprintReadOnly, Category = "Secondary Attributes")
 	FGameplayAttributeData MovementSpeed;
 	ATTRIBUTE_ACCESSORS(UAxeAttributeSet, MovementSpeed);
+
+	UPROPERTY(ReplicatedUsing=OnRep_BaseDamage, BlueprintReadOnly, Category = "Secondary Attributes")
+	FGameplayAttributeData BaseDamage;
+	ATTRIBUTE_ACCESSORS(UAxeAttributeSet, BaseDamage);
 	/**
 	 * @brief Meta Attributes
 	 */
@@ -155,6 +159,8 @@ public:
 	void OnRep_HealthRegeneration(const FGameplayAttributeData& OldValue) const;
 	UFUNCTION()
 	void OnRep_MovementSpeed(const FGameplayAttributeData& OldValue) const;
+	UFUNCTION()
+	void OnRep_BaseDamage(const FGameplayAttributeData& OldValue) const;
 
 private:
 	void SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const;

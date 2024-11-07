@@ -285,7 +285,7 @@ bool UAxeAbilitySystemComponent::ApplyDamageEffect(UAbilitySystemComponent* Targ
 		Params.DamageEffectClass, Params.EffectLevel, ContextHandle
 	);
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
-		SpecHandle, Params.DamageType, Params.BaseDamage
+		SpecHandle, Params.DamageType, Params.DamageValue
 	);
 	ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), TargetASC);
 	return true;

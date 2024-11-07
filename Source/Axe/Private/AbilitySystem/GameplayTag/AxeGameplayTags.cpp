@@ -50,6 +50,7 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(Attributes_Secondary_CriticalHitDamage, "Attributes.Secondary.CriticalHitDamage");
 	AddTag(Attributes_Secondary_HealthRegeneration, "Attributes.Secondary.HealthRegeneration");
 	AddTag(Attributes_Secondary_MovementSpeed, "Attributes.Secondary.MovementSpeed");
+	AddTag(Attributes_Secondary_BaseDamage, "Attributes.Secondary.BaseDamage");
 
 	AddTag(Damage_Physical, "Damage.Physical");
 	AddTag(Damage_Magic, "Damage.Magic");

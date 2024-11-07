@@ -22,7 +22,7 @@ struct FDamageEffectParams
 	FGameplayTag DamageType = FGameplayTag();
 
 	UPROPERTY(BlueprintReadWrite)
-	float BaseDamage = 0.f;
+	float DamageValue = 0.f;
 	UPROPERTY(BlueprintReadWrite)
 	float EffectLevel = 1.f;
 	UPROPERTY(BlueprintReadWrite)

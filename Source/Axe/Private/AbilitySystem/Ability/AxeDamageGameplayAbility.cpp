@@ -4,7 +4,9 @@
 #include "AbilitySystem/Ability/AxeDamageGameplayAbility.h"
 
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
+#include "AbilitySystem/AttributeSet/AxeAttributeSet.h"
 #include "Character/AxeCharacterBase.h"
+
 
 void UAxeDamageGameplayAbility::ApplyDamage(AAxeCharacterBase* TargetCharacter, const FHitResult& HitResult)
 {
@@ -25,11 +27,28 @@ void UAxeDamageGameplayAbility::ApplyDamage(AAxeCharacterBase* TargetCharacter, 
 		return;
 	}
 	FDamageEffectParams DamageEffectParam;
-	DamageEffectParam.BaseDamage = BaseDamage;
+
 	DamageEffectParam.DamageEffectClass = DamageEffectClass;
 	DamageEffectParam.DamageType = DamageType;
 	DamageEffectParam.EffectLevel = EffectLevel;
 	DamageEffectParam.HitResult = HitResult;
 
+	const float BaseDamage = GetOwnerCharacterBaseDamageAttr();
+
+	DamageEffectParam.DamageValue = FixedDamage + BaseDamageCoefficient * BaseDamage;
+
 	AxeASC->ApplyDamageEffect(TargetASC, DamageEffectParam);
+}
+
+float UAxeDamageGameplayAbility::GetOwnerCharacterBaseDamageAttr()
+{
+	if (const AAxeCharacterBase* AxeCharacter = GetAxeCharacterOwner())
+	{
+		UAttributeSet* AttributeSet = AxeCharacter->GetAttributeSet();
+		if (UAxeAttributeSet* AxeAttributeSet = Cast<UAxeAttributeSet>(AttributeSet))
+		{
+			return AxeAttributeSet->GetBaseDamage();
+		}
+	}
+	return 0.f;
 }

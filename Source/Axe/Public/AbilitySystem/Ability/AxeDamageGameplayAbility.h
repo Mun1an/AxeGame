@@ -21,14 +21,22 @@ public:
 	void ApplyDamage(AAxeCharacterBase* TargetCharacter, const FHitResult& HitResult);
 
 protected:
+	UFUNCTION(BlueprintCallable)
+	float GetOwnerCharacterBaseDamageAttr();
+
 	UPROPERTY(EditDefaultsOnly, Category="Damage")
 	TSubclassOf<UGameplayEffect> DamageEffectClass;
 
 	UPROPERTY(EditDefaultsOnly, Category="Damage")
 	FGameplayTag DamageType;
 
+	// 固定伤害
 	UPROPERTY(EditDefaultsOnly, Category="Damage")
-	float BaseDamage = 0.f;
+	float FixedDamage = 0.f;
+
+	// 基础伤害系数，伤害 = 基础伤害系数 * BaseDamage属性
+	UPROPERTY(EditDefaultsOnly, Category="Damage")
+	float BaseDamageCoefficient = 1.f;
 
 	UPROPERTY(EditDefaultsOnly, Category="Damage")
 	float EffectLevel = 1.f;
