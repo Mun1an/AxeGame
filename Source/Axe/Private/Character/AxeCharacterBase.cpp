@@ -73,3 +73,25 @@ void AAxeCharacterBase::InitDefaultAttributes()
 		AxeASC->ApplyEffectToSelfByClass(DefaultSecondaryAttributesEffect, 1.f);
 	}
 }
+
+bool AAxeCharacterBase::GiveStartupAbilities()
+{
+	if (!HasAuthority())
+	{
+		return false;
+	}
+	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(AbilitySystemComponent);
+	if (!AxeASC)
+	{
+		return false;
+	}
+	for (TSubclassOf<UGameplayAbility> Ability : StartupAbilities)
+	{
+		const bool bGive = AxeASC->GiveAbilityByAbilityAndLevel(Ability, 1);
+		if (!bGive)
+		{
+			return false;
+		}
+	}
+	return true;
+}

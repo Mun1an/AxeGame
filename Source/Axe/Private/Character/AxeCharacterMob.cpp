@@ -11,7 +11,7 @@ AAxeCharacterMob::AAxeCharacterMob(): Super()
 	AbilitySystemComponent = CreateDefaultSubobject<UAxeAbilitySystemComponent>("AbilitySystemComponent");
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
-	
+
 	AttributeSet = CreateDefaultSubobject<UAxeAttributeSet>("AttributeSet");
 }
 
@@ -23,5 +23,6 @@ void AAxeCharacterMob::BeginPlay()
 	if (HasAuthority())
 	{
 		InitDefaultAttributes();
+		GiveStartupAbilities();
 	}
 }

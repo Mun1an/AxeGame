@@ -24,17 +24,17 @@ struct FAxeGameplayTags
 	FGameplayTag InputTag_Skill_3;
 	FGameplayTag InputTag_Skill_4;
 
-	FGameplayTag Ability_LightAttack;
-	FGameplayTag Ability_HeavyAttack;
+	FGameplayTag Ability_Attack_LightAttack;
+	FGameplayTag Ability_Attack_HeavyAttack;
 
-	FGameplayTag Ability_MeleeCombo_A1;
-	FGameplayTag Ability_MeleeCombo_A2;
-	FGameplayTag Ability_MeleeCombo_A3;
-	FGameplayTag Ability_MeleeCombo_A4;
+	FGameplayTag Ability_Attack_MeleeCombo_A1;
+	FGameplayTag Ability_Attack_MeleeCombo_A2;
+	FGameplayTag Ability_Attack_MeleeCombo_A3;
+	FGameplayTag Ability_Attack_MeleeCombo_A4;
 
-	FGameplayTag Ability_MeleeCombo_B1;
-	FGameplayTag Ability_MeleeCombo_B2;
-	FGameplayTag Ability_MeleeCombo_B3;
+	FGameplayTag Ability_Attack_MeleeCombo_B1;
+	FGameplayTag Ability_Attack_MeleeCombo_B2;
+	FGameplayTag Ability_Attack_MeleeCombo_B3;
 
 	FGameplayTag Ability_Skill_LeapAttack;
 

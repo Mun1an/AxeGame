@@ -37,30 +37,29 @@ public:
 	void AbilityInputTagReleased(const FGameplayTag& InputTag);
 	//
 	void TryActivateAbilityAndCheck(FGameplayAbilitySpecHandle AbilitySpecHandle, bool bAllowRemoteActivation = true);
+	void TryActivateHitReactAbility(const FGameplayTag HitReactTag, const FHitResult& HitResult);
 	//
-	void GiveAbilityByAbilityAndLevel(const TSubclassOf<UGameplayAbility>& Ability, const int32 AbilityLevel);
+	bool GiveAbilityByAbilityAndLevel(const TSubclassOf<UGameplayAbility>& Ability, const int32 AbilityLevel);
 	//
 	TMap<EAxeAbilityActivationGroup, TArray<FGameplayAbilitySpecHandle>> GetActivationGroupMap() const
 	{
 		return ActivationGroupMap;
 	}
 
-	//
+	// Activation Group
 	bool IsActivationGroupBlocked(EAxeAbilityActivationGroup Group, const UAxeGameplayAbility* NewAxeAbility) const;
 	void AddAbilityToActivationGroup(EAxeAbilityActivationGroup Group, UAxeGameplayAbility* AxeAbility);
 	void RemoveAbilityFromActivationGroup(EAxeAbilityActivationGroup Group, UAxeGameplayAbility* AxeAbility);
 
-	//
+	// virtual
 	virtual void OnGiveAbility(FGameplayAbilitySpec& AbilitySpec);
 	virtual void NotifyAbilityActivated(const FGameplayAbilitySpecHandle Handle, UGameplayAbility* Ability) override;
 	virtual void NotifyAbilityEnded(FGameplayAbilitySpecHandle Handle, UGameplayAbility* Ability,
 	                                bool bWasCancelled) override;
-	//
+	// Effect
 	UFUNCTION(BlueprintCallable)
 	FActiveGameplayEffectHandle ApplyEffectToSelfByClass(const TSubclassOf<UGameplayEffect>& EffectClass,
 	                                                     const float Level);
-
-	//
 	bool ApplyDamageEffect(UAbilitySystemComponent* TargetASC, const FDamageEffectParams& Params);
 
 	//

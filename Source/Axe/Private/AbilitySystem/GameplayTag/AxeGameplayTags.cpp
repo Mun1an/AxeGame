@@ -16,17 +16,17 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(InputTag_Skill_3, "InputTag.Skill.3");
 	AddTag(InputTag_Skill_4, "InputTag.Skill.4");
 
-	AddTag(Ability_LightAttack, "Ability.LightAttack");
-	AddTag(Ability_HeavyAttack, "Ability.HeavyAttack");
+	AddTag(Ability_Attack_LightAttack, "Ability.Attack.LightAttack");
+	AddTag(Ability_Attack_HeavyAttack, "Ability.Attack.HeavyAttack");
 
-	AddTag(Ability_MeleeCombo_A1, "Ability.MeleeCombo.A1");
-	AddTag(Ability_MeleeCombo_A2, "Ability.MeleeCombo.A2");
-	AddTag(Ability_MeleeCombo_A3, "Ability.MeleeCombo.A3");
-	AddTag(Ability_MeleeCombo_A4, "Ability.MeleeCombo.A4");
+	AddTag(Ability_Attack_MeleeCombo_A1, "Ability.Attack.MeleeCombo.A1");
+	AddTag(Ability_Attack_MeleeCombo_A2, "Ability.Attack.MeleeCombo.A2");
+	AddTag(Ability_Attack_MeleeCombo_A3, "Ability.Attack.MeleeCombo.A3");
+	AddTag(Ability_Attack_MeleeCombo_A4, "Ability.Attack.MeleeCombo.A4");
 
-	AddTag(Ability_MeleeCombo_B1, "Ability.MeleeCombo.B1");
-	AddTag(Ability_MeleeCombo_B2, "Ability.MeleeCombo.B2");
-	AddTag(Ability_MeleeCombo_B3, "Ability.MeleeCombo.B3");
+	AddTag(Ability_Attack_MeleeCombo_B1, "Ability.Attack.MeleeCombo.B1");
+	AddTag(Ability_Attack_MeleeCombo_B2, "Ability.Attack.MeleeCombo.B2");
+	AddTag(Ability_Attack_MeleeCombo_B3, "Ability.Attack.MeleeCombo.B3");
 
 	AddTag(Ability_Skill_LeapAttack, "Ability.Skill.LeapAttack");
 
@@ -36,7 +36,8 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(GameplayCue_WeaponTrail_Axe, "GameplayCue.WeaponTrail.Axe");
 	AddTag(GameplayCue_WeaponHit_Axe, "GameplayCue.WeaponHit.Axe");
 	AddTag(GameplayCue_WeaponHit_Shield, "GameplayCue.WeaponHit.Shield");
-
+	
+	//
 	AddTag(Attributes_Vital_Health, "Attributes.Vital.Health");
 	AddTag(Attributes_Primary_Strength, "Attributes.Primary.Strength");
 	AddTag(Attributes_Primary_Dexterity, "Attributes.Primary.Dexterity");

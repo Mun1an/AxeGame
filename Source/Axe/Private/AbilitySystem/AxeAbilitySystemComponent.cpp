@@ -5,6 +5,7 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystem/Ability/AxeGameplayAbility.h"
+#include "AbilitySystem/Ability/HitReact/HitReactBase.h"
 #include "ActionSystem/ComboActionComponent.h"
 #include "ActionSystem/ComboDataAsset.h"
 #include "Character/AxeCharacterPlayer.h"
@@ -94,11 +95,31 @@ void UAxeAbilitySystemComponent::TryActivateAbilityAndCheck(FGameplayAbilitySpec
 	// );
 }
 
-void UAxeAbilitySystemComponent::GiveAbilityByAbilityAndLevel(const TSubclassOf<UGameplayAbility>& Ability,
+void UAxeAbilitySystemComponent::TryActivateHitReactAbility(const FGameplayTag HitReactTag, const FHitResult& HitResult)
+{
+	FGameplayTagContainer TagContainer;
+	TagContainer.AddTag(HitReactTag);
+	TArray<FGameplayAbilitySpec*> GameplayAbilitySpecs;
+	GetActivatableGameplayAbilitySpecsByAllMatchingTags(TagContainer, GameplayAbilitySpecs);
+	for (FGameplayAbilitySpec* GameplayAbilitySpec : GameplayAbilitySpecs)
+	{
+		for (UGameplayAbility* AbilityInstance : GameplayAbilitySpec->GetAbilityInstances())
+		{
+			if (UHitReactBase* HitReactBase = Cast<UHitReactBase>(AbilityInstance))
+			{
+				HitReactBase->SetHitResult(HitResult);
+			}
+		}
+		TryActivateAbility(GameplayAbilitySpec->Handle);
+	}
+}
+
+bool UAxeAbilitySystemComponent::GiveAbilityByAbilityAndLevel(const TSubclassOf<UGameplayAbility>& Ability,
                                                               const int32 AbilityLevel)
 {
 	const FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(Ability, AbilityLevel);
-	GiveAbility(AbilitySpec);
+	FGameplayAbilitySpecHandle GameplayAbilitySpecHandle = GiveAbility(AbilitySpec);
+	return GameplayAbilitySpecHandle.IsValid();
 }
 
 bool UAxeAbilitySystemComponent::IsActivationGroupBlocked(EAxeAbilityActivationGroup Group,

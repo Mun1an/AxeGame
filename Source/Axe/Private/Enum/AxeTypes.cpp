@@ -2,7 +2,7 @@
 
 bool FAxeGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, bool& bOutSuccess)
 {
-uint32 RepBits = 0;
+	uint32 RepBits = 0;
 	if (Ar.IsSaving())
 	{
 		if (Instigator.IsValid())
@@ -68,7 +68,7 @@ uint32 RepBits = 0;
 		}
 	}
 
-	Ar.SerializeBits(&RepBits, 15);
+	Ar.SerializeBits(&RepBits, 14);
 
 	if (RepBits & (1 << 0))
 	{
@@ -150,7 +150,6 @@ uint32 RepBits = 0;
 	{
 		KnockbackForce.NetSerialize(Ar, Map, bOutSuccess);
 	}
-
 
 	//
 	if (Ar.IsLoading())

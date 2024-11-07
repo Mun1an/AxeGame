@@ -7,11 +7,11 @@
 #include "GameplayEffectExtension.h"
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
 #include "AbilitySystem/AxeBlueprintFunctionLibrary.h"
+#include "AbilitySystem/GameplayTag/AxeGameplayTags.h"
 #include "ActionSystem/ActionCombatComponent.h"
 #include "Character/AxeCharacterBase.h"
 #include "Character/AxeCharacterPlayer.h"
 #include "Enum/AxeTypes.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "Net/UnrealNetwork.h"
 
 UAxeAttributeSet::UAxeAttributeSet()
@@ -210,6 +210,14 @@ void UAxeAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData&
 void UAxeAttributeSet::HandleIncomingDamageEffect(const FEffectProperties& Props)
 {
 	const float LocalIncomingDamage = GetIncomingDamage();
+	const FGameplayEffectContext* GameplayEffectContext = Props.EffectContextHandle.Get();
+	const FAxeGameplayEffectContext* AxeEffectContext = UAxeBlueprintFunctionLibrary::GetAxeGameplayEffectContext(
+		GameplayEffectContext);
+	const bool bIsCriticalHit = AxeEffectContext->IsCriticalHit();
+	const bool bIsEvasiveHit = AxeEffectContext->IsEvasive();
+	const FAxeGameplayTags AxeGameplayTags = FAxeGameplayTags::Get();
+
+	//
 	SetIncomingDamage(0.f);
 	if (LocalIncomingDamage > 0.f)
 	{
@@ -217,16 +225,9 @@ void UAxeAttributeSet::HandleIncomingDamageEffect(const FEffectProperties& Props
 		SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
 		const bool bFatal = NewHealth <= 0.f;
 	}
-	const FGameplayEffectContext* GameplayEffectContext = Props.EffectContextHandle.Get();
-	const FAxeGameplayEffectContext* AxeEffectContext = UAxeBlueprintFunctionLibrary::GetAxeGameplayEffectContext(
-		GameplayEffectContext);
-
-	bool bIsCriticalHit = AxeEffectContext->IsCriticalHit();
-	bool bIsEvasiveHit = AxeEffectContext->IsEvasive();
-
+	// ShowDamageFloatingText
 	const FHitResult* HitResult = Props.EffectContextHandle.Get()->GetHitResult();
-	FVector ShowLocation = HitResult->ImpactPoint;
-
+	const FVector ShowLocation = HitResult->ImpactPoint;
 	if (Props.SourceCharacter && Props.TargetCharacter)
 	{
 		ShowDamageFloatingText(
@@ -234,6 +235,11 @@ void UAxeAttributeSet::HandleIncomingDamageEffect(const FEffectProperties& Props
 			Cast<AAxeCharacterBase>(Props.TargetCharacter),
 			LocalIncomingDamage, bIsCriticalHit, bIsEvasiveHit, ShowLocation
 		);
+	}
+	// HitReact
+	if (UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(Props.TargetASC))
+	{
+		AxeASC->TryActivateHitReactAbility(AxeGameplayTags.Ability_HitReact_Light, *HitResult);
 	}
 }
 
@@ -258,5 +264,4 @@ void UAxeAttributeSet::ShowDamageFloatingText(AAxeCharacterBase* SourceCharacter
 		UActionCombatComponent* ActionCombatComponent = AxeCharacterPlayer->GetActionCombatComponent();
 		ActionCombatComponent->ShowDamageNumber(Damage, TargetCharacter, bIsCriticalHit, bIsEvasiveHit, ShowLocation);
 	}
-	
 }

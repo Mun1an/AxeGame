@@ -104,27 +104,16 @@ void AAxeCharacterPlayer::InitAbility()
 	AxePlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(AxePlayerState, this);
 	// AbilitySystemComponent
 	AbilitySystemComponent = AxePlayerState->GetAbilitySystemComponent();
-
-	// Give Startup Abilities
-	if (HasAuthority())
-	{
-		UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(AbilitySystemComponent);
-		for (TSubclassOf<UGameplayAbility> Ability : StartupAbilities)
-		{
-			AxeASC->GiveAbilityByAbilityAndLevel(Ability, 1);
-		}
-	}
 	// AttributeSet
 	AttributeSet = AxePlayerState->GetAttributeSet();
-
-	// init default attributes
 	if (HasAuthority())
 	{
+		// init default attributes
 		InitDefaultAttributes();
+		// Give Startup Abilities
+		GiveStartupAbilities();
 	}
-
 	// init HUD
-
 	AAxePlayerController* PlayerController = Cast<AAxePlayerController>(GetController());
 	if (PlayerController)
 	{
@@ -134,7 +123,6 @@ void AAxeCharacterPlayer::InitAbility()
 			AxeHUD->InitOverlay(PlayerController, AxePlayerState, AbilitySystemComponent, AttributeSet);
 		}
 	}
-
 	// Over
 	OnAbilityInitOverDelegate.Broadcast();
 	bIsAbilityInitOver = true;

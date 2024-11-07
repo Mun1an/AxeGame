@@ -54,9 +54,8 @@ public:
 	//
 	FOnAbilityInitOverDelegate OnAbilityInitOverDelegate;
 	bool IsAbilityInitOver() const { return bIsAbilityInitOver; }
-
 	//
-	
+
 
 	//
 	UFUNCTION()
@@ -70,6 +69,7 @@ protected:
 	bool bIsAbilityInitOver = false;
 
 	void InitDefaultAttributes();
+	bool GiveStartupAbilities();
 
 	UPROPERTY()
 	float MaxWalkSpeed = 1500.0f;
