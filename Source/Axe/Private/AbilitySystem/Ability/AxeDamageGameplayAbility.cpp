@@ -6,7 +6,7 @@
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
 #include "Character/AxeCharacterBase.h"
 
-void UAxeDamageGameplayAbility::ApplyDamage(AAxeCharacterBase* TargetCharacter)
+void UAxeDamageGameplayAbility::ApplyDamage(AAxeCharacterBase* TargetCharacter, const FHitResult& HitResult)
 {
 	if (!IsValid(TargetCharacter))
 	{
@@ -29,6 +29,7 @@ void UAxeDamageGameplayAbility::ApplyDamage(AAxeCharacterBase* TargetCharacter)
 	DamageEffectParam.DamageEffectClass = DamageEffectClass;
 	DamageEffectParam.DamageType = DamageType;
 	DamageEffectParam.EffectLevel = EffectLevel;
+	DamageEffectParam.HitResult = HitResult;
 
 	AxeASC->ApplyDamageEffect(TargetASC, DamageEffectParam);
 }

@@ -3,3 +3,9 @@
 
 #include "AbilitySystem/AbilitySystemGlobals/AxeAbilitySystemGlobals.h"
 
+#include "Enum/AxeTypes.h"
+
+FGameplayEffectContext* UAxeAbilitySystemGlobals::AllocGameplayEffectContext() const
+{
+	return new FAxeGameplayEffectContext();
+}

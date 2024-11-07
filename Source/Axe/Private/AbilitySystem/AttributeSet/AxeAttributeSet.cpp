@@ -213,16 +213,18 @@ void UAxeAttributeSet::HandleIncomingDamageEffect(const FEffectProperties& Props
 
 	bool bIsCriticalHit = false;
 	bool bIsEvasiveHit = false;
-	FVector ShowLocation = FVector::ZeroVector;
+
+	const FHitResult* HitResult = Props.EffectContextHandle.Get()->GetHitResult();
+	FVector ShowLocation = HitResult->ImpactPoint;
+	
 	if (Props.SourceCharacter && Props.TargetCharacter)
 	{
 		ShowDamageFloatingText(
-        		Cast<AAxeCharacterBase>(Props.SourceCharacter),
-        		Cast<AAxeCharacterBase>(Props.TargetCharacter),
-        		LocalIncomingDamage, bIsCriticalHit, bIsEvasiveHit, ShowLocation
-        	);
+			Cast<AAxeCharacterBase>(Props.SourceCharacter),
+			Cast<AAxeCharacterBase>(Props.TargetCharacter),
+			LocalIncomingDamage, bIsCriticalHit, bIsEvasiveHit, ShowLocation
+		);
 	}
-	
 }
 
 //

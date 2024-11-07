@@ -7,6 +7,7 @@
 #include "Enum/AxeTypes.h"
 #include "AxeDamageGameplayAbility.generated.h"
 
+struct FHitResult;
 /**
  * 
  */
@@ -17,7 +18,7 @@ class AXE_API UAxeDamageGameplayAbility : public UAxeGameplayAbility
 
 public:
 	UFUNCTION(BlueprintCallable)
-	void ApplyDamage(AAxeCharacterBase* TargetCharacter);
+	void ApplyDamage(AAxeCharacterBase* TargetCharacter, const FHitResult& HitResult);
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category="Damage")

@@ -13,5 +13,6 @@ UCLASS()
 class AXE_API UAxeAbilitySystemGlobals : public UAbilitySystemGlobals
 {
 	GENERATED_BODY()
-	
+public:
+	virtual FGameplayEffectContext* AllocGameplayEffectContext() const override;
 };

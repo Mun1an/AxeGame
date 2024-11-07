@@ -280,7 +280,7 @@ bool UAxeAbilitySystemComponent::ApplyDamageEffect(UAbilitySystemComponent* Targ
 
 	FGameplayEffectContextHandle ContextHandle = MakeEffectContext();
 	ContextHandle.AddSourceObject(GetAxeCharacterOwner());
-
+	ContextHandle.AddHitResult(Params.HitResult);
 	const FGameplayEffectSpecHandle SpecHandle = MakeOutgoingSpec(
 		Params.DamageEffectClass, Params.EffectLevel, ContextHandle
 	);
