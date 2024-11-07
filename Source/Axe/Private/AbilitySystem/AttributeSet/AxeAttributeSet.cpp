@@ -6,9 +6,11 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "GameplayEffectExtension.h"
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
+#include "AbilitySystem/AxeBlueprintFunctionLibrary.h"
 #include "ActionSystem/ActionCombatComponent.h"
 #include "Character/AxeCharacterBase.h"
 #include "Character/AxeCharacterPlayer.h"
+#include "Enum/AxeTypes.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Net/UnrealNetwork.h"
 
@@ -210,13 +212,16 @@ void UAxeAttributeSet::HandleIncomingDamageEffect(const FEffectProperties& Props
 		SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
 		const bool bFatal = NewHealth <= 0.f;
 	}
+	const FGameplayEffectContext* GameplayEffectContext = Props.EffectContextHandle.Get();
+	const FAxeGameplayEffectContext* AxeEffectContext = UAxeBlueprintFunctionLibrary::GetAxeGameplayEffectContext(
+		GameplayEffectContext);
 
-	bool bIsCriticalHit = false;
-	bool bIsEvasiveHit = false;
+	bool bIsCriticalHit = AxeEffectContext->IsCriticalHit();
+	bool bIsEvasiveHit = AxeEffectContext->IsEvasive();
 
 	const FHitResult* HitResult = Props.EffectContextHandle.Get()->GetHitResult();
 	FVector ShowLocation = HitResult->ImpactPoint;
-	
+
 	if (Props.SourceCharacter && Props.TargetCharacter)
 	{
 		ShowDamageFloatingText(

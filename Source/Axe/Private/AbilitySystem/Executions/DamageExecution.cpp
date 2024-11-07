@@ -3,12 +3,16 @@
 
 #include "AbilitySystem/Executions/DamageExecution.h"
 
+#include "AbilitySystem/AxeBlueprintFunctionLibrary.h"
 #include "AbilitySystem/GameplayTag/AxeGameplayTags.h"
+#include "Enum/AxeTypes.h"
 
 UDamageExecution::UDamageExecution()
 {
 	RelevantAttributesToCapture.Add(AttributeDefStatics().PhysicalResistanceDef);
 	RelevantAttributesToCapture.Add(AttributeDefStatics().MagicResistanceDef);
+	RelevantAttributesToCapture.Add(AttributeDefStatics().CriticalHitChanceDef);
+	RelevantAttributesToCapture.Add(AttributeDefStatics().CriticalHitDamageDef);
 }
 
 
@@ -19,10 +23,15 @@ void UDamageExecution::Execute_Implementation(const FGameplayEffectCustomExecuti
 	FAggregatorEvaluateParameters EvaluateParameters;
 	GetEvaluateParam(ExecutionParams, EvaluateParameters);
 	const FGameplayEffectSpec EffectSpec = ExecutionParams.GetOwningSpec();
+	FGameplayEffectContext* EffectContext = EffectSpec.GetContext().Get();
+	FAxeGameplayEffectContext* AxeEffectContext = UAxeBlueprintFunctionLibrary::GetAxeGameplayEffectContext(
+		EffectContext);
+
 	//
 	float Damage = 0.f;
 	//
 	CalDamageByResistance(ExecutionParams, EvaluateParameters, EffectSpec, Damage);
+	CalCritical(ExecutionParams, EvaluateParameters, AxeEffectContext, Damage);
 
 	//
 	const FGameplayModifierEvaluatedData EvaluatedData(
@@ -61,4 +70,24 @@ void UDamageExecution::CalDamageByResistance(const FGameplayEffectCustomExecutio
 		float AddDamage = FMath::Max(0.f, TypeDamage * (1 - ResistanceValue));
 		Damage += AddDamage;
 	}
+}
+
+void UDamageExecution::CalCritical(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
+                                   FAggregatorEvaluateParameters EvaluateParameters,
+                                   FAxeGameplayEffectContext* AxeEffectContext, float& Damage) const
+{
+	float CriticalHitChance = 0.f;
+	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(
+		AttributeDefStatics().CriticalHitChanceDef, EvaluateParameters, CriticalHitChance);
+	float CriticalHitDamage = 0.f;
+	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(
+		AttributeDefStatics().CriticalHitDamageDef, EvaluateParameters, CriticalHitDamage);
+	const bool bIsCritical = FMath::RandRange(0.f, 1.f) < CriticalHitChance;
+	float DamageCoefficient = 1.f;
+	if (bIsCritical)
+	{
+		DamageCoefficient = DamageCoefficient * CriticalHitDamage;
+		AxeEffectContext->SetCriticalHit(true);
+	}
+	Damage = Damage * DamageCoefficient;
 }

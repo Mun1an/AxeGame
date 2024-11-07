@@ -10,6 +10,9 @@ struct FAttributeDef
 	
 	DECLARE_ATTRIBUTE_CAPTUREDEF(PhysicalResistance);
 	DECLARE_ATTRIBUTE_CAPTUREDEF(MagicResistance);
+	
+	DECLARE_ATTRIBUTE_CAPTUREDEF(CriticalHitChance);
+	DECLARE_ATTRIBUTE_CAPTUREDEF(CriticalHitDamage);
 
 	FAttributeDef()
 	{
@@ -19,6 +22,9 @@ struct FAttributeDef
 		
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UAxeAttributeSet, PhysicalResistance, Target, false);
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UAxeAttributeSet, MagicResistance, Target, false);
+		
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UAxeAttributeSet, CriticalHitChance, Source, false);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UAxeAttributeSet, CriticalHitDamage, Source, false);
 	}
 
 };

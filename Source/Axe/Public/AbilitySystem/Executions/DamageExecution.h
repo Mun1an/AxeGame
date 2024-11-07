@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystem/Executions/AxeExecutionBase.h"
+#include "Enum/AxeTypes.h"
 #include "DamageExecution.generated.h"
 
 /**
@@ -17,6 +18,7 @@ class AXE_API UDamageExecution : public UAxeExecutionBase
 public:
 	UDamageExecution();
 
+
 	virtual void Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
 	                                    FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const override;
 
@@ -24,4 +26,7 @@ private:
 	void CalDamageByResistance(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
 	                           FAggregatorEvaluateParameters EvaluateParameters, FGameplayEffectSpec EffectSpec,
 	                           float& Damage) const;
+	void CalCritical(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
+	                 FAggregatorEvaluateParameters EvaluateParameters, FAxeGameplayEffectContext* AxeEffectContext,
+	                 float& Damage) const;
 };
