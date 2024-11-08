@@ -11,15 +11,4 @@ void UAxeMotionWrapAnimNotifyState::NotifyBegin(USkeletalMeshComponent* MeshComp
                                                 float TotalDuration, const FAnimNotifyEventReference& EventReference)
 {
 	Super::NotifyBegin(MeshComp, Animation, TotalDuration, EventReference);
-
-	// AAxeCharacterPlayer* AxeCharacterPlayer = GetPlayerCharacter(MeshComp);
-	//
-	// // TODO
-	// if (AxeCharacterPlayer)
-	// {
-	// 	UCameraComponent* CameraComponent = AxeCharacterPlayer->GetFollowCamera();
-	// 	FRotator ComponentRotation = CameraComponent->GetComponentRotation();
-	//
-	// 	AxeCharacterPlayer->SetActorRotation(ComponentRotation, ETeleportType::None);
-	// }
 }

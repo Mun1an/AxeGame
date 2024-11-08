@@ -53,9 +53,10 @@ public:
 
 	UFUNCTION()
 	AAxeCharacterBase* GetAxeCharacterOwner() const;
-	
+
 	UFUNCTION()
 	bool GetIsUsingClientMovement() const { return bUseClientMovement; }
+
 	/**
 	 * InputTag
 	 */
@@ -143,10 +144,10 @@ protected:
 	void SetIgnoreClientMovementErrorChecksAndCorrection(bool bIsIgnore);
 
 	// ANS
-	UFUNCTION()
-	void Ans_MovementSlow_NotifyBegin(UAnimNotifyState* AnimNotifyState);
-	UFUNCTION()
-	void Ans_MovementSlow_NotifyEnd(UAnimNotifyState* AnimNotifyState);
+	// UFUNCTION()
+	// void Ans_MovementSlow_NotifyBegin(UAnimNotifyState* AnimNotifyState);
+	// UFUNCTION()
+	// void Ans_MovementSlow_NotifyEnd(UAnimNotifyState* AnimNotifyState);
 
 	UFUNCTION()
 	void Ans_LaunchCharacter_NotifyBegin(UAnimNotifyState* AnimNotifyState);
@@ -157,9 +158,12 @@ protected:
 	void Ans_IgnoreInput_NotifyBegin(UAnimNotifyState* AnimNotifyState);
 	UFUNCTION()
 	void Ans_IgnoreInput_NotifyEnd(UAnimNotifyState* AnimNotifyState);
-	
+
+
 	UFUNCTION()
 	void Ans_MotionWrap_NotifyBegin(UAnimNotifyState* AnimNotifyState);
+	AAxeCharacterBase* GetOneGoodTargetToAttract(AAxeCharacterBase* AxeCharacterOwner, float SphereRadius = 500,
+	                                             float TraceAngleRange = 60.f);
 	UFUNCTION()
 	void Ans_MotionWrap_NotifyEnd(UAnimNotifyState* AnimNotifyState);
 };

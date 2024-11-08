@@ -12,6 +12,7 @@
 #include "AbilitySystem/Tasks/AbilityTask_MontageNotify.h"
 #include "ActionSystem/ActionCombatComponent.h"
 #include "ActionSystem/ComboActionComponent.h"
+#include "Anim/AxeMotionWrapAnimNotifyState.h"
 #include "Anim/ComboAnimNotifyState.h"
 #include "Anim/ComboInputCacheAnimNotifyState.h"
 #include "Anim/HitTraceAnimNotifyState.h"
@@ -22,6 +23,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "Interaction/CombatInterface.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 #define ENSURE_ABILITY_IS_INSTANTIATED_OR_RETURN(FunctionName, ReturnValue)																				\
 {																																						\
@@ -147,6 +149,7 @@ void UAxeGameplayAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handl
                                           const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+
 	// Client Movement
 	if (bUseClientMovement && HasAuthority(&CurrentActivationInfo) && IsForRemoteClient())
 	{
@@ -264,15 +267,15 @@ void UAxeGameplayAbility::AddMontageNotifyStateTask(UAnimMontage* LocalAnimMonta
 	//UAbilityTask_MontageNotify
 
 	// MovementSlow
-	UAbilityTask_MontageNotify* AT_MovementSlow_Ans = UAbilityTask_MontageNotify::CreateMontageNotifyStateTask(
-		this, LocalAnimMontage,
-		UMovementSlowAnimNotifyState::StaticClass()
-	);
-	AT_MovementSlow_Ans->MontageNotifyStartDelegate.AddDynamic(
-		this, &UAxeGameplayAbility::Ans_MovementSlow_NotifyBegin);
-	AT_MovementSlow_Ans->MontageNotifyEndDelegate.AddDynamic(
-		this, &UAxeGameplayAbility::Ans_MovementSlow_NotifyEnd);
-	AT_MovementSlow_Ans->ReadyForActivation();
+	// UAbilityTask_MontageNotify* AT_MovementSlow_Ans = UAbilityTask_MontageNotify::CreateMontageNotifyStateTask(
+	// 	this, LocalAnimMontage,
+	// 	UMovementSlowAnimNotifyState::StaticClass()
+	// );
+	// AT_MovementSlow_Ans->MontageNotifyStartDelegate.AddDynamic(
+	// 	this, &UAxeGameplayAbility::Ans_MovementSlow_NotifyBegin);
+	// AT_MovementSlow_Ans->MontageNotifyEndDelegate.AddDynamic(
+	// 	this, &UAxeGameplayAbility::Ans_MovementSlow_NotifyEnd);
+	// AT_MovementSlow_Ans->ReadyForActivation();
 
 	// LaunchCharacter
 	UAbilityTask_MontageNotify* AT_LaunchCharacter_Ans = UAbilityTask_MontageNotify::CreateMontageNotifyStateTask(
@@ -295,6 +298,17 @@ void UAxeGameplayAbility::AddMontageNotifyStateTask(UAnimMontage* LocalAnimMonta
 	AT_IgnoreInput_Ans->MontageNotifyEndDelegate.AddDynamic(
 		this, &UAxeGameplayAbility::Ans_IgnoreInput_NotifyEnd);
 	AT_IgnoreInput_Ans->ReadyForActivation();
+
+	// MotionWrap
+	UAbilityTask_MontageNotify* AT_MotionWrap_Ans = UAbilityTask_MontageNotify::CreateMontageNotifyStateTask(
+		this, LocalAnimMontage,
+		UAxeMotionWrapAnimNotifyState::StaticClass()
+	);
+	AT_MotionWrap_Ans->MontageNotifyStartDelegate.AddDynamic(
+		this, &UAxeGameplayAbility::Ans_MotionWrap_NotifyBegin);
+	AT_MotionWrap_Ans->MontageNotifyEndDelegate.AddDynamic(
+		this, &UAxeGameplayAbility::Ans_MotionWrap_NotifyEnd);
+	AT_MotionWrap_Ans->ReadyForActivation();
 
 	// Combo by IComboAbilityInterface
 	if (IComboAbilityInterface* ComboAbility = Cast<IComboAbilityInterface>(this))
@@ -349,29 +363,29 @@ void UAxeGameplayAbility::SetIgnoreClientMovementErrorChecksAndCorrection(bool b
 }
 
 //
-void UAxeGameplayAbility::Ans_MovementSlow_NotifyBegin(UAnimNotifyState* AnimNotifyState)
-{
-	// UActionCombatComponent* ActionCombatComponent = GetActionCombatComponent();
-	// UAxeAnimNotifyStateBase* AxeAnimNotifyStateBase = Cast<UAxeAnimNotifyStateBase>(AnimNotifyState);
-	// AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
-	// UAbilityTask_ApplyEffect* AbilityTask_ApplyEffect = UAbilityTask_ApplyEffect::CreateApplyEffectTask(
-	// 	this, AxeCharacterOwner, AxeCharacterOwner,
-	// 	ActionCombatComponent->GetMovementSlowEffectClass(),
-	// 	AbilityUsingMovementSlowEffectMagnitude,
-	// 	AxeAnimNotifyStateBase->GetNotifyStateDuration()
-	// );
-	// AbilityTask_ApplyEffect->ReadyForActivation();
-}
+// void UAxeGameplayAbility::Ans_MovementSlow_NotifyBegin(UAnimNotifyState* AnimNotifyState)
+// {
+// 	UActionCombatComponent* ActionCombatComponent = GetActionCombatComponent();
+// 	UAxeAnimNotifyStateBase* AxeAnimNotifyStateBase = Cast<UAxeAnimNotifyStateBase>(AnimNotifyState);
+// 	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
+// 	UAbilityTask_ApplyEffect* AbilityTask_ApplyEffect = UAbilityTask_ApplyEffect::CreateApplyEffectTask(
+// 		this, AxeCharacterOwner, AxeCharacterOwner,
+// 		ActionCombatComponent->GetMovementSlowEffectClass(),
+// 		AbilityUsingMovementSlowEffectMagnitude,
+// 		AxeAnimNotifyStateBase->GetNotifyStateDuration()
+// 	);
+// 	AbilityTask_ApplyEffect->ReadyForActivation();
+// }
 
 
-void UAxeGameplayAbility::Ans_MovementSlow_NotifyEnd(UAnimNotifyState* AnimNotifyState)
-{
-	// UActionCombatComponent* ActionCombatComponent = GetActionCombatComponent();
-	// if (ActionCombatComponent)
-	// {
-	// 	ActionCombatComponent->RemoveMovementSlowEffectInAbilityUse();
-	// }
-}
+// void UAxeGameplayAbility::Ans_MovementSlow_NotifyEnd(UAnimNotifyState* AnimNotifyState)
+// {
+// 	UActionCombatComponent* ActionCombatComponent = GetActionCombatComponent();
+// 	if (ActionCombatComponent)
+// 	{
+// 		ActionCombatComponent->RemoveMovementSlowEffectInAbilityUse();
+// 	}
+// }
 
 
 void UAxeGameplayAbility::Ans_LaunchCharacter_NotifyBegin(UAnimNotifyState* AnimNotifyState)
@@ -399,7 +413,6 @@ void UAxeGameplayAbility::Ans_LaunchCharacter_NotifyBegin(UAnimNotifyState* Anim
 	);
 }
 
-
 void UAxeGameplayAbility::Ans_LaunchCharacter_NotifyEnd(UAnimNotifyState* AnimNotifyState)
 {
 }
@@ -424,10 +437,102 @@ void UAxeGameplayAbility::Ans_IgnoreInput_NotifyEnd(UAnimNotifyState* AnimNotify
 	}
 }
 
+
 void UAxeGameplayAbility::Ans_MotionWrap_NotifyBegin(UAnimNotifyState* AnimNotifyState)
 {
+	if (!IsLocallyControlled())
+	{
+		return;
+	}
+	// 朝附近的目标吸附
+	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
+
+	AAxeCharacterBase* TargetCharacter = GetOneGoodTargetToAttract(AxeCharacterOwner, 500, 60.f);
+	if (!TargetCharacter)
+	{
+		return;
+	}
+
+	FVector ToTargetDir = (TargetCharacter->GetActorLocation() - AxeCharacterOwner->GetActorLocation());
+	float ToTargetDist = ToTargetDir.Size();
+
+	UAbilityTask_ApplyRootMotionConstantForce::ApplyRootMotionConstantForce(
+		this,
+		NAME_None,
+		ToTargetDir,
+		ToTargetDist,
+		Cast<UAxeAnimNotifyStateBase>(AnimNotifyState)->GetNotifyStateDuration(),
+		true,
+		nullptr,
+		ERootMotionFinishVelocityMode::ClampVelocity,
+		FVector::ZeroVector,
+		1000,
+		true
+	);
+	AxeCharacterOwner->SetActorRotation(ToTargetDir.Rotation(), ETeleportType::None);
+
+	AController* Controller = AxeCharacterOwner->GetController();
+	Controller->SetIgnoreMoveInput(true);
+}
+
+AAxeCharacterBase* UAxeGameplayAbility::GetOneGoodTargetToAttract(AAxeCharacterBase* AxeCharacterOwner,
+                                                                  float SphereRadius, float TraceAngleRange)
+{
+	TArray<AActor*> OutActors;
+	TArray<AActor*> IgnoredActors;
+	IgnoredActors.Add(AxeCharacterOwner);
+	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
+	ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_Pawn));
+	const FVector OwnerLocation = AxeCharacterOwner->GetActorLocation();
+	const FVector LastMovementInputVector = AxeCharacterOwner->GetLastMovementInputVector();
+	const FVector OwnerForwardVector = AxeCharacterOwner->GetActorForwardVector();
+	const FVector TraceDirection = (LastMovementInputVector * 10 + OwnerForwardVector).GetSafeNormal();
+	const FVector SpherePos = TraceDirection * 100 + OwnerLocation;
+	UKismetSystemLibrary::SphereOverlapActors(
+		AxeCharacterOwner,
+		SpherePos,
+		SphereRadius,
+		ObjectTypes,
+		nullptr,
+		IgnoredActors,
+		OutActors
+	);
+	AAxeCharacterBase* TargetCharacter = nullptr;
+	float MinScore = 99999;
+	for (AActor* OutActor : OutActors)
+	{
+		AAxeCharacterBase* OutAxeCharacter = Cast<AAxeCharacterBase>(OutActor);
+		if (!OutAxeCharacter)
+		{
+			continue;
+		}
+		FVector LocalActorLocation = OutAxeCharacter->GetActorLocation();
+		FVector ToTargetDir = (LocalActorLocation - OwnerLocation).GetSafeNormal();
+		// 判断是否在指定方向的前方
+		const float DotProduct = FVector::DotProduct(ToTargetDir, TraceDirection);
+		const float Angle = FMath::Acos(DotProduct) * 180.f / PI;
+		if (Angle > TraceAngleRange)
+		{
+			continue;
+		}
+		// 结合距离和角度计算分数
+		FVector PlaneNormal = FVector::CrossProduct(TraceDirection, FVector::UpVector);
+		float PointPlaneDistance = FVector::PointPlaneDist(LocalActorLocation, OwnerLocation, PlaneNormal);
+		float ToCharacterDistance = (LocalActorLocation - OwnerLocation).Size();
+		if (PointPlaneDistance + ToCharacterDistance < MinScore)
+		{
+			TargetCharacter = OutAxeCharacter;
+		}
+	}
+	return TargetCharacter;
 }
 
 void UAxeGameplayAbility::Ans_MotionWrap_NotifyEnd(UAnimNotifyState* AnimNotifyState)
 {
+	if (IsLocallyControlled())
+	{
+		AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
+		AController* Controller = AxeCharacterOwner->GetController();
+		Controller->SetIgnoreMoveInput(false);
+	}
 }

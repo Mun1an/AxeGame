@@ -14,9 +14,17 @@ class AXE_API UAxeMotionWrapAnimNotifyState : public UAxeAnimNotifyStateBase
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditDefaultsOnly)
-	bool bFacingRotation = true;
 public:
 	virtual void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration,
-							 const FAnimNotifyEventReference& EventReference) override;
+	                         const FAnimNotifyEventReference& EventReference) override;
+
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	float TraceAngle = 45.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	float TraceDistance = 500.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	float TraceSpeedCoefficient = 1.f;
 };

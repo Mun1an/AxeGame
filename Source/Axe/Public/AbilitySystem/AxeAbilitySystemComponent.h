@@ -30,6 +30,7 @@ public:
 	FOnAbilityInputTagPressed OnAbilityInputTagPressedDelegate;
 	//
 	// 获取角色
+	UFUNCTION(BlueprintCallable)
 	AAxeCharacterBase* GetAxeCharacterOwner() const;
 	//
 	void AbilityInputTagPressed(const FGameplayTag& InputTag);

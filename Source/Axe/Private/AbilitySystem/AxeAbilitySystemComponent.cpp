@@ -265,8 +265,8 @@ void UAxeAbilitySystemComponent::NotifyAbilityActivated(const FGameplayAbilitySp
 		OnNotifyAbilityActivatedDelegate.Broadcast(Ability);
 	}
 
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Blue, FString::Printf(TEXT("Ability Activated: %s"),
-	                                                                         *Ability->GetName()));
+	// GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Blue, FString::Printf(TEXT("Ability Activated: %s"),
+	//                                                                          *Ability->GetName()));
 }
 
 void UAxeAbilitySystemComponent::NotifyAbilityEnded(FGameplayAbilitySpecHandle Handle, UGameplayAbility* Ability,

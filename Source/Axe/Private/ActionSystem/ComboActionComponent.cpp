@@ -26,14 +26,14 @@ void UComboActionComponent::BeginPlay()
 	InitComboAbilityTree();
 	LastComboTreeNode = ComboAbilityTree->Root;
 
-	if (AxeCharacterPlayer->IsLocallyControlled())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("IsLocallyControlled"));
-	}
-	if (AxeCharacterPlayer->HasAuthority())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("HasAuthority"));
-	}
+	// if (AxeCharacterPlayer->IsLocallyControlled())
+	// {
+	// 	UE_LOG(LogTemp, Warning, TEXT("IsLocallyControlled"));
+	// }
+	// if (AxeCharacterPlayer->HasAuthority())
+	// {
+	// 	UE_LOG(LogTemp, Warning, TEXT("HasAuthority"));
+	// }
 }
 
 void UComboActionComponent::InitComboAbilityTree()
