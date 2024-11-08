@@ -56,7 +56,6 @@ public:
 	bool IsAbilityInitOver() const { return bIsAbilityInitOver; }
 	//
 
-
 	//
 	UFUNCTION()
 	void SetWalkSpeed(float NewMaxWalkSpeed);
@@ -71,14 +70,14 @@ protected:
 	void InitDefaultAttributes();
 	bool GiveStartupAbilities();
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, Category= "Axe Movement")
 	float MaxWalkSpeed = 1500.0f;
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, Category= "Axe Movement")
 	float MinWalkSpeed = 0.0f;
-	UPROPERTY()
-	float MaxRotationRateZ = 800.0f;
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, Category= "Axe Movement")
+	float MaxRotationRateZ = 2000.0f;
+	UPROPERTY(EditAnywhere, Category= "Axe Movement")
 	float MinRotationRateZ = 0.0f;
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, Category= "Axe Movement")
 	float DefaultWalkSpeed = 600.0f;
 };

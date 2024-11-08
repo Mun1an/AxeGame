@@ -29,8 +29,6 @@ ELaunchCharacterDirection UHitReactBase::GetHitDirectionMontageByHitResult(const
 	double Dot = CharacterDirection.Dot(HitDirection);
 	float Angle = FMath::Acos(Dot) * 180.f / PI;
 	FVector CrossVector = CharacterDirection.Cross(HitDirection);
-	UE_LOG(LogTemp, Warning, TEXT("Dot: %f"), Dot);
-	UE_LOG(LogTemp, Warning, TEXT("CrossVector: %s"), *CrossVector.ToString());
 
 	if (Angle < 45.f)
 	{

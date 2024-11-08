@@ -28,14 +28,11 @@ void UAbilityTask_ApplyEffect::Activate()
 
 	if (IsLocallyControlled())
 	{
-		
 	}
 	else
 	{
-		
 	}
 	ApplyEffect();
-	
 }
 
 
@@ -48,23 +45,29 @@ void UAbilityTask_ApplyEffect::OnDestroy(bool bInOwnerFinished)
 
 void UAbilityTask_ApplyEffect::ApplyEffect()
 {
+	if (!EffectClass)
+	{
+		return;
+	}
 	const IAbilitySystemInterface* SourceASCActor = Cast<IAbilitySystemInterface>(SourceActor);
 	const IAbilitySystemInterface* TargetASCActor = Cast<IAbilitySystemInterface>(TargetActor);
-	check(SourceASCActor)
-	check(TargetASCActor)
+	if (!SourceASCActor || !TargetASCActor)
+	{
+		return;
+	}
 
 	UAbilitySystemComponent* SourceASC = SourceASCActor->GetAbilitySystemComponent();
 	UAbilitySystemComponent* TargetASC = TargetASCActor->GetAbilitySystemComponent();
 
 	FGameplayEffectContextHandle ContextHandle = SourceASC->MakeEffectContext();
 	ContextHandle.AddSourceObject(SourceActor);
+	
 	const FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(
 		EffectClass, Level, ContextHandle
 	);
 	SpecHandle.Data->SetDuration(Duration, true);
 	EffectHandle = SourceASC->ApplyGameplayEffectSpecToTarget(
-		*SpecHandle.Data.Get(), TargetASC,
-		GetActivationPredictionKey()
+		*SpecHandle.Data.Get(), TargetASC
 	);
 }
 

@@ -53,7 +53,9 @@ public:
 
 	UFUNCTION()
 	AAxeCharacterBase* GetAxeCharacterOwner() const;
-
+	
+	UFUNCTION()
+	bool GetIsUsingClientMovement() const { return bUseClientMovement; }
 	/**
 	 * InputTag
 	 */
@@ -97,7 +99,7 @@ protected:
 	/**
 	 * Ability Props
 	 */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ability Props")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ability Props")
 	TObjectPtr<UAnimMontage> AbilityMontage;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Ability Props")
@@ -105,6 +107,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ability Activation")
 	EAxeAbilityActivationGroup ActivationGroup;
+
+	UPROPERTY(EditDefaultsOnly)
+	bool bUseClientMovement = true;
 
 	UFUNCTION()
 	UAxeAbilitySystemComponent* GetAxeAbilitySystemComponentFromActorInfo() const;
@@ -133,6 +138,10 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void AddMontageNotifyStateTask(UAnimMontage* LocalAnimMontage);
 
+	// Movement
+	UFUNCTION(BlueprintCallable)
+	void SetIgnoreClientMovementErrorChecksAndCorrection(bool bIsIgnore);
+
 	// ANS
 	UFUNCTION()
 	void Ans_MovementSlow_NotifyBegin(UAnimNotifyState* AnimNotifyState);
@@ -145,8 +154,12 @@ protected:
 	void Ans_LaunchCharacter_NotifyEnd(UAnimNotifyState* AnimNotifyState);
 
 	UFUNCTION()
+	void Ans_IgnoreInput_NotifyBegin(UAnimNotifyState* AnimNotifyState);
+	UFUNCTION()
+	void Ans_IgnoreInput_NotifyEnd(UAnimNotifyState* AnimNotifyState);
+	
+	UFUNCTION()
 	void Ans_MotionWrap_NotifyBegin(UAnimNotifyState* AnimNotifyState);
 	UFUNCTION()
 	void Ans_MotionWrap_NotifyEnd(UAnimNotifyState* AnimNotifyState);
-
 };

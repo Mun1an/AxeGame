@@ -15,9 +15,12 @@
 #include "Anim/ComboAnimNotifyState.h"
 #include "Anim/ComboInputCacheAnimNotifyState.h"
 #include "Anim/HitTraceAnimNotifyState.h"
+#include "Anim/IgnoreInputAnimNotifyState.h"
 #include "Anim/LaunchCharacterNotifyState.h"
 #include "Anim/MovementSlowAnimNotifyState.h"
 #include "Character/AxeCharacterBase.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/PawnMovementComponent.h"
 #include "Interaction/CombatInterface.h"
 
 #define ENSURE_ABILITY_IS_INSTANTIATED_OR_RETURN(FunctionName, ReturnValue)																				\
@@ -144,10 +147,10 @@ void UAxeGameplayAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handl
                                           const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-	// Tasks
-	if (AbilityMontage)
+	// Client Movement
+	if (bUseClientMovement && HasAuthority(&CurrentActivationInfo) && IsForRemoteClient())
 	{
-		AddMontageNotifyStateTask(AbilityMontage);
+		SetIgnoreClientMovementErrorChecksAndCorrection(true);
 	}
 }
 
@@ -157,6 +160,12 @@ void UAxeGameplayAbility::EndAbility(const FGameplayAbilitySpecHandle Handle,
                                      bool bReplicateEndAbility, bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+
+	// Client Movement
+	if (bUseClientMovement && HasAuthority(&CurrentActivationInfo) && IsForRemoteClient())
+	{
+		SetIgnoreClientMovementErrorChecksAndCorrection(false);
+	}
 }
 
 
@@ -276,6 +285,17 @@ void UAxeGameplayAbility::AddMontageNotifyStateTask(UAnimMontage* LocalAnimMonta
 		this, &UAxeGameplayAbility::Ans_LaunchCharacter_NotifyEnd);
 	AT_LaunchCharacter_Ans->ReadyForActivation();
 
+	// Ignore Input
+	UAbilityTask_MontageNotify* AT_IgnoreInput_Ans = UAbilityTask_MontageNotify::CreateMontageNotifyStateTask(
+		this, LocalAnimMontage,
+		UIgnoreInputAnimNotifyState::StaticClass()
+	);
+	AT_IgnoreInput_Ans->MontageNotifyStartDelegate.AddDynamic(
+		this, &UAxeGameplayAbility::Ans_IgnoreInput_NotifyBegin);
+	AT_IgnoreInput_Ans->MontageNotifyEndDelegate.AddDynamic(
+		this, &UAxeGameplayAbility::Ans_IgnoreInput_NotifyEnd);
+	AT_IgnoreInput_Ans->ReadyForActivation();
+
 	// Combo by IComboAbilityInterface
 	if (IComboAbilityInterface* ComboAbility = Cast<IComboAbilityInterface>(this))
 	{
@@ -317,19 +337,30 @@ void UAxeGameplayAbility::AddMontageNotifyStateTask(UAnimMontage* LocalAnimMonta
 	}
 }
 
+void UAxeGameplayAbility::SetIgnoreClientMovementErrorChecksAndCorrection(bool bIsIgnore)
+{
+	if (!HasAuthority(&CurrentActivationInfo))
+	{
+		return;
+	}
+	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
+	AxeCharacterOwner->GetCharacterMovement()->bIgnoreClientMovementErrorChecksAndCorrection = bIsIgnore;
+	AxeCharacterOwner->GetCharacterMovement()->bServerAcceptClientAuthoritativePosition = bIsIgnore;
+}
+
 //
 void UAxeGameplayAbility::Ans_MovementSlow_NotifyBegin(UAnimNotifyState* AnimNotifyState)
 {
-	UActionCombatComponent* ActionCombatComponent = GetActionCombatComponent();
-	UAxeAnimNotifyStateBase* AxeAnimNotifyStateBase = Cast<UAxeAnimNotifyStateBase>(AnimNotifyState);
-	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
-	UAbilityTask_ApplyEffect* AbilityTask_ApplyEffect = UAbilityTask_ApplyEffect::CreateApplyEffectTask(
-		this, AxeCharacterOwner, AxeCharacterOwner,
-		ActionCombatComponent->GetMovementSlowEffectClass(),
-		AbilityUsingMovementSlowEffectMagnitude,
-		AxeAnimNotifyStateBase->GetNotifyStateDuration()
-	);
-	AbilityTask_ApplyEffect->ReadyForActivation();
+	// UActionCombatComponent* ActionCombatComponent = GetActionCombatComponent();
+	// UAxeAnimNotifyStateBase* AxeAnimNotifyStateBase = Cast<UAxeAnimNotifyStateBase>(AnimNotifyState);
+	// AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
+	// UAbilityTask_ApplyEffect* AbilityTask_ApplyEffect = UAbilityTask_ApplyEffect::CreateApplyEffectTask(
+	// 	this, AxeCharacterOwner, AxeCharacterOwner,
+	// 	ActionCombatComponent->GetMovementSlowEffectClass(),
+	// 	AbilityUsingMovementSlowEffectMagnitude,
+	// 	AxeAnimNotifyStateBase->GetNotifyStateDuration()
+	// );
+	// AbilityTask_ApplyEffect->ReadyForActivation();
 }
 
 
@@ -371,6 +402,26 @@ void UAxeGameplayAbility::Ans_LaunchCharacter_NotifyBegin(UAnimNotifyState* Anim
 
 void UAxeGameplayAbility::Ans_LaunchCharacter_NotifyEnd(UAnimNotifyState* AnimNotifyState)
 {
+}
+
+void UAxeGameplayAbility::Ans_IgnoreInput_NotifyBegin(UAnimNotifyState* AnimNotifyState)
+{
+	if (IsLocallyControlled())
+	{
+		AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
+		AController* Controller = AxeCharacterOwner->GetController();
+		Controller->SetIgnoreMoveInput(true);
+	}
+}
+
+void UAxeGameplayAbility::Ans_IgnoreInput_NotifyEnd(UAnimNotifyState* AnimNotifyState)
+{
+	if (IsLocallyControlled())
+	{
+		AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
+		AController* Controller = AxeCharacterOwner->GetController();
+		Controller->SetIgnoreMoveInput(false);
+	}
 }
 
 void UAxeGameplayAbility::Ans_MotionWrap_NotifyBegin(UAnimNotifyState* AnimNotifyState)

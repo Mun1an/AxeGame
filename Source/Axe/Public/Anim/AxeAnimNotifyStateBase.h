@@ -6,6 +6,7 @@
 #include "Animation/AnimNotifies/AnimNotifyState.h"
 #include "AxeAnimNotifyStateBase.generated.h"
 
+class AAxeCharacterBase;
 class UAxeAbilitySystemComponent;
 class AAxeCharacterPlayer;
 class UComboActionComponent;
@@ -43,6 +44,8 @@ protected:
 	bool bIsInterrupted = false;
 	bool bIsNotifyStateEnded = true;
 
+	UFUNCTION()
+	AAxeCharacterBase* GetAxeCharacterBase(const USkeletalMeshComponent* MeshComp);
 	UFUNCTION()
 	AAxeCharacterPlayer* GetPlayerCharacter(const USkeletalMeshComponent* MeshComp);
 	UFUNCTION()

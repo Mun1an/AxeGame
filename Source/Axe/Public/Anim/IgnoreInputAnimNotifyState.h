@@ -4,18 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "Anim/AxeAnimNotifyStateBase.h"
-#include "AxeMotionWrapAnimNotifyState.generated.h"
+#include "IgnoreInputAnimNotifyState.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class AXE_API UAxeMotionWrapAnimNotifyState : public UAxeAnimNotifyStateBase
+class AXE_API UIgnoreInputAnimNotifyState : public UAxeAnimNotifyStateBase
 {
 	GENERATED_BODY()
-
-	UPROPERTY(EditDefaultsOnly)
-	bool bFacingRotation = true;
 public:
 	virtual void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration,
 							 const FAnimNotifyEventReference& EventReference) override;
