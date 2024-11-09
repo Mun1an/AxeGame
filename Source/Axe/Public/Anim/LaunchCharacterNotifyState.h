@@ -23,4 +23,7 @@ public:
 	bool bXYOverride = false;
 	bool bZOverride = false;
 
+	// 会根据目标的位置动态调整速度
+	UPROPERTY(EditAnywhere)
+	bool bDynamicChangedByTargetDistance = true;
 };

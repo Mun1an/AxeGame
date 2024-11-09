@@ -5,11 +5,13 @@
 
 #include "AbilitySystemLog.h"
 #include "Abilities/Tasks/AbilityTask_ApplyRootMotionConstantForce.h"
+#include "Abilities/Tasks/AbilityTask_WaitDelay.h"
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
 #include "AbilitySystem/Interaction/ComboAbilityInterface.h"
 #include "AbilitySystem/Interaction/HitTraceAbilityInterface.h"
-#include "AbilitySystem/Tasks/AbilityTask_ApplyEffect.h"
 #include "AbilitySystem/Tasks/AbilityTask_MontageNotify.h"
+#include "AbilitySystem/Tasks/AbilityTask_WaitFacingRot.h"
+#include "AbilitySystem/Tasks/AbilityTask_WaitLastMoveInput.h"
 #include "ActionSystem/ActionCombatComponent.h"
 #include "ActionSystem/ComboActionComponent.h"
 #include "Anim/AxeMotionWrapAnimNotifyState.h"
@@ -18,10 +20,8 @@
 #include "Anim/HitTraceAnimNotifyState.h"
 #include "Anim/IgnoreInputAnimNotifyState.h"
 #include "Anim/LaunchCharacterNotifyState.h"
-#include "Anim/MovementSlowAnimNotifyState.h"
 #include "Character/AxeCharacterBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "GameFramework/PawnMovementComponent.h"
 #include "Interaction/CombatInterface.h"
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -52,6 +52,19 @@ AAxeCharacterBase* UAxeGameplayAbility::GetAxeCharacterOwner() const
 		}
 	}
 	return nullptr;
+}
+
+AActor* UAxeGameplayAbility::GetOrFindAutoTargetActor()
+{
+	if (!AutoTargetActor)
+	{
+		AutoTargetActor = FindOneGoodTarget(
+			GetAxeCharacterOwner(),
+			AutoSearchTargetRadius,
+			AutoSearchTargetAngle
+		);
+	}
+	return AutoTargetActor;
 }
 
 bool UAxeGameplayAbility::CanChangeActivationGroup(EAxeAbilityActivationGroup NewGroup) const
@@ -149,11 +162,25 @@ void UAxeGameplayAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handl
                                           const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
 
 	// Client Movement
 	if (bUseClientMovement && HasAuthority(&CurrentActivationInfo) && IsForRemoteClient())
 	{
 		SetIgnoreClientMovementErrorChecksAndCorrection(true);
+	}
+
+	// AutoSearchTarget
+	if (bNeedAutoSearchTarget && IsLocallyControlled())
+	{
+		UAbilityTask_WaitLastMoveInput* AbilityTask_WaitDelay =
+			UAbilityTask_WaitLastMoveInput::CreateWaitLastMoveInputTask(
+				this, AxeCharacterOwner
+			);
+		AbilityTask_WaitDelay->OnLastMoveInputDelegate.AddDynamic(
+			this, &UAxeGameplayAbility::HasMovementInputFirstTimeCallBack
+		);
+		AbilityTask_WaitDelay->ReadyForActivation();
 	}
 }
 
@@ -266,17 +293,6 @@ void UAxeGameplayAbility::AddMontageNotifyStateTask(UAnimMontage* LocalAnimMonta
 
 	//UAbilityTask_MontageNotify
 
-	// MovementSlow
-	// UAbilityTask_MontageNotify* AT_MovementSlow_Ans = UAbilityTask_MontageNotify::CreateMontageNotifyStateTask(
-	// 	this, LocalAnimMontage,
-	// 	UMovementSlowAnimNotifyState::StaticClass()
-	// );
-	// AT_MovementSlow_Ans->MontageNotifyStartDelegate.AddDynamic(
-	// 	this, &UAxeGameplayAbility::Ans_MovementSlow_NotifyBegin);
-	// AT_MovementSlow_Ans->MontageNotifyEndDelegate.AddDynamic(
-	// 	this, &UAxeGameplayAbility::Ans_MovementSlow_NotifyEnd);
-	// AT_MovementSlow_Ans->ReadyForActivation();
-
 	// LaunchCharacter
 	UAbilityTask_MontageNotify* AT_LaunchCharacter_Ans = UAbilityTask_MontageNotify::CreateMontageNotifyStateTask(
 		this, LocalAnimMontage,
@@ -362,121 +378,8 @@ void UAxeGameplayAbility::SetIgnoreClientMovementErrorChecksAndCorrection(bool b
 	AxeCharacterOwner->GetCharacterMovement()->bServerAcceptClientAuthoritativePosition = bIsIgnore;
 }
 
-//
-// void UAxeGameplayAbility::Ans_MovementSlow_NotifyBegin(UAnimNotifyState* AnimNotifyState)
-// {
-// 	UActionCombatComponent* ActionCombatComponent = GetActionCombatComponent();
-// 	UAxeAnimNotifyStateBase* AxeAnimNotifyStateBase = Cast<UAxeAnimNotifyStateBase>(AnimNotifyState);
-// 	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
-// 	UAbilityTask_ApplyEffect* AbilityTask_ApplyEffect = UAbilityTask_ApplyEffect::CreateApplyEffectTask(
-// 		this, AxeCharacterOwner, AxeCharacterOwner,
-// 		ActionCombatComponent->GetMovementSlowEffectClass(),
-// 		AbilityUsingMovementSlowEffectMagnitude,
-// 		AxeAnimNotifyStateBase->GetNotifyStateDuration()
-// 	);
-// 	AbilityTask_ApplyEffect->ReadyForActivation();
-// }
-
-
-// void UAxeGameplayAbility::Ans_MovementSlow_NotifyEnd(UAnimNotifyState* AnimNotifyState)
-// {
-// 	UActionCombatComponent* ActionCombatComponent = GetActionCombatComponent();
-// 	if (ActionCombatComponent)
-// 	{
-// 		ActionCombatComponent->RemoveMovementSlowEffectInAbilityUse();
-// 	}
-// }
-
-
-void UAxeGameplayAbility::Ans_LaunchCharacter_NotifyBegin(UAnimNotifyState* AnimNotifyState)
-{
-	UActionCombatComponent* ActionCombatComponent = GetActionCombatComponent();
-	ULaunchCharacterNotifyState* LaunchCharacterNotifyState = Cast<ULaunchCharacterNotifyState>(AnimNotifyState);
-	const FVector MotionDirection = ActionCombatComponent->GetLaunchDirectionByEnum(
-		GetAxeCharacterOwner(), LaunchCharacterNotifyState->LaunchDirection
-	);
-	float LaunchSpeed = LaunchCharacterNotifyState->LaunchSpeed;
-	float NotifyStateDuration = LaunchCharacterNotifyState->GetNotifyStateDuration();
-
-	UAbilityTask_ApplyRootMotionConstantForce::ApplyRootMotionConstantForce(
-		this,
-		NAME_None,
-		MotionDirection,
-		LaunchSpeed,
-		NotifyStateDuration,
-		true,
-		nullptr,
-		ERootMotionFinishVelocityMode::ClampVelocity,
-		FVector::ZeroVector,
-		1000,
-		true
-	);
-}
-
-void UAxeGameplayAbility::Ans_LaunchCharacter_NotifyEnd(UAnimNotifyState* AnimNotifyState)
-{
-}
-
-void UAxeGameplayAbility::Ans_IgnoreInput_NotifyBegin(UAnimNotifyState* AnimNotifyState)
-{
-	if (IsLocallyControlled())
-	{
-		AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
-		AController* Controller = AxeCharacterOwner->GetController();
-		Controller->SetIgnoreMoveInput(true);
-	}
-}
-
-void UAxeGameplayAbility::Ans_IgnoreInput_NotifyEnd(UAnimNotifyState* AnimNotifyState)
-{
-	if (IsLocallyControlled())
-	{
-		AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
-		AController* Controller = AxeCharacterOwner->GetController();
-		Controller->SetIgnoreMoveInput(false);
-	}
-}
-
-
-void UAxeGameplayAbility::Ans_MotionWrap_NotifyBegin(UAnimNotifyState* AnimNotifyState)
-{
-	if (!IsLocallyControlled())
-	{
-		return;
-	}
-	// 朝附近的目标吸附
-	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
-
-	AAxeCharacterBase* TargetCharacter = GetOneGoodTargetToAttract(AxeCharacterOwner, 500, 60.f);
-	if (!TargetCharacter)
-	{
-		return;
-	}
-
-	FVector ToTargetDir = (TargetCharacter->GetActorLocation() - AxeCharacterOwner->GetActorLocation());
-	float ToTargetDist = ToTargetDir.Size();
-
-	UAbilityTask_ApplyRootMotionConstantForce::ApplyRootMotionConstantForce(
-		this,
-		NAME_None,
-		ToTargetDir,
-		ToTargetDist,
-		Cast<UAxeAnimNotifyStateBase>(AnimNotifyState)->GetNotifyStateDuration(),
-		true,
-		nullptr,
-		ERootMotionFinishVelocityMode::ClampVelocity,
-		FVector::ZeroVector,
-		1000,
-		true
-	);
-	AxeCharacterOwner->SetActorRotation(ToTargetDir.Rotation(), ETeleportType::None);
-
-	AController* Controller = AxeCharacterOwner->GetController();
-	Controller->SetIgnoreMoveInput(true);
-}
-
-AAxeCharacterBase* UAxeGameplayAbility::GetOneGoodTargetToAttract(AAxeCharacterBase* AxeCharacterOwner,
-                                                                  float SphereRadius, float TraceAngleRange)
+AAxeCharacterBase* UAxeGameplayAbility::FindOneGoodTarget(AAxeCharacterBase* AxeCharacterOwner,
+                                                          float SphereRadius, float TraceAngleRange)
 {
 	TArray<AActor*> OutActors;
 	TArray<AActor*> IgnoredActors;
@@ -519,7 +422,7 @@ AAxeCharacterBase* UAxeGameplayAbility::GetOneGoodTargetToAttract(AAxeCharacterB
 		FVector PlaneNormal = FVector::CrossProduct(TraceDirection, FVector::UpVector);
 		float PointPlaneDistance = FVector::PointPlaneDist(LocalActorLocation, OwnerLocation, PlaneNormal);
 		float ToCharacterDistance = (LocalActorLocation - OwnerLocation).Size();
-		if (PointPlaneDistance + ToCharacterDistance < MinScore)
+		if (PointPlaneDistance * 2 + ToCharacterDistance < MinScore)
 		{
 			TargetCharacter = OutAxeCharacter;
 		}
@@ -527,12 +430,153 @@ AAxeCharacterBase* UAxeGameplayAbility::GetOneGoodTargetToAttract(AAxeCharacterB
 	return TargetCharacter;
 }
 
+void UAxeGameplayAbility::HasMovementInputFirstTimeCallBack()
+{
+	GetOrFindAutoTargetActor();
+}
+
+void UAxeGameplayAbility::Ans_LaunchCharacter_NotifyBegin(UAnimNotifyState* AnimNotifyState)
+{
+	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
+
+	UActionCombatComponent* ActionCombatComponent = GetActionCombatComponent();
+	ULaunchCharacterNotifyState* Launch_ANS = Cast<ULaunchCharacterNotifyState>(AnimNotifyState);
+	const FVector MotionDirection = ActionCombatComponent->GetLaunchDirectionByEnum(
+		AxeCharacterOwner, Launch_ANS->LaunchDirection
+	);
+	float LaunchSpeed = Launch_ANS->LaunchSpeed;
+	float NotifyStateDuration = Launch_ANS->GetNotifyStateDuration();
+
+	// 根据 目标位置 调整计算位移
+	if (Launch_ANS->bDynamicChangedByTargetDistance)
+	{
+		const AActor* TargetActor = GetOrFindAutoTargetActor();
+		if (TargetActor)
+		{
+			const FVector TargetPos = TargetActor->GetActorLocation();
+			const FVector SourcePos = AxeCharacterOwner->GetActorLocation();
+			float ToTargetDist = (TargetPos - SourcePos).Size();
+			float OldNearlyDistance = LaunchSpeed * NotifyStateDuration;
+			if (OldNearlyDistance > ToTargetDist)
+			{
+				float MotionMulti = ToTargetDist / OldNearlyDistance;
+				LaunchSpeed = LaunchSpeed * 1;
+				NotifyStateDuration = NotifyStateDuration * MotionMulti;
+			}
+		}
+	}
+
+	UAbilityTask_ApplyRootMotionConstantForce::ApplyRootMotionConstantForce(
+		this,
+		NAME_None,
+		MotionDirection,
+		LaunchSpeed,
+		NotifyStateDuration,
+		true,
+		nullptr,
+		ERootMotionFinishVelocityMode::ClampVelocity,
+		FVector::ZeroVector,
+		100,
+		true
+	);
+}
+
+void UAxeGameplayAbility::Ans_LaunchCharacter_NotifyEnd(UAnimNotifyState* AnimNotifyState)
+{
+}
+
+void UAxeGameplayAbility::Ans_IgnoreInput_NotifyBegin(UAnimNotifyState* AnimNotifyState)
+{
+	if (IsLocallyControlled())
+	{
+		AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
+		if (AController* Controller = AxeCharacterOwner->GetController())
+		{
+			Controller->SetIgnoreMoveInput(true);
+		}
+	}
+}
+
+void UAxeGameplayAbility::Ans_IgnoreInput_NotifyEnd(UAnimNotifyState* AnimNotifyState)
+{
+	if (IsLocallyControlled())
+	{
+		AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
+		if (AController* Controller = AxeCharacterOwner->GetController())
+		{
+			Controller->SetIgnoreMoveInput(false);
+		}
+	}
+}
+
+void UAxeGameplayAbility::Ans_MotionWrap_NotifyBegin(UAnimNotifyState* AnimNotifyState)
+{
+	// 朝附近的目标吸附
+	if (!IsLocallyControlled())
+	{
+		return;
+	}
+	UAxeMotionWrapAnimNotifyState* AxeANS = Cast<UAxeMotionWrapAnimNotifyState>(AnimNotifyState);
+	if (!AxeANS)
+	{
+		return;
+	}
+	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
+
+	AActor* AttachTarget = GetOrFindAutoTargetActor();
+	if (AttachTarget == nullptr)
+	{
+		return;
+	}
+
+	FVector ToTargetDir = (AttachTarget->GetActorLocation() - AxeCharacterOwner->GetActorLocation());
+	float ToTargetDist = ToTargetDir.Size();
+
+	// SetIgnoreMoveInput
+	if (AController* Controller = AxeCharacterOwner->GetController())
+	{
+		Controller->SetIgnoreMoveInput(true);
+		bSetIgnoreMoveInputByMotionWrap = true;
+	}
+
+	// ApplyRootMotionConstantForce
+	float MotionDuration = AxeANS->GetNotifyStateDuration();
+	float MotionStrength = (ToTargetDist / MotionDuration) * AxeANS->GetTraceSpeedCoefficient();
+
+	UAbilityTask_ApplyRootMotionConstantForce::ApplyRootMotionConstantForce(
+		this,
+		NAME_None,
+		ToTargetDir,
+		MotionStrength,
+		MotionDuration,
+		true,
+		nullptr,
+		ERootMotionFinishVelocityMode::ClampVelocity,
+		FVector::ZeroVector,
+		100,
+		true
+	);
+
+	// SetActorRotation
+	const FRotator ToRot = ToTargetDir.Rotation().GetNormalized();
+	UAbilityTask_WaitFacingRot* AbilityTask_WaitFacingRot = UAbilityTask_WaitFacingRot::CreateWaitFacingRotTask(
+		this, AxeCharacterOwner, ToRot, 50.0f
+	);
+	AbilityTask_WaitFacingRot->ReadyForActivation();
+}
+
 void UAxeGameplayAbility::Ans_MotionWrap_NotifyEnd(UAnimNotifyState* AnimNotifyState)
 {
 	if (IsLocallyControlled())
 	{
 		AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
-		AController* Controller = AxeCharacterOwner->GetController();
-		Controller->SetIgnoreMoveInput(false);
+		if (AController* Controller = AxeCharacterOwner->GetController())
+		{
+			if (bSetIgnoreMoveInputByMotionWrap)
+			{
+				Controller->SetIgnoreMoveInput(false);
+				bSetIgnoreMoveInputByMotionWrap = false;
+			}
+		}
 	}
 }

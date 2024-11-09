@@ -48,14 +48,14 @@ public:
 	UFUNCTION()
 	UAnimMontage* GetAbilityMontage() const { return AbilityMontage; }
 
-	UFUNCTION()
-	float GetAbilityUsingMovementSlowEffectMagnitude() const { return AbilityUsingMovementSlowEffectMagnitude; }
-
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	AAxeCharacterBase* GetAxeCharacterOwner() const;
 
 	UFUNCTION()
 	bool GetIsUsingClientMovement() const { return bUseClientMovement; }
+
+	UFUNCTION()
+	AActor* GetOrFindAutoTargetActor();
 
 	/**
 	 * InputTag
@@ -103,14 +103,20 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ability Props")
 	TObjectPtr<UAnimMontage> AbilityMontage;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Ability Props")
-	float AbilityUsingMovementSlowEffectMagnitude = 10.f;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ability Activation")
 	EAxeAbilityActivationGroup ActivationGroup;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Client")
 	bool bUseClientMovement = true;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Ability Target")
+	bool bNeedAutoSearchTarget = true;
+	UPROPERTY(EditDefaultsOnly, Category = "Ability Target")
+	float AutoSearchTargetRadius = 200.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Ability Target")
+	float AutoSearchTargetAngle = 60.f;
+	UPROPERTY()
+	TObjectPtr<AActor> AutoTargetActor;
 
 	UFUNCTION()
 	UAxeAbilitySystemComponent* GetAxeAbilitySystemComponentFromActorInfo() const;
@@ -143,11 +149,10 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void SetIgnoreClientMovementErrorChecksAndCorrection(bool bIsIgnore);
 
-	// ANS
-	// UFUNCTION()
-	// void Ans_MovementSlow_NotifyBegin(UAnimNotifyState* AnimNotifyState);
-	// UFUNCTION()
-	// void Ans_MovementSlow_NotifyEnd(UAnimNotifyState* AnimNotifyState);
+	UFUNCTION(BlueprintCallable)
+	AAxeCharacterBase* FindOneGoodTarget(AAxeCharacterBase* AxeCharacterOwner, float SphereRadius = 300,
+	                                     float TraceAngleRange = 60.f);
+
 
 	UFUNCTION()
 	void Ans_LaunchCharacter_NotifyBegin(UAnimNotifyState* AnimNotifyState);
@@ -162,8 +167,12 @@ protected:
 
 	UFUNCTION()
 	void Ans_MotionWrap_NotifyBegin(UAnimNotifyState* AnimNotifyState);
-	AAxeCharacterBase* GetOneGoodTargetToAttract(AAxeCharacterBase* AxeCharacterOwner, float SphereRadius = 500,
-	                                             float TraceAngleRange = 60.f);
+
 	UFUNCTION()
 	void Ans_MotionWrap_NotifyEnd(UAnimNotifyState* AnimNotifyState);
+
+	//
+	bool bSetIgnoreMoveInputByMotionWrap = false;
+	UFUNCTION()
+	void HasMovementInputFirstTimeCallBack();
 };
