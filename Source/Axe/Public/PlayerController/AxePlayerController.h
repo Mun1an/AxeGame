@@ -22,8 +22,12 @@ class AXE_API AAxePlayerController : public APlayerController
 public:
 	AAxePlayerController();
 
+	// 可获取到屏蔽输入后的移动向量
+	FVector GetAxeLastMovementInputVector() const { return AxeLastMovementInputDirection; }
+
 protected:
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaSeconds) override;
 	virtual void SetupInputComponent() override;
 
 	//
@@ -31,6 +35,11 @@ protected:
 	void Look(const FInputActionValue& Value);
 	void Jump(const FInputActionValue& Value);
 	void StopJumping(const FInputActionValue& Value);
+
+	UPROPERTY(BlueprintReadOnly)
+	FVector AxeLastMovementInputDirection;
+	float ResetLastMovementInputMaxTime = 1.f;
+	float ResetLastMovementInputTime = 0.f;
 
 private:
 	UPROPERTY(EditAnywhere, Category="Input")

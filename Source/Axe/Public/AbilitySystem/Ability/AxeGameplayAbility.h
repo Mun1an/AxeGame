@@ -7,6 +7,7 @@
 #include "AxeGameplayAbility.generated.h"
 
 
+class AAxeCharacterPlayer;
 enum class ELaunchCharacterDirection : uint8;
 class UAbilityTask_HitTrace;
 class UComboActionComponent;
@@ -150,7 +151,7 @@ protected:
 	void SetIgnoreClientMovementErrorChecksAndCorrection(bool bIsIgnore);
 
 	UFUNCTION(BlueprintCallable)
-	AAxeCharacterBase* FindOneGoodTarget(AAxeCharacterBase* AxeCharacterOwner, float SphereRadius = 300,
+	AAxeCharacterBase* FindOneGoodTargetByMoveInput(float SphereRadius = 300,
 	                                     float TraceAngleRange = 60.f);
 
 
@@ -173,6 +174,4 @@ protected:
 
 	//
 	bool bSetIgnoreMoveInputByMotionWrap = false;
-	UFUNCTION()
-	void HasMovementInputFirstTimeCallBack();
 };

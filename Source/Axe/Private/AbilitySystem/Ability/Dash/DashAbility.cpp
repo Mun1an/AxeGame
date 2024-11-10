@@ -1,0 +1,38 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "AbilitySystem/Ability/Dash/DashAbility.h"
+
+#include "Character/AxeCharacterBase.h"
+#include "Enum/AxeEnum.h"
+
+ELaunchCharacterDirection UDashAbility::GetDashDirectionByMovementVector(const FVector MovementVector) const
+{
+	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
+	if (!AxeCharacterOwner)
+	{
+		return ELaunchCharacterDirection::Lc_Backward;
+	}
+	FVector CharacterDirection = AxeCharacterOwner->GetActorRotation().Vector().GetSafeNormal();
+
+	double Dot = CharacterDirection.Dot(MovementVector);
+	float Angle = FMath::Acos(Dot) * 180.f / PI;
+	FVector CrossVector = CharacterDirection.Cross(MovementVector);
+	
+	if (Angle < 45.f)
+	{
+		return ELaunchCharacterDirection::Lc_Forward;
+	}
+	if (Angle < 135.f)
+	{
+		if (CrossVector.Z > 0.f)
+		{
+			return ELaunchCharacterDirection::Lc_Right;
+		}
+		else
+		{
+			return ELaunchCharacterDirection::Lc_Left;
+		}
+	}
+	return ELaunchCharacterDirection::Lc_Backward;
+}

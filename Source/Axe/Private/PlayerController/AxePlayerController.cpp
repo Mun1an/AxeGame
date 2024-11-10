@@ -13,6 +13,7 @@
 
 AAxePlayerController::AAxePlayerController()
 {
+	PrimaryActorTick.bCanEverTick = true;
 }
 
 void AAxePlayerController::BeginPlay()
@@ -26,6 +27,21 @@ void AAxePlayerController::BeginPlay()
 	if (Subsystem)
 	{
 		Subsystem->AddMappingContext(AxeInputMappingContext, 0);
+	}
+}
+
+void AAxePlayerController::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	// 定时清除上次的自主移动输入
+	if (ResetLastMovementInputTime > 0)
+	{
+		ResetLastMovementInputTime -= DeltaSeconds;
+	}
+	else if (AxeLastMovementInputDirection != FVector::ZeroVector)
+	{
+		AxeLastMovementInputDirection = FVector::ZeroVector;
 	}
 }
 
@@ -67,6 +83,9 @@ void AAxePlayerController::Move(const FInputActionValue& Value)
 	AAxeCharacterPlayer* AxeCharacterPlayer = Cast<AAxeCharacterPlayer>(GetCharacter());
 	AxeCharacterPlayer->AddMovementInput(ForwardDirection, MovementVector.Y);
 	AxeCharacterPlayer->AddMovementInput(RightDirection, MovementVector.X);
+
+	ResetLastMovementInputTime = ResetLastMovementInputMaxTime;
+	AxeLastMovementInputDirection = ForwardDirection * MovementVector.Y + RightDirection * MovementVector.X;
 }
 
 void AAxePlayerController::Look(const FInputActionValue& Value)

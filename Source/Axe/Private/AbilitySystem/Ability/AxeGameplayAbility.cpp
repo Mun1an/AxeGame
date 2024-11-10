@@ -7,6 +7,7 @@
 #include "Abilities/Tasks/AbilityTask_ApplyRootMotionConstantForce.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
+#include "AbilitySystem/AxeBlueprintFunctionLibrary.h"
 #include "AbilitySystem/Interaction/ComboAbilityInterface.h"
 #include "AbilitySystem/Interaction/HitTraceAbilityInterface.h"
 #include "AbilitySystem/Tasks/AbilityTask_MontageNotify.h"
@@ -21,6 +22,7 @@
 #include "Anim/IgnoreInputAnimNotifyState.h"
 #include "Anim/LaunchCharacterNotifyState.h"
 #include "Character/AxeCharacterBase.h"
+#include "Character/AxeCharacterPlayer.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Interaction/CombatInterface.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -58,8 +60,7 @@ AActor* UAxeGameplayAbility::GetOrFindAutoTargetActor()
 {
 	if (!AutoTargetActor)
 	{
-		AutoTargetActor = FindOneGoodTarget(
-			GetAxeCharacterOwner(),
+		AutoTargetActor = FindOneGoodTargetByMoveInput(
 			AutoSearchTargetRadius,
 			AutoSearchTargetAngle
 		);
@@ -173,14 +174,7 @@ void UAxeGameplayAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 	// AutoSearchTarget
 	if (bNeedAutoSearchTarget && IsLocallyControlled())
 	{
-		UAbilityTask_WaitLastMoveInput* AbilityTask_WaitDelay =
-			UAbilityTask_WaitLastMoveInput::CreateWaitLastMoveInputTask(
-				this, AxeCharacterOwner
-			);
-		AbilityTask_WaitDelay->OnLastMoveInputDelegate.AddDynamic(
-			this, &UAxeGameplayAbility::HasMovementInputFirstTimeCallBack
-		);
-		AbilityTask_WaitDelay->ReadyForActivation();
+		GetOrFindAutoTargetActor();
 	}
 }
 
@@ -378,16 +372,22 @@ void UAxeGameplayAbility::SetIgnoreClientMovementErrorChecksAndCorrection(bool b
 	AxeCharacterOwner->GetCharacterMovement()->bServerAcceptClientAuthoritativePosition = bIsIgnore;
 }
 
-AAxeCharacterBase* UAxeGameplayAbility::FindOneGoodTarget(AAxeCharacterBase* AxeCharacterOwner,
-                                                          float SphereRadius, float TraceAngleRange)
+AAxeCharacterBase* UAxeGameplayAbility::FindOneGoodTargetByMoveInput(float SphereRadius, float TraceAngleRange)
 {
+	AAxeCharacterBase* AxeCharacterBase = GetAxeCharacterOwner();
+	AAxeCharacterPlayer* AxeCharacterOwner = Cast<AAxeCharacterPlayer>(AxeCharacterBase);
+	if (!AxeCharacterOwner)
+	{
+		return nullptr;
+	}
 	TArray<AActor*> OutActors;
 	TArray<AActor*> IgnoredActors;
 	IgnoredActors.Add(AxeCharacterOwner);
 	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
 	ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_Pawn));
 	const FVector OwnerLocation = AxeCharacterOwner->GetActorLocation();
-	const FVector LastMovementInputVector = AxeCharacterOwner->GetLastMovementInputVector();
+	const FVector LastMovementInputVector = UAxeBlueprintFunctionLibrary::GetAxeLastMovementInputVector(
+		AxeCharacterOwner);
 	const FVector OwnerForwardVector = AxeCharacterOwner->GetActorForwardVector();
 	const FVector TraceDirection = (LastMovementInputVector * 10 + OwnerForwardVector).GetSafeNormal();
 	const FVector SpherePos = TraceDirection * 100 + OwnerLocation;
@@ -428,11 +428,6 @@ AAxeCharacterBase* UAxeGameplayAbility::FindOneGoodTarget(AAxeCharacterBase* Axe
 		}
 	}
 	return TargetCharacter;
-}
-
-void UAxeGameplayAbility::HasMovementInputFirstTimeCallBack()
-{
-	GetOrFindAutoTargetActor();
 }
 
 void UAxeGameplayAbility::Ans_LaunchCharacter_NotifyBegin(UAnimNotifyState* AnimNotifyState)

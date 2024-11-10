@@ -6,6 +6,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "AxeBlueprintFunctionLibrary.generated.h"
 
+class AAxeCharacterPlayer;
 struct FGameplayEffectContext;
 struct FGameplayEffectContextHandle;
 struct FAxeGameplayEffectContext;
@@ -21,4 +22,7 @@ public:
 	static FAxeGameplayEffectContext& GetAxeGameplayEffectContext(FGameplayEffectContextHandle& EffectContextHandle);
 	static FAxeGameplayEffectContext* GetAxeGameplayEffectContext(FGameplayEffectContext* EffectContext);
 	static const FAxeGameplayEffectContext* GetAxeGameplayEffectContext(const FGameplayEffectContext* EffectContext);
+	
+	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemBPLibrary|Input")
+	static FVector GetAxeLastMovementInputVector(const AAxeCharacterPlayer* AxeCharacterPlayer);
 };

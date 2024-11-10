@@ -4,7 +4,9 @@
 #include "AbilitySystem/AxeBlueprintFunctionLibrary.h"
 
 #include "GameplayEffectTypes.h"
+#include "Character/AxeCharacterPlayer.h"
 #include "Enum/AxeTypes.h"
+#include "PlayerController/AxePlayerController.h"
 
 FAxeGameplayEffectContext& UAxeBlueprintFunctionLibrary::GetAxeGameplayEffectContext(
 	FGameplayEffectContextHandle& EffectContextHandle)
@@ -24,6 +26,21 @@ FAxeGameplayEffectContext* UAxeBlueprintFunctionLibrary::GetAxeGameplayEffectCon
 const FAxeGameplayEffectContext* UAxeBlueprintFunctionLibrary::GetAxeGameplayEffectContext(
 	const FGameplayEffectContext* EffectContext)
 {
-	const FAxeGameplayEffectContext* AxeGameplayEffectContext = static_cast<const FAxeGameplayEffectContext*>(EffectContext);
+	const FAxeGameplayEffectContext* AxeGameplayEffectContext = static_cast<const FAxeGameplayEffectContext*>(
+		EffectContext);
 	return AxeGameplayEffectContext;
+}
+
+FVector UAxeBlueprintFunctionLibrary::GetAxeLastMovementInputVector(const AAxeCharacterPlayer* AxeCharacterPlayer)
+{
+	check(AxeCharacterPlayer)
+	AController* Controller = AxeCharacterPlayer->GetController();
+	if (Controller)
+	{
+		if (AAxePlayerController* AxePlayerController = Cast<AAxePlayerController>(Controller))
+		{
+			return AxePlayerController->GetAxeLastMovementInputVector();
+		}
+	}
+	return AxeCharacterPlayer->GetLastMovementInputVector();
 }

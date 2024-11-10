@@ -64,7 +64,6 @@ AAxeCharacterPlayer::AAxeCharacterPlayer()
 	ComboActionComponent = CreateDefaultSubobject<UComboActionComponent>(TEXT("ComboActionComponent"));
 	//
 	ActionCombatComponent = CreateDefaultSubobject<UActionCombatComponent>(TEXT("ActionCombatComponent"));
-
 	//
 }
 

@@ -15,9 +15,11 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(InputTag_Skill_2, "InputTag.Skill.2");
 	AddTag(InputTag_Skill_3, "InputTag.Skill.3");
 	AddTag(InputTag_Skill_4, "InputTag.Skill.4");
+	AddTag(InputTag_Dash, "InputTag.Dash");
 
 	AddTag(Ability_Attack_LightAttack, "Ability.Attack.LightAttack");
 	AddTag(Ability_Attack_HeavyAttack, "Ability.Attack.HeavyAttack");
+	AddTag(Ability_Move_Dash, "Ability.Move.Dash");
 
 	AddTag(Ability_Attack_MeleeCombo_A1, "Ability.Attack.MeleeCombo.A1");
 	AddTag(Ability_Attack_MeleeCombo_A2, "Ability.Attack.MeleeCombo.A2");

@@ -7,7 +7,7 @@
 #include "AbilityTask_WaitLastMoveInput.generated.h"
 
 class AAxeCharacterPlayer;
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FLastMoveInputDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FLastMoveInputDelegate, FVector, LastMoveInput);
 
 /**
  * 
@@ -18,17 +18,23 @@ class AXE_API UAbilityTask_WaitLastMoveInput : public UAbilityTask
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(BlueprintAssignable)
 	FLastMoveInputDelegate OnLastMoveInputDelegate;
 
 	UFUNCTION(BlueprintCallable, Category="Ability|Tasks",
 		meta = (HidePin = "OwningAbility", DefaultToSelf = "OwningAbility", BlueprintInternalUseOnly = "TRUE"))
 	static UAbilityTask_WaitLastMoveInput* CreateWaitLastMoveInputTask(
 		UGameplayAbility* OwningAbility,
-		ACharacter* AxeCharacterPlayer);
+		AAxeCharacterPlayer* AxeCharacterPlayer);
+
 	virtual void Activate() override;
-	virtual void TickTask(float DeltaTime) override;
 	virtual void OnDestroy(bool bInOwnerFinished) override;
 
+	void SendDataToServer_Client();
+
+	void OnDataReplicatedCallback_Server(const FGameplayAbilityTargetDataHandle& DataHandle,
+															   FGameplayTag ActivationTag);
+
 protected:
-	TObjectPtr<ACharacter> AxeCharacterPlayer;
+	TObjectPtr<AAxeCharacterPlayer> AxeCharacterPlayer;
 };
