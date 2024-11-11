@@ -10,24 +10,41 @@
 #include "ActionSystem/ComboActionComponent.h"
 #include "Character/AxeCharacterPlayer.h"
 
-bool UComboGameplayAbility::CanReplaceAbilityByCondition(const UAxeGameplayAbility* NewAbility, AActor* Actor) const
-{
-	if (!Super::CanReplaceAbilityByCondition(NewAbility, Actor))
-	{
-		return false;
-	}
-	if (AAxeCharacterPlayer* CharacterPlayer = Cast<AAxeCharacterPlayer>(Actor))
-	{
-		if (CharacterPlayer->IsLocallyControlled())
-		{
-			UComboActionComponent* ComboActionComponent = CharacterPlayer->GetComboActionComponent();
-			bool bIsNextComboAbility = ComboActionComponent->IsNextComboAbility(NewAbility);
-			bool bIsInComboSwitchWindow = ComboActionComponent->IsInComboSwitchWindow();
-			return bIsNextComboAbility && bIsInComboSwitchWindow;
-		}
-	}
-	return true;
-}
+// bool UComboGameplayAbility::CanActivateAbility_ByLastReplaceCondition(const FGameplayAbilitySpecHandle Handle,
+// 											 const FGameplayAbilityActorInfo* ActorInfo,
+// 											 const FGameplayTagContainer* SourceTags,
+// 											 const FGameplayTagContainer* TargetTags,
+// 											 FGameplayTagContainer* OptionalRelevantTags) const
+// {
+// 	if (Super::CanActivateAbility_ByLastReplaceCondition(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags))
+// 	{
+// 		return true;
+// 	}
+//
+// 	if (IsLocallyControlled())
+// 	{
+// 		if (AAxeCharacterPlayer* CharacterPlayer = Cast<AAxeCharacterPlayer>(Actor))
+// 		{
+// 			if (CharacterPlayer->IsLocallyControlled())
+// 			{
+// 				UComboActionComponent* ComboActionComponent = CharacterPlayer->GetComboActionComponent();
+// 				bool bIsNextComboAbility = ComboActionComponent->IsNextComboAbility(NewAbility);
+// 				bool bIsInComboSwitchWindow = ComboActionComponent->IsInComboSwitchWindow();
+// 				if (bIsNextComboAbility && bIsInComboSwitchWindow)
+// 				{
+// 					return true;
+// 				}
+// 			}
+// 		}
+// 	}
+// 	else
+// 	{
+// 		return true;
+// 	}
+//
+//
+// 	return false;
+// }
 
 void UComboGameplayAbility::Ans_ComboInputCache_NotifyBegin(UAnimNotifyState* AnimNotifyState)
 {
@@ -152,7 +169,7 @@ void UComboGameplayAbility::OnHitTrace(const FHitResult& HitResults)
 		if (HasAuthority(&CurrentActivationInfo))
 		{
 			AAxeCharacterBase* AxeCharacterBase = Cast<AAxeCharacterBase>(HitResults.GetActor());
-			ApplyDamage(AxeCharacterBase, HitResults);	
+			ApplyDamage(AxeCharacterBase, HitResults);
 		}
 
 		SetActiveMontagePauseFrame(0.08, 0.1);

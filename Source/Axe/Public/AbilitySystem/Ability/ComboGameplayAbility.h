@@ -21,8 +21,6 @@ class AXE_API UComboGameplayAbility : public UAxeDamageGameplayAbility, public I
 	GENERATED_BODY()
 
 public:
-	virtual bool CanReplaceAbilityByCondition(const UAxeGameplayAbility* NewAbility, AActor* Actor) const;
-
 	// IComboAbilityInterface
 	virtual void Ans_Combo_NotifyBegin(UAnimNotifyState* AnimNotifyState) override;
 	virtual void Ans_Combo_NotifyEnd(UAnimNotifyState* AnimNotifyState) override;

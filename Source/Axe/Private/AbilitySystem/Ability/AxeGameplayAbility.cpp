@@ -39,7 +39,12 @@
 
 AAxeCharacterBase* UAxeGameplayAbility::GetAxeCharacterOwner() const
 {
-	if (AActor* LocalAvatarActor = CurrentActorInfo->AvatarActor.Get())
+	return GetAxeCharacterOwner(CurrentActorInfo);
+}
+
+AAxeCharacterBase* UAxeGameplayAbility::GetAxeCharacterOwner(const FGameplayAbilityActorInfo* ActorInfo) const
+{
+	if (AActor* LocalAvatarActor = ActorInfo->AvatarActor.Get())
 	{
 		if (AAxeCharacterBase* AxeCharacterBase = Cast<AAxeCharacterBase>(LocalAvatarActor))
 		{
@@ -48,7 +53,7 @@ AAxeCharacterBase* UAxeGameplayAbility::GetAxeCharacterOwner() const
 	}
 	else
 	{
-		AActor* LocalOwnerActor = CurrentActorInfo->OwnerActor.Get();
+		AActor* LocalOwnerActor = ActorInfo->OwnerActor.Get();
 		if (AAxeCharacterBase* AxeCharacterBase = Cast<AAxeCharacterBase>(LocalOwnerActor))
 		{
 			return AxeCharacterBase;
@@ -79,10 +84,7 @@ void UAxeGameplayAbility::OnAbilitySkillStageChanged(EAbilitySkillStage NewStage
 {
 	if (NewStage == EAbilitySkillStage::ASS_BackSwing)
 	{
-		if (bChangeToReplaceableInBackSwing)
-		{
-			ChangeActivationGroup(EAxeAbilityActivationGroup::Exclusive_Replaceable);
-		}
+		UAxeAbilitySystemComponent* AxeASC = GetAxeAbilitySystemComponentFromActorInfo();
 	}
 }
 
@@ -141,8 +143,83 @@ bool UAxeGameplayAbility::ChangeActivationGroup(EAxeAbilityActivationGroup NewGr
 	return true;
 }
 
-bool UAxeGameplayAbility::CanReplaceAbilityByCondition(const UAxeGameplayAbility* NewAbility, AActor* Actor) const
+bool UAxeGameplayAbility::CanActivateAbility_ByLastReplaceCondition(const FGameplayAbilitySpecHandle Handle,
+                                                                    const FGameplayAbilityActorInfo* ActorInfo,
+                                                                    const FGameplayTagContainer* SourceTags,
+                                                                    const FGameplayTagContainer* TargetTags,
+                                                                    FGameplayTagContainer* OptionalRelevantTags) const
 {
+	// 这边的this是 CDO
+	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(ActorInfo->AbilitySystemComponent.Get());
+	if (!AxeASC)
+	{
+		return false;
+	}
+
+	TArray<FGameplayAbilitySpecHandle> SpecHandles;
+	AxeASC->GetAbilitySpecHandlesByActivationGroup(
+		SpecHandles,
+		EAxeAbilityActivationGroup::Exclusive_ReplaceableByCondition
+	);
+
+	for (const FGameplayAbilitySpecHandle& SpecHandle : SpecHandles)
+	{
+		FGameplayAbilitySpec* GameplayAbilitySpec = AxeASC->FindAbilitySpecFromHandle(SpecHandle);
+		if (!GameplayAbilitySpec)
+		{
+			continue;
+		}
+		TArray<UGameplayAbility*> GameplayAbilities = GameplayAbilitySpec->GetAbilityInstances();
+		for (UGameplayAbility* LastGameplayAbility : GameplayAbilities)
+		{
+			if (!LastGameplayAbility)
+			{
+				continue;
+			}
+			bool EachResult = CanActivateAbility_ByLastReplaceCondition_EachProxy(LastGameplayAbility, ActorInfo);
+			if (EachResult)
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+bool UAxeGameplayAbility::CanActivateAbility_ByLastReplaceCondition_EachProxy(
+	UGameplayAbility* LastAbility, const FGameplayAbilityActorInfo* ActorInfo) const
+{
+	// 单纯客户端判断了，服务端默认 return true
+	AAxeCharacterPlayer* CharacterPlayer = Cast<AAxeCharacterPlayer>(GetAxeCharacterOwner(ActorInfo));
+	if (!CharacterPlayer)
+	{
+		return false;
+	}
+
+	if (CharacterPlayer->IsLocallyControlled())
+	{
+		// Client
+		UComboActionComponent* ComboActionComponent = CharacterPlayer->GetComboActionComponent();
+		bool bIsNextComboAbility = ComboActionComponent->IsNextComboAbility(this);
+		bool bIsInComboSwitchWindow = ComboActionComponent->IsInComboSwitchWindow();
+		if (bIsNextComboAbility && bIsInComboSwitchWindow)
+		{
+			return true;
+		}
+
+		UAxeGameplayAbility* AxeGameplayAbility = Cast<UAxeGameplayAbility>(LastAbility);
+		EAbilitySkillStage SkillStage = AxeGameplayAbility->GetAbilitySkillStage();
+		if (bCanReplacedInBackSwing && SkillStage == EAbilitySkillStage::ASS_BackSwing)
+		{
+			return true;
+		}
+
+		//
+		return false;
+	}
+
+	// server
 	return true;
 }
 
@@ -152,18 +229,24 @@ bool UAxeGameplayAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Ha
                                              const FGameplayTagContainer* TargetTags,
                                              FGameplayTagContainer* OptionalRelevantTags) const
 {
+	// CDO
+
 	if (!Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags))
 	{
 		return false;
 	}
+	bool bCanActivate = false;
 
 	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(ActorInfo->AbilitySystemComponent.Get());
-	if (AxeASC->IsActivationGroupBlocked(ActivationGroup, this))
-	{
-		return false;
-	}
+	bool bIsActivationGroupBlocked = AxeASC->IsActivationGroupBlocked(ActivationGroup, this);
 
-	return true;
+	bool bCanActivateAbility_ByLastReplaceCondition = CanActivateAbility_ByLastReplaceCondition(
+		Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
+
+
+	bCanActivate = !bIsActivationGroupBlocked | bCanActivateAbility_ByLastReplaceCondition;
+
+	return bCanActivate;
 }
 
 void UAxeGameplayAbility::PreActivate(const FGameplayAbilitySpecHandle Handle,
@@ -182,6 +265,8 @@ void UAxeGameplayAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
+
+	SetAbilitySkillStage(EAbilitySkillStage::Ass_FrontSwing);
 
 	// Client Movement
 	if (bUseClientMovement && HasAuthority(&CurrentActivationInfo) && IsForRemoteClient())
@@ -565,7 +650,7 @@ void UAxeGameplayAbility::Ans_MotionWrap_NotifyBegin(UAnimNotifyState* AnimNotif
 	if (AController* Controller = AxeCharacterOwner->GetController())
 	{
 		Controller->SetIgnoreMoveInput(true);
-		bSetIgnoreMoveInputByMotionWrap = true;
+		bHasSetIgnoreMoveInputByMotionWrap = true;
 	}
 
 	// ApplyRootMotionConstantForce
@@ -601,10 +686,10 @@ void UAxeGameplayAbility::Ans_MotionWrap_NotifyEnd(UAnimNotifyState* AnimNotifyS
 		AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
 		if (AController* Controller = AxeCharacterOwner->GetController())
 		{
-			if (bSetIgnoreMoveInputByMotionWrap)
+			if (bHasSetIgnoreMoveInputByMotionWrap)
 			{
 				Controller->SetIgnoreMoveInput(false);
-				bSetIgnoreMoveInputByMotionWrap = false;
+				bHasSetIgnoreMoveInputByMotionWrap = false;
 			}
 		}
 	}

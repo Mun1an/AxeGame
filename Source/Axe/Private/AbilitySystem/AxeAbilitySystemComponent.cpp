@@ -47,7 +47,7 @@ void UAxeAbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& Inpu
 
 			if (!AbilitySpec.IsActive())
 			{
-				TryActivateAbilityAndCheck(AbilitySpec.Handle);
+				TryActivateAbilityAndCheck_Client(AbilitySpec.Handle);
 			}
 		}
 	}
@@ -63,8 +63,8 @@ void UAxeAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag& Inp
 	//
 }
 
-void UAxeAbilitySystemComponent::TryActivateAbilityAndCheck(FGameplayAbilitySpecHandle AbilitySpecHandle,
-                                                            bool bAllowRemoteActivation)
+void UAxeAbilitySystemComponent::TryActivateAbilityAndCheck_Client(FGameplayAbilitySpecHandle AbilitySpecHandle,
+                                                                   bool bAllowRemoteActivation)
 {
 	const FGameplayAbilitySpec* AbilitySpec = FindAbilitySpecFromHandle(AbilitySpecHandle);
 	const FGameplayTag InputTag = Cast<UAxeGameplayAbility>(AbilitySpec->Ability)->InputTag;
@@ -86,13 +86,6 @@ void UAxeAbilitySystemComponent::TryActivateAbilityAndCheck(FGameplayAbilitySpec
 	}
 
 	TryActivateAbility(AbilitySpecHandle, bAllowRemoteActivation);
-	//
-	// GEngine->AddOnScreenDebugMessage(
-	// 	-1, 3.0f, FColor::Blue,
-	// 	FString::Printf(
-	// 		TEXT("Ability TryActivate: %s"), *FindAbilitySpecFromHandle(AbilitySpecHandle)->Ability->GetName()
-	// 	)
-	// );
 }
 
 void UAxeAbilitySystemComponent::TryActivateHitReactAbility(const FGameplayTag HitReactTag, const FHitResult& HitResult)
@@ -122,11 +115,16 @@ bool UAxeAbilitySystemComponent::GiveAbilityByAbilityAndLevel(const TSubclassOf<
 	return GameplayAbilitySpecHandle.IsValid();
 }
 
+void UAxeAbilitySystemComponent::GetAbilitySpecHandlesByActivationGroup(TArray<FGameplayAbilitySpecHandle>& HandleArray,
+                                                                        EAxeAbilityActivationGroup Group) const
+{
+	HandleArray = ActivationGroupMap.FindRef(Group);
+}
+
 bool UAxeAbilitySystemComponent::IsActivationGroupBlocked(EAxeAbilityActivationGroup Group,
                                                           const UAxeGameplayAbility* NewAxeAbility) const
 {
 	bool bBlocked = false;
-
 
 	switch (Group)
 	{
@@ -141,25 +139,11 @@ bool UAxeAbilitySystemComponent::IsActivationGroupBlocked(EAxeAbilityActivationG
 			const TArray<FGameplayAbilitySpecHandle>* SpecHandles = ActivationGroupMap.Find(
 				EAxeAbilityActivationGroup::Exclusive_ReplaceableByCondition
 			);
-			if (SpecHandles)
+			if (SpecHandles && !bBlocked)
 			{
-				for (const FGameplayAbilitySpecHandle& SpecHandle : *SpecHandles)
-				{
-					FGameplayAbilitySpec* GameplayAbilitySpec = FindAbilitySpecFromHandle(SpecHandle);
-					UAxeGameplayAbility* AxeGameplayAbility = Cast<UAxeGameplayAbility>(GameplayAbilitySpec->Ability);
-					if (!AxeGameplayAbility)
-					{
-						continue;
-					}
-					bool bReplaceByCondition = AxeGameplayAbility->CanReplaceAbilityByCondition(
-						NewAxeAbility, GetAxeCharacterOwner()
-					);
-					if (!bReplaceByCondition)
-					{
-						bBlocked = true;
-					}
-				}
+				bBlocked = SpecHandles->Num() > 0;
 			}
+			break;
 		}
 	case EAxeAbilityActivationGroup::Exclusive_Blocking:
 		{
@@ -264,7 +248,6 @@ void UAxeAbilitySystemComponent::NotifyAbilityActivated(const FGameplayAbilitySp
 	{
 		OnNotifyAbilityActivatedDelegate.Broadcast(Ability);
 	}
-
 	// GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Blue, FString::Printf(TEXT("Ability Activated: %s"),
 	//                                                                          *Ability->GetName()));
 }

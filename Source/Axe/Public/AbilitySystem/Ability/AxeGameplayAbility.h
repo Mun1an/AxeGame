@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/GameplayAbility.h"
+#include "Enum/AxeEnum.h"
 #include "AxeGameplayAbility.generated.h"
 
 
@@ -52,6 +53,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	AAxeCharacterBase* GetAxeCharacterOwner() const;
+	AAxeCharacterBase* GetAxeCharacterOwner(const FGameplayAbilityActorInfo* ActorInfo) const;
 
 	UFUNCTION()
 	bool GetIsUsingClientMovement() const { return bUseClientMovement; }
@@ -88,7 +90,12 @@ public:
 		Meta = (ExpandBoolAsExecs = "ReturnValue"))
 	bool ChangeActivationGroup(EAxeAbilityActivationGroup NewGroup);
 
-	virtual bool CanReplaceAbilityByCondition(const UAxeGameplayAbility* NewAbility, AActor* Actor) const;
+	virtual bool CanActivateAbility_ByLastReplaceCondition(const FGameplayAbilitySpecHandle Handle,
+											 const FGameplayAbilityActorInfo* ActorInfo,
+											 const FGameplayTagContainer* SourceTags,
+											 const FGameplayTagContainer* TargetTags,
+											 FGameplayTagContainer* OptionalRelevantTags) const;
+	virtual bool CanActivateAbility_ByLastReplaceCondition_EachProxy(UGameplayAbility* LastAbility, const FGameplayAbilityActorInfo* ActorInfo)  const;
 
 	// 根据条件替换技能的技能所需要的tag
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -134,11 +141,11 @@ protected:
 	TObjectPtr<AActor> AutoTargetActor;
 
 	// Skill Stage
-	EAbilitySkillStage AbilitySkillStage;
+	EAbilitySkillStage AbilitySkillStage = EAbilitySkillStage::Ass_FrontSwing;
 
 	// 可以在后摇时被替换
 	UPROPERTY(EditDefaultsOnly, Category = "Ability Target")
-	bool bChangeToReplaceableInBackSwing = true;
+	bool bCanReplacedInBackSwing = true;
 	//
 	UFUNCTION()
 	UAxeAbilitySystemComponent* GetAxeAbilitySystemComponentFromActorInfo() const;
@@ -196,5 +203,5 @@ protected:
 	void Ans_MotionWrap_NotifyEnd(UAnimNotifyState* AnimNotifyState);
 
 	//
-	bool bSetIgnoreMoveInputByMotionWrap = false;
+	bool bHasSetIgnoreMoveInputByMotionWrap = false;
 };
