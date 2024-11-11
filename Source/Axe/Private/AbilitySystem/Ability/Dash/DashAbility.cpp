@@ -3,6 +3,7 @@
 
 #include "AbilitySystem/Ability/Dash/DashAbility.h"
 
+#include "ActionSystem/ComboActionComponent.h"
 #include "Character/AxeCharacterBase.h"
 #include "Enum/AxeEnum.h"
 
@@ -37,3 +38,50 @@ ELaunchCharacterDirection UDashAbility::GetDashDirectionByMovementVector(const F
 	return ELaunchCharacterDirection::Lc_Backward;
 }
 
+void UDashAbility::Ans_ComboInputCache_NotifyBegin(UAnimNotifyState* AnimNotifyState)
+{
+	if (IsLocallyControlled())
+	{
+		UComboActionComponent* ComboActionComponent = GetComboActionComponent();
+		if (ComboActionComponent)
+		{
+			ComboActionComponent->AnsComboInputCacheStart();
+		}
+	}
+}
+
+void UDashAbility::Ans_ComboInputCache_NotifyEnd(UAnimNotifyState* AnimNotifyState)
+{
+	if (IsLocallyControlled())
+	{
+		UComboActionComponent* ComboActionComponent = GetComboActionComponent();
+		if (ComboActionComponent)
+		{
+			ComboActionComponent->AnsComboInputCacheEnd();
+		}
+	}
+}
+
+void UDashAbility::Ans_Combo_NotifyBegin(UAnimNotifyState* AnimNotifyState)
+{
+	if (IsLocallyControlled())
+	{
+		UComboActionComponent* ComboActionComponent = GetComboActionComponent();
+		if (ComboActionComponent)
+		{
+			ComboActionComponent->AnsComboSwitchWindowStart(AnimNotifyState);
+		}
+	}
+}
+
+void UDashAbility::Ans_Combo_NotifyEnd(UAnimNotifyState* AnimNotifyState)
+{
+	if (IsLocallyControlled())
+	{
+		UComboActionComponent* ComboActionComponent = GetComboActionComponent();
+		if (ComboActionComponent)
+		{
+			ComboActionComponent->AnsComboSwitchWindowEnd(AnimNotifyState);
+		}
+	}
+}

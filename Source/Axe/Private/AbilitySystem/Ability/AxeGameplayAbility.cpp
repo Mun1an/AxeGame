@@ -190,13 +190,15 @@ bool UAxeGameplayAbility::CanActivateAbility_ByLastReplaceCondition(const FGamep
 bool UAxeGameplayAbility::CanActivateAbility_ByLastReplaceCondition_EachProxy(
 	UGameplayAbility* LastAbility, const FGameplayAbilityActorInfo* ActorInfo) const
 {
-	// 单纯客户端判断了，服务端默认 return true
+	// 这边的this是 CDO ,,, LastAbility 不是CDO
+
 	AAxeCharacterPlayer* CharacterPlayer = Cast<AAxeCharacterPlayer>(GetAxeCharacterOwner(ActorInfo));
 	if (!CharacterPlayer)
 	{
 		return false;
 	}
 
+	// 单纯客户端判断了，服务端默认 return true
 	if (CharacterPlayer->IsLocallyControlled())
 	{
 		// Client
@@ -208,8 +210,8 @@ bool UAxeGameplayAbility::CanActivateAbility_ByLastReplaceCondition_EachProxy(
 			return true;
 		}
 
-		UAxeGameplayAbility* AxeGameplayAbility = Cast<UAxeGameplayAbility>(LastAbility);
-		EAbilitySkillStage SkillStage = AxeGameplayAbility->GetAbilitySkillStage();
+		const UAxeGameplayAbility* LastAxeAbility = Cast<UAxeGameplayAbility>(LastAbility);
+		const EAbilitySkillStage SkillStage = LastAxeAbility->GetAbilitySkillStage();
 		if (bCanReplacedInBackSwing && SkillStage == EAbilitySkillStage::ASS_BackSwing)
 		{
 			return true;
@@ -219,7 +221,7 @@ bool UAxeGameplayAbility::CanActivateAbility_ByLastReplaceCondition_EachProxy(
 		return false;
 	}
 
-	// server
+	// Server
 	return true;
 }
 

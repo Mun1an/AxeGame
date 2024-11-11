@@ -4,13 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystem/Ability/AxeGameplayAbility.h"
+#include "AbilitySystem/Interaction/ComboAbilityInterface.h"
 #include "DashAbility.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class AXE_API UDashAbility : public UAxeGameplayAbility
+class AXE_API UDashAbility : public UAxeGameplayAbility, public IComboAbilityInterface
 {
 	GENERATED_BODY()
 
@@ -27,4 +28,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	ELaunchCharacterDirection GetDashDirectionByMovementVector(const FVector MovementVector) const;
 
+	// IComboAbilityInterface
+	virtual void Ans_Combo_NotifyBegin(UAnimNotifyState* AnimNotifyState) override;
+	virtual void Ans_Combo_NotifyEnd(UAnimNotifyState* AnimNotifyState) override;
+	virtual void Ans_ComboInputCache_NotifyBegin(UAnimNotifyState* AnimNotifyState) override;
+	virtual void Ans_ComboInputCache_NotifyEnd(UAnimNotifyState* AnimNotifyState) override;
 };
