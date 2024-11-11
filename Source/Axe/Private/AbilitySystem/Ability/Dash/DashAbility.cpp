@@ -9,7 +9,7 @@
 ELaunchCharacterDirection UDashAbility::GetDashDirectionByMovementVector(const FVector MovementVector) const
 {
 	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
-	if (!AxeCharacterOwner)
+	if (!AxeCharacterOwner || MovementVector.IsNearlyZero())
 	{
 		return ELaunchCharacterDirection::Lc_Backward;
 	}
@@ -18,7 +18,7 @@ ELaunchCharacterDirection UDashAbility::GetDashDirectionByMovementVector(const F
 	double Dot = CharacterDirection.Dot(MovementVector);
 	float Angle = FMath::Acos(Dot) * 180.f / PI;
 	FVector CrossVector = CharacterDirection.Cross(MovementVector);
-	
+
 	if (Angle < 45.f)
 	{
 		return ELaunchCharacterDirection::Lc_Forward;
@@ -36,3 +36,4 @@ ELaunchCharacterDirection UDashAbility::GetDashDirectionByMovementVector(const F
 	}
 	return ELaunchCharacterDirection::Lc_Backward;
 }
+

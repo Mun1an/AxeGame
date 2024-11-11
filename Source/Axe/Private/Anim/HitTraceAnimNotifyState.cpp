@@ -3,3 +3,7 @@
 
 #include "Anim/HitTraceAnimNotifyState.h"
 
+UHitTraceAnimNotifyState::UHitTraceAnimNotifyState()
+{
+	NotifyColor = FColor::Red;
+}

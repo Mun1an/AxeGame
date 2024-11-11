@@ -6,3 +6,7 @@
 #include "ActionSystem/ComboActionComponent.h"
 
 
+UComboInputCacheAnimNotifyState::UComboInputCacheAnimNotifyState()
+{
+	NotifyColor = FColor::Yellow;
+}

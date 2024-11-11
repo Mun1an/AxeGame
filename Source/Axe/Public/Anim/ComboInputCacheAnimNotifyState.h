@@ -13,6 +13,7 @@ UCLASS()
 class AXE_API UComboInputCacheAnimNotifyState : public UAxeAnimNotifyStateBase
 {
 	GENERATED_BODY()
-
+public:
+	UComboInputCacheAnimNotifyState();
 	
 };

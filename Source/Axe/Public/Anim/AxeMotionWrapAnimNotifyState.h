@@ -15,6 +15,8 @@ class AXE_API UAxeMotionWrapAnimNotifyState : public UAxeAnimNotifyStateBase
 	GENERATED_BODY()
 
 public:
+	UAxeMotionWrapAnimNotifyState();
+
 	virtual void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration,
 	                         const FAnimNotifyEventReference& EventReference) override;
 
@@ -29,8 +31,7 @@ protected:
 	// UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	// float TraceDistance = 300.f;
 	//
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float TraceSpeedCoefficient = 1.f;
-	
 };

@@ -17,7 +17,8 @@ class AXE_API UComboAnimNotifyState : public UAxeAnimNotifyStateBase
 {
 	GENERATED_BODY()
 
-
+public:
+	UComboAnimNotifyState();
 protected:
 
 };

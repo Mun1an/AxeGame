@@ -4,6 +4,11 @@
 #include "Anim/IgnoreInputAnimNotifyState.h"
 
 
+UIgnoreInputAnimNotifyState::UIgnoreInputAnimNotifyState()
+{
+	NotifyColor = FColor::Silver;
+}
+
 void UIgnoreInputAnimNotifyState::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
                                               float TotalDuration, const FAnimNotifyEventReference& EventReference)
 {

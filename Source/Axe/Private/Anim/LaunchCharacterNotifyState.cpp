@@ -5,3 +5,7 @@
 
 #include "Character/AxeCharacterPlayer.h"
 
+ULaunchCharacterNotifyState::ULaunchCharacterNotifyState()
+{
+	NotifyColor = FColor::Cyan;
+}

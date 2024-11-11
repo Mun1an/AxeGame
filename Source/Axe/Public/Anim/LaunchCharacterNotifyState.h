@@ -16,6 +16,8 @@ class AXE_API ULaunchCharacterNotifyState : public UAxeAnimNotifyStateBase
 	GENERATED_BODY()
 
 public:
+	ULaunchCharacterNotifyState();
+	
 	UPROPERTY(EditAnywhere)
 	float LaunchSpeed = 1000;
 	UPROPERTY(EditAnywhere)

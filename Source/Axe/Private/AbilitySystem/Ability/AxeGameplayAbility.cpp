@@ -21,6 +21,7 @@
 #include "Anim/HitTraceAnimNotifyState.h"
 #include "Anim/IgnoreInputAnimNotifyState.h"
 #include "Anim/LaunchCharacterNotifyState.h"
+#include "Anim/AN/BackSwingAnimNotify.h"
 #include "Character/AxeCharacterBase.h"
 #include "Character/AxeCharacterPlayer.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -66,6 +67,23 @@ AActor* UAxeGameplayAbility::GetOrFindAutoTargetActor()
 		);
 	}
 	return AutoTargetActor;
+}
+
+void UAxeGameplayAbility::SetAbilitySkillStage(EAbilitySkillStage NewStage)
+{
+	AbilitySkillStage = NewStage;
+	OnAbilitySkillStageChanged(NewStage);
+}
+
+void UAxeGameplayAbility::OnAbilitySkillStageChanged(EAbilitySkillStage NewStage)
+{
+	if (NewStage == EAbilitySkillStage::ASS_BackSwing)
+	{
+		if (bChangeToReplaceableInBackSwing)
+		{
+			ChangeActivationGroup(EAxeAbilityActivationGroup::Exclusive_Replaceable);
+		}
+	}
 }
 
 bool UAxeGameplayAbility::CanChangeActivationGroup(EAxeAbilityActivationGroup NewGroup) const
@@ -288,13 +306,22 @@ void UAxeGameplayAbility::AddMontageNotifyStateTask(UAnimMontage* LocalAnimMonta
 	//UAbilityTask_MontageNotify
 
 	// LaunchCharacter
+	UAbilityTask_MontageNotify* AT_BackSwing_An = UAbilityTask_MontageNotify::CreateMontageNotifyTask(
+		this, LocalAnimMontage,
+		UBackSwingAnimNotify::StaticClass()
+	);
+	AT_BackSwing_An->MontageNotifyStartDelegate.AddDynamic(
+		this, &UAxeGameplayAbility::An_BackSwing_NotifyBegin);
+	AT_BackSwing_An->ReadyForActivation();
+
+	// LaunchCharacter
 	UAbilityTask_MontageNotify* AT_LaunchCharacter_Ans = UAbilityTask_MontageNotify::CreateMontageNotifyStateTask(
 		this, LocalAnimMontage,
 		ULaunchCharacterNotifyState::StaticClass()
 	);
-	AT_LaunchCharacter_Ans->MontageNotifyStartDelegate.AddDynamic(
+	AT_LaunchCharacter_Ans->MontageNotifyStateStartDelegate.AddDynamic(
 		this, &UAxeGameplayAbility::Ans_LaunchCharacter_NotifyBegin);
-	AT_LaunchCharacter_Ans->MontageNotifyEndDelegate.AddDynamic(
+	AT_LaunchCharacter_Ans->MontageNotifyStateEndDelegate.AddDynamic(
 		this, &UAxeGameplayAbility::Ans_LaunchCharacter_NotifyEnd);
 	AT_LaunchCharacter_Ans->ReadyForActivation();
 
@@ -303,9 +330,9 @@ void UAxeGameplayAbility::AddMontageNotifyStateTask(UAnimMontage* LocalAnimMonta
 		this, LocalAnimMontage,
 		UIgnoreInputAnimNotifyState::StaticClass()
 	);
-	AT_IgnoreInput_Ans->MontageNotifyStartDelegate.AddDynamic(
+	AT_IgnoreInput_Ans->MontageNotifyStateStartDelegate.AddDynamic(
 		this, &UAxeGameplayAbility::Ans_IgnoreInput_NotifyBegin);
-	AT_IgnoreInput_Ans->MontageNotifyEndDelegate.AddDynamic(
+	AT_IgnoreInput_Ans->MontageNotifyStateEndDelegate.AddDynamic(
 		this, &UAxeGameplayAbility::Ans_IgnoreInput_NotifyEnd);
 	AT_IgnoreInput_Ans->ReadyForActivation();
 
@@ -314,9 +341,9 @@ void UAxeGameplayAbility::AddMontageNotifyStateTask(UAnimMontage* LocalAnimMonta
 		this, LocalAnimMontage,
 		UAxeMotionWrapAnimNotifyState::StaticClass()
 	);
-	AT_MotionWrap_Ans->MontageNotifyStartDelegate.AddDynamic(
+	AT_MotionWrap_Ans->MontageNotifyStateStartDelegate.AddDynamic(
 		this, &UAxeGameplayAbility::Ans_MotionWrap_NotifyBegin);
-	AT_MotionWrap_Ans->MontageNotifyEndDelegate.AddDynamic(
+	AT_MotionWrap_Ans->MontageNotifyStateEndDelegate.AddDynamic(
 		this, &UAxeGameplayAbility::Ans_MotionWrap_NotifyEnd);
 	AT_MotionWrap_Ans->ReadyForActivation();
 
@@ -328,9 +355,9 @@ void UAxeGameplayAbility::AddMontageNotifyStateTask(UAnimMontage* LocalAnimMonta
 			this, LocalAnimMontage,
 			UComboInputCacheAnimNotifyState::StaticClass()
 		);
-		AT_ComboInputCache_Ans->MontageNotifyStartDelegate.AddDynamic(
+		AT_ComboInputCache_Ans->MontageNotifyStateStartDelegate.AddDynamic(
 			ComboAbility, &IComboAbilityInterface::Ans_ComboInputCache_NotifyBegin);
-		AT_ComboInputCache_Ans->MontageNotifyEndDelegate.AddDynamic(
+		AT_ComboInputCache_Ans->MontageNotifyStateEndDelegate.AddDynamic(
 			ComboAbility, &IComboAbilityInterface::Ans_ComboInputCache_NotifyEnd);
 		AT_ComboInputCache_Ans->ReadyForActivation();
 
@@ -339,9 +366,9 @@ void UAxeGameplayAbility::AddMontageNotifyStateTask(UAnimMontage* LocalAnimMonta
 			this, LocalAnimMontage,
 			UComboAnimNotifyState::StaticClass()
 		);
-		AT_Combo_Ans->MontageNotifyStartDelegate.AddDynamic(
+		AT_Combo_Ans->MontageNotifyStateStartDelegate.AddDynamic(
 			ComboAbility, &IComboAbilityInterface::Ans_Combo_NotifyBegin);
-		AT_Combo_Ans->MontageNotifyEndDelegate.AddDynamic(
+		AT_Combo_Ans->MontageNotifyStateEndDelegate.AddDynamic(
 			ComboAbility, &IComboAbilityInterface::Ans_Combo_NotifyEnd);
 		AT_Combo_Ans->ReadyForActivation();
 	}
@@ -353,10 +380,10 @@ void UAxeGameplayAbility::AddMontageNotifyStateTask(UAnimMontage* LocalAnimMonta
 			this, LocalAnimMontage,
 			UHitTraceAnimNotifyState::StaticClass()
 		);
-		AT_HitTrace_Ans->MontageNotifyStartDelegate.AddDynamic(HitTraceAbility,
-		                                                       &IHitTraceAbilityInterface::Ans_HitTrace_NotifyBegin);
-		AT_HitTrace_Ans->MontageNotifyEndDelegate.AddDynamic(HitTraceAbility,
-		                                                     &IHitTraceAbilityInterface::Ans_HitTrace_NotifyEnd);
+		AT_HitTrace_Ans->MontageNotifyStateStartDelegate.AddDynamic(
+			HitTraceAbility, &IHitTraceAbilityInterface::Ans_HitTrace_NotifyBegin);
+		AT_HitTrace_Ans->MontageNotifyStateEndDelegate.AddDynamic(
+			HitTraceAbility, &IHitTraceAbilityInterface::Ans_HitTrace_NotifyEnd);
 		AT_HitTrace_Ans->ReadyForActivation();
 	}
 }
@@ -430,6 +457,13 @@ AAxeCharacterBase* UAxeGameplayAbility::FindOneGoodTargetByMoveInput(float Spher
 	return TargetCharacter;
 }
 
+void UAxeGameplayAbility::An_BackSwing_NotifyBegin(UAnimNotify* AnimNotify)
+{
+	UE_LOG(LogTemp, Warning, TEXT("An_BackSwing_NotifyBegin"));
+
+	SetAbilitySkillStage(EAbilitySkillStage::ASS_BackSwing);
+}
+
 void UAxeGameplayAbility::Ans_LaunchCharacter_NotifyBegin(UAnimNotifyState* AnimNotifyState)
 {
 	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
@@ -442,7 +476,7 @@ void UAxeGameplayAbility::Ans_LaunchCharacter_NotifyBegin(UAnimNotifyState* Anim
 	float LaunchSpeed = Launch_ANS->LaunchSpeed;
 	float NotifyStateDuration = Launch_ANS->GetNotifyStateDuration();
 
-	// 根据 目标位置 调整计算位移
+	// 根据 目标位置 调整降低计算位移
 	if (Launch_ANS->bDynamicChangedByTargetDistance)
 	{
 		const AActor* TargetActor = GetOrFindAutoTargetActor();
@@ -455,7 +489,7 @@ void UAxeGameplayAbility::Ans_LaunchCharacter_NotifyBegin(UAnimNotifyState* Anim
 			if (OldNearlyDistance > ToTargetDist)
 			{
 				float MotionMulti = ToTargetDist / OldNearlyDistance;
-				LaunchSpeed = LaunchSpeed * 1;
+				LaunchSpeed = LaunchSpeed * MotionMulti;
 				NotifyStateDuration = NotifyStateDuration * MotionMulti;
 			}
 		}

@@ -7,6 +7,7 @@
 #include "AxeGameplayAbility.generated.h"
 
 
+enum class EAbilitySkillStage : uint8;
 class AAxeCharacterPlayer;
 enum class ELaunchCharacterDirection : uint8;
 class UAbilityTask_HitTrace;
@@ -58,6 +59,16 @@ public:
 	UFUNCTION()
 	AActor* GetOrFindAutoTargetActor();
 
+	// AbilitySkillStage
+
+	UFUNCTION()
+	EAbilitySkillStage GetAbilitySkillStage() const { return AbilitySkillStage; }
+
+	UFUNCTION()
+	void SetAbilitySkillStage(EAbilitySkillStage NewStage);
+	UFUNCTION()
+	void OnAbilitySkillStageChanged(EAbilitySkillStage NewStage);
+
 	/**
 	 * InputTag
 	 */
@@ -79,6 +90,9 @@ public:
 
 	virtual bool CanReplaceAbilityByCondition(const UAxeGameplayAbility* NewAbility, AActor* Actor) const;
 
+	// 根据条件替换技能的技能所需要的tag
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FGameplayTagContainer ReplaceAbilityDynamicConditionTags;
 	/**
 	 *  base virtual
 	 */
@@ -106,10 +120,10 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ability Activation")
 	EAxeAbilityActivationGroup ActivationGroup;
-
+	// ClientMovement 
 	UPROPERTY(EditDefaultsOnly, Category = "Client")
 	bool bUseClientMovement = true;
-
+	// Ability Target
 	UPROPERTY(EditDefaultsOnly, Category = "Ability Target")
 	bool bNeedAutoSearchTarget = true;
 	UPROPERTY(EditDefaultsOnly, Category = "Ability Target")
@@ -119,6 +133,13 @@ protected:
 	UPROPERTY()
 	TObjectPtr<AActor> AutoTargetActor;
 
+	// Skill Stage
+	EAbilitySkillStage AbilitySkillStage;
+
+	// 可以在后摇时被替换
+	UPROPERTY(EditDefaultsOnly, Category = "Ability Target")
+	bool bChangeToReplaceableInBackSwing = true;
+	//
 	UFUNCTION()
 	UAxeAbilitySystemComponent* GetAxeAbilitySystemComponentFromActorInfo() const;
 	UFUNCTION()
@@ -152,8 +173,10 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	AAxeCharacterBase* FindOneGoodTargetByMoveInput(float SphereRadius = 300,
-	                                     float TraceAngleRange = 60.f);
+	                                                float TraceAngleRange = 60.f);
 
+	UFUNCTION()
+	void An_BackSwing_NotifyBegin(UAnimNotify* AnimNotify);
 
 	UFUNCTION()
 	void Ans_LaunchCharacter_NotifyBegin(UAnimNotifyState* AnimNotifyState);

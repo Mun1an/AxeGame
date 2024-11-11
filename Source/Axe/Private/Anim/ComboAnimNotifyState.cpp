@@ -3,11 +3,8 @@
 
 #include "Anim/ComboAnimNotifyState.h"
 
-#include "ActionSystem/ComboActionComponent.h"
-#include "Character/AxeCharacterPlayer.h"
-#include "GameFramework/Character.h"
-#include "PlayerController/AxePlayerController.h"
 
-
-
-
+UComboAnimNotifyState::UComboAnimNotifyState()
+{
+	NotifyColor = FColor::Orange;
+}

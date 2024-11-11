@@ -8,9 +8,8 @@
 
 
 class AAxeCharacterBase;
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMontageNotifyDelegate, UAnimNotifyState*, AnimNotifyState);
-
-// DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FMontageNotifyEndDelegate, UAnimNotifyState*, AnimNotifyState, bool, IsInterrupted);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMontageNotifyDelegate, UAnimNotify*, AnimNotify);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMontageNotifyStateDelegate, UAnimNotifyState*, AnimNotifyState);
 
 /**
  * 
@@ -23,9 +22,12 @@ class AXE_API UAbilityTask_MontageNotify : public UAbilityTask
 public:
 	UPROPERTY(BlueprintAssignable)
 	FMontageNotifyDelegate MontageNotifyStartDelegate;
+	
+	UPROPERTY(BlueprintAssignable)
+	FMontageNotifyStateDelegate MontageNotifyStateStartDelegate;
 
 	UPROPERTY(BlueprintAssignable)
-	FMontageNotifyDelegate MontageNotifyEndDelegate;
+	FMontageNotifyStateDelegate MontageNotifyStateEndDelegate;
 
 	UFUNCTION(BlueprintCallable, Category="Ability|Tasks",
 		meta = (HidePin = "OwningAbility", DefaultToSelf = "OwningAbility", BlueprintInternalUseOnly = "TRUE"))
@@ -34,6 +36,15 @@ public:
 		UAnimMontage* AbilityMontage,
 		TSubclassOf<UAnimNotifyState> NotifyStateClass
 	);
+
+	UFUNCTION(BlueprintCallable, Category="Ability|Tasks",
+		meta = (HidePin = "OwningAbility", DefaultToSelf = "OwningAbility", BlueprintInternalUseOnly = "TRUE"))
+	static UAbilityTask_MontageNotify* CreateMontageNotifyTask(
+		UGameplayAbility* OwningAbility,
+		UAnimMontage* AbilityMontage,
+		TSubclassOf<UAnimNotify> NotifyClass
+	);
+
 	void InitTaskAuthority();
 
 protected:
@@ -50,15 +61,26 @@ protected:
 	TObjectPtr<UAnimMontage> AbilityMontage;
 	UPROPERTY()
 	TSubclassOf<UAnimNotifyState> NotifyStateClass;
+	UPROPERTY()
+	TSubclassOf<UAnimNotify> NotifyClass;
 
+	// HandleNotify
+	void NotifyActivate(TArray<FAnimNotifyEvent> AnimNotifyEvents);
+	void NotifyEnd();
+	UPROPERTY()
+	TArray<UAnimNotify*> NotifyList;
+	TMap<TObjectPtr<UAnimNotify>, TArray<FDelegateHandle>> AN_DelegateHandleMap;
+	void AnimNotifyBegin(UAnimNotify* AnimNotify);
+	TArray<UAnimNotify*> HasBeginNotifyList;
+	
+	// HandleNotifyState
+	void NotifyStateActivate(TArray<FAnimNotifyEvent> AnimNotifyEvents);
+	void NotifyStateEnd();
 	UPROPERTY()
 	TArray<UAnimNotifyState*> NotifyStateList;
-
-	TMap<UAnimNotifyState*, TArray<FDelegateHandle>> DelegateHandleMap;
-
+	TMap<TObjectPtr<UAnimNotifyState>, TArray<FDelegateHandle>> ANS_DelegateHandleMap;
 	void AnimNotifyStateBegin(UAnimNotifyState* AnimNotifyState);
 	void AnimNotifyStateEnd(UAnimNotifyState* AnimNotifyState);
-
 	TArray<UAnimNotifyState*> HasBeginNotifyStateList;
 	TArray<UAnimNotifyState*> HasEndNotifyStateList;
 };

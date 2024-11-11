@@ -14,6 +14,8 @@ class AXE_API UIgnoreInputAnimNotifyState : public UAxeAnimNotifyStateBase
 {
 	GENERATED_BODY()
 public:
+	UIgnoreInputAnimNotifyState();
+	
 	virtual void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration,
 							 const FAnimNotifyEventReference& EventReference) override;
 };

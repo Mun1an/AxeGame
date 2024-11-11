@@ -26,4 +26,5 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	ELaunchCharacterDirection GetDashDirectionByMovementVector(const FVector MovementVector) const;
+
 };
