@@ -77,12 +77,14 @@ void AAxePlayerController::Move(const FInputActionValue& Value)
 	const FRotator YawRotation(0, Rotation.Yaw, 0);
 
 	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-
 	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
 	AAxeCharacterPlayer* AxeCharacterPlayer = Cast<AAxeCharacterPlayer>(GetCharacter());
-	AxeCharacterPlayer->AddMovementInput(ForwardDirection, MovementVector.Y);
-	AxeCharacterPlayer->AddMovementInput(RightDirection, MovementVector.X);
+	if (AxeCharacterPlayer)
+	{
+		AxeCharacterPlayer->AddMovementInput(ForwardDirection, MovementVector.Y);
+		AxeCharacterPlayer->AddMovementInput(RightDirection, MovementVector.X);
+	}
 
 	ResetLastMovementInputTime = ResetLastMovementInputMaxTime;
 	AxeLastMovementInputDirection = ForwardDirection * MovementVector.Y + RightDirection * MovementVector.X;
@@ -93,20 +95,29 @@ void AAxePlayerController::Look(const FInputActionValue& Value)
 	const FVector2D LookAxisVector = Value.Get<FVector2D>();
 
 	AAxeCharacterPlayer* AxeCharacterPlayer = Cast<AAxeCharacterPlayer>(GetCharacter());
-	AxeCharacterPlayer->AddControllerYawInput(LookAxisVector.X);
-	AxeCharacterPlayer->AddControllerPitchInput(LookAxisVector.Y);
+	if (AxeCharacterPlayer)
+	{
+		AxeCharacterPlayer->AddControllerYawInput(LookAxisVector.X);
+		AxeCharacterPlayer->AddControllerPitchInput(LookAxisVector.Y);
+	}
 }
 
 void AAxePlayerController::Jump(const FInputActionValue& Value)
 {
 	AAxeCharacterPlayer* AxeCharacterPlayer = Cast<AAxeCharacterPlayer>(GetCharacter());
-	AxeCharacterPlayer->Jump();
+	if (AxeCharacterPlayer)
+	{
+		AxeCharacterPlayer->Jump();
+	}
 }
 
 void AAxePlayerController::StopJumping(const FInputActionValue& Value)
 {
 	AAxeCharacterPlayer* AxeCharacterPlayer = Cast<AAxeCharacterPlayer>(GetCharacter());
-	AxeCharacterPlayer->StopJumping();
+	if (AxeCharacterPlayer)
+	{
+		AxeCharacterPlayer->StopJumping();
+	}
 }
 
 

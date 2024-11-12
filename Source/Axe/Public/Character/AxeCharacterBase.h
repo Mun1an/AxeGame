@@ -64,6 +64,14 @@ public:
 	UFUNCTION()
 	void SetRotationRateByWalkSpeed();
 
+	UFUNCTION(BlueprintCallable)
+	bool IsDead() const { return bIsDead; }
+
+	UFUNCTION(BlueprintCallable)
+	void SetDeath();
+	UFUNCTION(BlueprintCallable)
+	void SetDeathWithParams(const FVector DeathImpulse);
+
 protected:
 	bool bIsAbilityInitOver = false;
 
@@ -80,4 +88,10 @@ protected:
 	float MinRotationRateZ = 0.0f;
 	UPROPERTY(EditAnywhere, Category= "Axe Movement")
 	float DefaultWalkSpeed = 600.0f;
+
+	bool bIsDead = false;
+	UPROPERTY(EditAnywhere, Category="Combat")
+	float DeadLifeSpan = 5.0f;
+	UFUNCTION(NetMulticast, Reliable)
+	virtual void MulticastDeath(const FVector DeathImpulse);
 };

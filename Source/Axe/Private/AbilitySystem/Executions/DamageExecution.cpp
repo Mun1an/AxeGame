@@ -36,7 +36,8 @@ void UDamageExecution::Execute_Implementation(const FGameplayEffectCustomExecuti
 	//
 	CalBlocked(ExecutionParams, EvaluateParameters, AxeEffectContext, Damage);
 
-	//
+	// TODO
+	AxeEffectContext->SetDamageType(AxeGameplayTags.Damage_Physical);
 	//
 	const FGameplayModifierEvaluatedData EvaluatedData(
 		UAxeAttributeSet::GetIncomingDamageAttribute(),

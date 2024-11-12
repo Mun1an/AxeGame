@@ -31,4 +31,6 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UMobOverlayWidgetController> MobOverlayWidgetControllerClass;
 	UMobOverlayWidgetController* GetMobOverlayWidgetController(const FWidgetControllerParams& Params);
+	
+	virtual void MulticastDeath_Implementation(const FVector DeathImpulse) override;
 };

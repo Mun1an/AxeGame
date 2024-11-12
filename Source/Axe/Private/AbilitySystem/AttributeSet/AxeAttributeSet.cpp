@@ -47,6 +47,7 @@ void UAxeAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME_CONDITION_NOTIFY(UAxeAttributeSet, CriticalHitDamage, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAxeAttributeSet, HealthRegeneration, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAxeAttributeSet, MovementSpeed, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAxeAttributeSet, BaseDamage, COND_None, REPNOTIFY_Always);
 }
 
 void UAxeAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
@@ -214,13 +215,16 @@ void UAxeAttributeSet::HandleIncomingDamageEffect(const FEffectProperties& Props
 	const FAxeGameplayEffectContext* AxeEffectContext = UAxeBlueprintFunctionLibrary::GetAxeGameplayEffectContext(
 		GameplayEffectContext);
 	const FAxeGameplayTags AxeGameplayTags = FAxeGameplayTags::Get();
+	const FHitResult* HitResult = AxeEffectContext->GetHitResult();
+	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
 	//
 	SetIncomingDamage(0.f);
+	bool bFatal = false;
 	if (LocalIncomingDamage > 0.f)
 	{
 		const float NewHealth = GetHealth() - LocalIncomingDamage;
 		SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
-		const bool bFatal = NewHealth <= 0.f;
+		bFatal = NewHealth <= 0.f;
 	}
 	// ShowDamageFloatingText
 	if (Props.SourceCharacter && Props.TargetCharacter)
@@ -232,11 +236,20 @@ void UAxeAttributeSet::HandleIncomingDamageEffect(const FEffectProperties& Props
 			AxeEffectContext
 		);
 	}
+	if (bFatal)
+	{
+		FVector DeathImpulse = AxeCharacterOwner->GetActorLocation() - HitResult->ImpactPoint;
+		DeathImpulse.Normalize();
+		DeathImpulse *= (FMath::RandRange(0.5f, 1.f) * 10000);
+		AxeCharacterOwner->SetDeathWithParams(DeathImpulse);
+		return;
+	}
+	// 死后return
+
 	// HitReact
 	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(Props.TargetASC);
 	if (LocalIncomingDamage > 0.f && AxeASC)
 	{
-		const FHitResult* HitResult = AxeEffectContext->GetHitResult();
 		AxeASC->TryActivateHitReactAbility(AxeGameplayTags.Ability_HitReact_Light, *HitResult);
 	}
 }

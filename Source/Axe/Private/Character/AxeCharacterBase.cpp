@@ -5,6 +5,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Enum/AxeEnum.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -59,6 +60,17 @@ void AAxeCharacterBase::SetRotationRateByWalkSpeed()
 	SetRotationRateZ(NewRotationRateZ);
 }
 
+void AAxeCharacterBase::SetDeath()
+{
+	SetDeathWithParams(FVector::ZeroVector);
+}
+
+void AAxeCharacterBase::SetDeathWithParams(const FVector DeathImpulse)
+{
+	SetLifeSpan(DeadLifeSpan);
+	MulticastDeath(DeathImpulse);
+}
+
 void AAxeCharacterBase::InitDefaultAttributes()
 {
 	UAbilitySystemComponent* ASC = GetAbilitySystemComponent();
@@ -94,4 +106,18 @@ bool AAxeCharacterBase::GiveStartupAbilities()
 		}
 	}
 	return true;
+}
+
+void AAxeCharacterBase::MulticastDeath_Implementation(const FVector DeathImpulse)
+{
+	bIsDead = true;
+
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->SetEnableGravity(true);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	// Impulse
+	GetMesh()->AddImpulse(DeathImpulse, NAME_None, true);
 }
