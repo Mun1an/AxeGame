@@ -31,7 +31,8 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(Ability_Attack_MeleeCombo_B2, "Ability.Attack.MeleeCombo.B2");
 	AddTag(Ability_Attack_MeleeCombo_B3, "Ability.Attack.MeleeCombo.B3");
 
-	AddTag(Ability_Skill_Defense, "Ability.Skill.Defense");
+	AddTag(Ability_Skill_ShieldDefense, "Ability.Skill.ShieldDefense");
+	AddTag(Ability_Skill_ShieldParry, "Ability.Skill.ShieldParry");
 	AddTag(Ability_Skill_LeapAttack, "Ability.Skill.LeapAttack");
 
 	AddTag(Ability_HitReact_Light, "Ability.HitReact.Light");
@@ -40,7 +41,7 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(GameplayCue_WeaponTrail_Axe, "GameplayCue.WeaponTrail.Axe");
 	AddTag(GameplayCue_WeaponHit_Axe, "GameplayCue.WeaponHit.Axe");
 	AddTag(GameplayCue_WeaponHit_Shield, "GameplayCue.WeaponHit.Shield");
-	
+
 	//
 	AddTag(Attributes_Vital_Health, "Attributes.Vital.Health");
 	AddTag(Attributes_Primary_Strength, "Attributes.Primary.Strength");
@@ -65,6 +66,7 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 
 	AddTag(State_HitReact, "State.HitReact");
 	AddTag(State_Blocking, "State.Blocking");
+	AddTag(State_PrepareParry, "State.PrepareParry");
 }
 
 

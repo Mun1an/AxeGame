@@ -39,7 +39,8 @@ struct FAxeGameplayTags
 	FGameplayTag Ability_Attack_MeleeCombo_B2;
 	FGameplayTag Ability_Attack_MeleeCombo_B3;
 
-	FGameplayTag Ability_Skill_Defense;
+	FGameplayTag Ability_Skill_ShieldDefense;
+	FGameplayTag Ability_Skill_ShieldParry;
 	FGameplayTag Ability_Skill_LeapAttack;
 
 	FGameplayTag Ability_HitReact_Light;
@@ -77,6 +78,7 @@ struct FAxeGameplayTags
 	// State
 	FGameplayTag State_HitReact;
 	FGameplayTag State_Blocking;
+	FGameplayTag State_PrepareParry;
 
 protected:
 	void AddTag(FGameplayTag& OutTag, const ANSICHAR* TagName = nullptr, const ANSICHAR* TagComment = nullptr);

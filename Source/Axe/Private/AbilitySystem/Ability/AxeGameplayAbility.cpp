@@ -546,7 +546,7 @@ AAxeCharacterBase* UAxeGameplayAbility::FindOneGoodTargetByMoveInput(float Spher
 
 void UAxeGameplayAbility::An_BackSwing_NotifyBegin(UAnimNotify* AnimNotify)
 {
-	UE_LOG(LogTemp, Warning, TEXT("An_BackSwing_NotifyBegin"));
+	// UE_LOG(LogTemp, Warning, TEXT("An_BackSwing_NotifyBegin"));
 
 	SetAbilitySkillStage(EAbilitySkillStage::ASS_BackSwing);
 }
@@ -574,7 +574,7 @@ void UAxeGameplayAbility::Ans_LaunchCharacter_NotifyBegin(UAnimNotifyState* Anim
 			float ToTargetDist = (TargetPos - SourcePos).Size();
 			// 暂时减去碰撞盒距离
 			ToTargetDist = FMath::Max(ToTargetDist - 100, 1.f);
-			
+
 			float OldNearlyDistance = LaunchSpeed * NotifyStateDuration;
 			if (OldNearlyDistance > ToTargetDist)
 			{
@@ -647,16 +647,17 @@ void UAxeGameplayAbility::Ans_MotionWrap_NotifyBegin(UAnimNotifyState* AnimNotif
 	{
 		return;
 	}
+	// 如果没输入方向就不移动了
+	const FVector LastMovementInputVector = UAxeBlueprintFunctionLibrary::GetAxeLastMovementInputVector(
+		Cast<AAxeCharacterPlayer>(AxeCharacterOwner)
+	);
+	if (LastMovementInputVector.IsNearlyZero(0.01))
+	{
+		return;
+	}
 
 	FVector ToTargetDir = (AttachTarget->GetActorLocation() - AxeCharacterOwner->GetActorLocation());
 	float ToTargetDist = ToTargetDir.Size();
-
-	// SetIgnoreMoveInput
-	if (AController* Controller = AxeCharacterOwner->GetController())
-	{
-		Controller->SetIgnoreMoveInput(true);
-		bHasSetIgnoreMoveInputByMotionWrap = true;
-	}
 
 	// ApplyRootMotionConstantForce
 	float MotionDuration = AxeANS->GetNotifyStateDuration();
@@ -682,20 +683,24 @@ void UAxeGameplayAbility::Ans_MotionWrap_NotifyBegin(UAnimNotifyState* AnimNotif
 		this, AxeCharacterOwner, ToRot, 50.0f
 	);
 	AbilityTask_WaitFacingRot->ReadyForActivation();
+
+	// SetIgnoreMoveInput
+	if (AController* Controller = AxeCharacterOwner->GetController())
+	{
+		Controller->SetIgnoreMoveInput(true);
+		bHasSetIgnoreMoveInputByMotionWrap = true;
+	}
 }
 
 void UAxeGameplayAbility::Ans_MotionWrap_NotifyEnd(UAnimNotifyState* AnimNotifyState)
 {
-	if (IsLocallyControlled())
+	if (IsLocallyControlled() && bHasSetIgnoreMoveInputByMotionWrap)
 	{
 		AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
 		if (AController* Controller = AxeCharacterOwner->GetController())
 		{
-			if (bHasSetIgnoreMoveInputByMotionWrap)
-			{
-				Controller->SetIgnoreMoveInput(false);
-				bHasSetIgnoreMoveInputByMotionWrap = false;
-			}
+			Controller->SetIgnoreMoveInput(false);
+			bHasSetIgnoreMoveInputByMotionWrap = false;
 		}
 	}
 }

@@ -15,6 +15,9 @@ class AXE_API UShieldBlockAbility : public UAxeGameplayAbility
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UAxeGameplayAbility> ShieldParryAbilityClass;
+
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	                             const FGameplayAbilityActivationInfo ActivationInfo,
 	                             const FGameplayEventData* TriggerEventData) override;
@@ -22,13 +25,15 @@ public:
 	                        const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility,
 	                        bool bWasCancelled) override;
 
-	bool GetIsBlocking() const { return bIsBlocking; }
 	void SetIsBlocking(bool NewIsBlocking);
 
 protected:
 	UFUNCTION()
 	void OnInputReleased(float TimeHeld);
+	UFUNCTION()
+	void OnEffectApplied(AActor* Source, FGameplayEffectSpecHandle SpecHandle,
+	                     FActiveGameplayEffectHandle ActiveHandle);
 
-	UPROPERTY()
-	bool bIsBlocking = false;
+	UFUNCTION()
+	void TransformToShieldParry(AActor* Source);
 };
