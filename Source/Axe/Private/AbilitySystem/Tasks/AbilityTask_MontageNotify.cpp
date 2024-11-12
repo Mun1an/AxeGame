@@ -202,29 +202,38 @@ void UAbilityTask_MontageNotify::NotifyStateEnd()
 void UAbilityTask_MontageNotify::AnimNotifyBegin(UAnimNotify* AnimNotify)
 {
 	// fixme 单进程多人有bug 先这样移除
-	if (!HasBeginNotifyList.Contains(AnimNotify))
+	if (ShouldBroadcastAbilityTaskDelegates())
 	{
-		MontageNotifyStartDelegate.Broadcast(AnimNotify);
-		HasBeginNotifyList.AddUnique(AnimNotify);
+		if (!HasBeginNotifyList.Contains(AnimNotify))
+		{
+			MontageNotifyStartDelegate.Broadcast(AnimNotify);
+			HasBeginNotifyList.AddUnique(AnimNotify);
+		}
 	}
 }
 
 void UAbilityTask_MontageNotify::AnimNotifyStateBegin(UAnimNotifyState* AnimNotifyState)
 {
 	// fixme 单进程多人有bug 先这样移除
-	if (!HasBeginNotifyStateList.Contains(AnimNotifyState))
+	if (ShouldBroadcastAbilityTaskDelegates())
 	{
-		MontageNotifyStateStartDelegate.Broadcast(AnimNotifyState);
-		HasBeginNotifyStateList.AddUnique(AnimNotifyState);
+		if (!HasBeginNotifyStateList.Contains(AnimNotifyState))
+		{
+			MontageNotifyStateStartDelegate.Broadcast(AnimNotifyState);
+			HasBeginNotifyStateList.AddUnique(AnimNotifyState);
+		}
 	}
 }
 
 void UAbilityTask_MontageNotify::AnimNotifyStateEnd(UAnimNotifyState* AnimNotifyState)
 {
 	// fixme 单进程多人有bug 先这样移除
-	if (!HasEndNotifyStateList.Contains(AnimNotifyState))
+	if (ShouldBroadcastAbilityTaskDelegates())
 	{
-		MontageNotifyStateEndDelegate.Broadcast(AnimNotifyState);
-		HasEndNotifyStateList.AddUnique(AnimNotifyState);
+		if (!HasEndNotifyStateList.Contains(AnimNotifyState))
+		{
+			MontageNotifyStateEndDelegate.Broadcast(AnimNotifyState);
+			HasEndNotifyStateList.AddUnique(AnimNotifyState);
+		}
 	}
 }

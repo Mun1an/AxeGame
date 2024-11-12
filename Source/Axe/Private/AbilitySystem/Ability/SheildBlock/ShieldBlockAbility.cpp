@@ -3,6 +3,7 @@
 
 #include "AbilitySystem/Ability/SheildBlock/ShieldBlockAbility.h"
 
+#include "Abilities/Tasks/AbilityTask_WaitDelay.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEffectApplied_Self.h"
 #include "Abilities/Tasks/AbilityTask_WaitInputRelease.h"
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
@@ -41,6 +42,16 @@ void UShieldBlockAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 	AbilityTask_WaitGameplayEffectApplied_Self->ReadyForActivation();
 	//
 	SetIsBlocking(true);
+	SetIsPrepareParry(true);
+
+	UAbilityTask_WaitDelay* AbilityTask_WaitDelay = UAbilityTask_WaitDelay::WaitDelay(this, PrePareParryTime);
+	AbilityTask_WaitDelay->OnFinish.AddDynamic(this, &UShieldBlockAbility::OnPrePareParryFinished);
+	AbilityTask_WaitDelay->ReadyForActivation();
+}
+
+void UShieldBlockAbility::OnPrePareParryFinished()
+{
+	SetIsPrepareParry(false);
 }
 
 void UShieldBlockAbility::EndAbility(const FGameplayAbilitySpecHandle Handle,
@@ -52,7 +63,9 @@ void UShieldBlockAbility::EndAbility(const FGameplayAbilitySpecHandle Handle,
 
 	//
 	SetIsBlocking(false);
+	SetIsPrepareParry(false);
 }
+
 
 void UShieldBlockAbility::OnInputReleased(float TimeHeld)
 {
@@ -74,9 +87,18 @@ void UShieldBlockAbility::OnEffectApplied(AActor* Source, FGameplayEffectSpecHan
 	{
 		if (ModifiedAttribute.Attribute == AxeAttributeSet->GetIncomingDamageAttribute())
 		{
-			TransformToShieldParry(Source);
+			OnIncomingDamageEffectApplied(Source, SpecHandle, ActiveHandle);
 			break;
 		}
+	}
+}
+
+void UShieldBlockAbility::OnIncomingDamageEffectApplied(AActor* Source, FGameplayEffectSpecHandle SpecHandle,
+                                                        FActiveGameplayEffectHandle ActiveHandle)
+{
+	if (bIsPrepareParry)
+	{
+		TransformToShieldParry(Source);
 	}
 }
 
@@ -103,20 +125,34 @@ void UShieldBlockAbility::TransformToShieldParry(AActor* Source)
 
 void UShieldBlockAbility::SetIsBlocking(bool NewIsBlocking)
 {
+	bIsBlocking = NewIsBlocking;
+
 	FAxeGameplayTags AxeGameplayTags = FAxeGameplayTags::Get();
-
 	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
-
 	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(AxeCharacterOwner->AbilitySystemComponent);
-
 	if (NewIsBlocking)
 	{
 		AxeASC->AddLooseGameplayTag(AxeGameplayTags.State_Blocking);
-		AxeASC->AddLooseGameplayTag(AxeGameplayTags.State_PrepareParry);
 	}
 	else
 	{
 		AxeASC->RemoveLooseGameplayTag(AxeGameplayTags.State_Blocking);
+	}
+}
+
+void UShieldBlockAbility::SetIsPrepareParry(bool NewIsPrepareParry)
+{
+	bIsPrepareParry = NewIsPrepareParry;
+
+	FAxeGameplayTags AxeGameplayTags = FAxeGameplayTags::Get();
+	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
+	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(AxeCharacterOwner->AbilitySystemComponent);
+	if (NewIsPrepareParry)
+	{
+		AxeASC->AddLooseGameplayTag(AxeGameplayTags.State_PrepareParry);
+	}
+	else
+	{
 		AxeASC->RemoveLooseGameplayTag(AxeGameplayTags.State_PrepareParry);
 	}
 }

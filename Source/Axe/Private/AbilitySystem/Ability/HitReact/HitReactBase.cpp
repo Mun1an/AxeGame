@@ -20,6 +20,11 @@ ELaunchCharacterDirection UHitReactBase::GetHitDirectionMontageByHitResult(const
 		return ELaunchCharacterDirection::Lc_Backward;
 	}
 	FVector HitLocation = InHitResult.ImpactPoint;
+	if (HitLocation.IsNearlyZero())
+	{
+		return ELaunchCharacterDirection::Lc_Backward;
+	}
+	
 	FVector CharacterLocation = AxeCharacterOwner->GetActorLocation();
 	FVector CharacterDirection = AxeCharacterOwner->GetActorRotation().Vector().GetSafeNormal();
 

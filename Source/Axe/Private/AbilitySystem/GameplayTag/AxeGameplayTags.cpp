@@ -41,6 +41,7 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(GameplayCue_WeaponTrail_Axe, "GameplayCue.WeaponTrail.Axe");
 	AddTag(GameplayCue_WeaponHit_Axe, "GameplayCue.WeaponHit.Axe");
 	AddTag(GameplayCue_WeaponHit_Shield, "GameplayCue.WeaponHit.Shield");
+	AddTag(GameplayCue_ShieldParry, "GameplayCue.ShieldParry");
 
 	//
 	AddTag(Attributes_Vital_Health, "Attributes.Vital.Health");

@@ -49,6 +49,7 @@ struct FAxeGameplayTags
 	FGameplayTag GameplayCue_WeaponTrail_Axe;
 	FGameplayTag GameplayCue_WeaponHit_Axe;
 	FGameplayTag GameplayCue_WeaponHit_Shield;
+	FGameplayTag GameplayCue_ShieldParry;
 
 	/**
 	 * Attributes

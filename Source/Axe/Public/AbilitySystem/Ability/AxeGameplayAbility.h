@@ -168,6 +168,7 @@ protected:
 	// Camera
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UCameraShakeBase> CameraShakeClass;
+	UFUNCTION(BlueprintCallable)
 	void ShakeCamera();
 
 	// Task

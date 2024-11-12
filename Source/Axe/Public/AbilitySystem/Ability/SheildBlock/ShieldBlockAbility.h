@@ -25,14 +25,31 @@ public:
 	                        const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility,
 	                        bool bWasCancelled) override;
 
+	UFUNCTION(BlueprintCallable)
 	void SetIsBlocking(bool NewIsBlocking);
 
+	UFUNCTION(BlueprintCallable)
+	void SetIsPrepareParry(bool NewIsPrepareParry);
+
 protected:
+	UPROPERTY(BlueprintReadOnly)
+	bool bIsBlocking = false;
+	UPROPERTY(BlueprintReadOnly)
+	bool bIsPrepareParry = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float PrePareParryTime = 1.0f;
+	UFUNCTION()
+	void OnPrePareParryFinished();
+
 	UFUNCTION()
 	void OnInputReleased(float TimeHeld);
 	UFUNCTION()
 	void OnEffectApplied(AActor* Source, FGameplayEffectSpecHandle SpecHandle,
 	                     FActiveGameplayEffectHandle ActiveHandle);
+	UFUNCTION()
+	void OnIncomingDamageEffectApplied(AActor* Source, FGameplayEffectSpecHandle SpecHandle,
+	                                   FActiveGameplayEffectHandle ActiveHandle);
 
 	UFUNCTION()
 	void TransformToShieldParry(AActor* Source);
