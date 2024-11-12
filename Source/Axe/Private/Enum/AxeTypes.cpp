@@ -42,37 +42,41 @@ bool FAxeGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, boo
 		{
 			RepBits |= 1 << 8;
 		}
-		if (bIsSuccessfulDebuff)
+		if (bIsBlocked)
 		{
 			RepBits |= 1 << 9;
 		}
-		if (DebuffChance > 0.f)
+		if (bIsSuccessfulDebuff)
 		{
 			RepBits |= 1 << 10;
 		}
-		if (DebuffDamage > 0.f)
+		if (DebuffChance > 0.f)
 		{
 			RepBits |= 1 << 11;
 		}
-		if (DebuffDuration > 0.f)
+		if (DebuffDamage > 0.f)
 		{
 			RepBits |= 1 << 12;
 		}
-		if (DebuffFrequency > 0.f)
+		if (DebuffDuration > 0.f)
 		{
 			RepBits |= 1 << 13;
 		}
-		if (DamageType.IsValid())
+		if (DebuffFrequency > 0.f)
 		{
 			RepBits |= 1 << 14;
 		}
-		if (!KnockbackForce.IsZero())
+		if (DamageType.IsValid())
 		{
 			RepBits |= 1 << 15;
 		}
+		if (!KnockbackForce.IsZero())
+		{
+			RepBits |= 1 << 16;
+		}
 	}
 
-	Ar.SerializeBits(&RepBits, 15);
+	Ar.SerializeBits(&RepBits, 16);
 
 	if (RepBits & (1 << 0))
 	{
@@ -125,25 +129,29 @@ bool FAxeGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, boo
 	}
 	if (RepBits & (1 << 9))
 	{
-		Ar << bIsSuccessfulDebuff;
+		Ar << bIsBlocked;
 	}
 	if (RepBits & (1 << 10))
 	{
-		Ar << DebuffChance;
+		Ar << bIsSuccessfulDebuff;
 	}
 	if (RepBits & (1 << 11))
 	{
-		Ar << DebuffDamage;
+		Ar << DebuffChance;
 	}
 	if (RepBits & (1 << 12))
 	{
-		Ar << DebuffDuration;
+		Ar << DebuffDamage;
 	}
 	if (RepBits & (1 << 13))
 	{
-		Ar << DebuffFrequency;
+		Ar << DebuffDuration;
 	}
 	if (RepBits & (1 << 14))
+	{
+		Ar << DebuffFrequency;
+	}
+	if (RepBits & (1 << 15))
 	{
 		if (Ar.IsLoading())
 		{
@@ -154,7 +162,7 @@ bool FAxeGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, boo
 		}
 		DamageType->NetSerialize(Ar, Map, bOutSuccess);
 	}
-	if (RepBits & (1 << 15))
+	if (RepBits & (1 << 16))
 	{
 		KnockbackForce.NetSerialize(Ar, Map, bOutSuccess);
 	}

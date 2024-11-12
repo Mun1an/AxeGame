@@ -16,6 +16,7 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(InputTag_Skill_3, "InputTag.Skill.3");
 	AddTag(InputTag_Skill_4, "InputTag.Skill.4");
 	AddTag(InputTag_Dash, "InputTag.Dash");
+	AddTag(InputTag_Defense, "InputTag.Defense");
 
 	AddTag(Ability_Attack_LightAttack, "Ability.Attack.LightAttack");
 	AddTag(Ability_Attack_HeavyAttack, "Ability.Attack.HeavyAttack");
@@ -30,6 +31,7 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(Ability_Attack_MeleeCombo_B2, "Ability.Attack.MeleeCombo.B2");
 	AddTag(Ability_Attack_MeleeCombo_B3, "Ability.Attack.MeleeCombo.B3");
 
+	AddTag(Ability_Skill_Defense, "Ability.Skill.Defense");
 	AddTag(Ability_Skill_LeapAttack, "Ability.Skill.LeapAttack");
 
 	AddTag(Ability_HitReact_Light, "Ability.HitReact.Light");
@@ -60,6 +62,9 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 
 	DamageTypesToResistances.Add(Damage_Physical, Attributes_Secondary_PhysicalResistance);
 	DamageTypesToResistances.Add(Damage_Magic, Attributes_Secondary_MagicResistance);
+
+	AddTag(State_HitReact, "State.HitReact");
+	AddTag(State_Blocking, "State.Blocking");
 }
 
 

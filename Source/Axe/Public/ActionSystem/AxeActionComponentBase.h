@@ -21,6 +21,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+
 	UPROPERTY()
 	TObjectPtr<AAxeCharacterPlayer> AxeCharacterPlayer;
 
@@ -29,5 +30,4 @@ protected:
 
 	UFUNCTION()
 	virtual void OnAbilityInitOver();
-
 };

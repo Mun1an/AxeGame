@@ -572,6 +572,9 @@ void UAxeGameplayAbility::Ans_LaunchCharacter_NotifyBegin(UAnimNotifyState* Anim
 			const FVector TargetPos = TargetActor->GetActorLocation();
 			const FVector SourcePos = AxeCharacterOwner->GetActorLocation();
 			float ToTargetDist = (TargetPos - SourcePos).Size();
+			// 暂时减去碰撞盒距离
+			ToTargetDist = FMath::Max(ToTargetDist - 100, 1.f);
+			
 			float OldNearlyDistance = LaunchSpeed * NotifyStateDuration;
 			if (OldNearlyDistance > ToTargetDist)
 			{
@@ -588,7 +591,7 @@ void UAxeGameplayAbility::Ans_LaunchCharacter_NotifyBegin(UAnimNotifyState* Anim
 		MotionDirection,
 		LaunchSpeed,
 		NotifyStateDuration,
-		true,
+		false,
 		nullptr,
 		ERootMotionFinishVelocityMode::ClampVelocity,
 		FVector::ZeroVector,
@@ -665,7 +668,7 @@ void UAxeGameplayAbility::Ans_MotionWrap_NotifyBegin(UAnimNotifyState* AnimNotif
 		ToTargetDir,
 		MotionStrength,
 		MotionDuration,
-		true,
+		false,
 		nullptr,
 		ERootMotionFinishVelocityMode::ClampVelocity,
 		FVector::ZeroVector,

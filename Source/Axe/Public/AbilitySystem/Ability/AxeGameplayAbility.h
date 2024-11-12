@@ -136,7 +136,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Ability Target")
 	float AutoSearchTargetRadius = 200.f;
 	UPROPERTY(EditDefaultsOnly, Category = "Ability Target")
-	float AutoSearchTargetAngle = 60.f;
+	float AutoSearchTargetAngle = 80.f;
 	UPROPERTY()
 	TObjectPtr<AActor> AutoTargetActor;
 

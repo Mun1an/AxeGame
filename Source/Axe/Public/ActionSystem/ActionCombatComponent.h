@@ -37,7 +37,7 @@ public:
 
 	UFUNCTION(Client, Reliable)
 	void ShowDamageNumber(const float Damage, ACharacter* TargetCharacter, const bool bIsCriticalHit,
-	                      const bool bIsEvasiveHit, const FVector ShowLocation);
+	                      const bool bIsEvasiveHit, const bool bIsBlocked, const FVector ShowLocation);
 
 protected:
 	virtual void BeginPlay() override;

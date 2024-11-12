@@ -13,6 +13,8 @@
 	GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName) \
 	GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 
+struct FAxeGameplayEffectContext;
+
 USTRUCT()
 struct FEffectProperties
 {
@@ -169,5 +171,5 @@ private:
 
 	void ShowDamageFloatingText(AAxeCharacterBase* SourceCharacter, AAxeCharacterBase* TargetCharacter,
 	                            const float Damage,
-	                            const bool bIsCriticalHit, const bool bIsEvasiveHit, const FVector& ShowLocation) const;
+	                            const FAxeGameplayEffectContext* AxeEffectContext) const;
 };

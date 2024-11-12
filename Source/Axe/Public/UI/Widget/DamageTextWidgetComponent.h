@@ -15,5 +15,5 @@ class AXE_API UDamageTextWidgetComponent : public UWidgetComponent
 	GENERATED_BODY()
 public:
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
-	void SetDamageText(float Damage, const bool bIsCriticalHit, const bool bIsEvasiveHit);
+	void SetDamageText(float Damage, const bool bIsCriticalHit, const bool bIsEvasiveHit, const bool bIsBlocked);
 };

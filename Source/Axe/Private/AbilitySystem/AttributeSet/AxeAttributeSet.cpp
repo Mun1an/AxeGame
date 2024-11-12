@@ -213,10 +213,7 @@ void UAxeAttributeSet::HandleIncomingDamageEffect(const FEffectProperties& Props
 	const FGameplayEffectContext* GameplayEffectContext = Props.EffectContextHandle.Get();
 	const FAxeGameplayEffectContext* AxeEffectContext = UAxeBlueprintFunctionLibrary::GetAxeGameplayEffectContext(
 		GameplayEffectContext);
-	const bool bIsCriticalHit = AxeEffectContext->IsCriticalHit();
-	const bool bIsEvasiveHit = AxeEffectContext->IsEvasive();
 	const FAxeGameplayTags AxeGameplayTags = FAxeGameplayTags::Get();
-
 	//
 	SetIncomingDamage(0.f);
 	if (LocalIncomingDamage > 0.f)
@@ -226,42 +223,54 @@ void UAxeAttributeSet::HandleIncomingDamageEffect(const FEffectProperties& Props
 		const bool bFatal = NewHealth <= 0.f;
 	}
 	// ShowDamageFloatingText
-	const FHitResult* HitResult = Props.EffectContextHandle.Get()->GetHitResult();
-	const FVector ShowLocation = HitResult->ImpactPoint;
 	if (Props.SourceCharacter && Props.TargetCharacter)
 	{
 		ShowDamageFloatingText(
 			Cast<AAxeCharacterBase>(Props.SourceCharacter),
 			Cast<AAxeCharacterBase>(Props.TargetCharacter),
-			LocalIncomingDamage, bIsCriticalHit, bIsEvasiveHit, ShowLocation
+			LocalIncomingDamage,
+			AxeEffectContext
 		);
 	}
 	// HitReact
-	if (UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(Props.TargetASC))
+	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(Props.TargetASC);
+	if (LocalIncomingDamage > 0.f && AxeASC)
 	{
+		const FHitResult* HitResult = AxeEffectContext->GetHitResult();
 		AxeASC->TryActivateHitReactAbility(AxeGameplayTags.Ability_HitReact_Light, *HitResult);
 	}
 }
 
 //
 void UAxeAttributeSet::ShowDamageFloatingText(AAxeCharacterBase* SourceCharacter, AAxeCharacterBase* TargetCharacter,
-                                              const float Damage, const bool bIsCriticalHit, const bool bIsEvasiveHit,
-                                              const FVector& ShowLocation) const
+                                              const float Damage,
+                                              const FAxeGameplayEffectContext* AxeEffectContext) const
 {
 	if (SourceCharacter == TargetCharacter)
 	{
 		return;
 	}
+
+	const FHitResult* HitResult = AxeEffectContext->GetHitResult();
+	const FVector ShowLocation = HitResult->ImpactPoint;
+	const bool bIsCriticalHit = AxeEffectContext->IsCriticalHit();
+	const bool bIsEvasiveHit = AxeEffectContext->IsEvasive();
+	const bool bIsBlocked = AxeEffectContext->IsBlocked();
+
 	if (Cast<AAxeCharacterPlayer>(SourceCharacter))
 	{
 		AAxeCharacterPlayer* AxeCharacterPlayer = Cast<AAxeCharacterPlayer>(SourceCharacter);
 		UActionCombatComponent* ActionCombatComponent = AxeCharacterPlayer->GetActionCombatComponent();
-		ActionCombatComponent->ShowDamageNumber(Damage, TargetCharacter, bIsCriticalHit, bIsEvasiveHit, ShowLocation);
+		ActionCombatComponent->ShowDamageNumber(
+			Damage, TargetCharacter, bIsCriticalHit, bIsEvasiveHit, bIsBlocked, ShowLocation
+		);
 	}
 	if (Cast<AAxeCharacterPlayer>(TargetCharacter))
 	{
 		AAxeCharacterPlayer* AxeCharacterPlayer = Cast<AAxeCharacterPlayer>(TargetCharacter);
 		UActionCombatComponent* ActionCombatComponent = AxeCharacterPlayer->GetActionCombatComponent();
-		ActionCombatComponent->ShowDamageNumber(Damage, TargetCharacter, bIsCriticalHit, bIsEvasiveHit, ShowLocation);
+		ActionCombatComponent->ShowDamageNumber(
+			Damage, TargetCharacter, bIsCriticalHit, bIsEvasiveHit, bIsBlocked, ShowLocation
+		);
 	}
 }

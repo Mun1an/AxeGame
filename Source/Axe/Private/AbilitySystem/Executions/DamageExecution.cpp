@@ -26,13 +26,17 @@ void UDamageExecution::Execute_Implementation(const FGameplayEffectCustomExecuti
 	FGameplayEffectContext* EffectContext = EffectSpec.GetContext().Get();
 	FAxeGameplayEffectContext* AxeEffectContext = UAxeBlueprintFunctionLibrary::GetAxeGameplayEffectContext(
 		EffectContext);
-
+	FAxeGameplayTags& AxeGameplayTags = FAxeGameplayTags::Get();
 	//
 	float Damage = 0.f;
 	//
 	CalDamageByResistance(ExecutionParams, EvaluateParameters, EffectSpec, Damage);
 	CalCritical(ExecutionParams, EvaluateParameters, AxeEffectContext, Damage);
 
+	//
+	CalBlocked(ExecutionParams, EvaluateParameters, AxeEffectContext, Damage);
+
+	//
 	//
 	const FGameplayModifierEvaluatedData EvaluatedData(
 		UAxeAttributeSet::GetIncomingDamageAttribute(),
@@ -90,4 +94,22 @@ void UDamageExecution::CalCritical(const FGameplayEffectCustomExecutionParameter
 		AxeEffectContext->SetCriticalHit(true);
 	}
 	Damage = Damage * DamageCoefficient;
+}
+
+void UDamageExecution::CalBlocked(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
+                                  FAggregatorEvaluateParameters EvaluateParameters,
+                                  FAxeGameplayEffectContext* AxeEffectContext, float& Damage) const
+{
+	FAxeGameplayTags& AxeGameplayTags = FAxeGameplayTags::Get();
+	UAbilitySystemComponent* TargetAbilitySystemComponent = ExecutionParams.GetTargetAbilitySystemComponent();
+	if (!TargetAbilitySystemComponent)
+	{
+		return;
+	}
+	bool bIsBlocking = TargetAbilitySystemComponent->GetOwnedGameplayTags().HasTag(AxeGameplayTags.State_Blocking);
+	if (bIsBlocking)
+	{
+		Damage = 0.f;
+		AxeEffectContext->SetBlocked(true);
+	}
 }

@@ -24,6 +24,7 @@ struct FAxeGameplayTags
 	FGameplayTag InputTag_Skill_3;
 	FGameplayTag InputTag_Skill_4;
 	FGameplayTag InputTag_Dash;
+	FGameplayTag InputTag_Defense;
 
 	FGameplayTag Ability_Attack_LightAttack;
 	FGameplayTag Ability_Attack_HeavyAttack;
@@ -38,6 +39,7 @@ struct FAxeGameplayTags
 	FGameplayTag Ability_Attack_MeleeCombo_B2;
 	FGameplayTag Ability_Attack_MeleeCombo_B3;
 
+	FGameplayTag Ability_Skill_Defense;
 	FGameplayTag Ability_Skill_LeapAttack;
 
 	FGameplayTag Ability_HitReact_Light;
@@ -71,6 +73,10 @@ struct FAxeGameplayTags
 	FGameplayTag Damage_Physical;
 	FGameplayTag Damage_Magic;
 	TMap<FGameplayTag, FGameplayTag> DamageTypesToResistances;
+
+	// State
+	FGameplayTag State_HitReact;
+	FGameplayTag State_Blocking;
 
 protected:
 	void AddTag(FGameplayTag& OutTag, const ANSICHAR* TagName = nullptr, const ANSICHAR* TagComment = nullptr);

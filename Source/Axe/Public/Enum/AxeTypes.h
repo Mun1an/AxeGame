@@ -55,6 +55,9 @@ struct FAxeGameplayEffectContext : public FGameplayEffectContext
 	bool IsEvasive() const { return bIsEvasive; }
 	void SetEvasive(const bool Value) { bIsEvasive = Value; }
 
+	bool IsBlocked() const { return bIsBlocked; }
+	void SetBlocked(const bool Value) { bIsBlocked = Value; }
+
 	bool IsSuccessfulDebuff() const { return bIsSuccessfulDebuff; }
 	void SetSuccessfulDebuff(const bool Value) { bIsSuccessfulDebuff = Value; }
 
@@ -89,6 +92,8 @@ protected:
 	bool bIsCriticalHit = false;
 	UPROPERTY()
 	bool bIsEvasive = false;
+	UPROPERTY()
+	bool bIsBlocked = false;
 	UPROPERTY()
 	bool bIsSuccessfulDebuff = false;
 	UPROPERTY()

@@ -49,6 +49,12 @@ void UAxeAbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& Inpu
 			{
 				TryActivateAbilityAndCheck_Client(AbilitySpec.Handle);
 			}
+
+			if (AbilitySpec.IsActive())
+			{
+				InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputPressed, AbilitySpec.Handle,
+				                      AbilitySpec.ActivationInfo.GetActivationPredictionKey());
+			}
 		}
 	}
 	OnAbilityInputTagPressedDelegate.Broadcast(InputTag);
@@ -60,7 +66,17 @@ void UAxeAbilitySystemComponent::AbilityInputTagHeld(const FGameplayTag& InputTa
 
 void UAxeAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag& InputTag)
 {
-	//
+	TArray<FGameplayAbilitySpec>& GameplayAbilitySpecList = GetActivatableAbilities();
+	for (FGameplayAbilitySpec& AbilitySpec : GameplayAbilitySpecList)
+	{
+		if (AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag))
+		{
+			AbilitySpecInputReleased(AbilitySpec);
+
+			InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputReleased, AbilitySpec.Handle,
+			                      AbilitySpec.ActivationInfo.GetActivationPredictionKey());
+		}
+	}
 }
 
 void UAxeAbilitySystemComponent::TryActivateAbilityAndCheck_Client(FGameplayAbilitySpecHandle AbilitySpecHandle,

@@ -81,7 +81,9 @@ FVector UActionCombatComponent::GetLaunchDirectionByEnum(AActor* Actor, ELaunchC
 }
 
 void UActionCombatComponent::ShowDamageNumber_Implementation(const float Damage, ACharacter* TargetCharacter,
-                                                             const bool bIsCriticalHit, const bool bIsEvasiveHit,
+                                                             const bool bIsCriticalHit,
+                                                             const bool bIsEvasiveHit,
+                                                             const bool bIsBlocked,
                                                              const FVector ShowLocation)
 {
 	if (!IsValid(TargetCharacter))
@@ -109,7 +111,7 @@ void UActionCombatComponent::ShowDamageNumber_Implementation(const float Damage,
 		DamageTextComponent->SetWorldLocation(ShowLocation);
 	}
 
-	DamageTextComponent->SetDamageText(Damage, bIsCriticalHit, bIsEvasiveHit);
+	DamageTextComponent->SetDamageText(Damage, bIsCriticalHit, bIsEvasiveHit, bIsBlocked);
 }
 
 void UActionCombatComponent::BeginPlay()
