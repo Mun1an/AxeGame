@@ -8,7 +8,7 @@
 #include "Character/AxeCharacterBase.h"
 
 
-void UAxeDamageGameplayAbility::ApplyDamage(AAxeCharacterBase* TargetCharacter, const FHitResult& HitResult)
+void UAxeDamageGameplayAbility::ApplyDamageToTarget(AAxeCharacterBase* TargetCharacter, const FHitResult& HitResult)
 {
 	if (!IsValid(TargetCharacter))
 	{

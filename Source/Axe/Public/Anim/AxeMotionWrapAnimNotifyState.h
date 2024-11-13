@@ -20,18 +20,21 @@ public:
 	virtual void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration,
 	                         const FAnimNotifyEventReference& EventReference) override;
 
-	// float GetTraceAngle() const { return TraceAngle; }
-	// float GetTraceDistance() const { return TraceDistance; }
 	float GetTraceSpeedCoefficient() const { return TraceSpeedCoefficient; }
+	bool IsFacingTarget() const { return bFacingTarget; }
+	bool IsMoveToTarget() const { return bMoveToTarget; }
+	bool IsMoveToTargetOnMoveInput() const { return bMoveToTargetOnMoveInput; }
 
 protected:
-	// UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	// float TraceAngle = 60.f;
-	//
-	// UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	// float TraceDistance = 300.f;
-	//
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float TraceSpeedCoefficient = 1.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bFacingTarget = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bMoveToTarget = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bMoveToTargetOnMoveInput = true;
 };

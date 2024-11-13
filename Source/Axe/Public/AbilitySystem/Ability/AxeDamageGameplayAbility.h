@@ -18,7 +18,7 @@ class AXE_API UAxeDamageGameplayAbility : public UAxeGameplayAbility
 
 public:
 	UFUNCTION(BlueprintCallable)
-	void ApplyDamage(AAxeCharacterBase* TargetCharacter, const FHitResult& HitResult);
+	void ApplyDamageToTarget(AAxeCharacterBase* TargetCharacter, const FHitResult& HitResult = FHitResult());
 
 protected:
 	UFUNCTION(BlueprintCallable)

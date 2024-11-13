@@ -58,7 +58,7 @@ public:
 	UFUNCTION()
 	bool GetIsUsingClientMovement() const { return bUseClientMovement; }
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	AActor* GetOrFindAutoTargetActor();
 
 	// AbilitySkillStage
@@ -91,11 +91,12 @@ public:
 	bool ChangeActivationGroup(EAxeAbilityActivationGroup NewGroup);
 
 	virtual bool CanActivateAbility_ByLastReplaceCondition(const FGameplayAbilitySpecHandle Handle,
-											 const FGameplayAbilityActorInfo* ActorInfo,
-											 const FGameplayTagContainer* SourceTags,
-											 const FGameplayTagContainer* TargetTags,
-											 FGameplayTagContainer* OptionalRelevantTags) const;
-	virtual bool CanActivateAbility_ByLastReplaceCondition_EachProxy(UGameplayAbility* LastAbility, const FGameplayAbilityActorInfo* ActorInfo)  const;
+	                                                       const FGameplayAbilityActorInfo* ActorInfo,
+	                                                       const FGameplayTagContainer* SourceTags,
+	                                                       const FGameplayTagContainer* TargetTags,
+	                                                       FGameplayTagContainer* OptionalRelevantTags) const;
+	virtual bool CanActivateAbility_ByLastReplaceCondition_EachProxy(UGameplayAbility* LastAbility,
+	                                                                 const FGameplayAbilityActorInfo* ActorInfo) const;
 
 	// 根据条件替换技能的技能所需要的tag
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -174,6 +175,11 @@ protected:
 	// Task
 	UFUNCTION(BlueprintCallable)
 	void AddMontageNotifyStateTask(UAnimMontage* LocalAnimMontage);
+	UFUNCTION(BlueprintCallable)
+	void InitMontageNotifyAndNotifyStateClasses(UAnimMontage* LocalAnimMontage);
+	UPROPERTY()
+	TArray<TSubclassOf<UAnimNotify>> MontageNotifyClassesCache;
+	TArray<TSubclassOf<UAnimNotifyState>> MontageNotifyStateClassesCache;
 
 	// Movement
 	UFUNCTION(BlueprintCallable)
@@ -185,6 +191,11 @@ protected:
 
 	UFUNCTION()
 	void An_BackSwing_NotifyBegin(UAnimNotify* AnimNotify);
+
+	UFUNCTION()
+	void An_CustomDamage_NotifyBegin(UAnimNotify* AnimNotify);
+	UFUNCTION(BlueprintImplementableEvent)
+	void BP_OnCustomDamageNotifyBegin(FName CustomName);
 
 	UFUNCTION()
 	void Ans_LaunchCharacter_NotifyBegin(UAnimNotifyState* AnimNotifyState);

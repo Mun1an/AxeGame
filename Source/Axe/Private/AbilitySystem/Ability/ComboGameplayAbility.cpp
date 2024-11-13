@@ -169,7 +169,7 @@ void UComboGameplayAbility::OnHitTrace(const FHitResult& HitResults)
 		if (HasAuthority(&CurrentActivationInfo))
 		{
 			AAxeCharacterBase* AxeCharacterBase = Cast<AAxeCharacterBase>(HitResults.GetActor());
-			ApplyDamage(AxeCharacterBase, HitResults);
+			ApplyDamageToTarget(AxeCharacterBase, HitResults);
 		}
 
 		SetActiveMontagePauseFrame(0.08, 0.1);
