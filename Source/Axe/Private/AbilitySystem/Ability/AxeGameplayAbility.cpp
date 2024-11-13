@@ -393,16 +393,16 @@ void UAxeGameplayAbility::AddMontageNotifyStateTask(UAnimMontage* LocalAnimMonta
 	//UAbilityTask_MontageNotify
 	InitMontageNotifyAndNotifyStateClasses(LocalAnimMontage);
 
-	// CustomDamage
+	// CustomName
 	if (MontageNotifyClassesCache.Contains(UCustomNameAnimNotify::StaticClass()))
 	{
-		UAbilityTask_MontageNotify* AT_CustomDamage_An = UAbilityTask_MontageNotify::CreateMontageNotifyTask(
+		UAbilityTask_MontageNotify* AT_CustomName_An = UAbilityTask_MontageNotify::CreateMontageNotifyTask(
 			this, LocalAnimMontage,
 			UCustomNameAnimNotify::StaticClass()
 		);
-		AT_CustomDamage_An->MontageNotifyStartDelegate.AddDynamic(
-			this, &UAxeGameplayAbility::An_CustomDamage_NotifyBegin);
-		AT_CustomDamage_An->ReadyForActivation();
+		AT_CustomName_An->MontageNotifyStartDelegate.AddDynamic(
+			this, &UAxeGameplayAbility::An_CustomName_NotifyBegin);
+		AT_CustomName_An->ReadyForActivation();
 	}
 	// BackSwing
 	if (MontageNotifyClassesCache.Contains(UBackSwingAnimNotify::StaticClass()))
@@ -600,10 +600,10 @@ void UAxeGameplayAbility::An_BackSwing_NotifyBegin(UAnimNotify* AnimNotify)
 	SetAbilitySkillStage(EAbilitySkillStage::ASS_BackSwing);
 }
 
-void UAxeGameplayAbility::An_CustomDamage_NotifyBegin(UAnimNotify* AnimNotify)
+void UAxeGameplayAbility::An_CustomName_NotifyBegin(UAnimNotify* AnimNotify)
 {
 	const FName CustomName = Cast<UCustomNameAnimNotify>(AnimNotify)->CustomName;
-	BP_OnCustomDamageNotifyBegin(CustomName);
+	BP_OnCustomNameNotifyBegin(CustomName);
 }
 
 void UAxeGameplayAbility::Ans_LaunchCharacter_NotifyBegin(UAnimNotifyState* AnimNotifyState)

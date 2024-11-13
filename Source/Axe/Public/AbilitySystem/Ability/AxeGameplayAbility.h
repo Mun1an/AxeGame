@@ -193,9 +193,9 @@ protected:
 	void An_BackSwing_NotifyBegin(UAnimNotify* AnimNotify);
 
 	UFUNCTION()
-	void An_CustomDamage_NotifyBegin(UAnimNotify* AnimNotify);
+	void An_CustomName_NotifyBegin(UAnimNotify* AnimNotify);
 	UFUNCTION(BlueprintImplementableEvent)
-	void BP_OnCustomDamageNotifyBegin(FName CustomName);
+	void BP_OnCustomNameNotifyBegin(FName CustomName);
 
 	UFUNCTION()
 	void Ans_LaunchCharacter_NotifyBegin(UAnimNotifyState* AnimNotifyState);

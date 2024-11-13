@@ -23,7 +23,10 @@ public:
 protected:
 	UFUNCTION(BlueprintCallable)
 	float GetOwnerCharacterBaseDamageAttr();
-
+	
+	UFUNCTION(BlueprintCallable)
+	float GetTotalDamage();
+	
 	UPROPERTY(EditDefaultsOnly, Category="Damage")
 	TSubclassOf<UGameplayEffect> DamageEffectClass;
 

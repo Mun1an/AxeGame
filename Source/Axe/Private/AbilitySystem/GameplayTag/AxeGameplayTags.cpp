@@ -34,6 +34,7 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(Ability_Skill_ShieldDefense, "Ability.Skill.ShieldDefense");
 	AddTag(Ability_Skill_ShieldParry, "Ability.Skill.ShieldParry");
 	AddTag(Ability_Skill_LeapAttack, "Ability.Skill.LeapAttack");
+	AddTag(Ability_Skill_ThrowAxe, "Ability.Skill.ThrowAxe");
 
 	AddTag(Ability_HitReact_Light, "Ability.HitReact.Light");
 	AddTag(Ability_HitReact_Heavy, "Ability.HitReact.Heavy");

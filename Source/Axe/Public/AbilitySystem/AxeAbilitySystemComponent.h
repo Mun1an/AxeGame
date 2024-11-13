@@ -67,7 +67,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FActiveGameplayEffectHandle ApplyEffectToSelfByClass(const TSubclassOf<UGameplayEffect>& EffectClass,
 	                                                     const float Level);
-	bool ApplyDamageEffect(UAbilitySystemComponent* TargetASC, const FDamageEffectParams& Params);
+	bool ApplyDamageEffectToTarget(UAbilitySystemComponent* TargetASC, const FDamageEffectParams& Params);
+	bool ApplyDamageEffectToSelf(AActor* FromTarget, const FDamageEffectParams& Params);
 
 	//
 protected:

@@ -5,6 +5,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
+#include "Axe/Axe.h"
 #include "Components/CapsuleComponent.h"
 #include "Enum/AxeEnum.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -14,6 +15,8 @@ AAxeCharacterBase::AAxeCharacterBase()
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Projectile, ECR_Overlap);
 }
 
 // Called when the game starts or when spawned

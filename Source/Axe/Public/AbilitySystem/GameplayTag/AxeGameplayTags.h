@@ -42,6 +42,7 @@ struct FAxeGameplayTags
 	FGameplayTag Ability_Skill_ShieldDefense;
 	FGameplayTag Ability_Skill_ShieldParry;
 	FGameplayTag Ability_Skill_LeapAttack;
+	FGameplayTag Ability_Skill_ThrowAxe;
 
 	FGameplayTag Ability_HitReact_Light;
 	FGameplayTag Ability_HitReact_Heavy;

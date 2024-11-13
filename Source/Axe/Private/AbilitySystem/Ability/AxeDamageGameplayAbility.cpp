@@ -33,11 +33,9 @@ void UAxeDamageGameplayAbility::ApplyDamageToTarget(AAxeCharacterBase* TargetCha
 	DamageEffectParam.EffectLevel = EffectLevel;
 	DamageEffectParam.HitResult = HitResult;
 
-	const float BaseDamage = GetOwnerCharacterBaseDamageAttr();
+	DamageEffectParam.DamageValue = GetTotalDamage();
 
-	DamageEffectParam.DamageValue = FixedDamage + BaseDamageCoefficient * BaseDamage;
-
-	AxeASC->ApplyDamageEffect(TargetASC, DamageEffectParam);
+	AxeASC->ApplyDamageEffectToTarget(TargetASC, DamageEffectParam);
 }
 
 float UAxeDamageGameplayAbility::GetOwnerCharacterBaseDamageAttr()
@@ -51,4 +49,10 @@ float UAxeDamageGameplayAbility::GetOwnerCharacterBaseDamageAttr()
 		}
 	}
 	return 0.f;
+}
+
+float UAxeDamageGameplayAbility::GetTotalDamage()
+{
+	const float BaseDamage = GetOwnerCharacterBaseDamageAttr();
+	return FixedDamage + BaseDamageCoefficient * BaseDamage;
 }

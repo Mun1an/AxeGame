@@ -295,7 +295,7 @@ FActiveGameplayEffectHandle UAxeAbilitySystemComponent::ApplyEffectToSelfByClass
 	return ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), this);
 }
 
-bool UAxeAbilitySystemComponent::ApplyDamageEffect(UAbilitySystemComponent* TargetASC,
+bool UAxeAbilitySystemComponent::ApplyDamageEffectToTarget(UAbilitySystemComponent* TargetASC,
                                                    const FDamageEffectParams& Params)
 {
 	checkf(Params.DamageEffectClass, TEXT("DamageEffectClass is nullptr"));
@@ -310,5 +310,22 @@ bool UAxeAbilitySystemComponent::ApplyDamageEffect(UAbilitySystemComponent* Targ
 		SpecHandle, Params.DamageType, Params.DamageValue
 	);
 	ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), TargetASC);
+	return true;
+}
+
+bool UAxeAbilitySystemComponent::ApplyDamageEffectToSelf(AActor* FromTarget, const FDamageEffectParams& Params)
+{
+	checkf(Params.DamageEffectClass, TEXT("DamageEffectClass is nullptr"));
+
+	FGameplayEffectContextHandle ContextHandle = MakeEffectContext();
+	ContextHandle.AddSourceObject(FromTarget);
+	ContextHandle.AddHitResult(Params.HitResult);
+	const FGameplayEffectSpecHandle SpecHandle = MakeOutgoingSpec(
+		Params.DamageEffectClass, Params.EffectLevel, ContextHandle
+	);
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
+		SpecHandle, Params.DamageType, Params.DamageValue
+	);
+	ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 	return true;
 }
