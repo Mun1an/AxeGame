@@ -50,6 +50,7 @@ struct FAxeGameplayTags
 	FGameplayTag GameplayCue_WeaponHit_Axe;
 	FGameplayTag GameplayCue_WeaponHit_Shield;
 	FGameplayTag GameplayCue_ShieldParry;
+	FGameplayTag GameplayCue_GroundSmash;
 
 	/**
 	 * Attributes

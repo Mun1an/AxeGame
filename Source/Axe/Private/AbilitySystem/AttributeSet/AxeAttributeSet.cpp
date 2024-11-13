@@ -250,7 +250,7 @@ void UAxeAttributeSet::HandleIncomingDamageEffect(const FEffectProperties& Props
 	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(Props.TargetASC);
 	if (LocalIncomingDamage > 0.f && AxeASC)
 	{
-		AxeASC->TryActivateHitReactAbility(AxeGameplayTags.Ability_HitReact_Light, *HitResult);
+		AxeASC->TryActivateHitReactAbility(AxeGameplayTags.Ability_HitReact_Light, *HitResult, Props.SourceCharacter);
 	}
 }
 

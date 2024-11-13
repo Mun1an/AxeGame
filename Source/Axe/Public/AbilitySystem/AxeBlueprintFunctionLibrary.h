@@ -17,12 +17,17 @@ UCLASS()
 class AXE_API UAxeBlueprintFunctionLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
+
 public:
-	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemBPLibrary|GameplayEffects")
+	UFUNCTION(BlueprintCallable, Category="AxeBPLibrary|GameplayEffects")
 	static FAxeGameplayEffectContext& GetAxeGameplayEffectContext(FGameplayEffectContextHandle& EffectContextHandle);
 	static FAxeGameplayEffectContext* GetAxeGameplayEffectContext(FGameplayEffectContext* EffectContext);
 	static const FAxeGameplayEffectContext* GetAxeGameplayEffectContext(const FGameplayEffectContext* EffectContext);
-	
-	UFUNCTION(BlueprintCallable, Category="AuraAbilitySystemBPLibrary|Input")
+
+	UFUNCTION(BlueprintCallable, Category="AxeBPLibrary|Input")
 	static FVector GetAxeLastMovementInputVector(const AAxeCharacterPlayer* AxeCharacterPlayer);
+
+	UFUNCTION(BlueprintCallable, Category="AxeBPLibrary|Input")
+	static FVector GetBottomGroundLocation(const AActor* SourceActor, FVector StartLocation,
+	                                       const float LineLength = 1000);
 };

@@ -21,10 +21,17 @@ public:
 	{
 		HitResult = InHitResult;
 	}
+	void SetSourceActor(AActor* InSourceActor)
+	{
+		SourceActor = InSourceActor;
+	}
 
 protected:
 	UPROPERTY(BlueprintReadWrite)
 	FHitResult HitResult;
+
+	UPROPERTY(BlueprintReadWrite)
+	AActor* SourceActor = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HitReact")
 	UAnimMontage* HitReactMontage_F;
@@ -36,5 +43,5 @@ protected:
 	UAnimMontage* HitReactMontage_R;
 
 	UFUNCTION(BlueprintCallable)
-	ELaunchCharacterDirection GetHitDirectionMontageByHitResult(const FHitResult& InHitResult) const;
+	ELaunchCharacterDirection GetHitDirectionMontage() const;
 };

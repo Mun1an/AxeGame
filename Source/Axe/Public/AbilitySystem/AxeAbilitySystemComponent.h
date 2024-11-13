@@ -37,9 +37,11 @@ public:
 	void AbilityInputTagHeld(const FGameplayTag& InputTag);
 	void AbilityInputTagReleased(const FGameplayTag& InputTag);
 	//
-	void TryActivateAbilityAndCheck_Client(FGameplayAbilitySpecHandle AbilitySpecHandle, bool bAllowRemoteActivation = true);
+	void TryActivateAbilityAndCheck_Client(FGameplayAbilitySpecHandle AbilitySpecHandle,
+	                                       bool bAllowRemoteActivation = true);
 	//
-	void TryActivateHitReactAbility(const FGameplayTag HitReactTag, const FHitResult& HitResult);
+	void TryActivateHitReactAbility(const FGameplayTag HitReactTag, const FHitResult& HitResult,
+	                                AActor* SourceActor = nullptr);
 	//
 	bool GiveAbilityByAbilityAndLevel(const TSubclassOf<UGameplayAbility>& Ability, const int32 AbilityLevel);
 	//
@@ -47,7 +49,9 @@ public:
 	{
 		return ActivationGroupMap;
 	}
-	void GetAbilitySpecHandlesByActivationGroup(TArray<FGameplayAbilitySpecHandle>& HandleArray,EAxeAbilityActivationGroup Group) const;
+
+	void GetAbilitySpecHandlesByActivationGroup(TArray<FGameplayAbilitySpecHandle>& HandleArray,
+	                                            EAxeAbilityActivationGroup Group) const;
 
 	// Activation Group
 	bool IsActivationGroupBlocked(EAxeAbilityActivationGroup Group, const UAxeGameplayAbility* NewAxeAbility) const;

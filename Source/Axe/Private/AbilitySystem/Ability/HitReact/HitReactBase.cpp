@@ -12,19 +12,23 @@ void UHitReactBase::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& 
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 }
 
-ELaunchCharacterDirection UHitReactBase::GetHitDirectionMontageByHitResult(const FHitResult& InHitResult) const
+ELaunchCharacterDirection UHitReactBase::GetHitDirectionMontage() const
 {
 	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
 	if (!AxeCharacterOwner)
 	{
 		return ELaunchCharacterDirection::Lc_Backward;
 	}
-	FVector HitLocation = InHitResult.ImpactPoint;
-	if (HitLocation.IsNearlyZero())
+	FVector HitLocation = HitResult.ImpactPoint;
+	if (HitLocation.IsNearlyZero() && !SourceActor)
 	{
 		return ELaunchCharacterDirection::Lc_Backward;
 	}
-	
+	if (SourceActor)
+	{
+		HitLocation = SourceActor->GetActorLocation();
+	}
+
 	FVector CharacterLocation = AxeCharacterOwner->GetActorLocation();
 	FVector CharacterDirection = AxeCharacterOwner->GetActorRotation().Vector().GetSafeNormal();
 

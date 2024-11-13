@@ -104,7 +104,8 @@ void UAxeAbilitySystemComponent::TryActivateAbilityAndCheck_Client(FGameplayAbil
 	TryActivateAbility(AbilitySpecHandle, bAllowRemoteActivation);
 }
 
-void UAxeAbilitySystemComponent::TryActivateHitReactAbility(const FGameplayTag HitReactTag, const FHitResult& HitResult)
+void UAxeAbilitySystemComponent::TryActivateHitReactAbility(const FGameplayTag HitReactTag, const FHitResult& HitResult,
+                                                            AActor* SourceActor)
 {
 	FGameplayTagContainer TagContainer;
 	TagContainer.AddTag(HitReactTag);
@@ -117,6 +118,7 @@ void UAxeAbilitySystemComponent::TryActivateHitReactAbility(const FGameplayTag H
 			if (UHitReactBase* HitReactBase = Cast<UHitReactBase>(AbilityInstance))
 			{
 				HitReactBase->SetHitResult(HitResult);
+				HitReactBase->SetSourceActor(SourceActor);
 			}
 		}
 		TryActivateAbility(GameplayAbilitySpec->Handle);

@@ -44,3 +44,27 @@ FVector UAxeBlueprintFunctionLibrary::GetAxeLastMovementInputVector(const AAxeCh
 	}
 	return AxeCharacterPlayer->GetLastMovementInputVector();
 }
+
+FVector UAxeBlueprintFunctionLibrary::GetBottomGroundLocation(const AActor* SourceActor, FVector StartLocation,
+                                                              const float LineLength)
+{
+	const UWorld* World = GEngine->GetWorldFromContextObject(SourceActor, EGetWorldErrorMode::LogAndReturnNull);
+
+	FHitResult HitResult;
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(SourceActor);
+	FVector EndLocation = StartLocation - FVector(0, 0, LineLength);
+	bool bHit = World->LineTraceSingleByChannel(
+		HitResult, StartLocation,
+		EndLocation,
+		ECC_Visibility, CollisionParams
+	);
+	if (bHit)
+	{
+		return HitResult.ImpactPoint;
+	}
+	else
+	{
+		return EndLocation;
+	}
+}
