@@ -10,7 +10,7 @@
 #include "UI/WidgetController/AxeWidgetControllerBase.h"
 #include "UI/WidgetController/MobOverlayWidgetController.h"
 
-AAxeCharacterEnemy::AAxeCharacterEnemy(): Super()
+AAxeCharacterEnemy::AAxeCharacterEnemy()
 {
 	// HealthBar
 	HealthBar = CreateDefaultSubobject<UWidgetComponent>("HealthBar");
@@ -20,7 +20,6 @@ AAxeCharacterEnemy::AAxeCharacterEnemy(): Super()
 void AAxeCharacterEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-
 	// HealthBar
 	if (UAxeUserWidget* AxeUserWidget = Cast<UAxeUserWidget>(HealthBar->GetUserWidgetObject()))
 	{
@@ -33,6 +32,7 @@ void AAxeCharacterEnemy::BeginPlay()
 			);
 			UMobOverlayWidgetController* WidgetController = GetMobOverlayWidgetController(WidgetControllerParams);
 			AxeUserWidget->SetWidgetController(WidgetController);
+
 			WidgetController->BroadcastInitialValues();
 		}
 	}
@@ -40,13 +40,13 @@ void AAxeCharacterEnemy::BeginPlay()
 
 UMobOverlayWidgetController* AAxeCharacterEnemy::GetMobOverlayWidgetController(const FWidgetControllerParams& Params)
 {
-	// if (MobOverlayWidgetController == nullptr && MobOverlayWidgetControllerClass)
-	// {
-	UMobOverlayWidgetController* MobOverlayWidgetController = NewObject<UMobOverlayWidgetController>(
-		this, MobOverlayWidgetControllerClass);
-	MobOverlayWidgetController->SetWidgetControllerParams(Params);
-	MobOverlayWidgetController->BindCallbacksToDependencies();
-	// }
+	if (MobOverlayWidgetController == nullptr && MobOverlayWidgetControllerClass)
+	{
+		MobOverlayWidgetController = NewObject<UMobOverlayWidgetController>(
+			this, MobOverlayWidgetControllerClass);
+		MobOverlayWidgetController->SetWidgetControllerParams(Params);
+		MobOverlayWidgetController->BindCallbacksToDependencies();
+	}
 	return MobOverlayWidgetController;
 }
 
@@ -56,3 +56,4 @@ void AAxeCharacterEnemy::MulticastDeath_Implementation(const FVector DeathImpuls
 
 	HealthBar->SetVisibility(false);
 }
+

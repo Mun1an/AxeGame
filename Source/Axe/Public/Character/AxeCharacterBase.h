@@ -68,6 +68,9 @@ public:
 	bool IsDead() const { return bIsDead; }
 
 	UFUNCTION(BlueprintCallable)
+	bool IsAlive() const { return !bIsDead; }
+
+	UFUNCTION(BlueprintCallable)
 	void SetDeath();
 	UFUNCTION(BlueprintCallable)
 	void SetDeathWithParams(const FVector DeathImpulse);

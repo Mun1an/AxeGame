@@ -13,6 +13,8 @@ struct FAttributeDef
 	
 	DECLARE_ATTRIBUTE_CAPTUREDEF(CriticalHitChance);
 	DECLARE_ATTRIBUTE_CAPTUREDEF(CriticalHitDamage);
+	
+	DECLARE_ATTRIBUTE_CAPTUREDEF(HealthRegeneration);
 
 	FAttributeDef()
 	{
@@ -25,6 +27,8 @@ struct FAttributeDef
 		
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UAxeAttributeSet, CriticalHitChance, Source, false);
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UAxeAttributeSet, CriticalHitDamage, Source, false);
+		
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UAxeAttributeSet, HealthRegeneration, Source, false);
 	}
 
 };

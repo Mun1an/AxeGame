@@ -31,12 +31,12 @@ void UMobOverlayWidgetController::BindCallbacksToDependencies()
 	MaxHealthChangeDelegate.AddUObject(this, &UMobOverlayWidgetController::MaxHealthChanged);
 }
 
-void UMobOverlayWidgetController::HealthChanged(const FOnAttributeChangeData& Data) const
+void UMobOverlayWidgetController::HealthChanged(const FOnAttributeChangeData& Data)
 {
-	OnHealthChanged.Broadcast(Data.NewValue);
+	OnHealthChanged.Broadcast(GetAxeAttributeSet()->GetHealth());
 }
 
-void UMobOverlayWidgetController::MaxHealthChanged(const FOnAttributeChangeData& Data) const
+void UMobOverlayWidgetController::MaxHealthChanged(const FOnAttributeChangeData& Data)
 {
-	OnMaxHealthChanged.Broadcast(Data.NewValue);
+	OnMaxHealthChanged.Broadcast(GetAxeAttributeSet()->GetMaxHealth());
 }

@@ -55,14 +55,14 @@ void UAxeAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, f
 	Super::PreAttributeChange(Attribute, NewValue);
 
 	// Clamp Health
-	if (Attribute == GetHealthAttribute())
-	{
-		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxHealth());
-	}
-	if (Attribute == GetMaxHealthAttribute())
-	{
-		NewValue = FMath::Max(NewValue, 0.f);
-	}
+	// if (Attribute == GetHealthAttribute())
+	// {
+	// 	NewValue = FMath::Clamp(NewValue, 0.f, GetMaxHealth());
+	// }
+	// if (Attribute == GetMaxHealthAttribute())
+	// {
+	// 	NewValue = FMath::Max(NewValue, 0.f);
+	// }
 }
 
 void UAxeAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
@@ -103,7 +103,10 @@ void UAxeAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbac
 
 	FEffectProperties EffectProperties;
 	SetEffectProperties(Data, EffectProperties);
-
+	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
+	{
+		SetHealth(FMath::Clamp(GetHealth(), 0.f, GetMaxHealth()));
+	}
 	if (Data.EvaluatedData.Attribute == GetIncomingDamageAttribute())
 	{
 		HandleIncomingDamageEffect(EffectProperties);
