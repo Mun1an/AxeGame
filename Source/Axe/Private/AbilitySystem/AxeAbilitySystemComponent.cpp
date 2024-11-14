@@ -130,6 +130,8 @@ bool UAxeAbilitySystemComponent::GiveAbilityByAbilityAndLevel(const TSubclassOf<
 {
 	const FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(Ability, AbilityLevel);
 	FGameplayAbilitySpecHandle GameplayAbilitySpecHandle = GiveAbility(AbilitySpec);
+
+	//
 	return GameplayAbilitySpecHandle.IsValid();
 }
 
@@ -253,6 +255,8 @@ void UAxeAbilitySystemComponent::OnGiveAbility(FGameplayAbilitySpec& AbilitySpec
 			AbilitySpec.DynamicAbilityTags.AddTag(AxeGameplayAbility->InputTag);
 		}
 	}
+
+	AbilitiesGivenDelegate.Broadcast();
 }
 
 void UAxeAbilitySystemComponent::NotifyAbilityActivated(const FGameplayAbilitySpecHandle Handle,
@@ -296,7 +300,7 @@ FActiveGameplayEffectHandle UAxeAbilitySystemComponent::ApplyEffectToSelfByClass
 }
 
 bool UAxeAbilitySystemComponent::ApplyDamageEffectToTarget(UAbilitySystemComponent* TargetASC,
-                                                   const FDamageEffectParams& Params)
+                                                           const FDamageEffectParams& Params)
 {
 	checkf(Params.DamageEffectClass, TEXT("DamageEffectClass is nullptr"));
 
@@ -328,4 +332,48 @@ bool UAxeAbilitySystemComponent::ApplyDamageEffectToSelf(AActor* FromTarget, con
 	);
 	ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 	return true;
+}
+
+void UAxeAbilitySystemComponent::ExecuteDelegateToGetAbilitySpec(const FAbilitySpecDataDelegate& Delegate)
+{
+	FScopedAbilityListLock AbilityLock(*this);
+
+	const TArray<FGameplayAbilitySpec> GameplayAbilitySpecs = GetActivatableAbilities();
+	for (const FGameplayAbilitySpec& AbilitySpec : GameplayAbilitySpecs)
+	{
+		bool bExecuteIfBound = Delegate.ExecuteIfBound(AbilitySpec);
+	}
+}
+
+FGameplayTag UAxeAbilitySystemComponent::GetAbilityTagFromSpec(const FGameplayAbilitySpec& AbilitySpec)
+{
+	if (AbilitySpec.Ability)
+	{
+		FGameplayTagContainer& GameplayTags = AbilitySpec.Ability.Get()->AbilityTags;
+		for (const FGameplayTag& Tag : GameplayTags)
+		{
+			FGameplayTag RequestGameplayTag = FGameplayTag::RequestGameplayTag(FName("Ability"));
+			if (RequestGameplayTag.IsValid() && Tag.MatchesTag(RequestGameplayTag))
+			{
+				return Tag;
+			}
+		}
+	}
+	return FGameplayTag();
+}
+
+FGameplayTag UAxeAbilitySystemComponent::GetInputTagFromSpec(const FGameplayAbilitySpec& AbilitySpec)
+{
+	if (AbilitySpec.Ability)
+	{
+		UAxeGameplayAbility* AxeGameplayAbility = Cast<UAxeGameplayAbility>(AbilitySpec.Ability);
+		return AxeGameplayAbility->InputTag;
+	}
+	return FGameplayTag();
+}
+
+void UAxeAbilitySystemComponent::OnRep_ActivateAbilities()
+{
+	Super::OnRep_ActivateAbilities();
+	AbilitiesGivenDelegate.Broadcast();
 }

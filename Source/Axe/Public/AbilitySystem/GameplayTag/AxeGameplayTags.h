@@ -46,12 +46,16 @@ struct FAxeGameplayTags
 
 	FGameplayTag Ability_HitReact_Light;
 	FGameplayTag Ability_HitReact_Heavy;
-
+	//
 	FGameplayTag GameplayCue_WeaponTrail_Axe;
 	FGameplayTag GameplayCue_WeaponHit_Axe;
 	FGameplayTag GameplayCue_WeaponHit_Shield;
 	FGameplayTag GameplayCue_ShieldParry;
 	FGameplayTag GameplayCue_GroundSmash;
+
+	// Cooldown
+	FGameplayTag Cooldown_Skill_LeapAttack;
+	FGameplayTag Cooldown_Skill_ThrowAxe;
 
 	/**
 	 * Attributes

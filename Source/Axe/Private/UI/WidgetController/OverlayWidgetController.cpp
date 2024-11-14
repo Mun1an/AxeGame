@@ -3,6 +3,7 @@
 
 #include "UI/WidgetController/OverlayWidgetController.h"
 
+#include "AbilitySystem/AxeAbilitySystemComponent.h"
 #include "AbilitySystem/AttributeSet/AxeAttributeSet.h"
 
 void UOverlayWidgetController::BroadcastInitialValues()
@@ -13,21 +14,27 @@ void UOverlayWidgetController::BroadcastInitialValues()
 
 	OnHealthChanged.Broadcast(LocalAxeAttributeSet->GetHealth());
 	OnMaxHealthChanged.Broadcast(LocalAxeAttributeSet->GetMaxHealth());
+
+	BroadcastAbilityInfo();
 }
 
 void UOverlayWidgetController::BindCallbacksToDependencies()
 {
 	Super::BindCallbacksToDependencies();
 	// 绑定委托回调
-	AAxePlayerState* LocalAxePlayerState = GetAxePlayerState();
 	const UAxeAttributeSet* LocalAxeAttributeSet = GetAxeAttributeSet();
+	UAxeAbilitySystemComponent* AxeASC = GetAxeAbilitySystemComponent();
 
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
+	AxeASC->GetGameplayAttributeValueChangeDelegate(
 		LocalAxeAttributeSet->GetHealthAttribute()
 	).AddUObject(this, &UOverlayWidgetController::HealthChanged);
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(
+	AxeASC->GetGameplayAttributeValueChangeDelegate(
 		LocalAxeAttributeSet->GetMaxHealthAttribute()
 	).AddUObject(this, &UOverlayWidgetController::MaxHealthChanged);
+
+	//
+	AxeASC->AbilitiesGivenDelegate.AddUObject(this, &UOverlayWidgetController::BroadcastAbilityInfo);
+	
 }
 
 void UOverlayWidgetController::HealthChanged(const FOnAttributeChangeData& Data) const

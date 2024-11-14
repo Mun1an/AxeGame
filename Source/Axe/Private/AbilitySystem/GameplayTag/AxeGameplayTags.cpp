@@ -44,6 +44,9 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(GameplayCue_WeaponHit_Shield, "GameplayCue.WeaponHit.Shield");
 	AddTag(GameplayCue_ShieldParry, "GameplayCue.ShieldParry");
 	AddTag(GameplayCue_GroundSmash, "GameplayCue.GroundSmash");
+	
+	AddTag(Cooldown_Skill_LeapAttack, "Cooldown.Skill.LeapAttack");
+	AddTag(Cooldown_Skill_ThrowAxe, "Cooldown.Skill.ThrowAxe");
 
 	//
 	AddTag(Attributes_Vital_Health, "Attributes.Vital.Health");

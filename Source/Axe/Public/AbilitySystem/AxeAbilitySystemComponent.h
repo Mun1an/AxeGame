@@ -14,6 +14,9 @@ class UAxeGameplayAbility;
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnNotifyAbilityActivatedDelegate, UGameplayAbility*)
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnNotifyAbilityEndedDelegate, UGameplayAbility*)
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnAbilityInputTagPressed, const FGameplayTag)
+DECLARE_DELEGATE_OneParam(FAbilitySpecDataDelegate, const FGameplayAbilitySpec&);
+DECLARE_MULTICAST_DELEGATE(FAbilitiesGivenDelegate);
+
 /**
  * 
  */
@@ -28,21 +31,20 @@ public:
 	FOnNotifyAbilityActivatedDelegate OnNotifyAbilityActivatedDelegate;
 	FOnNotifyAbilityEndedDelegate OnNotifyAbilityEndedDelegate;
 	FOnAbilityInputTagPressed OnAbilityInputTagPressedDelegate;
-	//
+	FAbilitiesGivenDelegate AbilitiesGivenDelegate;
 	// 获取角色
 	UFUNCTION(BlueprintCallable)
 	AAxeCharacterBase* GetAxeCharacterOwner() const;
-	//
+	// Input
 	void AbilityInputTagPressed(const FGameplayTag& InputTag);
 	void AbilityInputTagHeld(const FGameplayTag& InputTag);
 	void AbilityInputTagReleased(const FGameplayTag& InputTag);
 	//
 	void TryActivateAbilityAndCheck_Client(FGameplayAbilitySpecHandle AbilitySpecHandle,
 	                                       bool bAllowRemoteActivation = true);
-	//
 	void TryActivateHitReactAbility(const FGameplayTag HitReactTag, const FHitResult& HitResult,
 	                                AActor* SourceActor = nullptr);
-	//
+	// Activation Group
 	bool GiveAbilityByAbilityAndLevel(const TSubclassOf<UGameplayAbility>& Ability, const int32 AbilityLevel);
 	//
 	TMap<EAxeAbilityActivationGroup, TArray<FGameplayAbilitySpecHandle>> GetActivationGroupMap() const
@@ -52,8 +54,6 @@ public:
 
 	void GetAbilitySpecHandlesByActivationGroup(TArray<FGameplayAbilitySpecHandle>& HandleArray,
 	                                            EAxeAbilityActivationGroup Group) const;
-
-	// Activation Group
 	bool IsActivationGroupBlocked(EAxeAbilityActivationGroup Group, const UAxeGameplayAbility* NewAxeAbility) const;
 	void AddAbilityToActivationGroup(EAxeAbilityActivationGroup Group, UAxeGameplayAbility* AxeAbility);
 	void RemoveAbilityFromActivationGroup(EAxeAbilityActivationGroup Group, UAxeGameplayAbility* AxeAbility);
@@ -71,7 +71,13 @@ public:
 	bool ApplyDamageEffectToSelf(AActor* FromTarget, const FDamageEffectParams& Params);
 
 	//
+	void ExecuteDelegateToGetAbilitySpec(const FAbilitySpecDataDelegate& Delegate);
+	//
+	static FGameplayTag GetAbilityTagFromSpec(const FGameplayAbilitySpec& AbilitySpec);
+	static FGameplayTag GetInputTagFromSpec(const FGameplayAbilitySpec& AbilitySpec);
+
 protected:
+	virtual void OnRep_ActivateAbilities() override;
 
 private:
 	TMap<EAxeAbilityActivationGroup, TArray<FGameplayAbilitySpecHandle>> ActivationGroupMap;
