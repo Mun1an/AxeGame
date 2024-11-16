@@ -36,12 +36,17 @@ public:
 	UPROPERTY(BlueprintAssignable, Category="GAS|Attributes")
 	FOnAttributeChangedSignature OnMaxHealthChanged;
 
-	void EffectTagsApplied(const FGameplayTagContainer& EffectTags) const;
+	UPROPERTY(BlueprintAssignable, Category="GAS|Attributes")
+	FOnAttributeChangedSignature OnStaminaChanged;
+
+	UPROPERTY(BlueprintAssignable, Category="GAS|Attributes")
+	FOnAttributeChangedSignature OnMaxStaminaChanged;
+
 protected:
 	void HealthChanged(const FOnAttributeChangeData& Data) const;
 	void MaxHealthChanged(const FOnAttributeChangeData& Data) const;
-
-
+	void StaminaChanged(const FOnAttributeChangeData& Data) const;
+	void MaxStaminaChanged(const FOnAttributeChangeData& Data) const;
 	// template <typename T>
 	// T* GetDataTableRowByTag(UDataTable* DataTable, const FGameplayTag& Tag) const;
 };

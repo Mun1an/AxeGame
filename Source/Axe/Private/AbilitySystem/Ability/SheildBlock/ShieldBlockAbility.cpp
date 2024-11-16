@@ -28,11 +28,15 @@ void UShieldBlockAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 	AbilityTask_WaitInputRelease->ReadyForActivation();
 
 	//
+	const FAxeGameplayTags AxeGameplayTags = FAxeGameplayTags::Get();
+	FGameplayTagRequirements SourceTagRequirements = FGameplayTagRequirements();
+	SourceTagRequirements.RequireTags.AddTag(AxeGameplayTags.Effect_Asset_Damage);
+
 	UAbilityTask_WaitGameplayEffectApplied_Self* AbilityTask_WaitGameplayEffectApplied_Self =
 		UAbilityTask_WaitGameplayEffectApplied_Self::WaitGameplayEffectAppliedToSelf(
 			this,
 			FGameplayTargetDataFilterHandle(),
-			FGameplayTagRequirements(),
+			SourceTagRequirements,
 			FGameplayTagRequirements(),
 			false,
 			nullptr,
@@ -93,12 +97,81 @@ void UShieldBlockAbility::OnEffectApplied(AActor* Source, FGameplayEffectSpecHan
 	}
 }
 
+bool UShieldBlockAbility::ApplyShieldBlockDamageCostEffect(float CostValue)
+{
+	if (!ShieldBlockDamageCostEffectCls || !HasAuthorityOrPredictionKey(CurrentActorInfo, &CurrentActivationInfo))
+	{
+		return false;
+	}
+	FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(
+		CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo,
+		ShieldBlockDamageCostEffectCls, 1.f
+	);
+	if (!EffectSpecHandle.IsValid())
+	{
+		return false;
+	}
+	// Check
+	EffectSpecHandle.Data.Get()->SetSetByCallerMagnitude(
+		FAxeGameplayTags::Get().Effect_Magnitude_Stamina, CostValue
+	);
+	// Apply
+	FActiveGameplayEffectHandle ActiveGameplayEffectHandle = ApplyGameplayEffectSpecToOwner(
+		CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo,
+		EffectSpecHandle
+	);
+	return ActiveGameplayEffectHandle.IsValid();
+}
+
+bool UShieldBlockAbility::CanApplyEffectAttributeModifiers(FGameplayEffectSpecHandle& EffectSpecHandle)
+{
+	// for (int32 ModIdx = 0; ModIdx < Spec.Modifiers.Num(); ++ModIdx)
+	// {
+	// 	const FGameplayModifierInfo& ModDef = Spec.Def->Modifiers[ModIdx];
+	// 	const FModifierSpec& ModSpec = Spec.Modifiers[ModIdx];
+	//
+	// 	// It only makes sense to check additive operators
+	// 	if (ModDef.ModifierOp == EGameplayModOp::Additive)
+	// 	{
+	// 		if (!ModDef.Attribute.IsValid())
+	// 		{
+	// 			continue;
+	// 		}
+	// 		const UAttributeSet* Set = Owner->GetAttributeSubobject(ModDef.Attribute.GetAttributeSetClass());
+	// 		float CurrentValue = ModDef.Attribute.GetNumericValueChecked(Set);
+	// 		float CostValue = ModSpec.GetEvaluatedMagnitude();
+	//
+	// 		if (CurrentValue + CostValue < 0.f)
+	// 		{
+	// 			return false;
+	// 		}
+	// 	}
+	// }
+	return true;
+}
+
 void UShieldBlockAbility::OnIncomingDamageEffectApplied(AActor* Source, FGameplayEffectSpecHandle SpecHandle,
                                                         FActiveGameplayEffectHandle ActiveHandle)
 {
+	BP_OnIncomingDamageEffectApplied(Source, SpecHandle, ActiveHandle);
+
+	// ShieldParry
 	if (bIsPrepareParry)
 	{
 		TransformToShieldParry(Source);
+		return;
+	}
+	// Cost
+	float CostValue = SpecHandle.Data.Get()->GetSetByCallerMagnitude(FAxeGameplayTags::Get().Damage_Physical);
+	CostValue = FMath::Abs(CostValue) * -1;
+	ApplyShieldBlockDamageCostEffect(CostValue);
+
+	// ShieldStagger
+	float NowStamina = Cast<UAxeAttributeSet>(GetAxeCharacterOwner()->GetAttributeSet())->GetStamina();
+	if (NowStamina <= 0)
+	{
+		TransformToShieldStagger(Source);
+		return;
 	}
 }
 
@@ -112,7 +185,6 @@ void UShieldBlockAbility::TransformToShieldParry(AActor* Source)
 	{
 		AxeASC->TryActivateAbilityByClass(ShieldParryAbilityClass);
 	}
-
 	// Source
 	AAxeCharacterBase* SourceAxeCharacterBase = Cast<AAxeCharacterBase>(Source);
 	if (SourceAxeCharacterBase)
@@ -120,6 +192,18 @@ void UShieldBlockAbility::TransformToShieldParry(AActor* Source)
 		UAbilitySystemComponent* SourceASC = SourceAxeCharacterBase->GetAbilitySystemComponent();
 		UAxeAbilitySystemComponent* SourceAxeASC = Cast<UAxeAbilitySystemComponent>(SourceASC);
 		SourceAxeASC->TryActivateHitReactAbility(AxeGameplayTags.Ability_HitReact_Light, FHitResult());
+	}
+}
+
+void UShieldBlockAbility::TransformToShieldStagger(AActor* Source)
+{
+	FAxeGameplayTags AxeGameplayTags = FAxeGameplayTags::Get();
+	// self
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+	UAxeAbilitySystemComponent* AxeASC = GetAxeAbilitySystemComponentFromActorInfo();
+	if (ShieldStaggerAbilityClass)
+	{
+		AxeASC->TryActivateAbilityByClass(ShieldStaggerAbilityClass);
 	}
 }
 

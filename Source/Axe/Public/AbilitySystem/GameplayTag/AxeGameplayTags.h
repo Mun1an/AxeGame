@@ -41,6 +41,7 @@ struct FAxeGameplayTags
 
 	FGameplayTag Ability_Skill_ShieldDefense;
 	FGameplayTag Ability_Skill_ShieldParry;
+	FGameplayTag Ability_Skill_ShieldStagger;
 	FGameplayTag Ability_Skill_LeapAttack;
 	FGameplayTag Ability_Skill_ThrowAxe;
 	FGameplayTag Ability_Skill_Roar;
@@ -64,12 +65,14 @@ struct FAxeGameplayTags
 	 */
 	// Vital
 	FGameplayTag Attributes_Vital_Health;
+	FGameplayTag Attributes_Vital_Stamina;
 	// Primary
 	FGameplayTag Attributes_Primary_Strength;
 	FGameplayTag Attributes_Primary_Dexterity;
 	FGameplayTag Attributes_Primary_Intelligence;
 	// Secondary
 	FGameplayTag Attributes_Secondary_MaxHealth;
+	FGameplayTag Attributes_Secondary_MaxStamina;
 	FGameplayTag Attributes_Secondary_Armor;
 	FGameplayTag Attributes_Secondary_Evasive;
 	FGameplayTag Attributes_Secondary_PhysicalResistance;
@@ -77,6 +80,7 @@ struct FAxeGameplayTags
 	FGameplayTag Attributes_Secondary_CriticalHitChance;
 	FGameplayTag Attributes_Secondary_CriticalHitDamage;
 	FGameplayTag Attributes_Secondary_HealthRegeneration;
+	FGameplayTag Attributes_Secondary_StaminaRegeneration;
 	FGameplayTag Attributes_Secondary_MovementSpeed;
 	FGameplayTag Attributes_Secondary_BaseDamage;
 
@@ -88,6 +92,13 @@ struct FAxeGameplayTags
 	FGameplayTag State_HitReact;
 	FGameplayTag State_Blocking;
 	FGameplayTag State_PrepareParry;
+
+	// Effect
+	FGameplayTag Effect_Asset_Damage;
+	
+	FGameplayTag Effect_Magnitude_1;
+	FGameplayTag Effect_Magnitude_Damage;
+	FGameplayTag Effect_Magnitude_Stamina;
 
 protected:
 	void AddTag(FGameplayTag& OutTag, const ANSICHAR* TagName = nullptr, const ANSICHAR* TagComment = nullptr);

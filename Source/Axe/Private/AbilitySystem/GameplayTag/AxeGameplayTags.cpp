@@ -33,6 +33,7 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 
 	AddTag(Ability_Skill_ShieldDefense, "Ability.Skill.ShieldDefense");
 	AddTag(Ability_Skill_ShieldParry, "Ability.Skill.ShieldParry");
+	AddTag(Ability_Skill_ShieldStagger, "Ability.Skill.ShieldStagger");
 	AddTag(Ability_Skill_LeapAttack, "Ability.Skill.LeapAttack");
 	AddTag(Ability_Skill_ThrowAxe, "Ability.Skill.ThrowAxe");
 	AddTag(Ability_Skill_Roar, "Ability.Skill.Roar");
@@ -52,10 +53,12 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 
 	//
 	AddTag(Attributes_Vital_Health, "Attributes.Vital.Health");
+	AddTag(Attributes_Vital_Stamina, "Attributes.Vital.Stamina");
 	AddTag(Attributes_Primary_Strength, "Attributes.Primary.Strength");
 	AddTag(Attributes_Primary_Dexterity, "Attributes.Primary.Dexterity");
 	AddTag(Attributes_Primary_Intelligence, "Attributes.Primary.Intelligence");
 	AddTag(Attributes_Secondary_MaxHealth, "Attributes.Secondary.MaxHealth");
+	AddTag(Attributes_Secondary_MaxStamina, "Attributes.Secondary.MaxStamina");
 	AddTag(Attributes_Secondary_Armor, "Attributes.Secondary.Armor");
 	AddTag(Attributes_Secondary_Evasive, "Attributes.Secondary.Evasive");
 	AddTag(Attributes_Secondary_PhysicalResistance, "Attributes.Secondary.PhysicalResistance");
@@ -63,6 +66,7 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(Attributes_Secondary_CriticalHitChance, "Attributes.Secondary.CriticalHitChance");
 	AddTag(Attributes_Secondary_CriticalHitDamage, "Attributes.Secondary.CriticalHitDamage");
 	AddTag(Attributes_Secondary_HealthRegeneration, "Attributes.Secondary.HealthRegeneration");
+	AddTag(Attributes_Secondary_StaminaRegeneration, "Attributes.Secondary.StaminaRegeneration");
 	AddTag(Attributes_Secondary_MovementSpeed, "Attributes.Secondary.MovementSpeed");
 	AddTag(Attributes_Secondary_BaseDamage, "Attributes.Secondary.BaseDamage");
 
@@ -75,6 +79,12 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(State_HitReact, "State.HitReact");
 	AddTag(State_Blocking, "State.Blocking");
 	AddTag(State_PrepareParry, "State.PrepareParry");
+	
+	//
+	AddTag(Effect_Asset_Damage, "Effect.Asset.Damage");
+	AddTag(Effect_Magnitude_1, "Effect.Magnitude.1");
+	AddTag(Effect_Magnitude_Damage, "Effect.Magnitude.Damage");
+	AddTag(Effect_Magnitude_Stamina, "Effect.Magnitude.Stamina");
 }
 
 

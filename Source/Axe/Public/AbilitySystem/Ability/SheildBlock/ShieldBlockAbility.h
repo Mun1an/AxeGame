@@ -18,6 +18,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UAxeGameplayAbility> ShieldParryAbilityClass;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UAxeGameplayAbility> ShieldStaggerAbilityClass;
+
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	                             const FGameplayAbilityActivationInfo ActivationInfo,
 	                             const FGameplayEventData* TriggerEventData) override;
@@ -32,6 +35,9 @@ public:
 	void SetIsPrepareParry(bool NewIsPrepareParry);
 
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TSubclassOf<UGameplayEffect> ShieldBlockDamageCostEffectCls;
+
 	UPROPERTY(BlueprintReadOnly)
 	bool bIsBlocking = false;
 	UPROPERTY(BlueprintReadOnly)
@@ -47,10 +53,18 @@ protected:
 	UFUNCTION()
 	void OnEffectApplied(AActor* Source, FGameplayEffectSpecHandle SpecHandle,
 	                     FActiveGameplayEffectHandle ActiveHandle);
+	bool ApplyShieldBlockDamageCostEffect(float CostValue);
+	bool CanApplyEffectAttributeModifiers(FGameplayEffectSpecHandle& EffectSpecHandle);
 	UFUNCTION()
 	void OnIncomingDamageEffectApplied(AActor* Source, FGameplayEffectSpecHandle SpecHandle,
 	                                   FActiveGameplayEffectHandle ActiveHandle);
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void BP_OnIncomingDamageEffectApplied(AActor* Source, FGameplayEffectSpecHandle SpecHandle,
+	                                      FActiveGameplayEffectHandle ActiveHandle);
+
 	UFUNCTION()
 	void TransformToShieldParry(AActor* Source);
+	UFUNCTION()
+	void TransformToShieldStagger(AActor* Source);
 };

@@ -14,6 +14,8 @@ void UOverlayWidgetController::BroadcastInitialValues()
 
 	OnHealthChanged.Broadcast(LocalAxeAttributeSet->GetHealth());
 	OnMaxHealthChanged.Broadcast(LocalAxeAttributeSet->GetMaxHealth());
+	OnStaminaChanged.Broadcast(LocalAxeAttributeSet->GetStamina());
+	OnMaxStaminaChanged.Broadcast(LocalAxeAttributeSet->GetMaxStamina());
 
 	BroadcastAbilityInfo();
 }
@@ -32,9 +34,15 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 		LocalAxeAttributeSet->GetMaxHealthAttribute()
 	).AddUObject(this, &UOverlayWidgetController::MaxHealthChanged);
 
+	AxeASC->GetGameplayAttributeValueChangeDelegate(
+		LocalAxeAttributeSet->GetStaminaAttribute()
+	).AddUObject(this, &UOverlayWidgetController::StaminaChanged);
+	AxeASC->GetGameplayAttributeValueChangeDelegate(
+		LocalAxeAttributeSet->GetMaxStaminaAttribute()
+	).AddUObject(this, &UOverlayWidgetController::MaxStaminaChanged);
+
 	//
 	AxeASC->AbilitiesGivenDelegate.AddUObject(this, &UOverlayWidgetController::BroadcastAbilityInfo);
-	
 }
 
 void UOverlayWidgetController::HealthChanged(const FOnAttributeChangeData& Data) const
@@ -45,4 +53,14 @@ void UOverlayWidgetController::HealthChanged(const FOnAttributeChangeData& Data)
 void UOverlayWidgetController::MaxHealthChanged(const FOnAttributeChangeData& Data) const
 {
 	OnMaxHealthChanged.Broadcast(Data.NewValue);
+}
+
+void UOverlayWidgetController::StaminaChanged(const FOnAttributeChangeData& Data) const
+{
+	OnStaminaChanged.Broadcast(Data.NewValue);
+}
+
+void UOverlayWidgetController::MaxStaminaChanged(const FOnAttributeChangeData& Data) const
+{
+	OnMaxStaminaChanged.Broadcast(Data.NewValue);
 }
