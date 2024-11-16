@@ -35,6 +35,7 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(Ability_Skill_ShieldParry, "Ability.Skill.ShieldParry");
 	AddTag(Ability_Skill_LeapAttack, "Ability.Skill.LeapAttack");
 	AddTag(Ability_Skill_ThrowAxe, "Ability.Skill.ThrowAxe");
+	AddTag(Ability_Skill_Roar, "Ability.Skill.Roar");
 
 	AddTag(Ability_HitReact_Light, "Ability.HitReact.Light");
 	AddTag(Ability_HitReact_Heavy, "Ability.HitReact.Heavy");
@@ -47,6 +48,7 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	
 	AddTag(Cooldown_Skill_LeapAttack, "Cooldown.Skill.LeapAttack");
 	AddTag(Cooldown_Skill_ThrowAxe, "Cooldown.Skill.ThrowAxe");
+	AddTag(Cooldown_Skill_Roar, "Cooldown.Skill.Roar");
 
 	//
 	AddTag(Attributes_Vital_Health, "Attributes.Vital.Health");

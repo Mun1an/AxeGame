@@ -43,6 +43,7 @@ struct FAxeGameplayTags
 	FGameplayTag Ability_Skill_ShieldParry;
 	FGameplayTag Ability_Skill_LeapAttack;
 	FGameplayTag Ability_Skill_ThrowAxe;
+	FGameplayTag Ability_Skill_Roar;
 
 	FGameplayTag Ability_HitReact_Light;
 	FGameplayTag Ability_HitReact_Heavy;
@@ -56,6 +57,7 @@ struct FAxeGameplayTags
 	// Cooldown
 	FGameplayTag Cooldown_Skill_LeapAttack;
 	FGameplayTag Cooldown_Skill_ThrowAxe;
+	FGameplayTag Cooldown_Skill_Roar;
 
 	/**
 	 * Attributes
