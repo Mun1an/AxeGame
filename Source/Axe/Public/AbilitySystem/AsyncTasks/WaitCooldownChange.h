@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -30,7 +29,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"))
 	static UWaitCooldownChange* WaitForCooldownChange(UAbilitySystemComponent* AbilitySystemComponent,
-	                                                  const FGameplayTag& InCooldownTag);
+	                                                  const FGameplayTag AbilityTag);
 
 	UFUNCTION(BlueprintCallable)
 	void EndTask();
@@ -42,8 +41,13 @@ protected:
 	UPROPERTY()
 	FGameplayTag CooldownTag;
 
+	UPROPERTY()
+	FGameplayTag AbilityTag;
+
 	void CooldownTagChanged(const FGameplayTag InCooldownTag, int32 NewCount);
 
 	void OnActiveEffectAdded(UAbilitySystemComponent* AbilitySystemComponent,
 	                         const FGameplayEffectSpec& EffectSpec, FActiveGameplayEffectHandle EffectHandle);
+
+	FGameplayTag GetCooldownTagByAbilityTag() const;
 };

@@ -48,9 +48,6 @@ void UAxeWidgetControllerBase::OnGetActivateAbilitySpec(const FGameplayAbilitySp
 	FAxeAbilityUIInfo AbilityUIInfo = AbilityUIDataAsset->FindAbilityInfoByTag(AbilityTag);
 	if (!AbilityUIInfo.AbilityTag.IsValid())
 	{
-		UE_LOG(
-			LogTemp, Warning, TEXT("%s -- AbilityUIInfo.AbilityTag is invalid"), *AbilityTag.GetTagName().ToString()
-		);
 		return;
 	}
 	AbilityUIInfo.InputTag = AxeASC->GetInputTagFromSpec(AbilitySpec);

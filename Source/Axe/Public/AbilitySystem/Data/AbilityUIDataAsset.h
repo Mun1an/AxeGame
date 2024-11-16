@@ -19,9 +19,6 @@ struct FAxeAbilityUIInfo
 	FGameplayTag InputTag = FGameplayTag();
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	FGameplayTag CooldownGE_Tag = FGameplayTag();
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<const UTexture2D> Icon = nullptr;
 };
 /**

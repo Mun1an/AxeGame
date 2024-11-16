@@ -98,6 +98,7 @@ void AAxeCharacterPlayer::InitAbility()
 {
 	// 初始化 Ability
 	AAxePlayerState* AxePlayerState = GetPlayerState<AAxePlayerState>();
+
 	check(AxePlayerState);
 
 	AxePlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(AxePlayerState, this);
@@ -105,6 +106,7 @@ void AAxeCharacterPlayer::InitAbility()
 	AbilitySystemComponent = AxePlayerState->GetAbilitySystemComponent();
 	// AttributeSet
 	AttributeSet = AxePlayerState->GetAttributeSet();
+
 	if (HasAuthority())
 	{
 		// init default attributes
@@ -123,6 +125,8 @@ void AAxeCharacterPlayer::InitAbility()
 		}
 	}
 	// Over
+	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(AbilitySystemComponent);
+	AxeASC->OnCharacterASCInitOverCallback();
 	OnAbilityInitOverDelegate.Broadcast();
 	bIsAbilityInitOver = true;
 }

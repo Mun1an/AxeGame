@@ -26,7 +26,7 @@ class AXE_API UAxeAbilitySystemComponent : public UAbilitySystemComponent
 	GENERATED_BODY()
 
 public:
-	UAxeAbilitySystemComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+	UAxeAbilitySystemComponent();
 
 	FOnNotifyAbilityActivatedDelegate OnNotifyAbilityActivatedDelegate;
 	FOnNotifyAbilityEndedDelegate OnNotifyAbilityEndedDelegate;
@@ -36,6 +36,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	AAxeCharacterBase* GetAxeCharacterOwner() const;
 	// Input
+	virtual void AbilitySpecInputPressed(FGameplayAbilitySpec& Spec) override;
+	virtual void AbilitySpecInputReleased(FGameplayAbilitySpec& Spec) override;
+
 	void AbilityInputTagPressed(const FGameplayTag& InputTag);
 	void AbilityInputTagHeld(const FGameplayTag& InputTag);
 	void AbilityInputTagReleased(const FGameplayTag& InputTag);
@@ -75,6 +78,14 @@ public:
 	//
 	static FGameplayTag GetAbilityTagFromSpec(const FGameplayAbilitySpec& AbilitySpec);
 	static FGameplayTag GetInputTagFromSpec(const FGameplayAbilitySpec& AbilitySpec);
+	//
+	void OnCharacterASCInitOverCallback();
+
+	UFUNCTION(BlueprintCallable)
+	FGameplayAbilitySpecHandle GetAbilityHandleByAbilityTag(const FGameplayTag& AbilityTag);
+
+	UFUNCTION(BlueprintCallable)
+	FGameplayTag GetCooldownTagsByAbilitySpecHandle(const FGameplayAbilitySpecHandle& Handle);
 
 protected:
 	virtual void OnRep_ActivateAbilities() override;

@@ -5,11 +5,11 @@ bool FAxeGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, boo
 	uint32 RepBits = 0;
 	if (Ar.IsSaving())
 	{
-		if (Instigator.IsValid())
+		if (bReplicateInstigator && Instigator.IsValid())
 		{
 			RepBits |= 1 << 0;
 		}
-		if (EffectCauser.IsValid())
+		if (bReplicateEffectCauser && EffectCauser.IsValid() )
 		{
 			RepBits |= 1 << 1;
 		}
@@ -33,6 +33,7 @@ bool FAxeGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, boo
 		{
 			RepBits |= 1 << 6;
 		}
+		
 		// Add new RepBits here
 		if (bIsCriticalHit)
 		{
@@ -118,6 +119,7 @@ bool FAxeGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, boo
 	{
 		bHasWorldOrigin = false;
 	}
+	
 	// Add new RepBits here
 	if (RepBits & (1 << 7))
 	{

@@ -12,7 +12,7 @@ AAxePlayerState::AAxePlayerState()
 {
 	NetUpdateFrequency = 100.f;
 
-	AbilitySystemComponent = CreateDefaultSubobject<UAxeAbilitySystemComponent>("AxeAbilitySystemComponent");
+	AbilitySystemComponent = CreateDefaultSubobject<UAxeAbilitySystemComponent>("AbilitySystemComponent");
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 

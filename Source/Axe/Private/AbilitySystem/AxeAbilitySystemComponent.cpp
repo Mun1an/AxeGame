@@ -11,8 +11,8 @@
 #include "Character/AxeCharacterPlayer.h"
 #include "Enum/AxeTypes.h"
 
-UAxeAbilitySystemComponent::UAxeAbilitySystemComponent(const FObjectInitializer& ObjectInitializer): Super(
-	ObjectInitializer)
+
+UAxeAbilitySystemComponent::UAxeAbilitySystemComponent()
 {
 }
 
@@ -36,6 +36,26 @@ AAxeCharacterBase* UAxeAbilitySystemComponent::GetAxeCharacterOwner() const
 	return nullptr;
 }
 
+void UAxeAbilitySystemComponent::AbilitySpecInputPressed(FGameplayAbilitySpec& Spec)
+{
+	Super::AbilitySpecInputPressed(Spec);
+	if (Spec.IsActive())
+	{
+		InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputPressed, Spec.Handle,
+		                      Spec.ActivationInfo.GetActivationPredictionKey());
+	}
+}
+
+void UAxeAbilitySystemComponent::AbilitySpecInputReleased(FGameplayAbilitySpec& Spec)
+{
+	Super::AbilitySpecInputReleased(Spec);
+	if (Spec.IsActive())
+	{
+		InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputReleased, Spec.Handle,
+		                      Spec.ActivationInfo.GetActivationPredictionKey());
+	}
+}
+
 void UAxeAbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& InputTag)
 {
 	TArray<FGameplayAbilitySpec>& GameplayAbilitySpecList = GetActivatableAbilities();
@@ -48,12 +68,6 @@ void UAxeAbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& Inpu
 			if (!AbilitySpec.IsActive())
 			{
 				TryActivateAbilityAndCheck_Client(AbilitySpec.Handle);
-			}
-
-			if (AbilitySpec.IsActive())
-			{
-				InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputPressed, AbilitySpec.Handle,
-				                      AbilitySpec.ActivationInfo.GetActivationPredictionKey());
 			}
 		}
 	}
@@ -72,9 +86,6 @@ void UAxeAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag& Inp
 		if (AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag))
 		{
 			AbilitySpecInputReleased(AbilitySpec);
-
-			InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputReleased, AbilitySpec.Handle,
-			                      AbilitySpec.ActivationInfo.GetActivationPredictionKey());
 		}
 	}
 }
@@ -371,6 +382,35 @@ FGameplayTag UAxeAbilitySystemComponent::GetInputTagFromSpec(const FGameplayAbil
 	}
 	return FGameplayTag();
 }
+
+void UAxeAbilitySystemComponent::OnCharacterASCInitOverCallback()
+{
+}
+
+FGameplayAbilitySpecHandle UAxeAbilitySystemComponent::GetAbilityHandleByAbilityTag(const FGameplayTag& AbilityTag)
+{
+	TArray<FGameplayAbilitySpec>& GameplayAbilitySpecs = GetActivatableAbilities();
+	for (FGameplayAbilitySpec& AbilitySpec : GameplayAbilitySpecs)
+	{
+		if (AbilitySpec.Ability->AbilityTags.HasTagExact(AbilityTag))
+		{
+			return AbilitySpec.Handle;
+		}
+	}
+	return FGameplayAbilitySpecHandle();
+}
+
+FGameplayTag UAxeAbilitySystemComponent::GetCooldownTagsByAbilitySpecHandle(const FGameplayAbilitySpecHandle& Handle)
+{
+	FGameplayAbilitySpec* AbilitySpecFromHandle = FindAbilitySpecFromHandle(Handle);
+	const FGameplayTagContainer* CdTags = AbilitySpecFromHandle->Ability->GetCooldownTags();
+	if (CdTags)
+	{
+		return CdTags->First();
+	}
+	return FGameplayTag::EmptyTag;
+}
+
 
 void UAxeAbilitySystemComponent::OnRep_ActivateAbilities()
 {

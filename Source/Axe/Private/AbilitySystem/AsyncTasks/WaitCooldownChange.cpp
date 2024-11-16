@@ -1,27 +1,32 @@
 #include "AbilitySystem/AsyncTasks/WaitCooldownChange.h"
 
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/AxeAbilitySystemComponent.h"
 
 
 UWaitCooldownChange* UWaitCooldownChange::WaitForCooldownChange(UAbilitySystemComponent* AbilitySystemComponent,
-                                                                const FGameplayTag& InCooldownTag)
+                                                                const FGameplayTag AbilityTag)
 {
 	UWaitCooldownChange* WaitCooldownChange = NewObject<UWaitCooldownChange>();
 	WaitCooldownChange->ASC = AbilitySystemComponent;
-	WaitCooldownChange->CooldownTag = InCooldownTag;
+	WaitCooldownChange->AbilityTag = AbilityTag;
+	if (AbilitySystemComponent && AbilityTag.IsValid())
+	{
+		const FGameplayTag CdTag = WaitCooldownChange->GetCooldownTagByAbilityTag();
+		WaitCooldownChange->CooldownTag = CdTag;
+	}
 
-	if (!IsValid(AbilitySystemComponent) || !InCooldownTag.IsValid())
+	if (!IsValid(AbilitySystemComponent) || !WaitCooldownChange->CooldownTag.IsValid())
 	{
 		WaitCooldownChange->EndTask();
 		return nullptr;
 	}
 	// EffectTagCountChangedDelegate
 	FOnGameplayEffectTagCountChanged& EffectTagCountChangedDelegate = AbilitySystemComponent->RegisterGameplayTagEvent(
-		InCooldownTag,
+		WaitCooldownChange->CooldownTag,
 		EGameplayTagEventType::NewOrRemoved
 	);
 	EffectTagCountChangedDelegate.AddUObject(WaitCooldownChange, &UWaitCooldownChange::CooldownTagChanged);
-
 
 	// OnActiveGameplayEffectAddedDelegateToSelf
 	AbilitySystemComponent->OnActiveGameplayEffectAddedDelegateToSelf.AddUObject(
@@ -86,4 +91,12 @@ void UWaitCooldownChange::OnActiveEffectAdded(UAbilitySystemComponent* AbilitySy
 		}
 	}
 	CooldownStart.Broadcast(RemainingTime);
+}
+
+FGameplayTag UWaitCooldownChange::GetCooldownTagByAbilityTag() const
+{
+	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(ASC);
+	const FGameplayAbilitySpecHandle AbilityHandle = AxeASC->GetAbilityHandleByAbilityTag(AbilityTag);
+	const FGameplayTag CdTag = AxeASC->GetCooldownTagsByAbilitySpecHandle(AbilityHandle);
+	return CdTag;
 }

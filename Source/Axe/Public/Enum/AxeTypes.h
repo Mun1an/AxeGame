@@ -82,7 +82,7 @@ struct FAxeGameplayEffectContext : public FGameplayEffectContext
 
 	virtual UScriptStruct* GetScriptStruct() const override
 	{
-		return FGameplayEffectContext::StaticStruct();
+		return FAxeGameplayEffectContext::StaticStruct();
 	}
 
 	virtual bool NetSerialize(FArchive& Ar, UPackageMap* Map, bool& bOutSuccess) override;

@@ -12,7 +12,6 @@ class AAxeGameMode : public AGameModeBase
 	GENERATED_BODY()
 
 public:
-	AAxeGameMode();
 };
 
 
