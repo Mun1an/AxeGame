@@ -14,3 +14,9 @@ void UAxeAssetManager::StartInitialLoading()
 
 	UAbilitySystemGlobals::Get().InitGlobalData();
 }
+
+void UAxeAssetManager::FinishInitialLoading()
+{
+	Super::FinishInitialLoading();
+
+}

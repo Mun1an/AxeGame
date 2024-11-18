@@ -9,6 +9,7 @@
 #include "ActionSystem/ComboActionComponent.h"
 #include "Engine/LocalPlayer.h"
 #include "Camera/CameraComponent.h"
+#include "Character/Component/InventoryComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -62,9 +63,10 @@ AAxeCharacterPlayer::AAxeCharacterPlayer()
 	WeaponSecondary->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	// ComboActionComponent
 	ComboActionComponent = CreateDefaultSubobject<UComboActionComponent>(TEXT("ComboActionComponent"));
-	//
+	// ActionCombatComponent
 	ActionCombatComponent = CreateDefaultSubobject<UActionCombatComponent>(TEXT("ActionCombatComponent"));
-	//
+	// InventoryComponent
+	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
 }
 
 void AAxeCharacterPlayer::PossessedBy(AController* NewController)

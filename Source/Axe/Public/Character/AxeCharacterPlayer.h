@@ -5,9 +5,11 @@
 #include "CoreMinimal.h"
 #include "AxeCharacterBase.h"
 #include "Interaction/CombatInterface.h"
+#include "Interaction/InventoryInterface.h"
 #include "Logging/LogMacros.h"
 #include "AxeCharacterPlayer.generated.h"
 
+class UInventoryComponent;
 class UActionCombatComponent;
 class UComboActionComponent;
 class USpringArmComponent;
@@ -17,7 +19,7 @@ class UInputAction;
 struct FInputActionValue;
 
 UCLASS(config=Game)
-class AAxeCharacterPlayer : public AAxeCharacterBase, public ICombatInterface
+class AAxeCharacterPlayer : public AAxeCharacterBase, public ICombatInterface, public IInventoryInterface
 {
 	GENERATED_BODY()
 
@@ -46,6 +48,11 @@ public:
 	virtual FORCEINLINE UStaticMeshComponent* GetWeaponSecondaryComponent() const override
 	{
 		return WeaponSecondary;
+	}
+
+	virtual FORCEINLINE UInventoryComponent* GetInventoryComponent() const override
+	{
+		return InventoryComponent;
 	}
 
 	//
@@ -82,4 +89,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UActionCombatComponent> ActionCombatComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInventoryComponent> InventoryComponent;
 };

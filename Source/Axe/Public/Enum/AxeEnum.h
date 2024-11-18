@@ -18,3 +18,12 @@ enum class EAbilitySkillStage: uint8
 	ASS_Using,
 	ASS_BackSwing
 };
+
+UENUM(BlueprintType)
+enum class EItemType: uint8
+{
+	None,
+	Weapon,
+	Item,
+	Max
+};

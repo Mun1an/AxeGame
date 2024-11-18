@@ -13,5 +13,9 @@ UCLASS()
 class AXE_API UAxeAssetManager : public UAssetManager
 {
 	GENERATED_BODY()
+
+public:
 	virtual void StartInitialLoading() override;
+
+	virtual void FinishInitialLoading() override;
 };

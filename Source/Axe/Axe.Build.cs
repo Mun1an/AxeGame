@@ -13,7 +13,8 @@ public class Axe : ModuleRules
 			"Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput",
 			"UnLua",
 			"GameplayTags", "GameplayTasks", "GameplayAbilities", "MotionWarping",
-			"Niagara"
+			"Niagara",
+			"StructUtils", "DeveloperSettings"
 		});
 	}
 }
