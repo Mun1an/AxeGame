@@ -6,6 +6,7 @@
 #include "Engine/DeveloperSettings.h"
 #include "AxeItemSettings.generated.h"
 
+class UDataTable;
 /**
  * 
  */

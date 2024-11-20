@@ -14,7 +14,7 @@ public class Axe : ModuleRules
 			"UnLua",
 			"GameplayTags", "GameplayTasks", "GameplayAbilities", "MotionWarping",
 			"Niagara",
-			"StructUtils", "DeveloperSettings"
+			"StructUtils", "DeveloperSettings", "NetCore"
 		});
 	}
 }

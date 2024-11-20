@@ -28,7 +28,6 @@ void UItemComponent::BeginPlay()
 
 				ItemInstance = ItemSubsystem->CreateItemInstance(CustomItemInfo, this);
 				ItemInstance->StackSize = StackSize;
-				
 			}
 		}
 	}

@@ -18,7 +18,7 @@ void UAxeItemSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 
 	// 加载ItemDefDataTable
 	const UAxeItemSettings* AxeItemSettings = GetDefault<UAxeItemSettings>();
-	check(AxeItemSettings->ItemDefDataTable);
+	check(AxeItemSettings);
 	UDataTable* DataTable = AxeItemSettings->ItemDefDataTable.LoadSynchronous();
 }
 

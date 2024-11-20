@@ -37,9 +37,6 @@ struct FItemTableRowFragment_World : public FItemTableRowFragment
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item")
-	FName ItemName = NAME_None;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item")
 	TObjectPtr<UStaticMesh> StaticMesh = nullptr;
 };
 
@@ -85,7 +82,9 @@ struct FItemTableRowFragmentArray
 	TArray<FInstancedStruct> ItemFragments;
 };
 
-
+/**
+ * Handle
+ */
 USTRUCT(BlueprintType)
 struct FItemTableRowFragmentArrayHandle
 {
