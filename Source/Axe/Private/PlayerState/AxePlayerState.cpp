@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
 #include "AbilitySystem/AttributeSet/AxeAttributeSet.h"
+#include "Inventory/Component/InventoryComponent.h"
 
 
 AAxePlayerState::AAxePlayerState()
@@ -17,6 +18,9 @@ AAxePlayerState::AAxePlayerState()
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 
 	AttributeSet = CreateDefaultSubobject<UAxeAttributeSet>("AxeAttributeSet");
+
+	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>("InventoryComponent");
+	InventoryComponent->SetIsReplicated(true);
 }
 
 void AAxePlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -27,4 +31,9 @@ void AAxePlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 UAbilitySystemComponent* AAxePlayerState::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
+}
+
+UInventoryComponent* AAxePlayerState::GetInventoryComponent() const
+{
+	return InventoryComponent;
 }

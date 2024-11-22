@@ -10,8 +10,8 @@
  * 
  */
 
-struct FItemTableRowFragment_World;
-struct FItemTableRowFragment_UI;
+class UItemDefinition;
+class UItemFragment;
 class UItemInstance;
 
 UCLASS()
@@ -20,8 +20,7 @@ class AXE_API UItemFunctionLibrary : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable, Category="ItemFunctionLibrary|Item")
-	static bool FindFragment_UI(UItemInstance* ItemInstance, FItemTableRowFragment_UI& OutFragmentStruct);
-	UFUNCTION(BlueprintCallable, Category="ItemFunctionLibrary|Item")
-	static bool FindFragment_World(UItemInstance* ItemInstance, FItemTableRowFragment_World& OutFragmentStruct);
+	UFUNCTION(BlueprintCallable, meta=(DeterminesOutputType=FragmentClass))
+	static const UItemFragment* FindItemDefinitionFragment(TSubclassOf<UItemDefinition> ItemDef,
+	                                                       TSubclassOf<UItemFragment> FragmentClass);
 };

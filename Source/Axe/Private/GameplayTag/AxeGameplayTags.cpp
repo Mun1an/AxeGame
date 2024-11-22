@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AbilitySystem/GameplayTag/AxeGameplayTags.h"
+#include "GameplayTag/AxeGameplayTags.h"
 
 #include "GameplayTagsManager.h"
 
@@ -85,6 +85,11 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(Effect_Magnitude_1, "Effect.Magnitude.1");
 	AddTag(Effect_Magnitude_Damage, "Effect.Magnitude.Damage");
 	AddTag(Effect_Magnitude_Stamina, "Effect.Magnitude.Stamina");
+
+	/**
+	 * Item
+	 */
+	AddTag(Inventory_Slot_Bag, "Inventory.Slot.Bag");
 }
 
 

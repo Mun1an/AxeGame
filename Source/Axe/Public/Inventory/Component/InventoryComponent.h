@@ -7,6 +7,8 @@
 #include "Inventory/AxeInventoryTypes.h"
 #include "InventoryComponent.generated.h"
 
+class UItemDefinition;
+class AAxeCharacterBase;
 class UInventoryProcessor;
 class UItemInstance;
 
@@ -22,36 +24,54 @@ public:
 
 	virtual void InitializeComponent() override;
 
-	using ForEachProcessorFunc = TFunctionRef<void(UInventoryProcessor*)>;
-	void ForEachProcessor(ForEachProcessorFunc Func);
+	AActor* GetOwnerActor() const { return OwnerActor; }
+	bool SetOwnerActor(AActor* InOwnerActor);
+	AActor* GetAvatarActor() const { return AvatarActor; }
+	bool SetAvatarActor(AActor* InAvatarActor);
+	UFUNCTION(BlueprintCallable)
+	AAxeCharacterBase* GetAxeCharacterOwner() const;
+
+	UFUNCTION(BlueprintPure, Category = "Inventory")
+	int32 GetInventorySize() const;
+
+	UFUNCTION(BlueprintCallable, Category=Inventory, BlueprintPure=false)
+	TArray<UItemInstance*> GetAllItems() const;
+
+	UFUNCTION(BlueprintCallable, Category=Inventory)
+	UItemInstance* GetItemInstanceByIndex(int32 Index) const;
 	
-	void CreateInventorySlot(const FGameplayTagContainer& SlotTags);
+	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category=Inventory)
+	UItemInstance* AddItemDefinition(TSubclassOf<UItemDefinition> ItemDef, int32 StackCount = 1);
+
+	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category=Inventory)
+	void AddItemInstance(UItemInstance* ItemInstance);
+
+	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category=Inventory)
+	void RemoveItemInstance(UItemInstance* ItemInstance);
 
 protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-
-
-	void PostInventoryUpdate();
-
-	// Processor
-	UInventoryProcessor* AddProcessor(TSubclassOf<UInventoryProcessor> ProcessorClass,
-	                                  FGameplayTagContainer ProcessorTags = {});
-
-
-	UPROPERTY(Replicated)
-	FAxeInventoryItemSlotArray SlotArray;
-
-	UPROPERTY(EditAnywhere, Instanced, Category="Inventory", Replicated)
-	TArray<TObjectPtr<UInventoryProcessor>> ProcessorArray;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Inventory Layout")
 	TArray<FGameplayTagContainer> CustomInventorySlots;
 
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	// virtual bool ReplicateSubobjects(class UActorChannel *Channel, class FOutBunch *Bunch, FReplicationFlags *RepFlags) override;
-	
+	//~UObject interface
+	virtual bool ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch,
+	                                 FReplicationFlags* RepFlags) override;
+	virtual void ReadyForReplication() override;
+	//~End of UObject interface
+
+
 private:
-	int32 IdCounter;
+	UPROPERTY(Replicated)
+	FAxeInventoryList InventoryList;
+
+	UPROPERTY(Replicated)
+	TObjectPtr<AActor> OwnerActor;
+
+	UPROPERTY(Replicated)
+	TObjectPtr<AActor> AvatarActor;
 };

@@ -3,49 +3,37 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameplayTagAssetInterface.h"
-#include "Item/AxeItemInfo.h"
-#include "UObject/NoExportTypes.h"
+#include "GameplayTag/GameplayTagStack.h"
 #include "ItemInstance.generated.h"
 
+class UItemDefinition;
 /**
  * 
  */
-UCLASS()
-class AXE_API UItemInstance : public UObject, public IGameplayTagAssetInterface
+UCLASS(BlueprintType)
+class AXE_API UItemInstance : public UObject
 {
 	GENERATED_BODY()
 
 public:
 	UItemInstance(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
-	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual bool IsSupportedForNetworking() const override { return true; }
 
-	virtual FItemTableRowFragmentArrayHandle GetItemStructsHandle() const
+public:
+	TSubclassOf<UItemDefinition> GetItemDef() const
 	{
-		return ItemStructsHandle;
+		return ItemDef;
 	}
 
-	virtual void SetItemStructsHandle(FItemTableRowFragmentArrayHandle InItemStructsHandle)
-	{
-		ItemStructsHandle = InItemStructsHandle;
-	}
-
-	bool operator==(const UItemInstance& Other) const
-	{
-		return ItemStructsHandle.Data.Get() == Other.ItemStructsHandle.Data.Get();
-	}
-
-	bool operator!=(const UItemInstance& Other) const
-	{
-		return !(*this == Other);
-	}
-
-	//
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Item")
-	int32 StackSize = 1;
+	void SetItemDef(TSubclassOf<UItemDefinition> InDef);
 
 protected:
-	UPROPERTY()
-	FItemTableRowFragmentArrayHandle ItemStructsHandle;
+	UPROPERTY(Replicated)
+	FGameplayTagStackContainer StatTags;
+
+	// The item definition
+	UPROPERTY(Replicated, BlueprintReadOnly)
+	TSubclassOf<UItemDefinition> ItemDef;
 };

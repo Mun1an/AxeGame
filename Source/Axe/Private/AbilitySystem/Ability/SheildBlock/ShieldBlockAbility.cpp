@@ -8,7 +8,7 @@
 #include "Abilities/Tasks/AbilityTask_WaitInputRelease.h"
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
 #include "AbilitySystem/AttributeSet/AxeAttributeSet.h"
-#include "AbilitySystem/GameplayTag/AxeGameplayTags.h"
+#include "GameplayTag/AxeGameplayTags.h"
 #include "ActionSystem/ActionCombatComponent.h"
 #include "Character/AxeCharacterBase.h"
 #include "Character/AxeCharacterPlayer.h"

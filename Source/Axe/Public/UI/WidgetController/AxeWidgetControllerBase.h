@@ -52,7 +52,7 @@ class AXE_API UAxeWidgetControllerBase : public UObject
 
 public:
 	UFUNCTION(BlueprintCallable)
-	void SetWidgetControllerParams(const FWidgetControllerParams& Params);
+	virtual void SetWidgetControllerParams(const FWidgetControllerParams& Params);
 
 	UFUNCTION(BlueprintCallable)
 	virtual void BroadcastInitialValues();

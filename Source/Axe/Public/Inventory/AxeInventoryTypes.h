@@ -3,114 +3,78 @@
 #include "Net/Serialization/FastArraySerializer.h"
 #include "AxeInventoryTypes.generated.h"
 
-struct FAxeInventoryItemSlotArray;
+class UItemDefinition;
+class FInventoryList;
+struct FAxeInventoryList;
 class UItemInstance;
 class UInventoryComponent;
 
-#define INV_FASTARRAYSERIALIZER_TARRAY_ACCESSORS(PropertyName) \
-	auto begin() { return PropertyName.begin(); }	\
-	auto begin() const { return PropertyName.begin(); } \
-	auto end() { return PropertyName.end(); } \
-	auto end() const { return PropertyName.end(); } \
-	auto& operator[](int32 index) { return PropertyName[index]; } \
-	const auto& operator[](int32 index) const { return PropertyName[index]; } \
-	int32 Num() const { return PropertyName.Num(); }
-
 USTRUCT(BlueprintType)
-struct AXE_API FInventoryItemSlot : public FFastArraySerializerItem
+struct AXE_API FInventoryEntry : public FFastArraySerializerItem
 {
 	GENERATED_BODY()
 
-	FInventoryItemSlot()
-		: FFastArraySerializerItem()
-		  , ItemInstance(nullptr)
-		  , SlotId(INDEX_NONE)
-		  , SlotTags()
-		  , OldItemInstance(nullptr)
-		  , ParentInventory(nullptr)
-		  , MostRecentChangeContext()
+	FInventoryEntry()
 	{
 	}
 
-	FInventoryItemSlot(const FInventoryItemSlot& Copy)
-		: FFastArraySerializerItem(Copy)
-		  , ItemInstance(Copy.ItemInstance)
-		  , SlotId(Copy.SlotId)
-		  , SlotTags(Copy.SlotTags)
-		  , OldItemInstance(nullptr)
-		  , ParentInventory(Copy.ParentInventory)
-		  , MostRecentChangeContext()
-	{
-	}
-
-	UPROPERTY(BlueprintReadWrite, VisibleInstanceOnly, Category = Inventory)
-	UItemInstance* ItemInstance;
-
-	UPROPERTY(BlueprintReadOnly, VisibleInstanceOnly, Category = Inventory)
-	int32 SlotId;
-
-	UPROPERTY(BlueprintReadWrite, VisibleInstanceOnly, Category = Inventory)
-	FGameplayTagContainer SlotTags;
-
-	TWeakObjectPtr<UItemInstance> OldItemInstance;
-
-	static FInventoryItemSlot Invalid;
-
-	/** Comparison operator */
-	bool operator==(FInventoryItemSlot const& Other) const
-	{
-		return SlotId == Other.SlotId && ItemInstance == Other.ItemInstance && MostRecentChangeContext == Other.
-			MostRecentChangeContext;
-	}
-
-	/** Comparison operator */
-	bool operator!=(FInventoryItemSlot const& Other) const
-	{
-		return !(operator==(Other));
-	}
-
-	bool NetSerialize(FArchive& Ar, UPackageMap* Map, bool& bOutSuccess);
-
-	void PreReplicatedRemove(const FAxeInventoryItemSlotArray& InArraySerializer);
-	void PostReplicatedAdd(const FAxeInventoryItemSlotArray& InArraySerializer);
-	void PostReplicatedChange(const FAxeInventoryItemSlotArray& InArraySerializer);
-
-private:
-	UPROPERTY()
-	UInventoryComponent* ParentInventory;
+	friend FInventoryList;
+	friend UInventoryComponent;
 
 	UPROPERTY()
-	FGameplayTag MostRecentChangeContext;
+	TObjectPtr<UItemInstance> Instance = nullptr;
 
-	friend class UInventoryComponent;
+	UPROPERTY()
+	int32 StackCount = 0;
+
+	UPROPERTY(NotReplicated)
+	int32 LastObservedCount = INDEX_NONE;
 };
 
-
 USTRUCT()
-struct FAxeInventoryItemSlotArray : public FFastArraySerializer
+struct FAxeInventoryList : public FFastArraySerializer
 {
 	GENERATED_BODY()
 
-	FAxeInventoryItemSlotArray()
-		: FAxeInventoryItemSlotArray(nullptr)
+	FAxeInventoryList()
+		: FAxeInventoryList(nullptr)
 	{
 	}
 
-	FAxeInventoryItemSlotArray(UInventoryComponent* InOwner)
-		: Owner(InOwner)
+	FAxeInventoryList(UInventoryComponent* InOwner)
+		: OwnerComponent(InOwner)
 	{
 	}
 
 	UPROPERTY()
-	TArray<FInventoryItemSlot> Slots;
+	TArray<FInventoryEntry> Entries;
 
-	UPROPERTY()
-	UInventoryComponent* Owner;
+	UPROPERTY(NotReplicated)
+	UInventoryComponent* OwnerComponent;
 
-	// bool NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaParms)
-	// {
-	// 	return FFastArraySerializer::FastArrayDeltaSerialize<FArcInventoryItemSlot, FAxeInventoryItemSlotArray>(Slots, DeltaParms, *this);
-	// }
-	//
-	INV_FASTARRAYSERIALIZER_TARRAY_ACCESSORS(Slots)
+	//~FFastArraySerializer contract
+	void PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize);
+	void PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize);
+	void PostReplicatedChange(const TArrayView<int32> ChangedIndices, int32 FinalSize);
+	//~End of FFastArraySerializer contract
+	bool NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaParms)
+	{
+		return FFastArraySerializer::FastArrayDeltaSerialize<FInventoryEntry, FAxeInventoryList>(
+			Entries, DeltaParms, *this);
+	}
+
+	TArray<UItemInstance*> GetAllItems() const;
+	UItemInstance* GetItemInstanceByIndex(int32 Index) const;
+	UItemInstance* AddEntry(TSubclassOf<UItemDefinition> ItemClass, int32 StackCount = 1);
+	void AddEntry(UItemInstance* Instance, int32 StackCount = 1);
+	void RemoveEntry(UItemInstance* Instance);
+};
+
+template <>
+struct TStructOpsTypeTraits<FAxeInventoryList> : public TStructOpsTypeTraitsBase2<FAxeInventoryList>
+{
+	enum
+	{
+		WithNetDeltaSerializer = true,
+	};
 };

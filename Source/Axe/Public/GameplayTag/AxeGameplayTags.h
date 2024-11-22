@@ -100,6 +100,12 @@ struct FAxeGameplayTags
 	FGameplayTag Effect_Magnitude_Damage;
 	FGameplayTag Effect_Magnitude_Stamina;
 
+
+	/**
+	 * Item
+	 */
+	FGameplayTag Inventory_Slot_Bag;
+
 protected:
 	void AddTag(FGameplayTag& OutTag, const ANSICHAR* TagName = nullptr, const ANSICHAR* TagComment = nullptr);
 	void AddAllTags(UGameplayTagsManager& Manager);

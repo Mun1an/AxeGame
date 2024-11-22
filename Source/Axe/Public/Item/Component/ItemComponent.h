@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Item/AxeItemInfo.h"
 #include "ItemComponent.generated.h"
 
 
@@ -26,9 +25,6 @@ protected:
 
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Item")
 	int32 StackSize = 1;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Item")
-	FItemTableRowFragmentArray CustomItemInfo;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Item")
 	TObjectPtr<UItemInstance> ItemInstance;

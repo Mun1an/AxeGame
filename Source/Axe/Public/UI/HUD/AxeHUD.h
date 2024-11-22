@@ -7,6 +7,7 @@
 #include "UI/WidgetController/AxeWidgetControllerBase.h"
 #include "AxeHUD.generated.h"
 
+class UInventoryWidgetController;
 class UOverlayWidgetController;
 class UAbilitySystemComponent;
 class UAxeUserWidget;
@@ -22,17 +23,22 @@ public:
 	void InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS);
 
 	FWidgetControllerParams GetWidgetControllerParams() const;
-	
+
+	UFUNCTION(BlueprintCallable)
 	UOverlayWidgetController* GetOverlayWidgetController();
 	UOverlayWidgetController* GetOverlayWidgetController(const FWidgetControllerParams& Params);
 
+	UFUNCTION(BlueprintCallable)
+	UInventoryWidgetController* GetInventoryWidgetController();
+	UInventoryWidgetController* GetInventoryWidgetController(const FWidgetControllerParams& Params);
+	
 protected:
 	virtual void BeginPlay() override;
 
 private:
+	//
 	UPROPERTY()
 	TObjectPtr<UAxeUserWidget> OverlayWidget;
-
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UAxeUserWidget> OverlayWidgetClass;
 
@@ -42,7 +48,12 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<UOverlayWidgetController> OverlayWidgetController;
-
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UOverlayWidgetController> OverlayWidgetControllerClass;
+
+	//
+	UPROPERTY()
+	TObjectPtr<UInventoryWidgetController> InventoryWidgetController;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UInventoryWidgetController> InventoryWidgetControllerClass;
 };

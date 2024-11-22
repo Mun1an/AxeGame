@@ -13,7 +13,9 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Controller.h"
+#include "GameplayTag/AxeGameplayTags.h"
 #include "Inventory/Component/InventoryComponent.h"
+#include "Inventory/Processor/InventoryProcessor_Bag.h"
 #include "PlayerController/AxePlayerController.h"
 #include "PlayerState/AxePlayerState.h"
 #include "UI/HUD/AxeHUD.h"
@@ -66,7 +68,7 @@ AAxeCharacterPlayer::AAxeCharacterPlayer()
 	// ActionCombatComponent
 	ActionCombatComponent = CreateDefaultSubobject<UActionCombatComponent>(TEXT("ActionCombatComponent"));
 	// InventoryComponent
-	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
+	// InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
 }
 
 void AAxeCharacterPlayer::PossessedBy(AController* NewController)
@@ -74,6 +76,7 @@ void AAxeCharacterPlayer::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 	// server
 	InitAbility();
+	InitInventory();
 }
 
 void AAxeCharacterPlayer::OnRep_PlayerState()
@@ -81,6 +84,7 @@ void AAxeCharacterPlayer::OnRep_PlayerState()
 	Super::OnRep_PlayerState();
 	// client
 	InitAbility();
+	InitInventory();
 }
 
 
@@ -131,4 +135,13 @@ void AAxeCharacterPlayer::InitAbility()
 	AxeASC->OnCharacterASCInitOverCallback();
 	OnAbilityInitOverDelegate.Broadcast();
 	bIsAbilityInitOver = true;
+}
+
+void AAxeCharacterPlayer::InitInventory()
+{
+	AAxePlayerState* AxePlayerState = GetPlayerState<AAxePlayerState>();
+	check(AxePlayerState);
+	InventoryComponent = AxePlayerState->GetInventoryComponent();
+	InventoryComponent->SetOwnerActor(AxePlayerState);
+	InventoryComponent->SetAvatarActor(this);
 }

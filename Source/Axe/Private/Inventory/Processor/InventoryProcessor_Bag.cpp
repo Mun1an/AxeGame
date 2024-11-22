@@ -8,12 +8,12 @@ UInventoryProcessor_Bag::UInventoryProcessor_Bag():BagSlotCount(1)
 
 void UInventoryProcessor_Bag::OnInventoryBeginPlay_Implementation()
 {
-	Super::OnInventoryBeginPlay_Implementation();
-	if (GetOwningInventory()->GetOwnerRole() == ROLE_Authority)
-	{
-		for (int32 i = 0; i < BagSlotCount; i++)
-		{
-			GetOwningInventory()->CreateInventorySlot(BagSlotTags);
-		}
-	}
+	// Super::OnInventoryBeginPlay_Implementation();
+	// if (GetOwningInventory()->GetOwnerRole() == ROLE_Authority)
+	// {
+	// 	for (int32 i = 0; i < BagSlotCount; i++)
+	// 	{
+	// 		GetOwningInventory()->CreateInventorySlot(BagSlotTags);
+	// 	}
+	// }
 }

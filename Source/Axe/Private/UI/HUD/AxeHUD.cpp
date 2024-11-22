@@ -7,6 +7,7 @@
 #include "PlayerState/AxePlayerState.h"
 #include "UI/Widget/AxeUserWidget.h"
 #include "UI/WidgetController/AxeWidgetControllerBase.h"
+#include "UI/WidgetController/InventoryWidgetController.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
 
 void AAxeHUD::InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS)
@@ -53,6 +54,23 @@ UOverlayWidgetController* AAxeHUD::GetOverlayWidgetController(const FWidgetContr
 		OverlayWidgetController->BindCallbacksToDependencies();
 	}
 	return OverlayWidgetController;
+}
+
+UInventoryWidgetController* AAxeHUD::GetInventoryWidgetController()
+{
+	const FWidgetControllerParams Params = GetWidgetControllerParams();
+	return GetInventoryWidgetController(Params);
+}
+
+UInventoryWidgetController* AAxeHUD::GetInventoryWidgetController(const FWidgetControllerParams& Params)
+{
+	if (InventoryWidgetController == nullptr)
+	{
+		InventoryWidgetController = NewObject<UInventoryWidgetController>(this, InventoryWidgetControllerClass);
+		InventoryWidgetController->SetWidgetControllerParams(Params);
+		InventoryWidgetController->BindCallbacksToDependencies();
+	}
+	return InventoryWidgetController;
 }
 
 

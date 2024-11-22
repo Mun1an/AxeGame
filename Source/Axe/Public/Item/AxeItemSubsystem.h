@@ -23,12 +23,12 @@ public:
 	virtual void Deinitialize() override;
 
 	//
-	UFUNCTION(BlueprintCallable, meta = (DefaultToSelf = Outer), Category = "Item")
-	UItemInstance* CreateItemInstance(const FItemTableRowFragmentArray& ItemInfo, UObject* Outer);
-
-	UFUNCTION(BlueprintCallable, Category = "Item")
-	UDataTable* GetItemDefDataTable() const;
-
-	UFUNCTION(BlueprintCallable, Category = "Item")
-	void FindItemDefRowDefine(FName RowName, FAxeItemTableRowDefine& OutItemDef);
+	// UFUNCTION(BlueprintCallable, meta = (DefaultToSelf = Outer), Category = "Item")
+	// UItemInstance* CreateItemInstance(const FItemTableRowFragmentArray& ItemInfo, UObject* Outer);
+	//
+	// UFUNCTION(BlueprintCallable, Category = "Item")
+	// UDataTable* GetItemDefDataTable() const;
+	//
+	// UFUNCTION(BlueprintCallable, Category = "Item")
+	// void FindItemDefRowDefine(FName RowName, FAxeItemTableRowDefine& OutItemDef);
 };

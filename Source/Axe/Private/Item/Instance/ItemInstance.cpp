@@ -3,14 +3,19 @@
 
 #include "Item/Instance/ItemInstance.h"
 
+#include "Engine/ActorChannel.h"
+#include "Net/UnrealNetwork.h"
+
 UItemInstance::UItemInstance(const FObjectInitializer& ObjectInitializer): Super(ObjectInitializer)
 {
 }
 
-void UItemInstance::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const
+void UItemInstance::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
-	if (ItemStructsHandle.IsValid() && ItemStructsHandle.Data)
-	{
-		TagContainer.AppendTags(ItemStructsHandle.Data->ItemTags);
-	}
+	UObject::GetLifetimeReplicatedProps(OutLifetimeProps);
+}
+
+void UItemInstance::SetItemDef(TSubclassOf<UItemDefinition> InDef)
+{
+	ItemDef = InDef;
 }

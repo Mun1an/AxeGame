@@ -4,7 +4,7 @@
 #include "AbilitySystem/Executions/DamageExecution.h"
 
 #include "AbilitySystem/AxeBlueprintFunctionLibrary.h"
-#include "AbilitySystem/GameplayTag/AxeGameplayTags.h"
+#include "GameplayTag/AxeGameplayTags.h"
 #include "Enum/AxeTypes.h"
 
 UDamageExecution::UDamageExecution()

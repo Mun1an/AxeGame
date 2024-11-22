@@ -64,6 +64,7 @@ protected:
 	virtual void Tick(float DeltaSeconds) override;
 
 	void InitAbility();
+	void InitInventory();
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))

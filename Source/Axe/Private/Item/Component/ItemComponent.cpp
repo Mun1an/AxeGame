@@ -16,19 +16,4 @@ void UItemComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (AActor* Actor = GetOwner())
-	{
-		if (UGameInstance* GameInstance = Actor->GetGameInstance())
-		{
-			if (UAxeItemSubsystem* ItemSubsystem = GameInstance->GetSubsystem<UAxeItemSubsystem>())
-			{
-				FAxeItemTableRowDefine ItemRow;
-				ItemSubsystem->FindItemDefRowDefine(ItemID, ItemRow);
-				CustomItemInfo = ItemRow.ItemInfos;
-
-				ItemInstance = ItemSubsystem->CreateItemInstance(CustomItemInfo, this);
-				ItemInstance->StackSize = StackSize;
-			}
-		}
-	}
 }

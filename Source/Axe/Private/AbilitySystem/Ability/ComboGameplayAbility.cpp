@@ -5,7 +5,7 @@
 
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
-#include "AbilitySystem/GameplayTag/AxeGameplayTags.h"
+#include "GameplayTag/AxeGameplayTags.h"
 #include "AbilitySystem/Tasks/AbilityTask_HitTrace.h"
 #include "ActionSystem/ComboActionComponent.h"
 #include "Character/AxeCharacterPlayer.h"

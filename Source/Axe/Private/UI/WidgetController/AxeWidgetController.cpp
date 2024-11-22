@@ -15,6 +15,11 @@ void UAxeWidgetControllerBase::SetWidgetControllerParams(const FWidgetController
 	PlayerState = Params.PlayerState;
 	AbilitySystemComponent = Params.AbilitySystemComponent;
 	AttributeSet = Params.AttributeSet;
+
+	AxePlayerController = Cast<AAxePlayerController>(PlayerController);
+	AxePlayerState = Cast<AAxePlayerState>(PlayerState);
+	AxeAbilitySystemComponent = Cast<UAxeAbilitySystemComponent>(AbilitySystemComponent);
+	AxeAttributeSet = Cast<UAxeAttributeSet>(AttributeSet);
 }
 
 void UAxeWidgetControllerBase::BroadcastInitialValues()

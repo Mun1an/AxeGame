@@ -4,7 +4,7 @@
 #include "AssetManager/AxeAssetManager.h"
 
 #include "AbilitySystemGlobals.h"
-#include "AbilitySystem/GameplayTag/AxeGameplayTags.h"
+#include "GameplayTag/AxeGameplayTags.h"
 
 void UAxeAssetManager::StartInitialLoading()
 {
