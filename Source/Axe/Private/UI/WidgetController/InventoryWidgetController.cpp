@@ -14,5 +14,14 @@ void UInventoryWidgetController::SetWidgetControllerParams(const FWidgetControll
 
 	check(AxePlayerState)
 	InventoryComponent = AxePlayerState->GetInventoryComponent();
+
+	// bind
+	InventoryComponent->OnInventoryChanged.AddDynamic(this, &UInventoryWidgetController::OnInventoryChangedCallback);
 }
 
+void UInventoryWidgetController::OnInventoryChangedCallback(int32 SlotIndex, UItemInstance* ItemInstance,
+                                                            int32 NewCount,
+                                                            int32 OldCount)
+{
+	OnInventoryChangedInWidgetController.Broadcast(SlotIndex, ItemInstance, NewCount, OldCount);
+}

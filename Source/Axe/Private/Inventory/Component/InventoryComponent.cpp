@@ -68,6 +68,12 @@ void UInventoryComponent::ReadyForReplication()
 	}
 }
 
+void UInventoryComponent::OnInventoryItemChanged(int32 SlotIndex, UItemInstance* ItemInstance, int32 NewCount,
+                                                 int32 OldCount)
+{
+	OnInventoryChanged.Broadcast(SlotIndex, ItemInstance, NewCount, OldCount);
+}
+
 bool UInventoryComponent::SetOwnerActor(AActor* InOwnerActor)
 {
 	OwnerActor = InOwnerActor;
@@ -103,6 +109,15 @@ AAxeCharacterBase* UInventoryComponent::GetAxeCharacterOwner() const
 void UInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// init slot
+	if (GetOwnerRole() == ROLE_Authority)
+	{
+		for (int i = 0; i < InventoryEntryInitSize; ++i)
+		{
+			InventoryList.AddEntry();
+		}
+	}
 }
 
 void UInventoryComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -110,7 +125,7 @@ void UInventoryComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
-int32 UInventoryComponent::GetInventorySize() const
+int32 UInventoryComponent::GetInventoryEntriesSize() const
 {
 	return InventoryList.Entries.Num();
 }
@@ -125,35 +140,31 @@ UItemInstance* UInventoryComponent::GetItemInstanceByIndex(int32 Index) const
 	return InventoryList.GetItemInstanceByIndex(Index);
 }
 
-UItemInstance* UInventoryComponent::AddItemDefinition(TSubclassOf<UItemDefinition> ItemDef, int32 StackCount)
+UItemInstance* UInventoryComponent::AddItemDefinition(TSubclassOf<UItemDefinition> ItemDef, int32 StackCount,
+                                                      int32 Index)
 {
-	UItemInstance* Result = nullptr;
-	if (ItemDef != nullptr)
+	if (ItemDef == nullptr)
 	{
-		Result = InventoryList.AddEntry(ItemDef, StackCount);
-		if (IsUsingRegisteredSubObjectList() && IsReadyForReplication() && Result)
-		{
-			AddReplicatedSubObject(Result);
-		}
+		return nullptr;
 	}
-	return Result;
+	UItemInstance* ItemInstance = NewObject<UItemInstance>(GetOwner());
+	ItemInstance->SetItemDef(ItemDef);
+	AddItemInstance(ItemInstance, StackCount, Index);
+	return ItemInstance;
 }
 
-void UInventoryComponent::AddItemInstance(UItemInstance* ItemInstance)
+void UInventoryComponent::AddItemInstance(UItemInstance* ItemInstance, int32 StackCount, int32 Index)
 {
-	InventoryList.AddEntry(ItemInstance);
+	InventoryList.AddItem(ItemInstance, StackCount, Index);
+
 	if (IsUsingRegisteredSubObjectList() && IsReadyForReplication() && ItemInstance)
 	{
 		AddReplicatedSubObject(ItemInstance);
 	}
 }
 
-void UInventoryComponent::RemoveItemInstance(UItemInstance* ItemInstance)
+void UInventoryComponent::AddInventoryEntry()
 {
-	InventoryList.RemoveEntry(ItemInstance);
-
-	if (ItemInstance && IsUsingRegisteredSubObjectList())
-	{
-		RemoveReplicatedSubObject(ItemInstance);
-	}
+	InventoryList.AddEntry();
 }
+

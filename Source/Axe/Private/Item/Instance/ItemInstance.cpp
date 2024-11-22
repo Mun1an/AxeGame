@@ -13,6 +13,8 @@ UItemInstance::UItemInstance(const FObjectInitializer& ObjectInitializer): Super
 void UItemInstance::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
 	UObject::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UItemInstance, ItemDef);
+	DOREPLIFETIME(UItemInstance, StatTags);
 }
 
 void UItemInstance::SetItemDef(TSubclassOf<UItemDefinition> InDef)

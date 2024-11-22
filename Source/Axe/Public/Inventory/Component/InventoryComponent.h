@@ -12,6 +12,9 @@ class AAxeCharacterBase;
 class UInventoryProcessor;
 class UItemInstance;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnInventoryChanged, int32, SlotIndex, UItemInstance*, ItemInstance,
+                                              int32, NewCount, int32, OldCount);
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class AXE_API UInventoryComponent : public UActorComponent
 {
@@ -19,10 +22,15 @@ class AXE_API UInventoryComponent : public UActorComponent
 
 public:
 	friend class UInventoryProcessor;
+	friend struct FAxeInventoryList;
 
 	UInventoryComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	virtual void InitializeComponent() override;
+
+	//
+	FOnInventoryChanged OnInventoryChanged;
+	//
 
 	AActor* GetOwnerActor() const { return OwnerActor; }
 	bool SetOwnerActor(AActor* InOwnerActor);
@@ -31,23 +39,23 @@ public:
 	UFUNCTION(BlueprintCallable)
 	AAxeCharacterBase* GetAxeCharacterOwner() const;
 
-	UFUNCTION(BlueprintPure, Category = "Inventory")
-	int32 GetInventorySize() const;
+	UFUNCTION(BlueprintPure, Category = Inventory)
+	int32 GetInventoryEntriesSize() const;
 
 	UFUNCTION(BlueprintCallable, Category=Inventory, BlueprintPure=false)
 	TArray<UItemInstance*> GetAllItems() const;
 
 	UFUNCTION(BlueprintCallable, Category=Inventory)
 	UItemInstance* GetItemInstanceByIndex(int32 Index) const;
-	
-	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category=Inventory)
-	UItemInstance* AddItemDefinition(TSubclassOf<UItemDefinition> ItemDef, int32 StackCount = 1);
 
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category=Inventory)
-	void AddItemInstance(UItemInstance* ItemInstance);
+	UItemInstance* AddItemDefinition(TSubclassOf<UItemDefinition> ItemDef, int32 StackCount = 1, int32 Index = -1);
 
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category=Inventory)
-	void RemoveItemInstance(UItemInstance* ItemInstance);
+	void AddItemInstance(UItemInstance* ItemInstance, int32 StackCount = 1, int32 Index = -1);
+
+	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category=Inventory)
+	void AddInventoryEntry();
 
 protected:
 	virtual void BeginPlay() override;
@@ -64,6 +72,12 @@ public:
 	virtual void ReadyForReplication() override;
 	//~End of UObject interface
 
+
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	int32 InventoryEntryInitSize = 16;
+
+	void OnInventoryItemChanged(int32 SlotIndex, UItemInstance* ItemInstance, int32 NewCount, int32 OldCount);
 
 private:
 	UPROPERTY(Replicated)

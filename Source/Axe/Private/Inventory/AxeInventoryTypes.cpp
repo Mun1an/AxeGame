@@ -35,7 +35,19 @@ void FAxeInventoryList::PostReplicatedChange(const TArrayView<int32> ChangedIndi
 		check(Stack.LastObservedCount != INDEX_NONE);
 		// BroadcastChangeMessage(Stack, /*OldCount=*/ Stack.LastObservedCount, /*NewCount=*/ Stack.StackCount);
 		Stack.LastObservedCount = Stack.StackCount;
+		
+		OwnerComponent->OnInventoryItemChanged(Index, Stack.Instance, Stack.StackCount, Stack.LastObservedCount);
 	}
+}
+
+bool FAxeInventoryList::GetInventoryEntryByIndex(int32 Index, FInventoryEntry& InventoryEntry)
+{
+	if (Index >= Entries.Num())
+	{
+		return false;
+	}
+	InventoryEntry = Entries[Index];
+	return true;
 }
 
 TArray<UItemInstance*> FAxeInventoryList::GetAllItems() const
@@ -58,50 +70,50 @@ UItemInstance* FAxeInventoryList::GetItemInstanceByIndex(int32 Index) const
 	return Entries[Index].Instance;
 }
 
-UItemInstance* FAxeInventoryList::AddEntry(TSubclassOf<UItemDefinition> ItemClass, int32 StackCount)
+void FAxeInventoryList::AddEntry()
 {
-	check(ItemClass != nullptr);
-	UItemInstance* ItemInstance = NewObject<UItemInstance>(OwnerComponent->GetOwner());
-	ItemInstance->SetItemDef(ItemClass);
-
-	AddEntry(ItemInstance, StackCount);
-
-	return ItemInstance;
-}
-
-
-void FAxeInventoryList::AddEntry(UItemInstance* Instance, int32 StackCount)
-{
-	check(Instance);
 	check(OwnerComponent);
-
 	AActor* OwningActor = OwnerComponent->GetOwner();
 	check(OwningActor->HasAuthority());
+
 	FInventoryEntry& NewEntry = Entries.AddDefaulted_GetRef();
 
-	NewEntry.Instance = Instance;
-	UClass* ItemDefClass = Instance->GetItemDef();
-	for (UItemFragment* Fragment : GetDefault<UItemDefinition>(ItemDefClass)->Fragments)
-	{
-		if (Fragment != nullptr)
-		{
-			Fragment->OnInstanceCreated(NewEntry.Instance);
-		}
-	}
-	NewEntry.StackCount = StackCount;
+	NewEntry.Instance = nullptr;
+	NewEntry.StackCount = 0;
 
 	MarkItemDirty(NewEntry);
 }
 
-void FAxeInventoryList::RemoveEntry(UItemInstance* Instance)
+void FAxeInventoryList::AddItem(UItemInstance* ItemInstance, int32 StackCount, int32 SlotIndex)
 {
-	for (auto EntryIt = Entries.CreateIterator(); EntryIt; ++EntryIt)
+	check(OwnerComponent);
+	check(OwnerComponent->GetOwner()->HasAuthority());
+	if (SlotIndex == INDEX_NONE)
 	{
-		FInventoryEntry& Entry = *EntryIt;
-		if (Entry.Instance == Instance)
+		SlotIndex = GetEmptyOrStackSlotIndex(ItemInstance);
+	}
+	if (SlotIndex == INDEX_NONE)
+	{
+		return;
+	}
+	FInventoryEntry& Entry = Entries[SlotIndex];
+	Entry.Instance = ItemInstance;
+	Entry.StackCount = StackCount;
+
+	OwnerComponent->OnInventoryItemChanged(SlotIndex, ItemInstance, StackCount, Entry.LastObservedCount);
+
+	MarkItemDirty(Entry);
+}
+
+int32 FAxeInventoryList::GetEmptyOrStackSlotIndex(UItemInstance* ItemInstance)
+{
+	// TODO 堆叠
+	for (int32 Index = 0; Index < Entries.Num(); ++Index)
+	{
+		if (Entries[Index].Instance == nullptr)
 		{
-			EntryIt.RemoveCurrent();
-			MarkArrayDirty();
+			return Index;
 		}
 	}
+	return INDEX_NONE;
 }

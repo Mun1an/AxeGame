@@ -31,6 +31,7 @@ struct AXE_API FInventoryEntry : public FFastArraySerializerItem
 	int32 LastObservedCount = INDEX_NONE;
 };
 
+
 USTRUCT()
 struct FAxeInventoryList : public FFastArraySerializer
 {
@@ -63,11 +64,17 @@ struct FAxeInventoryList : public FFastArraySerializer
 			Entries, DeltaParms, *this);
 	}
 
+	//
+	bool GetInventoryEntryByIndex(int32 Index, FInventoryEntry& InventoryEntry);
+
 	TArray<UItemInstance*> GetAllItems() const;
 	UItemInstance* GetItemInstanceByIndex(int32 Index) const;
-	UItemInstance* AddEntry(TSubclassOf<UItemDefinition> ItemClass, int32 StackCount = 1);
-	void AddEntry(UItemInstance* Instance, int32 StackCount = 1);
-	void RemoveEntry(UItemInstance* Instance);
+
+	void AddEntry();
+	//
+	void AddItem(UItemInstance* ItemInstance, int32 StackCount = 1, int32 SlotIndex = INDEX_NONE);
+
+	int32 GetEmptyOrStackSlotIndex(UItemInstance* ItemInstance);
 };
 
 template <>
