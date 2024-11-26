@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
 #include "GameFramework/PlayerState.h"
-#include "Interaction/InventoryInterface.h"
+#include "Interface/InventoryInterface.h"
 #include "AxePlayerState.generated.h"
 
 class UAttributeSet;

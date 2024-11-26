@@ -4,7 +4,7 @@
 #include "AbilitySystem/Ability/ComboMelee/ComboMelee_A3.h"
 
 #include "Character/AxeCharacterBase.h"
-#include "Interaction/CombatInterface.h"
+#include "Interface/CombatInterface.h"
 
 void UComboMelee_A3::SetHitTraceDefaultValue()
 {

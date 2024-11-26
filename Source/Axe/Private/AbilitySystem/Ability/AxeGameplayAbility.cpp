@@ -24,7 +24,6 @@
 #include "Character/AxeCharacterBase.h"
 #include "Character/AxeCharacterPlayer.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Interaction/CombatInterface.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 #define ENSURE_ABILITY_IS_INSTANTIATED_OR_RETURN(FunctionName, ReturnValue)																				\

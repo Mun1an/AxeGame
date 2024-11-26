@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "AxeCharacterBase.h"
-#include "Interaction/CombatInterface.h"
-#include "Interaction/InventoryInterface.h"
+#include "Interface/CombatInterface.h"
+#include "Interface/InventoryInterface.h"
 #include "Logging/LogMacros.h"
 #include "AxeCharacterPlayer.generated.h"
 
