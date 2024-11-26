@@ -11,3 +11,8 @@ AAxeItemActorBase::AAxeItemActorBase()
 	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("StaticMeshComponent");
 	ItemComponent = CreateDefaultSubobject<UItemComponent>("ItemComponent");
 }
+
+void AAxeItemActorBase::GetInteractionOptions(FInteractionOption& OutOptions) const
+{
+	OutOptions = InteractionOption;
+}

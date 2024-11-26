@@ -19,6 +19,15 @@ class AAxeCharacterBase;
 class UAxeAbilitySystemComponent;
 
 UENUM(BlueprintType)
+enum class EAxeAbilityActivationPolicy : uint8
+{
+	None,
+
+	// Try to activate the ability when an avatar is assigned.
+	OnSpawn
+};
+
+UENUM(BlueprintType)
 enum class EAxeAbilityActivationGroup : uint8
 {
 	// Ability runs independently of all other abilities.
@@ -80,6 +89,7 @@ public:
 	/**
 	 * ActivationGroup
 	 */
+	EAxeAbilityActivationPolicy GetActivationPolicy() const { return ActivationPolicy; }
 	EAxeAbilityActivationGroup GetActivationGroup() const { return ActivationGroup; }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category = "Ability",
@@ -89,6 +99,8 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category = "Ability",
 		Meta = (ExpandBoolAsExecs = "ReturnValue"))
 	bool ChangeActivationGroup(EAxeAbilityActivationGroup NewGroup);
+
+	void TryActivateAbilityOnSpawn(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) const;
 
 	virtual bool CanActivateAbility_ByLastReplaceCondition(const FGameplayAbilitySpecHandle Handle,
 	                                                       const FGameplayAbilityActorInfo* ActorInfo,
@@ -104,6 +116,8 @@ public:
 	/**
 	 *  base virtual
 	 */
+	virtual void OnGiveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
+
 	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	                                const FGameplayTagContainer* SourceTags = nullptr,
 	                                const FGameplayTagContainer* TargetTags = nullptr,
@@ -128,6 +142,10 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ability Activation")
 	EAxeAbilityActivationGroup ActivationGroup;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Lyra|Ability Activation")
+	EAxeAbilityActivationPolicy ActivationPolicy;
+
 	// ClientMovement 
 	UPROPERTY(EditDefaultsOnly, Category = "Client")
 	bool bUseClientMovement = true;
