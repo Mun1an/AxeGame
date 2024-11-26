@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "InteractionOption.generated.h"
 
+class UGameplayAbility;
 class IInteractableInterface;
 class IInteractableTarget;
 class UUserWidget;
@@ -15,9 +16,11 @@ struct FInteractionOption
 {
 	GENERATED_BODY()
 
+	static FInteractionOption Empty;
+
 	/** The interactable target */
 	UPROPERTY(BlueprintReadWrite)
-	TScriptInterface<IInteractableInterface> InteractableTarget;
+	AActor* InteractableTarget;
 
 	/** Simple text the interaction might return */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -27,10 +30,7 @@ struct FInteractionOption
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FText SubText;
 
-	// UI
-	//--------------------------------------------------------------
-
-	/** The widget to show for this kind of interaction. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSoftClassPtr<UUserWidget> InteractionWidgetClass;
+	/** The ability to grant the avatar when they get near interactable objects. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TSubclassOf<UGameplayAbility> InteractionAbilityToGrant;
 };

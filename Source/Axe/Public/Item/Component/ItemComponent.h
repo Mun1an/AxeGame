@@ -6,7 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "ItemComponent.generated.h"
 
-
+class UItemDefinition;
 class UItemInstance;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
@@ -17,15 +17,16 @@ class AXE_API UItemComponent : public UActorComponent
 public:
 	UItemComponent();
 
+	TSubclassOf<UItemDefinition> GetItemDef() const { return ItemDef; }
+	
+	UStaticMesh* GetStaticMeshInItemFragment_World();
+
 protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Item")
-	FName ItemID;
+	TSubclassOf<UItemDefinition> ItemDef;
 
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Item")
 	int32 StackSize = 1;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Item")
-	TObjectPtr<UItemInstance> ItemInstance;
 };

@@ -17,6 +17,7 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(InputTag_Skill_4, "InputTag.Skill.4");
 	AddTag(InputTag_Dash, "InputTag.Dash");
 	AddTag(InputTag_Defense, "InputTag.Defense");
+	AddTag(InputTag_Interact, "InputTag.Interact");
 
 	AddTag(Ability_Attack_LightAttack, "Ability.Attack.LightAttack");
 	AddTag(Ability_Attack_HeavyAttack, "Ability.Attack.HeavyAttack");
@@ -90,6 +91,10 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	 * Item
 	 */
 	AddTag(Inventory_Slot_Bag, "Inventory.Slot.Bag");
+	/**
+	 * Interact
+	 */
+	AddTag(Ability_Interaction_Activate, "Ability.Interaction.Activate");
 }
 
 

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystem/Ability/AxeGameplayAbility.h"
+#include "Interact/InteractionOption.h"
 #include "PreInteract.generated.h"
 
 /**
@@ -17,6 +18,8 @@ class AXE_API UPreInteract : public UAxeGameplayAbility
 public:
 	UPreInteract(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
+	UFUNCTION(BlueprintCallable)
+	void TriggerInteraction();
 
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	                             const FGameplayAbilityActivationInfo ActivationInfo,
@@ -37,9 +40,14 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float ScanRange = 200;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float ScanAngleRange = 30;
+	float ScanAngleRange = 40;
+
+	//
 	UPROPERTY()
 	AActor* CurrentTarget = nullptr;
+
+	UPROPERTY()
+	FInteractionOption CurrentInteractionOption = FInteractionOption::Empty;
 
 	UPROPERTY()
 	TArray<AActor*> OutActors;

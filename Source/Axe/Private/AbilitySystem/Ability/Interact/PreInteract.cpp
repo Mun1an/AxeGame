@@ -3,8 +3,10 @@
 
 #include "AbilitySystem/Ability/Interact/PreInteract.h"
 
+#include "AbilitySystemComponent.h"
 #include "Axe/Axe.h"
 #include "Character/AxeCharacterBase.h"
+#include "GameplayTag/AxeGameplayTags.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Interface/InteractableInterface.h"
 
@@ -15,6 +17,35 @@ UPreInteract::UPreInteract(const FObjectInitializer& ObjectInitializer): Super(O
 	OverlapObjectTypes.AddUnique(UEngineTypes::ConvertToObjectType(ECC_Interact));
 }
 
+void UPreInteract::TriggerInteraction()
+{
+	if (CurrentTarget == nullptr)
+	{
+		return;
+	}
+	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
+
+	UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
+	FAxeGameplayTags AxeGameplayTags = FAxeGameplayTags::Get();
+	FGameplayEventData Payload;
+	Payload.EventTag = AxeGameplayTags.Ability_Interaction_Activate;
+	Payload.Instigator = AxeCharacterOwner;
+	Payload.Target = CurrentTarget;
+
+	FGameplayAbilitySpec* AbilitySpec = ASC->FindAbilitySpecFromClass(
+		CurrentInteractionOption.InteractionAbilityToGrant);
+
+	FGameplayAbilityActorInfo ActorInfo;
+	ActorInfo.InitFromActor(CurrentActorInfo->OwnerActor.Get(), CurrentActorInfo->AvatarActor.Get(), ASC);
+	const bool bSuccess = ASC->TriggerAbilityFromGameplayEvent(
+		AbilitySpec->Handle,
+		&ActorInfo,
+		AxeGameplayTags.Ability_Interaction_Activate,
+		&Payload,
+		*ASC
+	);
+}
+
 
 void UPreInteract::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
                                    const FGameplayAbilityActivationInfo ActivationInfo,
@@ -23,7 +54,8 @@ void UPreInteract::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
 	UWorld* World = GetWorld();
-	World->GetTimerManager().SetTimer(ScanTimerHandle, this, &ThisClass::FindTargetInteractable, ScanRate, true);
+	World->GetTimerManager().SetTimer(
+		ScanTimerHandle, this, &ThisClass::FindTargetInteractable, ScanRate, true);
 }
 
 void UPreInteract::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
@@ -46,10 +78,21 @@ void UPreInteract::FindTargetInteractable()
 	AActor* GoodTarget = GetGoodTarget();
 
 	CurrentTarget = GoodTarget;
+	if (Cast<IInteractableInterface>(CurrentTarget))
+	{
+		Cast<IInteractableInterface>(CurrentTarget)->GetInteractionOptions(CurrentInteractionOption);
+		CurrentInteractionOption.InteractableTarget = CurrentTarget;
+	}
+	else
+	{
+		CurrentInteractionOption = FInteractionOption::Empty;
+	}
 
 	if (CurrentTarget)
 	{
-		DrawDebugSphere(GetWorld(), CurrentTarget->GetActorLocation(), 50, 10, FColor::Red, false, 5);
+		DrawDebugSphere(
+			GetWorld(), CurrentTarget->GetActorLocation(), 50, 10, FColor::Red, false, 0.2
+		);
 	}
 }
 

@@ -3,6 +3,6 @@
 
 #include "Interface/InteractableInterface.h"
 
-void IInteractableInterface::GetInteractionOptions(FInteractionOption& OutOptions) const
+void IInteractableInterface::GetInteractionOptions(FInteractionOption& OutOptions)
 {
 }

@@ -8,11 +8,23 @@ AAxeItemActorBase::AAxeItemActorBase()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
-	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("StaticMeshComponent");
+	ItemStaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("StaticMeshComponent");
+	ItemStaticMeshComponent->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+
 	ItemComponent = CreateDefaultSubobject<UItemComponent>("ItemComponent");
 }
 
-void AAxeItemActorBase::GetInteractionOptions(FInteractionOption& OutOptions) const
+void AAxeItemActorBase::OnConstruction(const FTransform& Transform)
+{
+	Super::OnConstruction(Transform);
+
+	check(ItemComponent)
+	UStaticMesh* StaticMeshWorld = ItemComponent->GetStaticMeshInItemFragment_World();
+	ItemStaticMeshComponent->SetStaticMesh(StaticMeshWorld);
+}
+
+
+void AAxeItemActorBase::GetInteractionOptions(FInteractionOption& OutOptions)
 {
 	OutOptions = InteractionOption;
 }

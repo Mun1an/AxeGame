@@ -17,12 +17,13 @@ class AXE_API AAxeItemActorBase : public AActor, public IInteractableInterface
 
 public:
 	AAxeItemActorBase();
-
-	virtual void GetInteractionOptions(FInteractionOption& OutOptions) const override;
+	virtual void OnConstruction(const FTransform& Transform) override;
+	virtual void GetInteractionOptions(FInteractionOption& OutOptions) override;
 
 protected:
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	TObjectPtr<UStaticMeshComponent> StaticMeshComponent;
+	TObjectPtr<UStaticMeshComponent> ItemStaticMeshComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TObjectPtr<UItemComponent> ItemComponent;

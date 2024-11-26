@@ -24,5 +24,5 @@ class AXE_API IInteractableInterface
 	GENERATED_BODY()
 
 public:
-	virtual void GetInteractionOptions(FInteractionOption& OutOptions) const;
+	virtual void GetInteractionOptions(FInteractionOption& OutOptions);
 };

@@ -25,6 +25,7 @@ struct FAxeGameplayTags
 	FGameplayTag InputTag_Skill_4;
 	FGameplayTag InputTag_Dash;
 	FGameplayTag InputTag_Defense;
+	FGameplayTag InputTag_Interact;
 
 	FGameplayTag Ability_Attack_LightAttack;
 	FGameplayTag Ability_Attack_HeavyAttack;
@@ -105,6 +106,10 @@ struct FAxeGameplayTags
 	 * Item
 	 */
 	FGameplayTag Inventory_Slot_Bag;
+	/**
+	 * Interact
+	 */
+	FGameplayTag Ability_Interaction_Activate;
 
 protected:
 	void AddTag(FGameplayTag& OutTag, const ANSICHAR* TagName = nullptr, const ANSICHAR* TagComment = nullptr);
