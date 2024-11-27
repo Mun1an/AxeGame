@@ -142,6 +142,11 @@ UItemInstance* UInventoryComponent::GetItemInstanceByIndex(int32 Index) const
 	return InventoryList.GetItemInstanceByIndex(Index);
 }
 
+bool UInventoryComponent::GetInventoryEntryByIndex(int32 Index, FInventoryEntry& InventoryEntry)
+{
+	return InventoryList.GetInventoryEntryByIndex(Index, InventoryEntry);
+}
+
 UItemInstance* UInventoryComponent::AddItemDefinition(TSubclassOf<UItemDefinition> ItemDef, int32 StackCount,
                                                       int32 Index)
 {
@@ -167,6 +172,11 @@ void UInventoryComponent::AddItemInstance(UItemInstance* ItemInstance, int32 Sta
 	SendItemUIMessage(ItemInstance->GetItemDef(), StackCount);
 }
 
+bool UInventoryComponent::RemoveItemByIndex(int32 Index, int32 RemoveCount)
+{
+	return InventoryList.RemoveItemByIndex(Index, RemoveCount);
+}
+
 void UInventoryComponent::AddInventoryEntry()
 {
 	InventoryList.AddEntry();
@@ -181,5 +191,12 @@ void UInventoryComponent::SendItemUIMessage(TSubclassOf<UItemDefinition> ItemDef
 	UTexture2D* Texture2D = ItemFragment_UI->Icon;
 	FText DisplayName = ItemFragment_UI->DisplayName;
 
-	OnSendInventoryItemUIMessage.Broadcast(Texture2D, DisplayName, StackCount);
+	// OnSendInventoryItemUIMessage.Broadcast(Texture2D, DisplayName, StackCount);
+	ClientSendItemUIMessage(Texture2D, DisplayName, StackCount);
+}
+
+void UInventoryComponent::ClientSendItemUIMessage_Implementation(UTexture2D* Texture, const FText& ItemName,
+                                                                 int32 StackCount)
+{
+	OnSendInventoryItemUIMessage.Broadcast(Texture, ItemName, StackCount);
 }

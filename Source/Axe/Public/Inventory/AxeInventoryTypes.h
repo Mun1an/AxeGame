@@ -21,10 +21,10 @@ struct AXE_API FInventoryEntry : public FFastArraySerializerItem
 	friend FInventoryList;
 	friend UInventoryComponent;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<UItemInstance> Instance = nullptr;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	int32 StackCount = 0;
 
 	UPROPERTY(NotReplicated)
@@ -74,6 +74,8 @@ struct FAxeInventoryList : public FFastArraySerializer
 	//
 	void AddItem(UItemInstance* ItemInstance, int32 StackCount = 1, int32 SlotIndex = INDEX_NONE);
 
+	bool RemoveItemByIndex(int32 Index, int32 RemoveCount = 1);
+	
 	int32 GetEmptyOrStackSlotIndex(UItemInstance* ItemInstance);
 };
 

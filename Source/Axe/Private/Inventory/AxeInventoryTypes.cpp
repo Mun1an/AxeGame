@@ -12,6 +12,8 @@ void FAxeInventoryList::PreReplicatedRemove(const TArrayView<int32> RemovedIndic
 		FInventoryEntry& Stack = Entries[Index];
 		// BroadcastChangeMessage(Stack, /*OldCount=*/ Stack.StackCount, /*NewCount=*/ 0);
 		Stack.LastObservedCount = 0;
+
+		OwnerComponent->OnInventoryItemChanged(Index, Stack.Instance, Stack.StackCount, Stack.LastObservedCount);
 	}
 }
 
@@ -34,7 +36,7 @@ void FAxeInventoryList::PostReplicatedChange(const TArrayView<int32> ChangedIndi
 		check(Stack.LastObservedCount != INDEX_NONE);
 		// BroadcastChangeMessage(Stack, /*OldCount=*/ Stack.LastObservedCount, /*NewCount=*/ Stack.StackCount);
 		Stack.LastObservedCount = Stack.StackCount;
-		
+
 		OwnerComponent->OnInventoryItemChanged(Index, Stack.Instance, Stack.StackCount, Stack.LastObservedCount);
 	}
 }
@@ -102,6 +104,27 @@ void FAxeInventoryList::AddItem(UItemInstance* ItemInstance, int32 StackCount, i
 	OwnerComponent->OnInventoryItemChanged(SlotIndex, ItemInstance, StackCount, Entry.LastObservedCount);
 
 	MarkItemDirty(Entry);
+}
+
+bool FAxeInventoryList::RemoveItemByIndex(int32 Index, int32 RemoveCount)
+{
+	if (Index >= Entries.Num())
+	{
+		return false;
+	}
+	FInventoryEntry& Entry = Entries[Index];
+	if (Entry.Instance == nullptr)
+	{
+		return false;
+	}
+	Entry.Instance = nullptr;
+	Entry.StackCount = FMath::Max(0, Entry.StackCount - RemoveCount);
+
+	OwnerComponent->OnInventoryItemChanged(
+		Index, Entry.Instance, Entry.StackCount, Entry.LastObservedCount
+	);
+	MarkItemDirty(Entry);
+	return true;
 }
 
 int32 FAxeInventoryList::GetEmptyOrStackSlotIndex(UItemInstance* ItemInstance)

@@ -53,6 +53,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category=Inventory)
 	UItemInstance* GetItemInstanceByIndex(int32 Index) const;
 
+	UFUNCTION(BlueprintCallable, Category=Inventory)
+	bool GetInventoryEntryByIndex(int32 Index, FInventoryEntry& InventoryEntry);
+
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category=Inventory)
 	UItemInstance* AddItemDefinition(TSubclassOf<UItemDefinition> ItemDef, int32 StackCount = 1, int32 Index = -1);
 
@@ -60,11 +63,18 @@ public:
 	void AddItemInstance(UItemInstance* ItemInstance, int32 StackCount = 1, int32 Index = -1);
 
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category=Inventory)
+	bool RemoveItemByIndex(int32 Index, int32 RemoveCount = 1);
+
+	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category=Inventory)
 	void AddInventoryEntry();
 
 	UFUNCTION(BlueprintCallable, Category=Inventory)
 	void SendItemUIMessage(TSubclassOf<UItemDefinition> ItemDef, int32 StackCount = 1);
-	
+
+protected:
+	UFUNCTION(Client, Reliable)
+	void ClientSendItemUIMessage(UTexture2D* Texture, const FText& ItemName, int32 StackCount);
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
