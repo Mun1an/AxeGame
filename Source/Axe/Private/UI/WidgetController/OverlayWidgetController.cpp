@@ -5,6 +5,17 @@
 
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
 #include "AbilitySystem/AttributeSet/AxeAttributeSet.h"
+#include "Inventory/Component/InventoryComponent.h"
+#include "PlayerState/AxePlayerState.h"
+#include "UI/WidgetController/InventoryWidgetController.h"
+
+void UOverlayWidgetController::SetWidgetControllerParams(const FWidgetControllerParams& Params)
+{
+	Super::SetWidgetControllerParams(Params);
+	
+	check(AxePlayerState)
+	InventoryComponent = AxePlayerState->GetInventoryComponent();
+}
 
 void UOverlayWidgetController::BroadcastInitialValues()
 {
@@ -24,9 +35,11 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 {
 	Super::BindCallbacksToDependencies();
 	// 绑定委托回调
+
+	// AxeASC
 	const UAxeAttributeSet* LocalAxeAttributeSet = GetAxeAttributeSet();
 	UAxeAbilitySystemComponent* AxeASC = GetAxeAbilitySystemComponent();
-
+	
 	AxeASC->GetGameplayAttributeValueChangeDelegate(
 		LocalAxeAttributeSet->GetHealthAttribute()
 	).AddUObject(this, &UOverlayWidgetController::HealthChanged);
@@ -43,6 +56,9 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 
 	//
 	AxeASC->AbilitiesGivenDelegate.AddUObject(this, &UOverlayWidgetController::BroadcastAbilityInfo);
+
+	// item
+	InventoryComponent->OnSendInventoryItemUIMessage.AddDynamic(this, &UOverlayWidgetController::SendInventoryItemUIMessage);
 }
 
 void UOverlayWidgetController::HealthChanged(const FOnAttributeChangeData& Data) const
@@ -63,4 +79,9 @@ void UOverlayWidgetController::StaminaChanged(const FOnAttributeChangeData& Data
 void UOverlayWidgetController::MaxStaminaChanged(const FOnAttributeChangeData& Data) const
 {
 	OnMaxStaminaChanged.Broadcast(Data.NewValue);
+}
+
+void UOverlayWidgetController::SendInventoryItemUIMessage(UTexture2D* Texture, FText ItemName, int32 StackCount)
+{
+	OnSendInventoryItemUIMessageSignature.Broadcast(Texture, ItemName, StackCount);
 }

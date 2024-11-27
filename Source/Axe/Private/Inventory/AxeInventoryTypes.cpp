@@ -10,7 +10,6 @@ void FAxeInventoryList::PreReplicatedRemove(const TArrayView<int32> RemovedIndic
 	for (int32 Index : RemovedIndices)
 	{
 		FInventoryEntry& Stack = Entries[Index];
-		// TODO
 		// BroadcastChangeMessage(Stack, /*OldCount=*/ Stack.StackCount, /*NewCount=*/ 0);
 		Stack.LastObservedCount = 0;
 	}

@@ -11,9 +11,13 @@ class UItemDefinition;
 class AAxeCharacterBase;
 class UInventoryProcessor;
 class UItemInstance;
+class UTexture2D;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnInventoryChanged, int32, SlotIndex, UItemInstance*, ItemInstance,
                                               int32, NewCount, int32, OldCount);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnSendInventoryItemUIMessage, UTexture2D*, Texture,
+                                               FText, ItemName, int32, StackCount);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class AXE_API UInventoryComponent : public UActorComponent
@@ -30,6 +34,7 @@ public:
 
 	//
 	FOnInventoryChanged OnInventoryChanged;
+	FOnSendInventoryItemUIMessage OnSendInventoryItemUIMessage;
 	//
 
 	AActor* GetOwnerActor() const { return OwnerActor; }
@@ -57,6 +62,9 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category=Inventory)
 	void AddInventoryEntry();
 
+	UFUNCTION(BlueprintCallable, Category=Inventory)
+	void SendItemUIMessage(TSubclassOf<UItemDefinition> ItemDef, int32 StackCount = 1);
+	
 protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;

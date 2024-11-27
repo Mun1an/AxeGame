@@ -8,8 +8,10 @@
 #include "GameplayTag/AxeGameplayTags.h"
 #include "Inventory/Processor/InventoryProcessor.h"
 #include "Inventory/Processor/InventoryProcessor_Bag.h"
+#include "Item/ItemFunctionLibrary.h"
 #include "Item/Instance/ItemDefinition.h"
 #include "Item/Instance/ItemInstance.h"
+#include "Item/ItemFragment/ItemFragment_UI.h"
 #include "Net/UnrealNetwork.h"
 
 UInventoryComponent::UInventoryComponent(const FObjectInitializer& ObjectInitializer): Super(ObjectInitializer),
@@ -161,6 +163,8 @@ void UInventoryComponent::AddItemInstance(UItemInstance* ItemInstance, int32 Sta
 	{
 		AddReplicatedSubObject(ItemInstance);
 	}
+
+	SendItemUIMessage(ItemInstance->GetItemDef(), StackCount);
 }
 
 void UInventoryComponent::AddInventoryEntry()
@@ -168,3 +172,14 @@ void UInventoryComponent::AddInventoryEntry()
 	InventoryList.AddEntry();
 }
 
+void UInventoryComponent::SendItemUIMessage(TSubclassOf<UItemDefinition> ItemDef, int32 StackCount)
+{
+	const UItemFragment* Fragment = UItemFunctionLibrary::FindItemDefinitionFragment(
+		ItemDef, UItemFragment_UI::StaticClass());
+	const UItemFragment_UI* ItemFragment_UI = Cast<UItemFragment_UI>(Fragment);
+
+	UTexture2D* Texture2D = ItemFragment_UI->Icon;
+	FText DisplayName = ItemFragment_UI->DisplayName;
+
+	OnSendInventoryItemUIMessage.Broadcast(Texture2D, DisplayName, StackCount);
+}
