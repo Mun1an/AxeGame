@@ -174,7 +174,9 @@ void UInventoryComponent::AddItemInstance(UItemInstance* ItemInstance, int32 Sta
 
 bool UInventoryComponent::RemoveItemByIndex(int32 Index, int32 RemoveCount)
 {
-	return InventoryList.RemoveItemByIndex(Index, RemoveCount);
+	FInventoryEntry Entry;
+	GetInventoryEntryByIndex(Index, Entry);
+	return InventoryList.RemoveItem(Entry, RemoveCount);
 }
 
 void UInventoryComponent::AddInventoryEntry()

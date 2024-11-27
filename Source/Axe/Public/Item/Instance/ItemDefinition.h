@@ -26,5 +26,8 @@ public:
 public:
 	
 	const UItemFragment* FindFragmentByClass(TSubclassOf<UItemFragment> FragmentClass) const;
+
+	UFUNCTION(BlueprintCallable)
+	int32 GetItemMaxStackSize() const;
 };
 

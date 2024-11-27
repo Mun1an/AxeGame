@@ -42,6 +42,4 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FInteractionOption InteractionOption;
 
-	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Item")
-	int32 StackSize = 1;
 };

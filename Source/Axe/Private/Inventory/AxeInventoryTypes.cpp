@@ -81,38 +81,61 @@ void FAxeInventoryList::AddEntry()
 
 	NewEntry.Instance = nullptr;
 	NewEntry.StackCount = 0;
+	NewEntry.SlotIndex = NewEntryIndex;
+
+	NewEntryIndex++;
 
 	MarkItemDirty(NewEntry);
 }
 
-void FAxeInventoryList::AddItem(UItemInstance* ItemInstance, int32 StackCount, int32 SlotIndex)
+bool FAxeInventoryList::AddItem(UItemInstance* ItemInstance, int32 StackCount, int32 SlotIndex)
 {
 	check(OwnerComponent);
 	check(OwnerComponent->GetOwner()->HasAuthority());
+
+	TMap<int32, int32> SlotCountMap;
 	if (SlotIndex == INDEX_NONE)
 	{
-		SlotIndex = GetEmptyOrStackSlotIndex(ItemInstance);
+		bool bGet = GetStackOrEmptySlotIndex(ItemInstance, SlotCountMap, StackCount);
+		if (!bGet)
+		{
+			return false;
+		}
 	}
-	if (SlotIndex == INDEX_NONE)
+	else
 	{
-		return;
+		SlotCountMap.Add(SlotIndex, StackCount);
 	}
+
+	bool bResult = true;
+	for (TTuple<int, int> CountMap : SlotCountMap)
+	{
+		const int32 InSlot = CountMap.Key;
+		const int32 InCount = CountMap.Value;
+
+		bResult = bResult & AddItemInternal(ItemInstance, InCount, InSlot);
+	}
+	return bResult;
+}
+
+bool FAxeInventoryList::AddItemInternal(UItemInstance* ItemInstance, int32 StackCount, int32 SlotIndex)
+{
 	FInventoryEntry& Entry = Entries[SlotIndex];
+	if (Entry.Instance && Entry.Instance->GetItemDef() == ItemInstance->GetItemDef())
+	{
+		return ChangeItemStackCount(Entry, StackCount + Entry.StackCount);
+	}
+
 	Entry.Instance = ItemInstance;
 	Entry.StackCount = StackCount;
 
 	OwnerComponent->OnInventoryItemChanged(SlotIndex, ItemInstance, StackCount, Entry.LastObservedCount);
-
 	MarkItemDirty(Entry);
+	return true;
 }
 
-bool FAxeInventoryList::RemoveItemByIndex(int32 Index, int32 RemoveCount)
+bool FAxeInventoryList::RemoveItem(FInventoryEntry& Entry, int32 RemoveCount)
 {
-	if (Index >= Entries.Num())
-	{
-		return false;
-	}
-	FInventoryEntry& Entry = Entries[Index];
 	if (Entry.Instance == nullptr)
 	{
 		return false;
@@ -121,21 +144,86 @@ bool FAxeInventoryList::RemoveItemByIndex(int32 Index, int32 RemoveCount)
 	Entry.StackCount = FMath::Max(0, Entry.StackCount - RemoveCount);
 
 	OwnerComponent->OnInventoryItemChanged(
-		Index, Entry.Instance, Entry.StackCount, Entry.LastObservedCount
+		Entry.SlotIndex, Entry.Instance, Entry.StackCount, Entry.LastObservedCount
 	);
 	MarkItemDirty(Entry);
 	return true;
 }
 
-int32 FAxeInventoryList::GetEmptyOrStackSlotIndex(UItemInstance* ItemInstance)
+bool FAxeInventoryList::ChangeItemStackCount(FInventoryEntry& Entry, int32 NewCount)
 {
-	// TODO 堆叠
+	Entry.StackCount = NewCount;
+
+	OwnerComponent->OnInventoryItemChanged(
+		Entry.SlotIndex, Entry.Instance, Entry.StackCount, Entry.LastObservedCount
+	);
+	MarkItemDirty(Entry);
+	return true;
+}
+
+bool FAxeInventoryList::GetStackOrEmptySlotIndex(UItemInstance* ItemInstance, TMap<int32, int32>& SlotCountMap,
+                                                 int32 NeedCount)
+{
+	const UItemDefinition* ItemDef = GetDefault<UItemDefinition>(ItemInstance->GetItemDef());
+	const int32 ItemMaxStackSize = ItemDef->GetItemMaxStackSize();
+	//
+	int32 RemainingNeedCount = NeedCount;
+
 	for (int32 Index = 0; Index < Entries.Num(); ++Index)
 	{
-		if (Entries[Index].Instance == nullptr)
+		FInventoryEntry& Entry = Entries[Index];
+		if (Entry.Instance == nullptr)
 		{
-			return Index;
+			continue;
+		}
+		if (Entry.Instance->GetItemDef() == ItemInstance->GetItemDef() && Entry.StackCount < ItemMaxStackSize)
+		{
+			//
+			int32 CanAddCount = ItemMaxStackSize - Entry.StackCount;
+			if (CanAddCount > 0)
+			{
+				if (RemainingNeedCount < CanAddCount)
+				{
+					RemainingNeedCount = 0;
+					SlotCountMap.Add(Index, RemainingNeedCount);
+					break;
+				}
+				else
+				{
+					RemainingNeedCount -= CanAddCount;
+					SlotCountMap.Add(Index, CanAddCount);
+				}
+			}
 		}
 	}
-	return INDEX_NONE;
+	//
+	if (RemainingNeedCount > 0)
+	{
+		for (int32 Index = 0; Index < Entries.Num(); ++Index)
+		{
+			if (Entries[Index].Instance == nullptr)
+			{
+				if (RemainingNeedCount > ItemMaxStackSize)
+				{
+					RemainingNeedCount -= ItemMaxStackSize;
+					SlotCountMap.Add(Index, ItemMaxStackSize);
+				}
+				else
+				{
+					SlotCountMap.Add(Index, RemainingNeedCount);
+					RemainingNeedCount = 0;
+					break;
+				}
+			}
+		}
+	}
+
+	if (RemainingNeedCount > 0)
+	{
+		// 如果还是装不下
+		// FIXME
+		return false;
+	}
+
+	return true;
 }

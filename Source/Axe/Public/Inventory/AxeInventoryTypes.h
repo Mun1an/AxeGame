@@ -22,6 +22,9 @@ struct AXE_API FInventoryEntry : public FFastArraySerializerItem
 	friend UInventoryComponent;
 
 	UPROPERTY(BlueprintReadOnly)
+	int32 SlotIndex = INDEX_NONE;
+
+	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<UItemInstance> Instance = nullptr;
 
 	UPROPERTY(BlueprintReadOnly)
@@ -72,11 +75,17 @@ struct FAxeInventoryList : public FFastArraySerializer
 
 	void AddEntry();
 	//
-	void AddItem(UItemInstance* ItemInstance, int32 StackCount = 1, int32 SlotIndex = INDEX_NONE);
-
-	bool RemoveItemByIndex(int32 Index, int32 RemoveCount = 1);
+	bool AddItem(UItemInstance* ItemInstance, int32 StackCount = 1, int32 SlotIndex = INDEX_NONE);
 	
-	int32 GetEmptyOrStackSlotIndex(UItemInstance* ItemInstance);
+	bool RemoveItem(FInventoryEntry& Entry, int32 RemoveCount = 1);
+
+	bool ChangeItemStackCount(FInventoryEntry& Entry, int32 NewCount);
+
+	bool GetStackOrEmptySlotIndex(UItemInstance* ItemInstance, TMap<int32, int32>& SlotCountMap, int32 NeedCount);
+protected:
+	bool AddItemInternal(UItemInstance* ItemInstance, int32 StackCount, int32 SlotIndex);
+private:
+	int32 NewEntryIndex = 0;
 };
 
 template <>

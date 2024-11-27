@@ -4,6 +4,7 @@
 #include "Item/Instance/ItemDefinition.h"
 
 #include "Item/ItemFragment/ItemFragment.h"
+#include "Item/ItemFragment/ItemFragment_CommonInfo.h"
 
 
 UItemDefinition::UItemDefinition(const FObjectInitializer& ObjectInitializer): Super(ObjectInitializer)
@@ -25,3 +26,12 @@ const UItemFragment* UItemDefinition::FindFragmentByClass(TSubclassOf<UItemFragm
 	return nullptr;
 }
 
+int32 UItemDefinition::GetItemMaxStackSize() const
+{
+	const UItemFragment* Fragment = FindFragmentByClass(UItemFragment_CommonInfo::StaticClass());
+	if (Fragment)
+	{
+		return Cast<UItemFragment_CommonInfo>(Fragment)->ItemMaxStackSize;
+	}
+	return 1;
+}

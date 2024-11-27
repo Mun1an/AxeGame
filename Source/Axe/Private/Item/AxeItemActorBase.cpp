@@ -36,7 +36,7 @@ TSubclassOf<UItemDefinition> AAxeItemActorBase::GetPickupableItemDef()
 
 int32 AAxeItemActorBase::GetPickupableItemCount()
 {
-	return StackSize;
+	return ItemComponent->GetStackCount();
 }
 
 void AAxeItemActorBase::HighlightActor()

@@ -18,6 +18,7 @@ public:
 	UItemComponent();
 
 	TSubclassOf<UItemDefinition> GetItemDef() const { return ItemDef; }
+	int32 GetStackCount() const { return StackCount; }
 	
 	UStaticMesh* GetStaticMeshInItemFragment_World();
 
@@ -26,4 +27,7 @@ protected:
 
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Item")
 	TSubclassOf<UItemDefinition> ItemDef;
+
+	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Item")
+	int32 StackCount = 1;
 };

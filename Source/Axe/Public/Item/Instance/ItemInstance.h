@@ -22,7 +22,7 @@ public:
 	virtual bool IsSupportedForNetworking() const override { return true; }
 
 public:
-	TSubclassOf<UItemDefinition> GetItemDef() const
+	const TSubclassOf<UItemDefinition>& GetItemDef()
 	{
 		return ItemDef;
 	}
