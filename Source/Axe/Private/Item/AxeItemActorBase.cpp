@@ -28,3 +28,30 @@ void AAxeItemActorBase::GetInteractionOptions(FInteractionOption& OutOptions)
 {
 	OutOptions = InteractionOption;
 }
+
+TSubclassOf<UItemDefinition> AAxeItemActorBase::GetPickupableItemDef()
+{
+	return ItemComponent->GetItemDef();
+}
+
+int32 AAxeItemActorBase::GetPickupableItemCount()
+{
+	return StackSize;
+}
+
+void AAxeItemActorBase::HighlightActor()
+{
+	if (ItemStaticMeshComponent)
+	{
+		ItemStaticMeshComponent->SetRenderCustomDepth(true);
+		ItemStaticMeshComponent->SetCustomDepthStencilValue(250);
+	}
+}
+
+void AAxeItemActorBase::UnHighlightActor()
+{
+	if (ItemStaticMeshComponent)
+	{
+		ItemStaticMeshComponent->SetRenderCustomDepth(false);
+	}
+}

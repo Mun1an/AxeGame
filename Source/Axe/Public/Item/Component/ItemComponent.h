@@ -26,7 +26,4 @@ protected:
 
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Item")
 	TSubclassOf<UItemDefinition> ItemDef;
-
-	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Item")
-	int32 StackSize = 1;
 };

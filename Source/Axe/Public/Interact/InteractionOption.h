@@ -20,7 +20,7 @@ struct FInteractionOption
 
 	/** The interactable target */
 	UPROPERTY(BlueprintReadWrite)
-	AActor* InteractableTarget;
+	AActor* InteractableTarget = nullptr;
 
 	/** Simple text the interaction might return */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

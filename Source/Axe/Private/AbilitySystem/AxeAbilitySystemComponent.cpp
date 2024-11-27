@@ -298,6 +298,13 @@ void UAxeAbilitySystemComponent::NotifyAbilityEnded(FGameplayAbilitySpecHandle H
 	}
 }
 
+void UAxeAbilitySystemComponent::InitAbilityActorInfo(AActor* InOwnerActor, AActor* InAvatarActor)
+{
+	Super::InitAbilityActorInfo(InOwnerActor, InAvatarActor);
+	
+	TryActivateAbilitiesOnSpawn();
+}
+
 FActiveGameplayEffectHandle UAxeAbilitySystemComponent::ApplyEffectToSelfByClass(
 	const TSubclassOf<UGameplayEffect>& EffectClass, const float Level)
 {
@@ -416,4 +423,16 @@ void UAxeAbilitySystemComponent::OnRep_ActivateAbilities()
 {
 	Super::OnRep_ActivateAbilities();
 	AbilitiesGivenDelegate.Broadcast();
+}
+
+void UAxeAbilitySystemComponent::TryActivateAbilitiesOnSpawn()
+{
+	ABILITYLIST_SCOPE_LOCK();
+	for (const FGameplayAbilitySpec& AbilitySpec : ActivatableAbilities.Items)
+	{
+		if (const UAxeGameplayAbility* LyraAbilityCDO = Cast<UAxeGameplayAbility>(AbilitySpec.Ability))
+		{
+			LyraAbilityCDO->TryActivateAbilityOnSpawn(AbilityActorInfo.Get(), AbilitySpec);
+		}
+	}
 }

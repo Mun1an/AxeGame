@@ -88,17 +88,20 @@ void UPreInteract::FindTargetInteractable()
 		CurrentInteractionOption = FInteractionOption::Empty;
 	}
 
-	if (CurrentTarget)
+	if (LastCurrentTarget != CurrentTarget)
 	{
-		DrawDebugSphere(
-			GetWorld(), CurrentTarget->GetActorLocation(), 50, 10, FColor::Red, false, 0.2
-		);
+		LastCurrentTarget = CurrentTarget;
+		OnTargetInteractableChange();
 	}
 }
 
 AActor* UPreInteract::GetGoodTarget()
 {
 	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
+	if (AxeCharacterOwner == nullptr)
+	{
+		return nullptr;
+	}
 	FVector OwnerLocation = AxeCharacterOwner->GetActorLocation();
 	UKismetSystemLibrary::SphereOverlapActors(
 		AxeCharacterOwner,

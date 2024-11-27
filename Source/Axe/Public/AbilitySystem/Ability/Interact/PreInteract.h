@@ -34,6 +34,9 @@ protected:
 
 	AActor* GetGoodTarget();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnTargetInteractableChange();
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float ScanRate = 0.1;
 
@@ -43,8 +46,11 @@ protected:
 	float ScanAngleRange = 40;
 
 	//
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	AActor* CurrentTarget = nullptr;
+
+	UPROPERTY(BlueprintReadOnly)
+	AActor* LastCurrentTarget = nullptr;
 
 	UPROPERTY()
 	FInteractionOption CurrentInteractionOption = FInteractionOption::Empty;

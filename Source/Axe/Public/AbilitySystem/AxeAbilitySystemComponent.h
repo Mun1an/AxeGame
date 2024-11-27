@@ -66,6 +66,7 @@ public:
 	virtual void NotifyAbilityActivated(const FGameplayAbilitySpecHandle Handle, UGameplayAbility* Ability) override;
 	virtual void NotifyAbilityEnded(FGameplayAbilitySpecHandle Handle, UGameplayAbility* Ability,
 	                                bool bWasCancelled) override;
+	virtual void InitAbilityActorInfo(AActor* InOwnerActor, AActor* InAvatarActor) override;
 	// Effect
 	UFUNCTION(BlueprintCallable)
 	FActiveGameplayEffectHandle ApplyEffectToSelfByClass(const TSubclassOf<UGameplayEffect>& EffectClass,
@@ -89,7 +90,7 @@ public:
 
 protected:
 	virtual void OnRep_ActivateAbilities() override;
-
+	void TryActivateAbilitiesOnSpawn();
 private:
 	TMap<EAxeAbilityActivationGroup, TArray<FGameplayAbilitySpecHandle>> ActivationGroupMap;
 };

@@ -5,23 +5,34 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Interact/InteractionOption.h"
+#include "Interface/HighLight.h"
 #include "Interface/InteractableInterface.h"
+#include "Interface/Pickupable.h"
 #include "AxeItemActorBase.generated.h"
 
 class UItemComponent;
 
 UCLASS(Abstract)
-class AXE_API AAxeItemActorBase : public AActor, public IInteractableInterface
+class AXE_API AAxeItemActorBase : public AActor, public IInteractableInterface, public IPickupable, public IHighLight
+
 {
 	GENERATED_BODY()
 
 public:
 	AAxeItemActorBase();
 	virtual void OnConstruction(const FTransform& Transform) override;
+	// IInteractableInterface
 	virtual void GetInteractionOptions(FInteractionOption& OutOptions) override;
 
-protected:
+	// IPickupable
+	virtual TSubclassOf<UItemDefinition> GetPickupableItemDef() override;
+	virtual int32 GetPickupableItemCount() override;
 
+	// HighLight
+	virtual void HighlightActor() override;
+	virtual void UnHighlightActor() override;
+
+protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TObjectPtr<UStaticMeshComponent> ItemStaticMeshComponent;
 
@@ -30,4 +41,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FInteractionOption InteractionOption;
+
+	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Item")
+	int32 StackSize = 1;
 };
