@@ -54,7 +54,7 @@ public:
 	UItemInstance* GetItemInstanceByIndex(int32 Index) const;
 
 	UFUNCTION(BlueprintCallable, Category=Inventory)
-	bool GetInventoryEntryByIndex(int32 Index, FInventoryEntry& InventoryEntry);
+	FInventoryEntry& GetInventoryEntryByIndex(int32 Index);
 
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category=Inventory)
 	UItemInstance* AddItemDefinition(TSubclassOf<UItemDefinition> ItemDef, int32 StackCount = 1, int32 Index = -1);
@@ -64,7 +64,10 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category=Inventory)
 	bool RemoveItemByIndex(int32 Index, int32 RemoveCount = 1);
-
+	
+	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category=Inventory)
+	bool SwapItemBySlots(int32 FromSlot, int32 ToSlot);
+	
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category=Inventory)
 	void AddInventoryEntry();
 

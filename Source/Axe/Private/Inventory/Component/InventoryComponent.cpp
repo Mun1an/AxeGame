@@ -142,9 +142,9 @@ UItemInstance* UInventoryComponent::GetItemInstanceByIndex(int32 Index) const
 	return InventoryList.GetItemInstanceByIndex(Index);
 }
 
-bool UInventoryComponent::GetInventoryEntryByIndex(int32 Index, FInventoryEntry& InventoryEntry)
+FInventoryEntry& UInventoryComponent::GetInventoryEntryByIndex(int32 Index)
 {
-	return InventoryList.GetInventoryEntryByIndex(Index, InventoryEntry);
+	return InventoryList.GetInventoryEntryByIndex(Index);
 }
 
 UItemInstance* UInventoryComponent::AddItemDefinition(TSubclassOf<UItemDefinition> ItemDef, int32 StackCount,
@@ -174,9 +174,16 @@ void UInventoryComponent::AddItemInstance(UItemInstance* ItemInstance, int32 Sta
 
 bool UInventoryComponent::RemoveItemByIndex(int32 Index, int32 RemoveCount)
 {
-	FInventoryEntry Entry;
-	GetInventoryEntryByIndex(Index, Entry);
-	return InventoryList.RemoveItem(Entry, RemoveCount);
+	return InventoryList.RemoveItem(Index, RemoveCount);
+}
+
+bool UInventoryComponent::SwapItemBySlots(int32 FromSlot, int32 ToSlot)
+{
+	if (FromSlot == ToSlot)
+	{
+		return false;
+	}
+	return InventoryList.SwapItem(FromSlot, ToSlot);
 }
 
 void UInventoryComponent::AddInventoryEntry()

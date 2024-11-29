@@ -292,7 +292,7 @@ void UAxeAbilitySystemComponent::NotifyAbilityEnded(FGameplayAbilitySpecHandle H
 	UAxeGameplayAbility* AxeGameplayAbility = Cast<UAxeGameplayAbility>(Ability);
 	RemoveAbilityFromActivationGroup(AxeGameplayAbility->GetActivationGroup(), AxeGameplayAbility);
 
-	if (GetAxeCharacterOwner()->IsLocallyControlled())
+	if (GetAxeCharacterOwner() && GetAxeCharacterOwner()->IsLocallyControlled())
 	{
 		OnNotifyAbilityEndedDelegate.Broadcast(Ability);
 	}

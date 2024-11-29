@@ -27,6 +27,12 @@ public:
 	UPROPERTY(BlueprintAssignable, Category="Inventory")
 	FOnInventoryChangedInWidgetController OnInventoryChangedInWidgetController;
 
+	UFUNCTION(BlueprintCallable)
+	void TrySwapItemSlot(int32 FromSlot, int32 ToSlot);
+	
+	UFUNCTION(Server, Reliable)
+	void ServerTrySwapItemSlot(int32 FromSlot, int32 ToSlot);
+	
 protected:
 	UFUNCTION()
 	void OnInventoryChangedCallback(int32 SlotIndex, UItemInstance* ItemInstance, int32 NewCount, int32 OldCount);

@@ -68,7 +68,7 @@ struct FAxeInventoryList : public FFastArraySerializer
 	}
 
 	//
-	bool GetInventoryEntryByIndex(int32 Index, FInventoryEntry& InventoryEntry);
+	FInventoryEntry& GetInventoryEntryByIndex(int32 Index);
 
 	TArray<UItemInstance*> GetAllItems() const;
 	UItemInstance* GetItemInstanceByIndex(int32 Index) const;
@@ -76,14 +76,20 @@ struct FAxeInventoryList : public FFastArraySerializer
 	void AddEntry();
 	//
 	bool AddItem(UItemInstance* ItemInstance, int32 StackCount = 1, int32 SlotIndex = INDEX_NONE);
-	
-	bool RemoveItem(FInventoryEntry& Entry, int32 RemoveCount = 1);
+
+	bool RemoveItem(int32 SlotIndex, int32 RemoveCount = 1);
+
+	bool SwapItem(int32 FromSlot, int32 ToSlot);
 
 	bool ChangeItemStackCount(FInventoryEntry& Entry, int32 NewCount);
 
 	bool GetStackOrEmptySlotIndex(UItemInstance* ItemInstance, TMap<int32, int32>& SlotCountMap, int32 NeedCount);
+
+	void HandleEntryChanged(FInventoryEntry& Entry);
+
 protected:
 	bool AddItemInternal(UItemInstance* ItemInstance, int32 StackCount, int32 SlotIndex);
+
 private:
 	int32 NewEntryIndex = 0;
 };

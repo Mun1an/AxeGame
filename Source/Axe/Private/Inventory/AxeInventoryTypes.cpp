@@ -41,14 +41,9 @@ void FAxeInventoryList::PostReplicatedChange(const TArrayView<int32> ChangedIndi
 	}
 }
 
-bool FAxeInventoryList::GetInventoryEntryByIndex(int32 Index, FInventoryEntry& InventoryEntry)
+FInventoryEntry& FAxeInventoryList::GetInventoryEntryByIndex(int32 Index)
 {
-	if (Index >= Entries.Num())
-	{
-		return false;
-	}
-	InventoryEntry = Entries[Index];
-	return true;
+	return Entries[Index];
 }
 
 TArray<UItemInstance*> FAxeInventoryList::GetAllItems() const
@@ -85,7 +80,7 @@ void FAxeInventoryList::AddEntry()
 
 	NewEntryIndex++;
 
-	MarkItemDirty(NewEntry);
+	HandleEntryChanged(NewEntry);
 }
 
 bool FAxeInventoryList::AddItem(UItemInstance* ItemInstance, int32 StackCount, int32 SlotIndex)
@@ -129,13 +124,14 @@ bool FAxeInventoryList::AddItemInternal(UItemInstance* ItemInstance, int32 Stack
 	Entry.Instance = ItemInstance;
 	Entry.StackCount = StackCount;
 
-	OwnerComponent->OnInventoryItemChanged(SlotIndex, ItemInstance, StackCount, Entry.LastObservedCount);
-	MarkItemDirty(Entry);
+	HandleEntryChanged(Entry);
 	return true;
 }
 
-bool FAxeInventoryList::RemoveItem(FInventoryEntry& Entry, int32 RemoveCount)
+bool FAxeInventoryList::RemoveItem(int32 SlotIndex, int32 RemoveCount)
 {
+	FInventoryEntry& Entry = Entries[SlotIndex];
+
 	if (Entry.Instance == nullptr)
 	{
 		return false;
@@ -143,10 +139,57 @@ bool FAxeInventoryList::RemoveItem(FInventoryEntry& Entry, int32 RemoveCount)
 	Entry.Instance = nullptr;
 	Entry.StackCount = FMath::Max(0, Entry.StackCount - RemoveCount);
 
-	OwnerComponent->OnInventoryItemChanged(
-		Entry.SlotIndex, Entry.Instance, Entry.StackCount, Entry.LastObservedCount
-	);
-	MarkItemDirty(Entry);
+	HandleEntryChanged(Entry);
+	return true;
+}
+
+bool FAxeInventoryList::SwapItem(int32 FromSlot, int32 ToSlot)
+{
+	FInventoryEntry& FromEntry = Entries[FromSlot];
+	FInventoryEntry& ToEntry = Entries[ToSlot];
+
+	if (FromEntry.Instance == nullptr && ToEntry.Instance == nullptr)
+	{
+		return false;
+	}
+	// 判断堆叠
+	if (FromEntry.Instance && ToEntry.Instance && FromEntry.Instance->GetItemDef() == ToEntry.Instance->GetItemDef()
+	)
+	{
+		const UItemDefinition* ItemDef = GetDefault<UItemDefinition>(FromEntry.Instance->GetItemDef());
+		const int32 ItemMaxStackSize = ItemDef->GetItemMaxStackSize();
+		int32 TotalCount = ToEntry.StackCount + FromEntry.StackCount;
+
+		if (TotalCount <= ItemMaxStackSize)
+		{
+			ToEntry.StackCount = TotalCount;
+			FromEntry.StackCount = 0;
+		}
+		else if (ToEntry.StackCount < ItemMaxStackSize)
+		{
+			ToEntry.StackCount = ItemMaxStackSize;
+			FromEntry.StackCount = TotalCount - ItemMaxStackSize;
+		}
+		else
+		{
+			int32 TempStackCount = FromEntry.StackCount;
+			FromEntry.StackCount = ToEntry.StackCount;
+			ToEntry.StackCount = TempStackCount;
+		}
+	}
+	else
+	{
+		TObjectPtr<UItemInstance> TempItemInstance = FromEntry.Instance;
+		int32 TempStackCount = FromEntry.StackCount;
+
+		FromEntry.Instance = ToEntry.Instance;
+		FromEntry.StackCount = ToEntry.StackCount;
+		ToEntry.Instance = TempItemInstance;
+		ToEntry.StackCount = TempStackCount;
+	}
+
+	HandleEntryChanged(FromEntry);
+	HandleEntryChanged(ToEntry);
 	return true;
 }
 
@@ -154,10 +197,7 @@ bool FAxeInventoryList::ChangeItemStackCount(FInventoryEntry& Entry, int32 NewCo
 {
 	Entry.StackCount = NewCount;
 
-	OwnerComponent->OnInventoryItemChanged(
-		Entry.SlotIndex, Entry.Instance, Entry.StackCount, Entry.LastObservedCount
-	);
-	MarkItemDirty(Entry);
+	HandleEntryChanged(Entry);
 	return true;
 }
 
@@ -226,4 +266,22 @@ bool FAxeInventoryList::GetStackOrEmptySlotIndex(UItemInstance* ItemInstance, TM
 	}
 
 	return true;
+}
+
+void FAxeInventoryList::HandleEntryChanged(FInventoryEntry& Entry)
+{
+	// 改变Entry时手动调用
+	if (Entry.SlotIndex == INDEX_NONE)
+	{
+		return;
+	}
+	if (Entry.StackCount <= 0)
+	{
+		Entry.Instance = nullptr;
+	}
+
+	OwnerComponent->OnInventoryItemChanged(
+		Entry.SlotIndex, Entry.Instance, Entry.StackCount, Entry.LastObservedCount
+	);
+	MarkItemDirty(Entry);
 }
