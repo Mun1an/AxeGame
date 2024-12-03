@@ -21,13 +21,7 @@ void UInventoryWidgetController::SetWidgetControllerParams(const FWidgetControll
 
 void UInventoryWidgetController::TrySwapItemSlot(int32 FromSlot, int32 ToSlot)
 {
-	ServerTrySwapItemSlot(FromSlot, ToSlot);
-}
-
-void UInventoryWidgetController::ServerTrySwapItemSlot_Implementation(int32 FromSlot, int32 ToSlot)
-{
-	check(InventoryComponent)
-	InventoryComponent->SwapItemBySlots(FromSlot, ToSlot);
+	InventoryComponent->ServerSwapItemBySlots(FromSlot, ToSlot);
 }
 
 void UInventoryWidgetController::OnInventoryChangedCallback(int32 SlotIndex, UItemInstance* ItemInstance,

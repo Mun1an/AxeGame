@@ -64,15 +64,21 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category=Inventory)
 	bool RemoveItemByIndex(int32 Index, int32 RemoveCount = 1);
-	
+
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category=Inventory)
 	bool SwapItemBySlots(int32 FromSlot, int32 ToSlot);
+
+	UFUNCTION(Server, Reliable)
+	void ServerSwapItemBySlots(int32 FromSlot, int32 ToSlot);
 	
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category=Inventory)
 	void AddInventoryEntry();
 
 	UFUNCTION(BlueprintCallable, Category=Inventory)
 	void SendItemUIMessage(TSubclassOf<UItemDefinition> ItemDef, int32 StackCount = 1);
+
+	UFUNCTION(BlueprintCallable, Category=Inventory)
+	void GetEquipmentEntryArray(TArray<FInventoryEntry>& OutEntries) const;
 
 protected:
 	UFUNCTION(Client, Reliable)

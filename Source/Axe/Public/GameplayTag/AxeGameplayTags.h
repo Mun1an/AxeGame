@@ -96,7 +96,7 @@ struct FAxeGameplayTags
 
 	// Effect
 	FGameplayTag Effect_Asset_Damage;
-	
+
 	FGameplayTag Effect_Magnitude_1;
 	FGameplayTag Effect_Magnitude_Damage;
 	FGameplayTag Effect_Magnitude_Stamina;
@@ -105,7 +105,14 @@ struct FAxeGameplayTags
 	/**
 	 * Item
 	 */
-	FGameplayTag Inventory_Slot_Bag;
+	FGameplayTag Inventory_Entry_Bag;
+	FGameplayTag Inventory_Entry_Equipment;
+	FGameplayTag Inventory_Entry_Equipment_Armor_Helmet;
+	FGameplayTag Inventory_Entry_Equipment_Armor_Chestplate;
+	FGameplayTag Inventory_Entry_Equipment_Armor_Leggings;
+	FGameplayTag Inventory_Entry_Equipment_Armor_Boots;
+
+	FGameplayTag Inventory_Entry_Equipment_Weapon;
 	/**
 	 * Interact
 	 */

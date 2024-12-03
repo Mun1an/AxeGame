@@ -4,6 +4,7 @@
 #include "Item/Instance/ItemDefinition.h"
 #include "Item/Instance/ItemInstance.h"
 #include "Item/ItemFragment/ItemFragment.h"
+#include "Item/ItemFragment/ItemFragment_CommonInfo.h"
 
 void FAxeInventoryList::PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize)
 {
@@ -66,7 +67,7 @@ UItemInstance* FAxeInventoryList::GetItemInstanceByIndex(int32 Index) const
 	return Entries[Index].Instance;
 }
 
-void FAxeInventoryList::AddEntry()
+void FAxeInventoryList::AddEntry(const FGameplayTagContainer& EntryTags)
 {
 	check(OwnerComponent);
 	AActor* OwningActor = OwnerComponent->GetOwner();
@@ -77,6 +78,7 @@ void FAxeInventoryList::AddEntry()
 	NewEntry.Instance = nullptr;
 	NewEntry.StackCount = 0;
 	NewEntry.SlotIndex = NewEntryIndex;
+	NewEntry.EntryTags = EntryTags;
 
 	NewEntryIndex++;
 
@@ -116,6 +118,13 @@ bool FAxeInventoryList::AddItem(UItemInstance* ItemInstance, int32 StackCount, i
 bool FAxeInventoryList::AddItemInternal(UItemInstance* ItemInstance, int32 StackCount, int32 SlotIndex)
 {
 	FInventoryEntry& Entry = Entries[SlotIndex];
+
+	bool bCanPutInEntry = CheckCanPutInEntry(Entry, ItemInstance);
+	if (!bCanPutInEntry)
+	{
+		return false;
+	}
+	
 	if (Entry.Instance && Entry.Instance->GetItemDef() == ItemInstance->GetItemDef())
 	{
 		return ChangeItemStackCount(Entry, StackCount + Entry.StackCount);
@@ -152,6 +161,14 @@ bool FAxeInventoryList::SwapItem(int32 FromSlot, int32 ToSlot)
 	{
 		return false;
 	}
+
+	const bool bCanPutInEntry = CheckCanPutInEntry(FromEntry, ToEntry.Instance);
+	const bool bCanPutInEntry_1 = CheckCanPutInEntry(ToEntry, FromEntry.Instance);
+	if (!bCanPutInEntry || !bCanPutInEntry_1)
+	{
+		return false;
+	}
+
 	// 判断堆叠
 	if (FromEntry.Instance && ToEntry.Instance && FromEntry.Instance->GetItemDef() == ToEntry.Instance->GetItemDef()
 	)
@@ -284,4 +301,20 @@ void FAxeInventoryList::HandleEntryChanged(FInventoryEntry& Entry)
 		Entry.SlotIndex, Entry.Instance, Entry.StackCount, Entry.LastObservedCount
 	);
 	MarkItemDirty(Entry);
+}
+
+bool FAxeInventoryList::CheckCanPutInEntry(FInventoryEntry& Entry, UItemInstance* ItemInstance)
+{
+	if (ItemInstance == nullptr)
+	{
+		return true;
+	}
+	const UItemDefinition* ItemDef = GetDefault<UItemDefinition>(ItemInstance->GetItemDef());
+	const UItemFragment_CommonInfo* Fragment = ItemDef->GetCommonInfoFragment();
+	if (!Fragment)
+	{
+		return false;
+	}
+	const bool bHasAny = Fragment->EntryTags.HasAny(Entry.EntryTags);
+	return bHasAny;
 }

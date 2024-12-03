@@ -30,6 +30,9 @@ struct AXE_API FInventoryEntry : public FFastArraySerializerItem
 	UPROPERTY(BlueprintReadOnly)
 	int32 StackCount = 0;
 
+	UPROPERTY(BlueprintReadOnly)
+	FGameplayTagContainer EntryTags;
+
 	UPROPERTY(NotReplicated)
 	int32 LastObservedCount = INDEX_NONE;
 };
@@ -73,7 +76,7 @@ struct FAxeInventoryList : public FFastArraySerializer
 	TArray<UItemInstance*> GetAllItems() const;
 	UItemInstance* GetItemInstanceByIndex(int32 Index) const;
 
-	void AddEntry();
+	void AddEntry(const FGameplayTagContainer& EntryTags);
 	//
 	bool AddItem(UItemInstance* ItemInstance, int32 StackCount = 1, int32 SlotIndex = INDEX_NONE);
 
@@ -86,6 +89,8 @@ struct FAxeInventoryList : public FFastArraySerializer
 	bool GetStackOrEmptySlotIndex(UItemInstance* ItemInstance, TMap<int32, int32>& SlotCountMap, int32 NeedCount);
 
 	void HandleEntryChanged(FInventoryEntry& Entry);
+
+	bool CheckCanPutInEntry(FInventoryEntry& Entry, UItemInstance* ItemInstance);
 
 protected:
 	bool AddItemInternal(UItemInstance* ItemInstance, int32 StackCount, int32 SlotIndex);

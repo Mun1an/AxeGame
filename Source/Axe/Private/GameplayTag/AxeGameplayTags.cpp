@@ -47,7 +47,7 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(GameplayCue_WeaponHit_Shield, "GameplayCue.WeaponHit.Shield");
 	AddTag(GameplayCue_ShieldParry, "GameplayCue.ShieldParry");
 	AddTag(GameplayCue_GroundSmash, "GameplayCue.GroundSmash");
-	
+
 	AddTag(Cooldown_Skill_LeapAttack, "Cooldown.Skill.LeapAttack");
 	AddTag(Cooldown_Skill_ThrowAxe, "Cooldown.Skill.ThrowAxe");
 	AddTag(Cooldown_Skill_Roar, "Cooldown.Skill.Roar");
@@ -80,7 +80,7 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(State_HitReact, "State.HitReact");
 	AddTag(State_Blocking, "State.Blocking");
 	AddTag(State_PrepareParry, "State.PrepareParry");
-	
+
 	//
 	AddTag(Effect_Asset_Damage, "Effect.Asset.Damage");
 	AddTag(Effect_Magnitude_1, "Effect.Magnitude.1");
@@ -90,7 +90,15 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	/**
 	 * Item
 	 */
-	AddTag(Inventory_Slot_Bag, "Inventory.Slot.Bag");
+	AddTag(Inventory_Entry_Bag, "Inventory.Entry.Bag");
+
+	AddTag(Inventory_Entry_Equipment, "Inventory.Entry.Equipment");
+	AddTag(Inventory_Entry_Equipment_Armor_Helmet, "Inventory.Entry.Equipment.Armor.Helmet");
+	AddTag(Inventory_Entry_Equipment_Armor_Chestplate, "Inventory.Entry.Equipment.Armor.Chestplate");
+	AddTag(Inventory_Entry_Equipment_Armor_Leggings, "Inventory.Entry.Equipment.Armor.Leggings");
+	AddTag(Inventory_Entry_Equipment_Armor_Boots, "Inventory.Entry.Equipment.Armor.Boots");
+	
+	AddTag(Inventory_Entry_Equipment_Weapon, "Inventory.Entry.Equipment.Weapon");
 	/**
 	 * Interact
 	 */

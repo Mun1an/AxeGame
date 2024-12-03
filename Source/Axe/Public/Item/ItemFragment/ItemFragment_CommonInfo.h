@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
+#include "GameplayTag/AxeGameplayTags.h"
 #include "Item/ItemFragment/ItemFragment.h"
 #include "ItemFragment_CommonInfo.generated.h"
 
@@ -17,8 +19,13 @@ class AXE_API UItemFragment_CommonInfo : public UItemFragment
 public:
 	UItemFragment_CommonInfo()
 	{
+		EntryTags = FGameplayTagContainer();
+		EntryTags.AddTag(FAxeGameplayTags::Get().Inventory_Entry_Bag);
 	}
-	
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Appearance)
+	FGameplayTagContainer EntryTags;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Appearance)
 	int32 ItemMaxStackSize = 1;
 };

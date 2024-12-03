@@ -115,10 +115,25 @@ void UInventoryComponent::BeginPlay()
 	// init slot
 	if (GetOwnerRole() == ROLE_Authority)
 	{
+		// inv
 		for (int i = 0; i < InventoryEntryInitSize; ++i)
 		{
-			InventoryList.AddEntry();
+			AddInventoryEntry();
 		}
+
+		FAxeGameplayTags AxeGameplayTags = FAxeGameplayTags::Get();
+
+		FGameplayTagContainer Armor_Helmet(AxeGameplayTags.Inventory_Entry_Equipment_Armor_Helmet);
+		InventoryList.AddEntry(Armor_Helmet);
+		FGameplayTagContainer Armor_Chestplate(AxeGameplayTags.Inventory_Entry_Equipment_Armor_Chestplate);
+		InventoryList.AddEntry(Armor_Chestplate);
+		FGameplayTagContainer Armor_Leggings(AxeGameplayTags.Inventory_Entry_Equipment_Armor_Leggings);
+		InventoryList.AddEntry(Armor_Leggings);
+		FGameplayTagContainer Armor_Boots(AxeGameplayTags.Inventory_Entry_Equipment_Armor_Boots);
+		InventoryList.AddEntry(Armor_Boots);
+
+		FGameplayTagContainer Weapon(AxeGameplayTags.Inventory_Entry_Equipment_Weapon);
+		InventoryList.AddEntry(Weapon);
 	}
 }
 
@@ -186,9 +201,16 @@ bool UInventoryComponent::SwapItemBySlots(int32 FromSlot, int32 ToSlot)
 	return InventoryList.SwapItem(FromSlot, ToSlot);
 }
 
+void UInventoryComponent::ServerSwapItemBySlots_Implementation(int32 FromSlot, int32 ToSlot)
+{
+	SwapItemBySlots(FromSlot, ToSlot);
+}
+
 void UInventoryComponent::AddInventoryEntry()
 {
-	InventoryList.AddEntry();
+	FGameplayTagContainer EntryTags;
+	EntryTags.AddTag(FAxeGameplayTags::Get().Inventory_Entry_Bag);
+	InventoryList.AddEntry(EntryTags);
 }
 
 void UInventoryComponent::SendItemUIMessage(TSubclassOf<UItemDefinition> ItemDef, int32 StackCount)
@@ -202,6 +224,18 @@ void UInventoryComponent::SendItemUIMessage(TSubclassOf<UItemDefinition> ItemDef
 
 	// OnSendInventoryItemUIMessage.Broadcast(Texture2D, DisplayName, StackCount);
 	ClientSendItemUIMessage(Texture2D, DisplayName, StackCount);
+}
+
+void UInventoryComponent::GetEquipmentEntryArray(TArray<FInventoryEntry>& OutEntries) const
+{
+	FAxeGameplayTags AxeGameplayTags = FAxeGameplayTags::Get();
+	for (const FInventoryEntry& Entry : InventoryList.Entries)
+	{
+		if (Entry.EntryTags.HasTag(AxeGameplayTags.Inventory_Entry_Equipment))
+		{
+			OutEntries.Add(Entry);
+		}
+	}
 }
 
 void UInventoryComponent::ClientSendItemUIMessage_Implementation(UTexture2D* Texture, const FText& ItemName,

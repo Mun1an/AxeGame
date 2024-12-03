@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "ItemDefinition.generated.h"
 
+class UItemFragment_CommonInfo;
 class UItemFragment;
 /**
  * 
@@ -27,6 +28,9 @@ public:
 	
 	const UItemFragment* FindFragmentByClass(TSubclassOf<UItemFragment> FragmentClass) const;
 
+	UFUNCTION(BlueprintCallable)
+	const UItemFragment_CommonInfo* GetCommonInfoFragment() const;
+	
 	UFUNCTION(BlueprintCallable)
 	int32 GetItemMaxStackSize() const;
 };

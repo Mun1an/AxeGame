@@ -30,8 +30,6 @@ public:
 	void SetItemDef(TSubclassOf<UItemDefinition> InDef);
 
 protected:
-	UPROPERTY(Replicated)
-	FGameplayTagStackContainer StatTags;
 
 	// The item definition
 	UPROPERTY(Replicated, BlueprintReadOnly)

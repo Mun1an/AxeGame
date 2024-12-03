@@ -14,7 +14,6 @@ void UItemInstance::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& 
 {
 	UObject::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(UItemInstance, ItemDef);
-	DOREPLIFETIME(UItemInstance, StatTags);
 }
 
 void UItemInstance::SetItemDef(TSubclassOf<UItemDefinition> InDef)
