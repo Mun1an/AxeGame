@@ -96,10 +96,11 @@ struct FAxeGameplayTags
 
 	// Effect
 	FGameplayTag Effect_Asset_Damage;
-
+	// Effect_Magnitude
 	FGameplayTag Effect_Magnitude_1;
 	FGameplayTag Effect_Magnitude_Damage;
 	FGameplayTag Effect_Magnitude_Stamina;
+	FGameplayTag Effect_Magnitude_Armor;
 
 
 	/**

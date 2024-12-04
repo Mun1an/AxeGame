@@ -43,7 +43,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float ScanRange = 200;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float ScanAngleRange = 40;
+	float ScanAngleRange = 50;
 
 	//
 	UPROPERTY(BlueprintReadOnly)

@@ -197,7 +197,8 @@ void UComboActionComponent::AnsComboSwitchWindowEnd(UAnimNotifyState* NotifyStat
 		bool bIsInterrupted = AxeAnimNotifyStateBase->GetIsInterrupted();
 
 		// 重置连招树
-		if (!bIsInterrupted && LastComboTreeNode->AbilityClass == ActivatedComboAbility->GetClass())
+		if (!bIsInterrupted && ActivatedComboAbility && LastComboTreeNode->AbilityClass == ActivatedComboAbility->
+			GetClass())
 		{
 			LastComboTreeNode = ComboAbilityTree->Root;
 		}

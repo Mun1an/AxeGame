@@ -74,6 +74,8 @@ public:
 	bool ApplyDamageEffectToTarget(UAbilitySystemComponent* TargetASC, const FDamageEffectParams& Params);
 	bool ApplyDamageEffectToSelf(AActor* FromTarget, const FDamageEffectParams& Params);
 
+	bool ApplyEquipmentEffectToSelf(const TSubclassOf<UGameplayEffect>& EffectClass, float Damage, float EquipmentArmor);
+
 	//
 	void ExecuteDelegateToGetAbilitySpec(const FAbilitySpecDataDelegate& Delegate);
 	//
@@ -91,6 +93,9 @@ public:
 protected:
 	virtual void OnRep_ActivateAbilities() override;
 	void TryActivateAbilitiesOnSpawn();
+
 private:
 	TMap<EAxeAbilityActivationGroup, TArray<FGameplayAbilitySpecHandle>> ActivationGroupMap;
+
+	FActiveGameplayEffectHandle EquipmentEffectHandle;
 };

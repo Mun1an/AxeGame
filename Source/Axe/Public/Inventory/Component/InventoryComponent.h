@@ -7,6 +7,7 @@
 #include "Inventory/AxeInventoryTypes.h"
 #include "InventoryComponent.generated.h"
 
+class UGameplayEffect;
 class UItemDefinition;
 class AAxeCharacterBase;
 class UInventoryProcessor;
@@ -97,6 +98,7 @@ public:
 	virtual bool ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch,
 	                                 FReplicationFlags* RepFlags) override;
 	virtual void ReadyForReplication() override;
+	
 	//~End of UObject interface
 
 
@@ -105,7 +107,10 @@ protected:
 	int32 InventoryEntryInitSize = 16;
 
 	void OnInventoryItemChanged(int32 SlotIndex, UItemInstance* ItemInstance, int32 NewCount, int32 OldCount);
+	void OnEquipmentItemChanged(int32 SlotIndex, UItemInstance* ItemInstance);
 
+	
+	
 private:
 	UPROPERTY(Replicated)
 	FAxeInventoryList InventoryList;

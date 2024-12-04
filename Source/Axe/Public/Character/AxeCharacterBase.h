@@ -51,6 +51,9 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Attributes")
 	TSubclassOf<UGameplayEffect> DefaultSecondaryAttributesEffect;
 
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Effect")
+	TSubclassOf<UGameplayEffect> EquipmentEffect;
+	
 	//
 	FOnAbilityInitOverDelegate OnAbilityInitOverDelegate;
 	bool IsAbilityInitOver() const { return bIsAbilityInitOver; }

@@ -3,7 +3,6 @@
 #include "Character/AxeCharacterPlayer.h"
 
 #include "AbilitySystemComponent.h"
-#include "NiagaraComponent.h"
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
 #include "ActionSystem/ActionCombatComponent.h"
 #include "ActionSystem/ComboActionComponent.h"
@@ -13,9 +12,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Controller.h"
-#include "GameplayTag/AxeGameplayTags.h"
 #include "Inventory/Component/InventoryComponent.h"
-#include "Inventory/Processor/InventoryProcessor_Bag.h"
 #include "PlayerController/AxePlayerController.h"
 #include "PlayerState/AxePlayerState.h"
 #include "UI/HUD/AxeHUD.h"

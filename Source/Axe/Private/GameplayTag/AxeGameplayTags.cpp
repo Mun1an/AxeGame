@@ -86,6 +86,7 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(Effect_Magnitude_1, "Effect.Magnitude.1");
 	AddTag(Effect_Magnitude_Damage, "Effect.Magnitude.Damage");
 	AddTag(Effect_Magnitude_Stamina, "Effect.Magnitude.Stamina");
+	AddTag(Effect_Magnitude_Armor, "Effect.Magnitude.Armor");
 
 	/**
 	 * Item

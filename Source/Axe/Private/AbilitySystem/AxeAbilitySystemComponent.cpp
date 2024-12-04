@@ -10,6 +10,7 @@
 #include "ActionSystem/ComboDataAsset.h"
 #include "Character/AxeCharacterPlayer.h"
 #include "Enum/AxeTypes.h"
+#include "GameplayTag/AxeGameplayTags.h"
 
 
 UAxeAbilitySystemComponent::UAxeAbilitySystemComponent()
@@ -301,7 +302,7 @@ void UAxeAbilitySystemComponent::NotifyAbilityEnded(FGameplayAbilitySpecHandle H
 void UAxeAbilitySystemComponent::InitAbilityActorInfo(AActor* InOwnerActor, AActor* InAvatarActor)
 {
 	Super::InitAbilityActorInfo(InOwnerActor, InAvatarActor);
-	
+
 	TryActivateAbilitiesOnSpawn();
 }
 
@@ -349,6 +350,32 @@ bool UAxeAbilitySystemComponent::ApplyDamageEffectToSelf(AActor* FromTarget, con
 		SpecHandle, Params.DamageType, Params.DamageValue
 	);
 	ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+	return true;
+}
+
+bool UAxeAbilitySystemComponent::ApplyEquipmentEffectToSelf(const TSubclassOf<UGameplayEffect>& EffectClass,
+                                                            float Damage, float EquipmentArmor)
+{
+	FGameplayEffectContextHandle ContextHandle = MakeEffectContext();
+	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
+
+	ContextHandle.AddSourceObject(AxeCharacterOwner);
+	const FGameplayEffectSpecHandle SpecHandle = MakeOutgoingSpec(
+		EffectClass, 1, ContextHandle
+	);
+
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
+		SpecHandle, FAxeGameplayTags::Get().Effect_Magnitude_Damage, Damage
+	);
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
+		SpecHandle, FAxeGameplayTags::Get().Effect_Magnitude_Armor, EquipmentArmor
+	);
+	if (EquipmentEffectHandle.IsValid())
+	{
+		RemoveActiveGameplayEffect(EquipmentEffectHandle);
+	}
+	EquipmentEffectHandle = ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+
 	return true;
 }
 

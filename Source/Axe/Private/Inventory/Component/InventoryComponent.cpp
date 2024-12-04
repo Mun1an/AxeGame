@@ -3,15 +3,16 @@
 
 #include "Inventory/Component/InventoryComponent.h"
 
+#include "AbilitySystemComponent.h"
+#include "AbilitySystem/AxeAbilitySystemComponent.h"
 #include "Character/AxeCharacterBase.h"
 #include "Engine/ActorChannel.h"
 #include "GameplayTag/AxeGameplayTags.h"
-#include "Inventory/Processor/InventoryProcessor.h"
-#include "Inventory/Processor/InventoryProcessor_Bag.h"
 #include "Item/ItemFunctionLibrary.h"
 #include "Item/Instance/ItemDefinition.h"
 #include "Item/Instance/ItemInstance.h"
 #include "Item/ItemFragment/ItemFragment_UI.h"
+#include "Item/ItemFragment/ItemFragment_EquipmentInfo.h"
 #include "Net/UnrealNetwork.h"
 
 UInventoryComponent::UInventoryComponent(const FObjectInitializer& ObjectInitializer): Super(ObjectInitializer),
@@ -70,10 +71,46 @@ void UInventoryComponent::ReadyForReplication()
 	}
 }
 
+
 void UInventoryComponent::OnInventoryItemChanged(int32 SlotIndex, UItemInstance* ItemInstance, int32 NewCount,
                                                  int32 OldCount)
 {
 	OnInventoryChanged.Broadcast(SlotIndex, ItemInstance, NewCount, OldCount);
+
+	//
+	const FInventoryEntry& Entry = GetInventoryEntryByIndex(SlotIndex);
+	if (Entry.EntryTags.HasTag(FAxeGameplayTags::Get().Inventory_Entry_Equipment))
+	{
+		OnEquipmentItemChanged(SlotIndex, ItemInstance);
+	}
+}
+
+void UInventoryComponent::OnEquipmentItemChanged(int32 SlotIndex, UItemInstance* ItemInstance)
+{
+	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
+	UAbilitySystemComponent* ASC = AxeCharacterOwner->GetAbilitySystemComponent();
+	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(ASC);
+
+	float EquipmentDamage = 0.f;
+	float EquipmentArmor = 0.f;
+	if (AxeASC && AxeCharacterOwner->EquipmentEffect)
+	{
+		TArray<FInventoryEntry> EquipmentEntries;
+		GetEquipmentEntryArray(EquipmentEntries);
+		for (const FInventoryEntry& EquipmentEntry : EquipmentEntries)
+		{
+			if (EquipmentEntry.Instance && EquipmentEntry.Instance->GetItemDef())
+			{
+				const UItemDefinition* ItemDef = GetDefault<UItemDefinition>(EquipmentEntry.Instance->GetItemDef());
+				const UItemFragment* Fragment = ItemDef->
+					FindFragmentByClass(UItemFragment_EquipmentInfo::StaticClass());
+				const UItemFragment_EquipmentInfo* EquipmentFragment = Cast<UItemFragment_EquipmentInfo>(Fragment);
+				EquipmentDamage += EquipmentFragment->EquipmentDamage;
+				EquipmentArmor += EquipmentFragment->EquipmentArmor;
+			}
+		}
+	}
+	AxeASC->ApplyEquipmentEffectToSelf(AxeCharacterOwner->EquipmentEffect, EquipmentDamage, EquipmentArmor);
 }
 
 bool UInventoryComponent::SetOwnerActor(AActor* InOwnerActor)
