@@ -17,6 +17,16 @@ AAxeCharacterEnemy::AAxeCharacterEnemy()
 	HealthBar->SetupAttachment(GetRootComponent());
 }
 
+void AAxeCharacterEnemy::SetCombatTarget(AActor* NewCombatTarget)
+{
+	CombatTarget = NewCombatTarget;
+}
+
+AActor* AAxeCharacterEnemy::GetCombatTarget() const
+{
+	return CombatTarget;
+}
+
 void AAxeCharacterEnemy::BeginPlay()
 {
 	Super::BeginPlay();
@@ -56,4 +66,3 @@ void AAxeCharacterEnemy::MulticastDeath_Implementation(const FVector DeathImpuls
 
 	HealthBar->SetVisibility(false);
 }
-

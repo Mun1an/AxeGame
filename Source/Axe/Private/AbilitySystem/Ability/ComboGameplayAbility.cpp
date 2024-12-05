@@ -10,6 +10,12 @@
 #include "ActionSystem/ComboActionComponent.h"
 #include "Character/AxeCharacterPlayer.h"
 
+UComboGameplayAbility::UComboGameplayAbility(const FObjectInitializer& ObjectInitializer): Super(ObjectInitializer)
+{
+	bUseClientMovement = true;
+	bNeedAutoSearchTarget = true;
+}
+
 // bool UComboGameplayAbility::CanActivateAbility_ByLastReplaceCondition(const FGameplayAbilitySpecHandle Handle,
 // 											 const FGameplayAbilityActorInfo* ActorInfo,
 // 											 const FGameplayTagContainer* SourceTags,
@@ -69,6 +75,7 @@ void UComboGameplayAbility::Ans_ComboInputCache_NotifyEnd(UAnimNotifyState* Anim
 		}
 	}
 }
+
 
 void UComboGameplayAbility::Ans_Combo_NotifyBegin(UAnimNotifyState* AnimNotifyState)
 {

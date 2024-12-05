@@ -83,7 +83,7 @@ public:
 	/**
 	 * InputTag
 	 */
-	UPROPERTY(EditDefaultsOnly, Category="Input")
+	UPROPERTY(EditDefaultsOnly, Category="Axe Ability | Input")
 	FGameplayTag InputTag;
 
 	/**
@@ -92,11 +92,11 @@ public:
 	EAxeAbilityActivationPolicy GetActivationPolicy() const { return ActivationPolicy; }
 	EAxeAbilityActivationGroup GetActivationGroup() const { return ActivationGroup; }
 
-	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category = "Ability",
+	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category = "Axe Ability",
 		Meta = (ExpandBoolAsExecs = "ReturnValue"))
 	bool CanChangeActivationGroup(EAxeAbilityActivationGroup NewGroup) const;
 
-	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category = "Ability",
+	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category = "Axe Ability",
 		Meta = (ExpandBoolAsExecs = "ReturnValue"))
 	bool ChangeActivationGroup(EAxeAbilityActivationGroup NewGroup);
 
@@ -137,24 +137,24 @@ protected:
 	/**
 	 * Ability Props
 	 */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ability Props")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Axe Ability | Props")
 	TObjectPtr<UAnimMontage> AbilityMontage;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ability Activation")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Axe Ability | Activation")
 	EAxeAbilityActivationGroup ActivationGroup;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Lyra|Ability Activation")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Axe Ability | Activation")
 	EAxeAbilityActivationPolicy ActivationPolicy;
 
 	// ClientMovement 
-	UPROPERTY(EditDefaultsOnly, Category = "Client")
-	bool bUseClientMovement = true;
+	UPROPERTY(EditDefaultsOnly, Category = "Axe Ability | Client")
+	bool bUseClientMovement = false;
 	// Ability Target
-	UPROPERTY(EditDefaultsOnly, Category = "Ability Target")
-	bool bNeedAutoSearchTarget = true;
-	UPROPERTY(EditDefaultsOnly, Category = "Ability Target")
+	UPROPERTY(EditDefaultsOnly, Category = "Axe Ability | Target")
+	bool bNeedAutoSearchTarget = false;
+	UPROPERTY(EditDefaultsOnly, Category = "Axe Ability | Target")
 	float AutoSearchTargetRadius = 200.f;
-	UPROPERTY(EditDefaultsOnly, Category = "Ability Target")
+	UPROPERTY(EditDefaultsOnly, Category = "Axe Ability | Target")
 	float AutoSearchTargetAngle = 80.f;
 	UPROPERTY()
 	TObjectPtr<AActor> AutoTargetActor;
@@ -163,7 +163,7 @@ protected:
 	EAbilitySkillStage AbilitySkillStage = EAbilitySkillStage::Ass_FrontSwing;
 
 	// 可以在后摇时被替换
-	UPROPERTY(EditDefaultsOnly, Category = "Ability Target")
+	UPROPERTY(EditDefaultsOnly, Category = "Axe Ability | Target")
 	bool bCanReplacedInBackSwing = true;
 	//
 	UFUNCTION()
@@ -174,9 +174,9 @@ protected:
 	UComboActionComponent* GetComboActionComponent() const;
 
 	// Montage PauseFrame
-	UPROPERTY(EditDefaultsOnly, Category = "AnimMontage|PauseFrame")
+	UPROPERTY(EditDefaultsOnly, Category = "Axe AnimMontage|PauseFrame")
 	float ActiveMontagePauseFrameRateMagnitude = 1.0f;
-	UPROPERTY(EditDefaultsOnly, Category = "AnimMontage|PauseFrame")
+	UPROPERTY(EditDefaultsOnly, Category = "Axe AnimMontage|PauseFrame")
 	float ActiveMontagePauseFrameDurationMagnitude = 1.0f;
 	UFUNCTION(BlueprintCallable)
 	void SetActiveMontagePauseFrame(float LowRate, float Duration);

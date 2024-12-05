@@ -21,6 +21,8 @@ class AXE_API UComboGameplayAbility : public UAxeDamageGameplayAbility, public I
 	GENERATED_BODY()
 
 public:
+	UComboGameplayAbility(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
 	// IComboAbilityInterface
 	virtual void Ans_Combo_NotifyBegin(UAnimNotifyState* AnimNotifyState) override;
 	virtual void Ans_Combo_NotifyEnd(UAnimNotifyState* AnimNotifyState) override;
@@ -48,7 +50,7 @@ public:
 protected:
 	// HitTrace
 	UPROPERTY()
-	UStaticMeshComponent* HitTraceMeshComponent;
+	UStaticMeshComponent* HitTraceMeshComponent = nullptr;
 
 	UPROPERTY(EditAnywhere, Category="HitTrace")
 	FName HitTraceStartSocketName = FName("Bottom");
@@ -70,7 +72,7 @@ protected:
 
 	//
 	UPROPERTY()
-	UAbilityTask_HitTrace* AbilityTask_HitTrace;
+	UAbilityTask_HitTrace* AbilityTask_HitTrace = nullptr;
 
 	UFUNCTION(BlueprintCallable)
 	bool IsFirstHitTarget(AActor* Target);

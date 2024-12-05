@@ -12,15 +12,15 @@ FAxeGameplayEffectContext& UAxeBlueprintFunctionLibrary::GetAxeGameplayEffectCon
 	FGameplayEffectContextHandle& EffectContextHandle)
 {
 	FGameplayEffectContext* EffectContext = EffectContextHandle.Get();
-	FAxeGameplayEffectContext* AuraEffectContext = static_cast<FAxeGameplayEffectContext*>(EffectContext);
-	return *AuraEffectContext;
+	FAxeGameplayEffectContext* AxeEffectContext = static_cast<FAxeGameplayEffectContext*>(EffectContext);
+	return *AxeEffectContext;
 }
 
 FAxeGameplayEffectContext* UAxeBlueprintFunctionLibrary::GetAxeGameplayEffectContext(
 	FGameplayEffectContext* EffectContext)
 {
-	FAxeGameplayEffectContext* AuraEffectContext = static_cast<FAxeGameplayEffectContext*>(EffectContext);
-	return AuraEffectContext;
+	FAxeGameplayEffectContext* AxeEffectContext = static_cast<FAxeGameplayEffectContext*>(EffectContext);
+	return AxeEffectContext;
 }
 
 const FAxeGameplayEffectContext* UAxeBlueprintFunctionLibrary::GetAxeGameplayEffectContext(

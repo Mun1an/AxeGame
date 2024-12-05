@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Character/AxeCharacterMob.h"
+#include "Interface/EnemyInterface.h"
 #include "AxeCharacterEnemy.generated.h"
 
 class UMobOverlayWidgetController;
@@ -13,12 +14,20 @@ class UWidgetComponent;
  * 
  */
 UCLASS()
-class AXE_API AAxeCharacterEnemy : public AAxeCharacterMob
+class AXE_API AAxeCharacterEnemy : public AAxeCharacterMob, public IEnemyInterface
 {
 	GENERATED_BODY()
 
 public:
 	AAxeCharacterEnemy();
+
+	// IEnemyInterface
+	UFUNCTION(BlueprintCallable)
+	void SetCombatTarget(AActor* NewCombatTarget);
+
+	UFUNCTION(BlueprintCallable)
+	AActor* GetCombatTarget() const;
+	//
 
 protected:
 	virtual void BeginPlay() override;
@@ -31,7 +40,9 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UMobOverlayWidgetController> MobOverlayWidgetControllerClass;
 	UMobOverlayWidgetController* GetMobOverlayWidgetController(const FWidgetControllerParams& Params);
-	
+
 	virtual void MulticastDeath_Implementation(const FVector DeathImpulse) override;
 
+	UPROPERTY()
+	AActor* CombatTarget;
 };

@@ -5,6 +5,9 @@
 
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
 #include "AbilitySystem/AttributeSet/AxeAttributeSet.h"
+#include "AI/AxeAIController.h"
+#include "BehaviorTree/BehaviorTree.h"
+#include "BehaviorTree/BlackboardComponent.h"
 
 AAxeCharacterMob::AAxeCharacterMob()
 {
@@ -13,6 +16,20 @@ AAxeCharacterMob::AAxeCharacterMob()
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
 
 	AttributeSet = CreateDefaultSubobject<UAxeAttributeSet>("AttributeSet");
+	
+}
+
+void AAxeCharacterMob::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+	if (HasAuthority())
+	{
+		check(BehaviorTree)
+		
+		AxeAIController = Cast<AAxeAIController>(NewController);
+		AxeAIController->GetBlackboardComponent()->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
+		AxeAIController->RunBehaviorTree(BehaviorTree);
+	}
 }
 
 void AAxeCharacterMob::BeginPlay()
