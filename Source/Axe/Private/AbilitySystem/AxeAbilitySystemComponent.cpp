@@ -278,12 +278,11 @@ void UAxeAbilitySystemComponent::NotifyAbilityActivated(const FGameplayAbilitySp
 	UAxeGameplayAbility* AxeGameplayAbility = Cast<UAxeGameplayAbility>(Ability);
 	AddAbilityToActivationGroup(AxeGameplayAbility->GetActivationGroup(), AxeGameplayAbility);
 
-	if (GetAxeCharacterOwner()->IsLocallyControlled())
+	const AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
+	if (AxeCharacterOwner)
 	{
 		OnNotifyAbilityActivatedDelegate.Broadcast(Ability);
 	}
-	// GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Blue, FString::Printf(TEXT("Ability Activated: %s"),
-	//                                                                          *Ability->GetName()));
 }
 
 void UAxeAbilitySystemComponent::NotifyAbilityEnded(FGameplayAbilitySpecHandle Handle, UGameplayAbility* Ability,
@@ -293,10 +292,12 @@ void UAxeAbilitySystemComponent::NotifyAbilityEnded(FGameplayAbilitySpecHandle H
 	UAxeGameplayAbility* AxeGameplayAbility = Cast<UAxeGameplayAbility>(Ability);
 	RemoveAbilityFromActivationGroup(AxeGameplayAbility->GetActivationGroup(), AxeGameplayAbility);
 
-	if (GetAxeCharacterOwner() && GetAxeCharacterOwner()->IsLocallyControlled())
+	const AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
+	if (AxeCharacterOwner)
 	{
 		OnNotifyAbilityEndedDelegate.Broadcast(Ability);
 	}
+	
 }
 
 void UAxeAbilitySystemComponent::InitAbilityActorInfo(AActor* InOwnerActor, AActor* InAvatarActor)

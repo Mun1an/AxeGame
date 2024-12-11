@@ -30,4 +30,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category="AxeBPLibrary|Input")
 	static FVector GetBottomGroundLocation(const AActor* SourceActor, FVector StartLocation,
 	                                       const float LineLength = 1000);
+
+	UFUNCTION(BlueprintPure, Category="AxeBPLibrary|Family")
+	static bool IsFriend(const AActor* ActorA, const AActor* ActorB);
 };

@@ -6,12 +6,13 @@
 #include "Character/AxeCharacterBase.h"
 #include "AxeCharacterMob.generated.h"
 
+struct FAbilityEndedData;
 class UBehaviorTree;
 class AAxeAIController;
 /**
  * 
  */
-UCLASS()
+UCLASS(Blueprintable)
 class AXE_API AAxeCharacterMob : public AAxeCharacterBase
 {
 	GENERATED_BODY()
@@ -22,10 +23,16 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void OnAbilityActivated(UGameplayAbility* Ability);
+	virtual void OnAbilityEnded(UGameplayAbility* Ability);
+	virtual void SetIsUsingBlockingAbility();
 
 	UPROPERTY()
 	TObjectPtr<AAxeAIController> AxeAIController;
 
 	UPROPERTY(EditAnywhere, Category="AI")
 	TObjectPtr<UBehaviorTree> BehaviorTree;
+
+	UPROPERTY(BlueprintReadOnly)
+	bool bIsUsingBlockingAbility = false;
 };

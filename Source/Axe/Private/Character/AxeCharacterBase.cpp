@@ -7,7 +7,6 @@
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
 #include "Axe/Axe.h"
 #include "Components/CapsuleComponent.h"
-#include "Enum/AxeEnum.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
@@ -55,12 +54,12 @@ void AAxeCharacterBase::SetRotationRateZ(float NewRotationRateZ)
 
 void AAxeCharacterBase::SetRotationRateByWalkSpeed()
 {
-	float NewRotationRateZ = FMath::GetMappedRangeValueClamped(
-		FVector2D(MinWalkSpeed, MaxWalkSpeed),
-		FVector2D(MinRotationRateZ, MaxRotationRateZ),
-		GetCharacterMovement()->MaxWalkSpeed
-	);
-	SetRotationRateZ(NewRotationRateZ);
+	// float NewRotationRateZ = FMath::GetMappedRangeValueClamped(
+	// 	FVector2D(MinWalkSpeed, MaxWalkSpeed),
+	// 	FVector2D(MinRotationRateZ, MaxRotationRateZ),
+	// 	GetCharacterMovement()->MaxWalkSpeed
+	// );
+	// SetRotationRateZ(NewRotationRateZ);
 }
 
 void AAxeCharacterBase::SetDeath()

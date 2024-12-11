@@ -88,7 +88,16 @@ void UInventoryComponent::OnInventoryItemChanged(int32 SlotIndex, UItemInstance*
 void UInventoryComponent::OnEquipmentItemChanged(int32 SlotIndex, UItemInstance* ItemInstance)
 {
 	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
+	// TODO 处理下客户端加载
+	if (AxeCharacterOwner == nullptr)
+	{
+		return;
+	}
 	UAbilitySystemComponent* ASC = AxeCharacterOwner->GetAbilitySystemComponent();
+	if (ASC == nullptr)
+	{
+		return;
+	}
 	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(ASC);
 
 	float EquipmentDamage = 0.f;

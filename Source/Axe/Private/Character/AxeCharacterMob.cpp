@@ -16,7 +16,6 @@ AAxeCharacterMob::AAxeCharacterMob()
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
 
 	AttributeSet = CreateDefaultSubobject<UAxeAttributeSet>("AttributeSet");
-	
 }
 
 void AAxeCharacterMob::PossessedBy(AController* NewController)
@@ -25,7 +24,7 @@ void AAxeCharacterMob::PossessedBy(AController* NewController)
 	if (HasAuthority())
 	{
 		check(BehaviorTree)
-		
+
 		AxeAIController = Cast<AAxeAIController>(NewController);
 		AxeAIController->GetBlackboardComponent()->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
 		AxeAIController->RunBehaviorTree(BehaviorTree);
@@ -41,5 +40,40 @@ void AAxeCharacterMob::BeginPlay()
 	{
 		InitDefaultAttributes();
 		GiveStartupAbilities();
+
+		UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(GetAbilitySystemComponent());
+		AxeASC->OnNotifyAbilityActivatedDelegate.AddUObject(this, &ThisClass::OnAbilityActivated);
+		AxeASC->OnNotifyAbilityEndedDelegate.AddUObject(this, &ThisClass::OnAbilityEnded);
 	}
+}
+
+void AAxeCharacterMob::OnAbilityActivated(UGameplayAbility* Ability)
+{
+	SetIsUsingBlockingAbility();
+}
+
+void AAxeCharacterMob::OnAbilityEnded(UGameplayAbility* Ability)
+{
+	SetIsUsingBlockingAbility();
+}
+
+void AAxeCharacterMob::SetIsUsingBlockingAbility()
+{
+	check(AxeAIController)
+	
+	const UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(AbilitySystemComponent);
+	TArray<FGameplayAbilitySpecHandle> SpecHandles;
+	AxeASC->GetAbilitySpecHandlesByActivationGroup(
+		SpecHandles,
+		EAxeAbilityActivationGroup::Exclusive_Blocking
+	);
+	if (SpecHandles.Num() > 0)
+	{
+		bIsUsingBlockingAbility = true;
+	}
+	else
+	{
+		bIsUsingBlockingAbility = false;
+	}
+	AxeAIController->GetBlackboardComponent()->SetValueAsBool(FName("IsUsingBlockingAbility"), bIsUsingBlockingAbility);
 }

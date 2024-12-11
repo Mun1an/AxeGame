@@ -69,7 +69,6 @@ void UAxeAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, 
 		if (AxeCharacterBase)
 		{
 			AxeCharacterBase->SetWalkSpeed(NewValue);
-			AxeCharacterBase->SetRotationRateByWalkSpeed();
 		}
 	}
 	if (Attribute == GetMaxHealthAttribute())

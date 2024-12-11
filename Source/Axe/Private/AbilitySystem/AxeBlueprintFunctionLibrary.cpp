@@ -68,3 +68,13 @@ FVector UAxeBlueprintFunctionLibrary::GetBottomGroundLocation(const AActor* Sour
 		return EndLocation;
 	}
 }
+
+bool UAxeBlueprintFunctionLibrary::IsFriend(const AActor* ActorA, const AActor* ActorB)
+{
+	const bool bIsPlayerA = ActorA->ActorHasTag(FName("Player"));
+	const bool bIsPlayerB = ActorB->ActorHasTag(FName("Player"));
+	const bool bIsEnemyA = ActorA->ActorHasTag(FName("Enemy"));
+	const bool bIsEnemyB = ActorB->ActorHasTag(FName("Enemy"));
+
+	return (bIsPlayerA && bIsPlayerB) || (bIsEnemyA && bIsEnemyB);
+}

@@ -53,18 +53,21 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Effect")
 	TSubclassOf<UGameplayEffect> EquipmentEffect;
-	
+
 	//
 	FOnAbilityInitOverDelegate OnAbilityInitOverDelegate;
 	bool IsAbilityInitOver() const { return bIsAbilityInitOver; }
 	//
 
 	//
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
+	float GetDefaultWalkSpeed() const { return DefaultWalkSpeed; }
+
+	UFUNCTION(BlueprintCallable)
 	void SetWalkSpeed(float NewMaxWalkSpeed);
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void SetRotationRateZ(float NewRotationRateZ);
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void SetRotationRateByWalkSpeed();
 
 	UFUNCTION(BlueprintCallable)
@@ -84,6 +87,10 @@ protected:
 	void InitDefaultAttributes();
 	bool GiveStartupAbilities();
 
+
+	UPROPERTY(EditAnywhere, Category= "Axe Movement")
+	float DefaultWalkSpeed = 600.0f;
+
 	UPROPERTY(EditAnywhere, Category= "Axe Movement")
 	float MaxWalkSpeed = 1500.0f;
 	UPROPERTY(EditAnywhere, Category= "Axe Movement")
@@ -92,8 +99,6 @@ protected:
 	float MaxRotationRateZ = 2000.0f;
 	UPROPERTY(EditAnywhere, Category= "Axe Movement")
 	float MinRotationRateZ = 0.0f;
-	UPROPERTY(EditAnywhere, Category= "Axe Movement")
-	float DefaultWalkSpeed = 600.0f;
 
 	bool bIsDead = false;
 	UPROPERTY(EditAnywhere, Category="Combat")
