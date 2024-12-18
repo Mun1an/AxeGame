@@ -15,7 +15,8 @@
 				"Niagara",
 				"UMG",
 				"CoreUObject",
-				"DeveloperSettings"
+				"DeveloperSettings",
+				"AIModule"
 			]
 		}
 	],
