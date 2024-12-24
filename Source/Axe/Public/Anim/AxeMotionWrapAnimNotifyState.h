@@ -15,7 +15,7 @@ class AXE_API UAxeMotionWrapAnimNotifyState : public UAxeAnimNotifyStateBase
 	GENERATED_BODY()
 
 public:
-	UAxeMotionWrapAnimNotifyState();
+	UAxeMotionWrapAnimNotifyState(const FObjectInitializer& ObjectInitializer);
 
 	virtual void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration,
 	                         const FAnimNotifyEventReference& EventReference) override;

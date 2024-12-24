@@ -4,7 +4,9 @@
 #include "Anim/ComboAnimNotifyState.h"
 
 
-UComboAnimNotifyState::UComboAnimNotifyState()
+UComboAnimNotifyState::UComboAnimNotifyState(const FObjectInitializer& ObjectInitializer): Super(ObjectInitializer)
 {
+#if WITH_EDITORONLY_DATA
 	NotifyColor = FColor::Orange;
+#endif
 }

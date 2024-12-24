@@ -5,7 +5,9 @@
 
 #include "Character/AxeCharacterPlayer.h"
 
-ULaunchCharacterNotifyState::ULaunchCharacterNotifyState()
+ULaunchCharacterNotifyState::ULaunchCharacterNotifyState(const FObjectInitializer& ObjectInitializer): Super(ObjectInitializer)
 {
+#if WITH_EDITORONLY_DATA
 	NotifyColor = FColor::Cyan;
+#endif
 }

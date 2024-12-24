@@ -6,7 +6,9 @@
 #include "ActionSystem/ComboActionComponent.h"
 
 
-UComboInputCacheAnimNotifyState::UComboInputCacheAnimNotifyState()
+UComboInputCacheAnimNotifyState::UComboInputCacheAnimNotifyState(const FObjectInitializer& ObjectInitializer): Super(ObjectInitializer)
 {
+#if WITH_EDITORONLY_DATA
 	NotifyColor = FColor::Yellow;
+#endif
 }

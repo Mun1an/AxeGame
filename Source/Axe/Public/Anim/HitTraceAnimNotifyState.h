@@ -14,5 +14,5 @@ class AXE_API UHitTraceAnimNotifyState : public UAxeAnimNotifyStateBase
 {
 	GENERATED_BODY()
 public:
-	UHitTraceAnimNotifyState();
+	UHitTraceAnimNotifyState(const FObjectInitializer& ObjectInitializer);
 };

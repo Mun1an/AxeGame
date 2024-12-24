@@ -14,6 +14,6 @@ class AXE_API UComboInputCacheAnimNotifyState : public UAxeAnimNotifyStateBase
 {
 	GENERATED_BODY()
 public:
-	UComboInputCacheAnimNotifyState();
+	UComboInputCacheAnimNotifyState(const FObjectInitializer& ObjectInitializer);
 	
 };

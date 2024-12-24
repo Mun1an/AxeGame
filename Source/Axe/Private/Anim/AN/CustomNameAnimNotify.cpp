@@ -3,7 +3,9 @@
 
 #include "Anim/AN/CustomNameAnimNotify.h"
 
-UCustomNameAnimNotify::UCustomNameAnimNotify()
+UCustomNameAnimNotify::UCustomNameAnimNotify(const FObjectInitializer& ObjectInitializer): Super(ObjectInitializer)
 {
+#if WITH_EDITORONLY_DATA
 	NotifyColor = FColor::Cyan;
+#endif
 }

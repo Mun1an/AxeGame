@@ -3,15 +3,15 @@
 
 #include "Anim/AN/BackSwingAnimNotify.h"
 
-UBackSwingAnimNotify::UBackSwingAnimNotify()
+UBackSwingAnimNotify::UBackSwingAnimNotify(const FObjectInitializer& ObjectInitializer): Super(ObjectInitializer)
 {
+#if WITH_EDITORONLY_DATA
 	NotifyColor = FColor::White;
+#endif
 }
 
 void UBackSwingAnimNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
                                   const FAnimNotifyEventReference& EventReference)
 {
 	Super::Notify(MeshComp, Animation, EventReference);
-
-	
 }

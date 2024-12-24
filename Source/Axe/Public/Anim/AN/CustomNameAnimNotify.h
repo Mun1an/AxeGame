@@ -15,7 +15,7 @@ class AXE_API UCustomNameAnimNotify : public UAxeAnimNotifyBase
 	GENERATED_BODY()
 
 public:
-	UCustomNameAnimNotify();
+	UCustomNameAnimNotify(const FObjectInitializer& ObjectInitializer);
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	FName CustomName;

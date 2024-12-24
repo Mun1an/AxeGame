@@ -3,7 +3,9 @@
 
 #include "Anim/HitTraceAnimNotifyState.h"
 
-UHitTraceAnimNotifyState::UHitTraceAnimNotifyState()
+UHitTraceAnimNotifyState::UHitTraceAnimNotifyState(const FObjectInitializer& ObjectInitializer): Super(ObjectInitializer)
 {
+#if WITH_EDITORONLY_DATA
 	NotifyColor = FColor::Red;
+#endif
 }

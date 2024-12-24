@@ -17,7 +17,7 @@ class AXE_API UBackSwingAnimNotify : public UAxeAnimNotifyBase
 	GENERATED_BODY()
 
 public:
-	UBackSwingAnimNotify();
+	UBackSwingAnimNotify(const FObjectInitializer& ObjectInitializer);
 
 	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
 	                               const FAnimNotifyEventReference& EventReference) override;

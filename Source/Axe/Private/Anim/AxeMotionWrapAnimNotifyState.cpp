@@ -7,9 +7,11 @@
 #include "Character/AxeCharacterPlayer.h"
 #include "GameFramework/PawnMovementComponent.h"
 
-UAxeMotionWrapAnimNotifyState::UAxeMotionWrapAnimNotifyState()
+UAxeMotionWrapAnimNotifyState::UAxeMotionWrapAnimNotifyState(const FObjectInitializer& ObjectInitializer): Super(ObjectInitializer)
 {
+#if WITH_EDITORONLY_DATA
 	NotifyColor = FColor::Turquoise;
+#endif
 }
 
 void UAxeMotionWrapAnimNotifyState::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,

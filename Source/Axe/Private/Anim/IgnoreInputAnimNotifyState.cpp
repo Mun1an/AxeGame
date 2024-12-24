@@ -4,9 +4,11 @@
 #include "Anim/IgnoreInputAnimNotifyState.h"
 
 
-UIgnoreInputAnimNotifyState::UIgnoreInputAnimNotifyState()
+UIgnoreInputAnimNotifyState::UIgnoreInputAnimNotifyState(const FObjectInitializer& ObjectInitializer): Super(ObjectInitializer)
 {
+#if WITH_EDITORONLY_DATA
 	NotifyColor = FColor::Silver;
+#endif
 }
 
 void UIgnoreInputAnimNotifyState::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
