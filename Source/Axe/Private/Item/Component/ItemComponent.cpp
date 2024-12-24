@@ -3,9 +3,7 @@
 
 #include "Item/Component/ItemComponent.h"
 
-#include "Item/AxeItemSubsystem.h"
 #include "Item/Instance/ItemDefinition.h"
-#include "Item/Instance/ItemInstance.h"
 #include "Item/ItemFragment/ItemFragment.h"
 #include "Item/ItemFragment/ItemFragment_World.h"
 

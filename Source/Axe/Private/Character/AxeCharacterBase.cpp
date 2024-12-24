@@ -71,6 +71,8 @@ void AAxeCharacterBase::SetDeathWithParams(const FVector DeathImpulse)
 {
 	SetLifeSpan(DeadLifeSpan);
 	MulticastDeath(DeathImpulse);
+
+	OnActorDeadDelegate.Broadcast(this);
 }
 
 void AAxeCharacterBase::InitDefaultAttributes()

@@ -4,6 +4,7 @@
 #include "AbilitySystemInterface.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Interface/DeadInterface.h"
 #include "AxeCharacterBase.generated.h"
 
 class UGameplayEffect;
@@ -13,9 +14,10 @@ class UComboDataAsset;
 class UGameplayAbility;
 
 DECLARE_MULTICAST_DELEGATE(FOnAbilityInitOverDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnActorDeadDelegate, AActor*, DeadActor);
 
 UCLASS()
-class AXE_API AAxeCharacterBase : public ACharacter, public IAbilitySystemInterface
+class AXE_API AAxeCharacterBase : public ACharacter, public IAbilitySystemInterface, public IDeadInterface
 {
 	GENERATED_BODY()
 
@@ -70,16 +72,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetRotationRateByWalkSpeed();
 
-	UFUNCTION(BlueprintCallable)
-	bool IsDead() const { return bIsDead; }
-
-	UFUNCTION(BlueprintCallable)
-	bool IsAlive() const { return !bIsDead; }
+	virtual bool IsDead() const override { return bIsDead; }
+	virtual bool IsAlive() const override { return !bIsDead; }
 
 	UFUNCTION(BlueprintCallable)
 	void SetDeath();
 	UFUNCTION(BlueprintCallable)
 	void SetDeathWithParams(const FVector DeathImpulse);
+
+	FOnActorDeadDelegate OnActorDeadDelegate;
 
 protected:
 	bool bIsAbilityInitOver = false;
