@@ -73,12 +73,12 @@ public:
 	// AbilitySkillStage
 
 	UFUNCTION()
-	EAbilitySkillStage GetAbilitySkillStage() const { return AbilitySkillStage; }
+	EAbilitySkillStage GetCurrentAbilitySkillStage() const { return CurrentAbilitySkillStage; }
 
 	UFUNCTION()
-	void SetAbilitySkillStage(EAbilitySkillStage NewStage);
+	void SetCurrentAbilitySkillStage(EAbilitySkillStage NewStage);
 	UFUNCTION()
-	void OnAbilitySkillStageChanged(EAbilitySkillStage NewStage);
+	void OnCurrentAbilitySkillStageChanged(EAbilitySkillStage NewStage);
 
 	/**
 	 * InputTag
@@ -110,9 +110,6 @@ public:
 	virtual bool CanActivateAbility_ByLastReplaceCondition_EachProxy(UGameplayAbility* LastAbility,
 	                                                                 const FGameplayAbilityActorInfo* ActorInfo) const;
 
-	// 根据条件替换技能的技能所需要的tag
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FGameplayTagContainer ReplaceAbilityDynamicConditionTags;
 	/**
 	 *  base virtual
 	 */
@@ -160,7 +157,8 @@ protected:
 	TObjectPtr<AActor> AutoTargetActor;
 
 	// Skill Stage
-	EAbilitySkillStage AbilitySkillStage = EAbilitySkillStage::Ass_FrontSwing;
+	UPROPERTY()
+	EAbilitySkillStage CurrentAbilitySkillStage = EAbilitySkillStage::ASS_FrontSwing;
 
 	// 可以在后摇时被替换
 	UPROPERTY(EditDefaultsOnly, Category = "Axe Ability | Target")
@@ -208,7 +206,7 @@ protected:
 	                                                float TraceAngleRange = 60.f);
 
 	UFUNCTION()
-	void An_BackSwing_NotifyBegin(UAnimNotify* AnimNotify);
+	void An_AbilitySkillState_NotifyBegin(UAnimNotify* AnimNotify);
 
 	UFUNCTION()
 	void An_CustomName_NotifyBegin(UAnimNotify* AnimNotify);

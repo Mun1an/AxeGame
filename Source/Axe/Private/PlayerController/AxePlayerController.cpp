@@ -104,11 +104,11 @@ void AAxePlayerController::Look(const FInputActionValue& Value)
 
 void AAxePlayerController::Jump(const FInputActionValue& Value)
 {
-	AAxeCharacterPlayer* AxeCharacterPlayer = Cast<AAxeCharacterPlayer>(GetCharacter());
-	if (AxeCharacterPlayer)
-	{
-		AxeCharacterPlayer->Jump();
-	}
+	// AAxeCharacterPlayer* AxeCharacterPlayer = Cast<AAxeCharacterPlayer>(GetCharacter());
+	// if (AxeCharacterPlayer)
+	// {
+	// 	AxeCharacterPlayer->Jump();
+	// }
 }
 
 void AAxePlayerController::StopJumping(const FInputActionValue& Value)

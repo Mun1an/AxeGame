@@ -19,7 +19,7 @@
 #include "Anim/HitTraceAnimNotifyState.h"
 #include "Anim/IgnoreInputAnimNotifyState.h"
 #include "Anim/LaunchCharacterNotifyState.h"
-#include "Anim/AN/BackSwingAnimNotify.h"
+#include "Anim/AN/AbilitySkillStageAnimNotify.h"
 #include "Anim/AN/CustomNameAnimNotify.h"
 #include "Character/AxeCharacterBase.h"
 #include "Character/AxeCharacterPlayer.h"
@@ -72,17 +72,25 @@ AActor* UAxeGameplayAbility::GetOrFindAutoTargetActor()
 	return AutoTargetActor;
 }
 
-void UAxeGameplayAbility::SetAbilitySkillStage(EAbilitySkillStage NewStage)
+void UAxeGameplayAbility::SetCurrentAbilitySkillStage(EAbilitySkillStage NewStage)
 {
-	AbilitySkillStage = NewStage;
-	OnAbilitySkillStageChanged(NewStage);
+	CurrentAbilitySkillStage = NewStage;
+	OnCurrentAbilitySkillStageChanged(NewStage);
 }
 
-void UAxeGameplayAbility::OnAbilitySkillStageChanged(EAbilitySkillStage NewStage)
+void UAxeGameplayAbility::OnCurrentAbilitySkillStageChanged(EAbilitySkillStage NewStage)
 {
 	if (NewStage == EAbilitySkillStage::ASS_BackSwing)
 	{
 		UAxeAbilitySystemComponent* AxeASC = GetAxeAbilitySystemComponentFromActorInfo();
+
+		if (IsBlockingOtherAbilities() && bCanReplacedInBackSwing)
+		{
+			// 后摇阶段时 取消 阻挡标签
+			AxeASC->ApplyAbilityBlockAndCancelTags(
+				AbilityTags, this, false, BlockAbilitiesWithTag, false, CancelAbilitiesWithTag
+			);
+		}
 	}
 }
 
@@ -177,6 +185,11 @@ bool UAxeGameplayAbility::CanActivateAbility_ByLastReplaceCondition(const FGamep
                                                                     const FGameplayTagContainer* TargetTags,
                                                                     FGameplayTagContainer* OptionalRelevantTags) const
 {
+	/*
+	 * 根据上个技能的状态来判断是否可以使用技能
+	 * 
+	 */
+
 	// 这边的this是 CDO
 	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(ActorInfo->AbilitySystemComponent.Get());
 	if (!AxeASC)
@@ -184,6 +197,7 @@ bool UAxeGameplayAbility::CanActivateAbility_ByLastReplaceCondition(const FGamep
 		return false;
 	}
 
+	// 获取Exclusive_ReplaceableByCondition的使用中的技能
 	TArray<FGameplayAbilitySpecHandle> SpecHandles;
 	AxeASC->GetAbilitySpecHandlesByActivationGroup(
 		SpecHandles,
@@ -218,7 +232,7 @@ bool UAxeGameplayAbility::CanActivateAbility_ByLastReplaceCondition(const FGamep
 bool UAxeGameplayAbility::CanActivateAbility_ByLastReplaceCondition_EachProxy(
 	UGameplayAbility* LastAbility, const FGameplayAbilityActorInfo* ActorInfo) const
 {
-	// 这边的this是 CDO ,,, LastAbility 不是CDO
+	// 此对象this是 CDO , LastAbility 不是CDO
 
 	AAxeCharacterPlayer* CharacterPlayer = Cast<AAxeCharacterPlayer>(GetAxeCharacterOwner(ActorInfo));
 	if (!CharacterPlayer)
@@ -230,6 +244,8 @@ bool UAxeGameplayAbility::CanActivateAbility_ByLastReplaceCondition_EachProxy(
 	if (CharacterPlayer->IsLocallyControlled())
 	{
 		// Client
+
+		// Check Combo
 		UComboActionComponent* ComboActionComponent = CharacterPlayer->GetComboActionComponent();
 		bool bIsNextComboAbility = ComboActionComponent->IsNextComboAbility(this);
 		bool bIsInComboSwitchWindow = ComboActionComponent->IsInComboSwitchWindow();
@@ -238,8 +254,9 @@ bool UAxeGameplayAbility::CanActivateAbility_ByLastReplaceCondition_EachProxy(
 			return true;
 		}
 
+		// Check 后摇状态
 		const UAxeGameplayAbility* LastAxeAbility = Cast<UAxeGameplayAbility>(LastAbility);
-		const EAbilitySkillStage SkillStage = LastAxeAbility->GetAbilitySkillStage();
+		const EAbilitySkillStage SkillStage = LastAxeAbility->GetCurrentAbilitySkillStage();
 		if (bCanReplacedInBackSwing && SkillStage == EAbilitySkillStage::ASS_BackSwing)
 		{
 			return true;
@@ -301,9 +318,8 @@ void UAxeGameplayAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handl
                                           const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
 
-	SetAbilitySkillStage(EAbilitySkillStage::Ass_FrontSwing);
+	SetCurrentAbilitySkillStage(EAbilitySkillStage::ASS_FrontSwing);
 
 	// Client Movement
 	if (bUseClientMovement && HasAuthority(&CurrentActivationInfo) && IsForRemoteClient())
@@ -440,16 +456,16 @@ void UAxeGameplayAbility::AddMontageNotifyStateTask(UAnimMontage* LocalAnimMonta
 			this, &UAxeGameplayAbility::An_CustomName_NotifyBegin);
 		AT_CustomName_An->ReadyForActivation();
 	}
-	// BackSwing
-	if (MontageNotifyClassesCache.Contains(UBackSwingAnimNotify::StaticClass()))
+	// AbilitySkillState
+	if (MontageNotifyClassesCache.Contains(UAbilitySkillStageAnimNotify::StaticClass()))
 	{
-		UAbilityTask_MontageNotify* AT_BackSwing_An = UAbilityTask_MontageNotify::CreateMontageNotifyTask(
+		UAbilityTask_MontageNotify* AT_AbilitySkillState_An = UAbilityTask_MontageNotify::CreateMontageNotifyTask(
 			this, LocalAnimMontage,
-			UBackSwingAnimNotify::StaticClass()
+			UAbilitySkillStageAnimNotify::StaticClass()
 		);
-		AT_BackSwing_An->MontageNotifyStartDelegate.AddDynamic(
-			this, &UAxeGameplayAbility::An_BackSwing_NotifyBegin);
-		AT_BackSwing_An->ReadyForActivation();
+		AT_AbilitySkillState_An->MontageNotifyStartDelegate.AddDynamic(
+			this, &UAxeGameplayAbility::An_AbilitySkillState_NotifyBegin);
+		AT_AbilitySkillState_An->ReadyForActivation();
 	}
 
 	// LaunchCharacter
@@ -629,11 +645,14 @@ AAxeCharacterBase* UAxeGameplayAbility::FindOneGoodTargetByMoveInput(float Spher
 	return TargetCharacter;
 }
 
-void UAxeGameplayAbility::An_BackSwing_NotifyBegin(UAnimNotify* AnimNotify)
+void UAxeGameplayAbility::An_AbilitySkillState_NotifyBegin(UAnimNotify* AnimNotify)
 {
 	// UE_LOG(LogTemp, Warning, TEXT("An_BackSwing_NotifyBegin"));
-
-	SetAbilitySkillStage(EAbilitySkillStage::ASS_BackSwing);
+	const UAbilitySkillStageAnimNotify* Notify = Cast<UAbilitySkillStageAnimNotify>(AnimNotify);
+	if (Notify)
+	{
+		SetCurrentAbilitySkillStage(Notify->GetAbilitySkillStage());
+	}
 }
 
 void UAxeGameplayAbility::An_CustomName_NotifyBegin(UAnimNotify* AnimNotify)

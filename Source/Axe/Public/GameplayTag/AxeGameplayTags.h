@@ -26,10 +26,12 @@ struct FAxeGameplayTags
 	FGameplayTag InputTag_Dash;
 	FGameplayTag InputTag_Defense;
 	FGameplayTag InputTag_Interact;
+	FGameplayTag InputTag_Jump;
 
 	FGameplayTag Ability_Attack_LightAttack;
 	FGameplayTag Ability_Attack_HeavyAttack;
 	FGameplayTag Ability_Move_Dash;
+	FGameplayTag Ability_Move_Jump;
 
 	FGameplayTag Ability_Attack_MeleeCombo_A1;
 	FGameplayTag Ability_Attack_MeleeCombo_A2;

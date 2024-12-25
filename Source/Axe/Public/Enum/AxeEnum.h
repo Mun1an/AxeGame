@@ -14,7 +14,7 @@ enum class ELaunchCharacterDirection: uint8
 UENUM(BlueprintType)
 enum class EAbilitySkillStage: uint8
 {
-	Ass_FrontSwing,
+	ASS_FrontSwing,
 	ASS_Using,
 	ASS_BackSwing
 };
