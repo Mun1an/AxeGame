@@ -79,11 +79,11 @@ void AAxePlayerController::Move(const FInputActionValue& Value)
 	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
-	AAxeCharacterPlayer* AxeCharacterPlayer = Cast<AAxeCharacterPlayer>(GetCharacter());
-	if (AxeCharacterPlayer)
+	ACharacter* ControlCharacter = GetCharacter();
+	if (ControlCharacter)
 	{
-		AxeCharacterPlayer->AddMovementInput(ForwardDirection, MovementVector.Y);
-		AxeCharacterPlayer->AddMovementInput(RightDirection, MovementVector.X);
+		ControlCharacter->AddMovementInput(ForwardDirection, MovementVector.Y);
+		ControlCharacter->AddMovementInput(RightDirection, MovementVector.X);
 	}
 
 	ResetLastMovementInputTime = ResetLastMovementInputMaxTime;

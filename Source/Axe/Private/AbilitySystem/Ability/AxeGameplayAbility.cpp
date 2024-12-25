@@ -11,6 +11,7 @@
 #include "AbilitySystem/Interaction/HitTraceAbilityInterface.h"
 #include "AbilitySystem/Tasks/AbilityTask_MontageNotify.h"
 #include "AbilitySystem/Tasks/AbilityTask_WaitFacingRot.h"
+#include "AbilitySystem/Tasks/AbilityTask_WaitMoveInput.h"
 #include "ActionSystem/ActionCombatComponent.h"
 #include "ActionSystem/ComboActionComponent.h"
 #include "Anim/AxeMotionWrapAnimNotifyState.h"
@@ -80,17 +81,36 @@ void UAxeGameplayAbility::SetCurrentAbilitySkillStage(EAbilitySkillStage NewStag
 
 void UAxeGameplayAbility::OnCurrentAbilitySkillStageChanged(EAbilitySkillStage NewStage)
 {
+	UAxeAbilitySystemComponent* AxeASC = GetAxeAbilitySystemComponentFromActorInfo();
+	// 后摇阶段
 	if (NewStage == EAbilitySkillStage::ASS_BackSwing)
 	{
-		UAxeAbilitySystemComponent* AxeASC = GetAxeAbilitySystemComponentFromActorInfo();
-
+		// 后摇阶段时 取消 阻挡标签
 		if (IsBlockingOtherAbilities() && bCanReplacedInBackSwing)
 		{
-			// 后摇阶段时 取消 阻挡标签
 			AxeASC->ApplyAbilityBlockAndCancelTags(
 				AbilityTags, this, false, BlockAbilitiesWithTag, false, CancelAbilitiesWithTag
 			);
 		}
+
+		AAxeCharacterPlayer* AxeCharacterPlayer = Cast<AAxeCharacterPlayer>(GetAxeCharacterOwner());
+		// 移动取消后摇
+		if (AxeCharacterPlayer && bCanCancelByMoveInputInBackSwing)
+		{
+			UAbilityTask_WaitMoveInput* WaitMoveInputTask = UAbilityTask_WaitMoveInput::CreateWaitMoveInputTask(
+				this, AxeCharacterPlayer);
+			WaitMoveInputTask->OnMoveInputDelegate.AddUniqueDynamic(
+				this, &ThisClass::OnCancelAbilityByMoveInputInBackSwing);
+			WaitMoveInputTask->ReadyForActivation();
+		}
+	}
+}
+
+void UAxeGameplayAbility::OnCancelAbilityByMoveInputInBackSwing(FVector LastMoveInput)
+{
+	if (bCanCancelByMoveInputInBackSwing)
+	{
+		CancelAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true);
 	}
 }
 

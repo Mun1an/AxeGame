@@ -80,6 +80,8 @@ public:
 	UFUNCTION()
 	void OnCurrentAbilitySkillStageChanged(EAbilitySkillStage NewStage);
 
+	UFUNCTION()
+	void OnCancelAbilityByMoveInputInBackSwing(FVector LastMoveInput);
 	/**
 	 * InputTag
 	 */
@@ -163,6 +165,8 @@ protected:
 	// 可以在后摇时被替换
 	UPROPERTY(EditDefaultsOnly, Category = "Axe Ability | Target")
 	bool bCanReplacedInBackSwing = true;
+	UPROPERTY(EditDefaultsOnly, Category = "Axe Ability | Target")
+	bool bCanCancelByMoveInputInBackSwing = true;
 	//
 	UFUNCTION()
 	UAxeAbilitySystemComponent* GetAxeAbilitySystemComponentFromActorInfo() const;
