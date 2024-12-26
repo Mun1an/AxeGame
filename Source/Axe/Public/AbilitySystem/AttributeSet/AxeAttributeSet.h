@@ -13,6 +13,10 @@
 	GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName) \
 	GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 
+// typedef TBaseStaticDelegateInstance<FGameplayAttribute(), FDefaultDelegateUserPolicy>::FFuncPtr FAttributeFuncPtr;
+template <class T>
+using TStaticFuncPtr = typename TBaseStaticDelegateInstance<T, FDefaultDelegateUserPolicy>::FFuncPtr;
+
 struct FAxeGameplayEffectContext;
 
 USTRUCT()
@@ -58,6 +62,11 @@ public:
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
+
+	TMap<FGameplayTag, TStaticFuncPtr<FGameplayAttribute()>> GetTagsToAttributesFuncPtrMap() const
+	{
+		return TagsToAttributesFuncPtrMap;
+	}
 
 	/**
 	 * @brief Vital Attributes
@@ -119,7 +128,7 @@ public:
 	UPROPERTY(ReplicatedUsing=OnRep_HealthRegeneration, BlueprintReadOnly, Category = "Secondary Attributes")
 	FGameplayAttributeData HealthRegeneration;
 	ATTRIBUTE_ACCESSORS(UAxeAttributeSet, HealthRegeneration);
-	
+
 	UPROPERTY(ReplicatedUsing=OnRep_StaminaRegeneration, BlueprintReadOnly, Category = "Secondary Attributes")
 	FGameplayAttributeData StaminaRegeneration;
 	ATTRIBUTE_ACCESSORS(UAxeAttributeSet, StaminaRegeneration);
@@ -181,6 +190,8 @@ public:
 	void OnRep_BaseDamage(const FGameplayAttributeData& OldValue) const;
 
 private:
+	TMap<FGameplayTag, TStaticFuncPtr<FGameplayAttribute()>> TagsToAttributesFuncPtrMap;
+
 	void SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const;
 	void HandleIncomingDamageEffect(const FEffectProperties& Props);
 

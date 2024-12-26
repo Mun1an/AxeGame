@@ -7,6 +7,7 @@
 #include "UI/WidgetController/AxeWidgetControllerBase.h"
 #include "AxeHUD.generated.h"
 
+class UAttributeMenuWidgetController;
 class UInventoryWidgetController;
 class UOverlayWidgetController;
 class UAbilitySystemComponent;
@@ -31,6 +32,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	UInventoryWidgetController* GetInventoryWidgetController();
 	UInventoryWidgetController* GetInventoryWidgetController(const FWidgetControllerParams& Params);
+
+	UFUNCTION(BlueprintCallable)
+	UAttributeMenuWidgetController* GetAttributeMenuWidgetController();
+	UAttributeMenuWidgetController* GetAttributeMenuWidgetController(const FWidgetControllerParams& Params);
 	
 protected:
 	virtual void BeginPlay() override;
@@ -56,4 +61,9 @@ private:
 	TObjectPtr<UInventoryWidgetController> InventoryWidgetController;
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UInventoryWidgetController> InventoryWidgetControllerClass;
+
+	UPROPERTY()
+	TObjectPtr<UAttributeMenuWidgetController> AttributeMenuWidgetController;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UAttributeMenuWidgetController> AttributeMenuWidgetControllerClass;
 };

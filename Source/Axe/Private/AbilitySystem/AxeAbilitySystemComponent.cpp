@@ -11,6 +11,7 @@
 #include "Character/AxeCharacterPlayer.h"
 #include "Enum/AxeTypes.h"
 #include "GameplayTag/AxeGameplayTags.h"
+#include "Item/ItemFragment/ItemFragment_EquipmentInfo.h"
 
 
 UAxeAbilitySystemComponent::UAxeAbilitySystemComponent()
@@ -355,7 +356,7 @@ bool UAxeAbilitySystemComponent::ApplyDamageEffectToSelf(AActor* FromTarget, con
 }
 
 bool UAxeAbilitySystemComponent::ApplyEquipmentEffectToSelf(const TSubclassOf<UGameplayEffect>& EffectClass,
-                                                            float Damage, float EquipmentArmor)
+                                                            const FEquipmentInfo EquipmentInfo)
 {
 	FGameplayEffectContextHandle ContextHandle = MakeEffectContext();
 	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
@@ -366,10 +367,13 @@ bool UAxeAbilitySystemComponent::ApplyEquipmentEffectToSelf(const TSubclassOf<UG
 	);
 
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
-		SpecHandle, FAxeGameplayTags::Get().Effect_Magnitude_Damage, Damage
+		SpecHandle, FAxeGameplayTags::Get().Effect_Magnitude_Damage, EquipmentInfo.EquipmentDamage
 	);
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
-		SpecHandle, FAxeGameplayTags::Get().Effect_Magnitude_Armor, EquipmentArmor
+		SpecHandle, FAxeGameplayTags::Get().Effect_Magnitude_Armor, EquipmentInfo.EquipmentArmor
+	);
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
+		SpecHandle, FAxeGameplayTags::Get().Effect_Magnitude_MaxHealth, EquipmentInfo.EquipmentMaxHealth
 	);
 	if (EquipmentEffectHandle.IsValid())
 	{

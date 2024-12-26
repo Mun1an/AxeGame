@@ -61,6 +61,36 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 	InventoryComponent->OnSendInventoryItemUIMessage.AddDynamic(this, &UOverlayWidgetController::SendInventoryItemUIMessage);
 }
 
+void UOverlayWidgetController::BroadcastAbilityInfo()
+{
+	UAxeAbilitySystemComponent* AxeASC = GetAxeAbilitySystemComponent();
+	if (!AxeASC)
+	{
+		return;
+	}
+	FAbilitySpecDataDelegate DataDelegate;
+	DataDelegate.BindUObject(this, &UOverlayWidgetController::OnGetActivateAbilitySpec);
+	AxeASC->ExecuteDelegateToGetAbilitySpec(DataDelegate);
+}
+
+void UOverlayWidgetController::OnGetActivateAbilitySpec(const FGameplayAbilitySpec& AbilitySpec)
+{
+	const UAxeAbilitySystemComponent* AxeASC = GetAxeAbilitySystemComponent();
+	if (!AxeASC)
+	{
+		return;
+	}
+	const FGameplayTag& AbilityTag = AxeASC->GetAbilityTagFromSpec(AbilitySpec);
+	FAxeAbilityUIInfo AbilityUIInfo = AbilityUIDataAsset->FindAbilityInfoByTag(AbilityTag);
+	if (!AbilityUIInfo.AbilityTag.IsValid())
+	{
+		return;
+	}
+	AbilityUIInfo.InputTag = AxeASC->GetInputTagFromSpec(AbilitySpec);
+	//
+	AbilityInfoDelegate.Broadcast(AbilityUIInfo);
+}
+
 void UOverlayWidgetController::HealthChanged(const FOnAttributeChangeData& Data) const
 {
 	OnHealthChanged.Broadcast(Data.NewValue);

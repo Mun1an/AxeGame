@@ -7,6 +7,7 @@
 #include "Ability/AxeGameplayAbility.h"
 #include "AxeAbilitySystemComponent.generated.h"
 
+struct FEquipmentInfo;
 struct FDamageEffectParams;
 class AAxeCharacterBase;
 class UAxeGameplayAbility;
@@ -74,7 +75,7 @@ public:
 	bool ApplyDamageEffectToTarget(UAbilitySystemComponent* TargetASC, const FDamageEffectParams& Params);
 	bool ApplyDamageEffectToSelf(AActor* FromTarget, const FDamageEffectParams& Params);
 
-	bool ApplyEquipmentEffectToSelf(const TSubclassOf<UGameplayEffect>& EffectClass, float Damage, float EquipmentArmor);
+	bool ApplyEquipmentEffectToSelf(const TSubclassOf<UGameplayEffect>& EffectClass, FEquipmentInfo EquipmentInfo);
 
 	//
 	void ExecuteDelegateToGetAbilitySpec(const FAbilitySpecDataDelegate& Delegate);

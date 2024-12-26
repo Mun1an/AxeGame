@@ -43,8 +43,6 @@ struct FWidgetControllerParams
 	TObjectPtr<UAttributeSet> AttributeSet = nullptr;
 };
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilityInfoSignature, const FAxeAbilityUIInfo&, AbilityInfo);
-
 UCLASS()
 class AXE_API UAxeWidgetControllerBase : public UObject
 {
@@ -58,10 +56,7 @@ public:
 	virtual void BroadcastInitialValues();
 	virtual void BindCallbacksToDependencies();
 
-	UPROPERTY(BlueprintAssignable, Category="GAS|Messages")
-	FAbilityInfoSignature AbilityInfoDelegate;
-	void BroadcastAbilityInfo();
-	void OnGetActivateAbilitySpec(const FGameplayAbilitySpec& AbilitySpec);
+	
 
 protected:
 	UPROPERTY(BlueprintReadOnly, Category="WidgetController")
@@ -88,8 +83,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category="WidgetController")
 	TObjectPtr<UAxeAttributeSet> AxeAttributeSet;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TObjectPtr<UAbilityUIDataAsset> AbilityUIDataAsset;
+	
 
 	AAxePlayerController* GetAxePlayerController();
 	AAxePlayerState* GetAxePlayerState();

@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "PlayerState/AxePlayerState.h"
 #include "UI/Widget/AxeUserWidget.h"
+#include "UI/WidgetController/AttributeMenuWidgetController.h"
 #include "UI/WidgetController/AxeWidgetControllerBase.h"
 #include "UI/WidgetController/InventoryWidgetController.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
@@ -71,6 +72,23 @@ UInventoryWidgetController* AAxeHUD::GetInventoryWidgetController(const FWidgetC
 		InventoryWidgetController->BindCallbacksToDependencies();
 	}
 	return InventoryWidgetController;
+}
+
+UAttributeMenuWidgetController* AAxeHUD::GetAttributeMenuWidgetController()
+{
+	const FWidgetControllerParams Params = GetWidgetControllerParams();
+	return GetAttributeMenuWidgetController(Params);
+}
+
+UAttributeMenuWidgetController* AAxeHUD::GetAttributeMenuWidgetController(const FWidgetControllerParams& Params)
+{
+	if (AttributeMenuWidgetController == nullptr)
+	{
+		AttributeMenuWidgetController = NewObject<UAttributeMenuWidgetController>(this, AttributeMenuWidgetControllerClass);
+		AttributeMenuWidgetController->SetWidgetControllerParams(Params);
+		AttributeMenuWidgetController->BindCallbacksToDependencies();
+	}
+	return AttributeMenuWidgetController;
 }
 
 

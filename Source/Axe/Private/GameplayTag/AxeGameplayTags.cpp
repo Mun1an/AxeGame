@@ -55,23 +55,23 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(Cooldown_Skill_Roar, "Cooldown.Skill.Roar");
 
 	//
-	AddTag(Attributes_Vital_Health, "Attributes.Vital.Health");
-	AddTag(Attributes_Vital_Stamina, "Attributes.Vital.Stamina");
-	AddTag(Attributes_Primary_Strength, "Attributes.Primary.Strength");
-	AddTag(Attributes_Primary_Dexterity, "Attributes.Primary.Dexterity");
-	AddTag(Attributes_Primary_Intelligence, "Attributes.Primary.Intelligence");
-	AddTag(Attributes_Secondary_MaxHealth, "Attributes.Secondary.MaxHealth");
-	AddTag(Attributes_Secondary_MaxStamina, "Attributes.Secondary.MaxStamina");
-	AddTag(Attributes_Secondary_Armor, "Attributes.Secondary.Armor");
-	AddTag(Attributes_Secondary_Evasive, "Attributes.Secondary.Evasive");
-	AddTag(Attributes_Secondary_PhysicalResistance, "Attributes.Secondary.PhysicalResistance");
-	AddTag(Attributes_Secondary_MagicResistance, "Attributes.Secondary.MagicResistance");
-	AddTag(Attributes_Secondary_CriticalHitChance, "Attributes.Secondary.CriticalHitChance");
-	AddTag(Attributes_Secondary_CriticalHitDamage, "Attributes.Secondary.CriticalHitDamage");
-	AddTag(Attributes_Secondary_HealthRegeneration, "Attributes.Secondary.HealthRegeneration");
-	AddTag(Attributes_Secondary_StaminaRegeneration, "Attributes.Secondary.StaminaRegeneration");
-	AddTag(Attributes_Secondary_MovementSpeed, "Attributes.Secondary.MovementSpeed");
-	AddTag(Attributes_Secondary_BaseDamage, "Attributes.Secondary.BaseDamage");
+	AddTag(Attributes_Vital_Health, "Attributes.Vital.Health", "", true);
+	AddTag(Attributes_Vital_Stamina, "Attributes.Vital.Stamina", "", true);
+	AddTag(Attributes_Primary_Strength, "Attributes.Primary.Strength", "", true);
+	AddTag(Attributes_Primary_Dexterity, "Attributes.Primary.Dexterity", "", true);
+	AddTag(Attributes_Primary_Intelligence, "Attributes.Primary.Intelligence", "", true);
+	AddTag(Attributes_Secondary_MaxHealth, "Attributes.Secondary.MaxHealth", "", true);
+	AddTag(Attributes_Secondary_MaxStamina, "Attributes.Secondary.MaxStamina", "", true);
+	AddTag(Attributes_Secondary_Armor, "Attributes.Secondary.Armor", "", true);
+	AddTag(Attributes_Secondary_Evasive, "Attributes.Secondary.Evasive", "", true);
+	AddTag(Attributes_Secondary_PhysicalResistance, "Attributes.Secondary.PhysicalResistance", "", true);
+	AddTag(Attributes_Secondary_MagicResistance, "Attributes.Secondary.MagicResistance", "", true);
+	AddTag(Attributes_Secondary_CriticalHitChance, "Attributes.Secondary.CriticalHitChance", "", true);
+	AddTag(Attributes_Secondary_CriticalHitDamage, "Attributes.Secondary.CriticalHitDamage", "", true);
+	AddTag(Attributes_Secondary_HealthRegeneration, "Attributes.Secondary.HealthRegeneration", "", true);
+	AddTag(Attributes_Secondary_StaminaRegeneration, "Attributes.Secondary.StaminaRegeneration", "", true);
+	AddTag(Attributes_Secondary_MovementSpeed, "Attributes.Secondary.MovementSpeed", "", true);
+	AddTag(Attributes_Secondary_BaseDamage, "Attributes.Secondary.BaseDamage", "", true);
 
 	AddTag(Damage_Physical, "Damage.Physical");
 	AddTag(Damage_Magic, "Damage.Magic");
@@ -89,6 +89,7 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(Effect_Magnitude_Damage, "Effect.Magnitude.Damage");
 	AddTag(Effect_Magnitude_Stamina, "Effect.Magnitude.Stamina");
 	AddTag(Effect_Magnitude_Armor, "Effect.Magnitude.Armor");
+	AddTag(Effect_Magnitude_MaxHealth, "Effect.Magnitude.MaxHealth");
 
 	/**
 	 * Item
@@ -100,12 +101,30 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(Inventory_Entry_Equipment_Armor_Chestplate, "Inventory.Entry.Equipment.Armor.Chestplate");
 	AddTag(Inventory_Entry_Equipment_Armor_Leggings, "Inventory.Entry.Equipment.Armor.Leggings");
 	AddTag(Inventory_Entry_Equipment_Armor_Boots, "Inventory.Entry.Equipment.Armor.Boots");
-	
+
 	AddTag(Inventory_Entry_Equipment_Weapon, "Inventory.Entry.Equipment.Weapon");
 	/**
 	 * Interact
 	 */
 	AddTag(Ability_Interaction_Activate, "Ability.Interaction.Activate");
+
+	//
+	OnTagsAdded();
+}
+
+void FAxeGameplayTags::OnTagsAdded()
+{
+	for (FGameplayTag& GameplayTag : AllAttributesList)
+	{
+		if (GameplayTag.ToString().Contains("Primary"))
+		{
+			AllPrimaryTagList.Add(GameplayTag);
+		}
+		if (GameplayTag.ToString().Contains("Secondary"))
+		{
+			AllSecondaryTagList.Add(GameplayTag);
+		}
+	}
 }
 
 
@@ -116,7 +135,8 @@ void FAxeGameplayTags::InitNativeGameplayTags()
 	Instance.AddAllTags(GameplayTagsManager);
 }
 
-void FAxeGameplayTags::AddTag(FGameplayTag& OutTag, const ANSICHAR* TagName, const ANSICHAR* TagComment)
+void FAxeGameplayTags::AddTag(FGameplayTag& OutTag, const ANSICHAR* TagName, const ANSICHAR* TagComment,
+                              bool bIsAttributesTag)
 {
 	if (TagComment == nullptr)
 	{
@@ -127,4 +147,10 @@ void FAxeGameplayTags::AddTag(FGameplayTag& OutTag, const ANSICHAR* TagName, con
 		FName(TagName),
 		FString(TEXT("(Native) ")) + FString(TagComment)
 	);
+
+
+	if (bIsAttributesTag)
+	{
+		AllAttributesList.Add(OutTag);
+	}
 }

@@ -100,8 +100,7 @@ void UInventoryComponent::OnEquipmentItemChanged(int32 SlotIndex, UItemInstance*
 	}
 	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(ASC);
 
-	float EquipmentDamage = 0.f;
-	float EquipmentArmor = 0.f;
+	FEquipmentInfo TotalEquipmentInfo = FEquipmentInfo();
 	if (AxeASC && AxeCharacterOwner->EquipmentEffect)
 	{
 		TArray<FInventoryEntry> EquipmentEntries;
@@ -114,12 +113,16 @@ void UInventoryComponent::OnEquipmentItemChanged(int32 SlotIndex, UItemInstance*
 				const UItemFragment* Fragment = ItemDef->
 					FindFragmentByClass(UItemFragment_EquipmentInfo::StaticClass());
 				const UItemFragment_EquipmentInfo* EquipmentFragment = Cast<UItemFragment_EquipmentInfo>(Fragment);
-				EquipmentDamage += EquipmentFragment->EquipmentDamage;
-				EquipmentArmor += EquipmentFragment->EquipmentArmor;
+				if (EquipmentFragment)
+				{
+					TotalEquipmentInfo.EquipmentDamage += EquipmentFragment->EquipmentInfo.EquipmentDamage;
+					TotalEquipmentInfo.EquipmentArmor += EquipmentFragment->EquipmentInfo.EquipmentArmor;
+					TotalEquipmentInfo.EquipmentMaxHealth += EquipmentFragment->EquipmentInfo.EquipmentMaxHealth;
+				}
 			}
 		}
 	}
-	AxeASC->ApplyEquipmentEffectToSelf(AxeCharacterOwner->EquipmentEffect, EquipmentDamage, EquipmentArmor);
+	AxeASC->ApplyEquipmentEffectToSelf(AxeCharacterOwner->EquipmentEffect, TotalEquipmentInfo);
 }
 
 bool UInventoryComponent::SetOwnerActor(AActor* InOwnerActor)

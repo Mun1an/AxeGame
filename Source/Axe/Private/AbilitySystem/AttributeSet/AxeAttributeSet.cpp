@@ -16,6 +16,30 @@
 
 UAxeAttributeSet::UAxeAttributeSet()
 {
+	const FAxeGameplayTags AxeGameplayTags = FAxeGameplayTags::Get();
+
+	TagsToAttributesFuncPtrMap.Add(AxeGameplayTags.Attributes_Vital_Health, GetHealthAttribute);
+	TagsToAttributesFuncPtrMap.Add(AxeGameplayTags.Attributes_Vital_Stamina, GetStaminaAttribute);
+	TagsToAttributesFuncPtrMap.Add(AxeGameplayTags.Attributes_Primary_Strength, GetStrengthAttribute);
+	TagsToAttributesFuncPtrMap.Add(AxeGameplayTags.Attributes_Primary_Dexterity, GetDexterityAttribute);
+	TagsToAttributesFuncPtrMap.Add(AxeGameplayTags.Attributes_Primary_Intelligence, GetIntelligenceAttribute);
+	TagsToAttributesFuncPtrMap.Add(AxeGameplayTags.Attributes_Secondary_MaxHealth, GetMaxHealthAttribute);
+	TagsToAttributesFuncPtrMap.Add(AxeGameplayTags.Attributes_Secondary_MaxStamina, GetMaxStaminaAttribute);
+	TagsToAttributesFuncPtrMap.Add(AxeGameplayTags.Attributes_Secondary_Armor, GetArmorAttribute);
+	TagsToAttributesFuncPtrMap.Add(AxeGameplayTags.Attributes_Secondary_Evasive, GetEvasiveAttribute);
+	TagsToAttributesFuncPtrMap.Add(AxeGameplayTags.Attributes_Secondary_PhysicalResistance,
+	                               GetPhysicalResistanceAttribute);
+	TagsToAttributesFuncPtrMap.Add(AxeGameplayTags.Attributes_Secondary_MagicResistance, GetMagicResistanceAttribute);
+	TagsToAttributesFuncPtrMap.Add(AxeGameplayTags.Attributes_Secondary_CriticalHitChance,
+	                               GetCriticalHitChanceAttribute);
+	TagsToAttributesFuncPtrMap.Add(AxeGameplayTags.Attributes_Secondary_CriticalHitDamage,
+	                               GetCriticalHitDamageAttribute);
+	TagsToAttributesFuncPtrMap.Add(AxeGameplayTags.Attributes_Secondary_HealthRegeneration,
+	                               GetHealthRegenerationAttribute);
+	TagsToAttributesFuncPtrMap.Add(AxeGameplayTags.Attributes_Secondary_StaminaRegeneration,
+	                               GetStaminaRegenerationAttribute);
+	TagsToAttributesFuncPtrMap.Add(AxeGameplayTags.Attributes_Secondary_MovementSpeed, GetMovementSpeedAttribute);
+	TagsToAttributesFuncPtrMap.Add(AxeGameplayTags.Attributes_Secondary_BaseDamage, GetBaseDamageAttribute);
 }
 
 AAxeCharacterBase* UAxeAttributeSet::GetAxeCharacterOwner() const

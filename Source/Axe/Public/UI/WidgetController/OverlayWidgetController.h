@@ -21,6 +21,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerStatChangedSignature, int32
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnSendInventoryItemUIMessageSignature, UTexture2D*, Texture,
 											   FText, ItemName, int32, StackCount);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilityInfoSignature, const FAxeAbilityUIInfo&, AbilityInfo);
 
 /**
  * 
@@ -36,6 +37,11 @@ public:
 	virtual void BroadcastInitialValues() override;
 	virtual void BindCallbacksToDependencies() override;
 
+	UPROPERTY(BlueprintAssignable, Category="GAS|Messages")
+	FAbilityInfoSignature AbilityInfoDelegate;
+	void BroadcastAbilityInfo();
+	void OnGetActivateAbilitySpec(const FGameplayAbilitySpec& AbilitySpec);
+	
 	// Signature delegates
 	UPROPERTY(BlueprintAssignable, Category="GAS|Attributes")
 	FOnAttributeChangedSignature OnHealthChanged;
@@ -63,6 +69,9 @@ protected:
 	// template <typename T>
 	// T* GetDataTableRowByTag(UDataTable* DataTable, const FGameplayTag& Tag) const;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TObjectPtr<UAbilityUIDataAsset> AbilityUIDataAsset;
+	
 	UPROPERTY(BlueprintReadOnly, Category="WidgetController")
 	TObjectPtr<UInventoryComponent> InventoryComponent;
 };

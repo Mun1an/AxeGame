@@ -91,6 +91,10 @@ struct FAxeGameplayTags
 	FGameplayTag Damage_Magic;
 	TMap<FGameplayTag, FGameplayTag> DamageTypesToResistances;
 
+	TArray<FGameplayTag> AllAttributesList;
+	TArray<FGameplayTag> AllPrimaryTagList;
+	TArray<FGameplayTag> AllSecondaryTagList;
+
 	// State
 	FGameplayTag State_HitReact;
 	FGameplayTag State_Blocking;
@@ -103,6 +107,7 @@ struct FAxeGameplayTags
 	FGameplayTag Effect_Magnitude_Damage;
 	FGameplayTag Effect_Magnitude_Stamina;
 	FGameplayTag Effect_Magnitude_Armor;
+	FGameplayTag Effect_Magnitude_MaxHealth;
 
 
 	/**
@@ -122,8 +127,11 @@ struct FAxeGameplayTags
 	FGameplayTag Ability_Interaction_Activate;
 
 protected:
-	void AddTag(FGameplayTag& OutTag, const ANSICHAR* TagName = nullptr, const ANSICHAR* TagComment = nullptr);
+	void AddTag(FGameplayTag& OutTag, const ANSICHAR* TagName = nullptr, const ANSICHAR* TagComment = nullptr,
+	            bool bIsAttributesTag = false);
 	void AddAllTags(UGameplayTagsManager& Manager);
+
+	void OnTagsAdded();
 
 private:
 	static FAxeGameplayTags Instance;
