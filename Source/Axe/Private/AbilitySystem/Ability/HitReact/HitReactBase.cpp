@@ -12,6 +12,8 @@ void UHitReactBase::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& 
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 }
 
+
+
 ELaunchCharacterDirection UHitReactBase::GetHitDirectionMontage() const
 {
 	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();

@@ -16,11 +16,12 @@ class AXE_API UHitReactBase : public UAxeGameplayAbility
 
 public:
 	void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
-
+	
 	void SetHitResult(const FHitResult& InHitResult)
 	{
 		HitResult = InHitResult;
 	}
+
 	void SetSourceActor(AActor* InSourceActor)
 	{
 		SourceActor = InSourceActor;

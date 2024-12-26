@@ -6,6 +6,7 @@
 #include "UI/WidgetController/AxeWidgetControllerBase.h"
 #include "InventoryWidgetController.generated.h"
 
+class UInventoryEntryDefaultIconDataAsset;
 class UItemInstance;
 class UInventoryComponent;
 /**
@@ -23,17 +24,20 @@ class AXE_API UInventoryWidgetController : public UAxeWidgetControllerBase
 
 public:
 	virtual void SetWidgetControllerParams(const FWidgetControllerParams& Params) override;
-	
+
 	UPROPERTY(BlueprintAssignable, Category="Inventory")
 	FOnInventoryChangedInWidgetController OnInventoryChangedInWidgetController;
 
 	UFUNCTION(BlueprintCallable)
 	void TrySwapItemSlot(int32 FromSlot, int32 ToSlot);
-	
+
 protected:
 	UFUNCTION()
 	void OnInventoryChangedCallback(int32 SlotIndex, UItemInstance* ItemInstance, int32 NewCount, int32 OldCount);
 
 	UPROPERTY(BlueprintReadOnly, Category="WidgetController")
 	TObjectPtr<UInventoryComponent> InventoryComponent;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="InventoryEntryDefaultIconDataAsset")
+	TObjectPtr<UInventoryEntryDefaultIconDataAsset> InventoryEntryDefaultIconDataAsset;
 };

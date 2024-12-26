@@ -163,9 +163,9 @@ protected:
 	EAbilitySkillStage CurrentAbilitySkillStage = EAbilitySkillStage::ASS_FrontSwing;
 
 	// 可以在后摇时被替换
-	UPROPERTY(EditDefaultsOnly, Category = "Axe Ability | Target")
+	UPROPERTY(EditDefaultsOnly, Category = "Axe Ability | SkillStage")
 	bool bCanReplacedInBackSwing = true;
-	UPROPERTY(EditDefaultsOnly, Category = "Axe Ability | Target")
+	UPROPERTY(EditDefaultsOnly, Category = "Axe Ability | SkillStage")
 	bool bCanCancelByMoveInputInBackSwing = true;
 	//
 	UFUNCTION()
