@@ -25,15 +25,6 @@ void UComboActionComponent::BeginPlay()
 
 	InitComboAbilityTree();
 	LastComboTreeNode = ComboAbilityTree->Root;
-
-	// if (AxeCharacterPlayer->IsLocallyControlled())
-	// {
-	// 	UE_LOG(LogTemp, Warning, TEXT("IsLocallyControlled"));
-	// }
-	// if (AxeCharacterPlayer->HasAuthority())
-	// {
-	// 	UE_LOG(LogTemp, Warning, TEXT("HasAuthority"));
-	// }
 }
 
 void UComboActionComponent::InitComboAbilityTree()
@@ -164,6 +155,12 @@ void UComboActionComponent::OnComboAbilityActivated(UGameplayAbility* Ability)
 
 void UComboActionComponent::OnComboAbilityEnded(UGameplayAbility* Ability)
 {
+	if (Ability->GetClass() != LastComboTreeNode->AbilityClass)
+	{
+		LastComboTreeNode = ComboAbilityTree->Root;
+		return;
+	}
+	// 连招 被连招 取消 
 	bIsInComboWindow = false;
 	bSaveComboInputAbilityTagCache = false;
 }

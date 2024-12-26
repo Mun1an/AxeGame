@@ -6,13 +6,15 @@
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
 #include "AbilitySystem/AttributeSet/AxeAttributeSet.h"
 #include "Inventory/Component/InventoryComponent.h"
+#include "PlayerController/AxePlayerController.h"
 #include "PlayerState/AxePlayerState.h"
+#include "TipsMessage/TipsMessageSubsystem.h"
 #include "UI/WidgetController/InventoryWidgetController.h"
 
 void UOverlayWidgetController::SetWidgetControllerParams(const FWidgetControllerParams& Params)
 {
 	Super::SetWidgetControllerParams(Params);
-	
+
 	check(AxePlayerState)
 	InventoryComponent = AxePlayerState->GetInventoryComponent();
 }
@@ -39,7 +41,7 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 	// AxeASC
 	const UAxeAttributeSet* LocalAxeAttributeSet = GetAxeAttributeSet();
 	UAxeAbilitySystemComponent* AxeASC = GetAxeAbilitySystemComponent();
-	
+
 	AxeASC->GetGameplayAttributeValueChangeDelegate(
 		LocalAxeAttributeSet->GetHealthAttribute()
 	).AddUObject(this, &UOverlayWidgetController::HealthChanged);
@@ -58,7 +60,14 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 	AxeASC->AbilitiesGivenDelegate.AddUObject(this, &UOverlayWidgetController::BroadcastAbilityInfo);
 
 	// item
-	InventoryComponent->OnSendInventoryItemUIMessage.AddDynamic(this, &UOverlayWidgetController::SendInventoryItemUIMessage);
+	InventoryComponent->OnSendInventoryItemUIMessage.AddDynamic(
+		this, &UOverlayWidgetController::SendInventoryItemUIMessage);
+
+
+	// TipsMessage
+	const ULocalPlayer* LocalPlayer = PlayerController->GetLocalPlayer();
+	UTipsMessageSubsystem* TipsMessageSubsystem = LocalPlayer->GetGameInstance()->GetSubsystem<UTipsMessageSubsystem>();
+	TipsMessageSubsystem->OnSendTipsMessageSignature.AddDynamic(this, &UOverlayWidgetController::OnSendTipsMessage);
 }
 
 void UOverlayWidgetController::BroadcastAbilityInfo()
@@ -114,4 +123,9 @@ void UOverlayWidgetController::MaxStaminaChanged(const FOnAttributeChangeData& D
 void UOverlayWidgetController::SendInventoryItemUIMessage(UTexture2D* Texture, FText ItemName, int32 StackCount)
 {
 	OnSendInventoryItemUIMessageSignature.Broadcast(Texture, ItemName, StackCount);
+}
+
+void UOverlayWidgetController::OnSendTipsMessage(const FString& Message)
+{
+	OnSendTipsMessageUISignature.Broadcast(Message);
 }
