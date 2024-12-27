@@ -369,6 +369,17 @@ void UAxeGameplayAbility::EndAbility(const FGameplayAbilitySpecHandle Handle,
 	}
 }
 
+bool UAxeGameplayAbility::CheckCost(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+                                    FGameplayTagContainer* OptionalRelevantTags) const
+{
+	const bool bResult = Super::CheckCost(Handle, ActorInfo, OptionalRelevantTags);
+
+	UGameplayEffect* CostGE = GetCostGameplayEffect();
+	UAbilitySystemComponent* const ASC = ActorInfo->AbilitySystemComponent.Get();
+
+	return bResult;
+}
+
 
 //
 UAxeAbilitySystemComponent* UAxeGameplayAbility::GetAxeAbilitySystemComponentFromActorInfo() const
