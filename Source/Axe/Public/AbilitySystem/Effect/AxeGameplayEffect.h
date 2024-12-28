@@ -16,9 +16,4 @@ class AXE_API UAxeGameplayEffect : public UGameplayEffect
 {
 	GENERATED_BODY()
 
-public:
-	bool CanApplyAttributeModifiers(const UGameplayEffect* GameplayEffect, float Level,
-	                                const FGameplayEffectContextHandle& EffectContext,
-	                                const AAxeCharacterBase* ToTarget,
-	                                TArray<FGameplayAttribute>& NotApplyAttributes);
 };

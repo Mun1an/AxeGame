@@ -3,6 +3,7 @@
 
 #include "AbilitySystem/AxeBlueprintFunctionLibrary.h"
 
+#include "GameplayEffect.h"
 #include "GameplayEffectTypes.h"
 #include "Character/AxeCharacterPlayer.h"
 #include "Enum/AxeTypes.h"
@@ -77,4 +78,42 @@ bool UAxeBlueprintFunctionLibrary::IsFriend(const AActor* ActorA, const AActor* 
 	const bool bIsEnemyB = ActorB->ActorHasTag(FName("Enemy"));
 
 	return (bIsPlayerA && bIsPlayerB) || (bIsEnemyA && bIsEnemyB);
+}
+
+bool UAxeBlueprintFunctionLibrary::CanApplyAttributeModifiers(const UGameplayEffect* GameplayEffect, float Level,
+	const FGameplayEffectContextHandle& EffectContext, const AAxeCharacterBase* ToTarget,
+	TArray<FGameplayAttribute>& NotApplyAttributes)
+{
+	FGameplayEffectSpec Spec(GameplayEffect, EffectContext, Level);
+
+	Spec.CalculateModifierMagnitudes();
+
+	UAttributeSet* AttributeSet = ToTarget->GetAttributeSet();
+
+	for (int32 ModIdx = 0; ModIdx < Spec.Modifiers.Num(); ++ModIdx)
+	{
+		const FGameplayModifierInfo& ModDef = Spec.Def->Modifiers[ModIdx];
+		const FModifierSpec& ModSpec = Spec.Modifiers[ModIdx];
+
+		// It only makes sense to check additive operators
+		if (ModDef.ModifierOp == EGameplayModOp::Additive)
+		{
+			if (!ModDef.Attribute.IsValid())
+			{
+				continue;
+			}
+			float CurrentValue = ModDef.Attribute.GetNumericValueChecked(AttributeSet);
+			float CostValue = ModSpec.GetEvaluatedMagnitude();
+
+			if (CurrentValue + CostValue < 0.f)
+			{
+				NotApplyAttributes.AddUnique(ModDef.Attribute);
+			}
+		}
+	}
+	if (NotApplyAttributes.Num() > 0)
+	{
+		return false;
+	}
+	return true;
 }

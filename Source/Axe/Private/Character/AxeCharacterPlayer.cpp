@@ -8,6 +8,7 @@
 #include "ActionSystem/ComboActionComponent.h"
 #include "Engine/LocalPlayer.h"
 #include "Camera/CameraComponent.h"
+#include "Character/ModularCharacterComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -53,12 +54,16 @@ AAxeCharacterPlayer::AAxeCharacterPlayer()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
+	RetargetCharacterMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("RetargetCharacterMesh"));
+	RetargetCharacterMesh->SetupAttachment(GetMesh());
+	RetargetCharacterMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
 	Weapon = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Weapon"));
-	Weapon->SetupAttachment(GetMesh(), WeaponTipSocketName);
+	Weapon->SetupAttachment(RetargetCharacterMesh, WeaponTipSocketName);
 	Weapon->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	WeaponSecondary = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponSecondary"));
-	WeaponSecondary->SetupAttachment(GetMesh(), WeaponSecondaryTipSocketName);
+	WeaponSecondary->SetupAttachment(RetargetCharacterMesh, WeaponSecondaryTipSocketName);
 	WeaponSecondary->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	// ComboActionComponent
 	ComboActionComponent = CreateDefaultSubobject<UComboActionComponent>(TEXT("ComboActionComponent"));
@@ -66,6 +71,94 @@ AAxeCharacterPlayer::AAxeCharacterPlayer()
 	ActionCombatComponent = CreateDefaultSubobject<UActionCombatComponent>(TEXT("ActionCombatComponent"));
 	// InventoryComponent
 	// InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
+
+	// ModularCharacterComponent
+	ModularCharacterComponent = CreateDefaultSubobject<UModularCharacterComponent>(TEXT("ModularCharacterComponent"));
+
+	HandleModularSkeletalMeshComponent(ModularSM_Gender_Head,
+	                                   "Gender_Head",
+	                                   EAxeModularCharacterSM::Gender_Head);
+	HandleModularSkeletalMeshComponent(ModularSM_Gender_Eyebrows,
+	                                   "Gender_Eyebrows",
+	                                   EAxeModularCharacterSM::Gender_Eyebrows);
+	HandleModularSkeletalMeshComponent(ModularSM_Gender_FacialHair,
+	                                   "Gender_FacialHair",
+	                                   EAxeModularCharacterSM::Gender_FacialHair);
+	HandleModularSkeletalMeshComponent(ModularSM_Gender_Torso,
+	                                   "Gender_Torso",
+	                                   EAxeModularCharacterSM::Gender_Torso);
+	HandleModularSkeletalMeshComponent(ModularSM_Gender_ArmUpperArm_Right,
+	                                   "Gender_ArmUpperArm_Right",
+	                                   EAxeModularCharacterSM::Gender_ArmUpperArm_Right);
+	HandleModularSkeletalMeshComponent(ModularSM_Gender_ArmUpperArm_Left,
+	                                   "Gender_ArmUpperArm_Left",
+	                                   EAxeModularCharacterSM::Gender_ArmUpperArm_Left);
+	HandleModularSkeletalMeshComponent(ModularSM_Gender_ArmLowerArm_Right,
+	                                   "Gender_ArmLowerArm_Right",
+	                                   EAxeModularCharacterSM::Gender_ArmLowerArm_Right);
+	HandleModularSkeletalMeshComponent(ModularSM_Gender_HandRight,
+	                                   "Gender_HandRight",
+	                                   EAxeModularCharacterSM::Gender_HandRight);
+	HandleModularSkeletalMeshComponent(ModularSM_Gender_ArmLowerArm_Left,
+	                                   "Gender_ArmLowerArm_Left",
+	                                   EAxeModularCharacterSM::Gender_ArmLowerArm_Left);
+	HandleModularSkeletalMeshComponent(ModularSM_Gender_HandLeft,
+	                                   "Gender_HandLeft",
+	                                   EAxeModularCharacterSM::Gender_HandLeft);
+	HandleModularSkeletalMeshComponent(ModularSM_Gender_Hips,
+	                                   "Gender_Hips",
+	                                   EAxeModularCharacterSM::Gender_Hips);
+	HandleModularSkeletalMeshComponent(ModularSM_Gender_LegRight,
+	                                   "Gender_LegRight",
+	                                   EAxeModularCharacterSM::Gender_LegRight);
+	HandleModularSkeletalMeshComponent(ModularSM_Gender_LegLeft,
+	                                   "Gender_LegLeft",
+	                                   EAxeModularCharacterSM::Gender_LegLeft);
+	HandleModularSkeletalMeshComponent(ModularSM_All_HeadCoverings_NoHair,
+	                                   "All_HeadCoverings_NoHair",
+	                                   EAxeModularCharacterSM::All_HeadCoverings_NoHair);
+	HandleModularSkeletalMeshComponent(ModularSM_All_HeadCoverings_BaseHair,
+	                                   "All_HeadCoverings_BaseHair",
+	                                   EAxeModularCharacterSM::All_HeadCoverings_BaseHair);
+	HandleModularSkeletalMeshComponent(ModularSM_All_HeadCoverings_NoFacialHair,
+	                                   "All_HeadCoverings_NoFacialHair",
+	                                   EAxeModularCharacterSM::All_HeadCoverings_NoFacialHair);
+	HandleModularSkeletalMeshComponent(ModularSM_All_Hair,
+	                                   "All_Hair",
+	                                   EAxeModularCharacterSM::All_Hair);
+	HandleModularSkeletalMeshComponent(ModularSM_All_HeadAttachment,
+	                                   "All_HeadAttachment",
+	                                   EAxeModularCharacterSM::All_HeadAttachment);
+	HandleModularSkeletalMeshComponent(ModularSM_All_ChestAttachment,
+	                                   "All_ChestAttachment",
+	                                   EAxeModularCharacterSM::All_ChestAttachment);
+	HandleModularSkeletalMeshComponent(ModularSM_All_BackAttachment,
+	                                   "All_BackAttachment",
+	                                   EAxeModularCharacterSM::All_BackAttachment);
+	HandleModularSkeletalMeshComponent(ModularSM_All_ShoulderAttachment_Right,
+	                                   "All_ShoulderAttachment_Right",
+	                                   EAxeModularCharacterSM::All_ShoulderAttachment_Right);
+	HandleModularSkeletalMeshComponent(ModularSM_All_ShoulderAttachment_Left,
+	                                   "All_ShoulderAttachment_Left",
+	                                   EAxeModularCharacterSM::All_ShoulderAttachment_Left);
+	HandleModularSkeletalMeshComponent(ModularSM_All_ElbowAttachment_Right,
+	                                   "All_ElbowAttachment_Right",
+	                                   EAxeModularCharacterSM::All_ElbowAttachment_Right);
+	HandleModularSkeletalMeshComponent(ModularSM_All_ElbowAttachment_Left,
+	                                   "All_ElbowAttachment_Left",
+	                                   EAxeModularCharacterSM::All_ElbowAttachment_Left);
+	HandleModularSkeletalMeshComponent(ModularSM_All_HipsAttachment,
+	                                   "All_HipsAttachment",
+	                                   EAxeModularCharacterSM::All_HipsAttachment);
+	HandleModularSkeletalMeshComponent(ModularSM_All_KneeAttachment_Right,
+	                                   "All_KneeAttachment_Right",
+	                                   EAxeModularCharacterSM::All_KneeAttachment_Right);
+	HandleModularSkeletalMeshComponent(ModularSM_All_KneeAttachment_Left,
+	                                   "All_KneeAttachment_Left",
+	                                   EAxeModularCharacterSM::All_KneeAttachment_Left);
+	HandleModularSkeletalMeshComponent(ModularSM_All_Extra,
+	                                   "All_Extra",
+	                                   EAxeModularCharacterSM::All_Extra);
 }
 
 void AAxeCharacterPlayer::PossessedBy(AController* NewController)
@@ -141,4 +234,18 @@ void AAxeCharacterPlayer::InitInventory()
 	InventoryComponent = AxePlayerState->GetInventoryComponent();
 	InventoryComponent->SetOwnerActor(AxePlayerState);
 	InventoryComponent->SetAvatarActor(this);
+}
+
+void AAxeCharacterPlayer::HandleModularSkeletalMeshComponent(TObjectPtr<USkeletalMeshComponent>& SMComp,
+                                                             FName CompName,
+                                                             EAxeModularCharacterSM SMEnum)
+{
+	SMComp = CreateDefaultSubobject<USkeletalMeshComponent>(CompName);
+	SMComp->SetupAttachment(RetargetCharacterMesh);
+	SMComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	if (SMComp)
+	{
+		ModularSkeletalMeshComponentMap.Add(SMEnum, SMComp);
+	}
 }

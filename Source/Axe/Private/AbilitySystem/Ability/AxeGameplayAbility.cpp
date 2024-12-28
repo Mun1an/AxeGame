@@ -26,6 +26,9 @@
 #include "Character/AxeCharacterPlayer.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "TipsMessage/TipsMessageFunctionLibrary.h"
+#include "UI/HUD/AxeHUD.h"
+#include "UI/WidgetController/AttributeMenuWidgetController.h"
 
 #define ENSURE_ABILITY_IS_INSTANTIATED_OR_RETURN(FunctionName, ReturnValue)																				\
 {																																						\
@@ -376,6 +379,27 @@ bool UAxeGameplayAbility::CheckCost(const FGameplayAbilitySpecHandle Handle, con
 
 	UGameplayEffect* CostGE = GetCostGameplayEffect();
 	UAbilitySystemComponent* const ASC = ActorInfo->AbilitySystemComponent.Get();
+
+	if (!bResult)
+	{
+		// 某属性不足时 发送提示
+		TArray<FGameplayAttribute> NotApplyAttributes;
+		AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner(ActorInfo);
+		UAxeBlueprintFunctionLibrary::CanApplyAttributeModifiers(
+			CostGE,
+			GetAbilityLevel(Handle, ActorInfo),
+			MakeEffectContext(Handle, ActorInfo),
+			AxeCharacterOwner,
+			NotApplyAttributes
+		);
+		for (const FGameplayAttribute& NotApplyAttribute : NotApplyAttributes)
+		{
+			FString String = NotApplyAttribute.GetUProperty()->GetName();
+			UTipsMessageFunctionLibrary::SendTipsMessage(
+				AxeCharacterOwner, FString::Printf(TEXT("%s 不足"), *String)
+			);
+		}
+	}
 
 	return bResult;
 }

@@ -96,8 +96,10 @@ TSubclassOf<UAxeGameplayAbility>* UComboActionComponent::GetComboAbilityByInputT
 	{
 		return nullptr;
 	}
-
-	if (UComboTreeNode* NextComboTreeNode = LastComboTreeNode->FindChild(NextInputAbilityTag))
+	
+	UComboTreeNode* NextComboTreeNode = LastComboTreeNode->FindChild(NextInputAbilityTag);
+	
+	if (NextComboTreeNode && IsInComboSwitchWindow())
 	{
 		// 连招
 		return &NextComboTreeNode->AbilityClass;
@@ -157,10 +159,10 @@ void UComboActionComponent::OnComboAbilityEnded(UGameplayAbility* Ability)
 {
 	if (Ability->GetClass() != LastComboTreeNode->AbilityClass)
 	{
+		// 连招结束 （不是被连招取消）
 		LastComboTreeNode = ComboAbilityTree->Root;
-		return;
 	}
-	// 连招 被连招 取消 
+
 	bIsInComboWindow = false;
 	bSaveComboInputAbilityTagCache = false;
 }

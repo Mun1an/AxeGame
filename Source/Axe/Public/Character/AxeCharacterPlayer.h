@@ -9,6 +9,8 @@
 #include "Logging/LogMacros.h"
 #include "AxeCharacterPlayer.generated.h"
 
+enum class EAxeModularCharacterSM : uint8;
+class UModularCharacterComponent;
 class UInventoryComponent;
 class UActionCombatComponent;
 class UComboActionComponent;
@@ -59,6 +61,13 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
 
+	USkeletalMeshComponent* GetRetargetCharacterMesh() const { return RetargetCharacterMesh; }
+
+	TMap<EAxeModularCharacterSM, USkeletalMeshComponent*> GetModularSkeletalMeshComponentMap() const 
+	{
+		return ModularSkeletalMeshComponentMap;
+	}
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
@@ -75,6 +84,9 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	FName WeaponTipSocketName = FName("WeaponHandSocket");
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Mesh")
+	TObjectPtr<USkeletalMeshComponent> RetargetCharacterMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Combat")
 	TObjectPtr<UStaticMeshComponent> Weapon;
@@ -93,4 +105,71 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInventoryComponent> InventoryComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UModularCharacterComponent> ModularCharacterComponent;
+
+	// ModularSkeletalMeshComponent
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USkeletalMeshComponent> ModularSM_Gender_Head;
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USkeletalMeshComponent> ModularSM_Gender_Eyebrows;
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USkeletalMeshComponent> ModularSM_Gender_FacialHair;
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USkeletalMeshComponent> ModularSM_Gender_Torso;
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USkeletalMeshComponent> ModularSM_Gender_ArmUpperArm_Right;
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USkeletalMeshComponent> ModularSM_Gender_ArmUpperArm_Left;
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USkeletalMeshComponent> ModularSM_Gender_ArmLowerArm_Right;
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USkeletalMeshComponent> ModularSM_Gender_HandRight;
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USkeletalMeshComponent> ModularSM_Gender_ArmLowerArm_Left;
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USkeletalMeshComponent> ModularSM_Gender_HandLeft;
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USkeletalMeshComponent> ModularSM_Gender_Hips;
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USkeletalMeshComponent> ModularSM_Gender_LegRight;
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USkeletalMeshComponent> ModularSM_Gender_LegLeft;
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USkeletalMeshComponent> ModularSM_All_HeadCoverings_NoHair;
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USkeletalMeshComponent> ModularSM_All_HeadCoverings_BaseHair;
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USkeletalMeshComponent> ModularSM_All_HeadCoverings_NoFacialHair;
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USkeletalMeshComponent> ModularSM_All_Hair;
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USkeletalMeshComponent> ModularSM_All_HeadAttachment;
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USkeletalMeshComponent> ModularSM_All_ChestAttachment;
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USkeletalMeshComponent> ModularSM_All_BackAttachment;
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USkeletalMeshComponent> ModularSM_All_ShoulderAttachment_Right;
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USkeletalMeshComponent> ModularSM_All_ShoulderAttachment_Left;
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USkeletalMeshComponent> ModularSM_All_ElbowAttachment_Right;
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USkeletalMeshComponent> ModularSM_All_ElbowAttachment_Left;
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USkeletalMeshComponent> ModularSM_All_HipsAttachment;
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USkeletalMeshComponent> ModularSM_All_KneeAttachment_Right;
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USkeletalMeshComponent> ModularSM_All_KneeAttachment_Left;
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USkeletalMeshComponent> ModularSM_All_Extra;
+
+	UPROPERTY()
+	TMap<EAxeModularCharacterSM, USkeletalMeshComponent*> ModularSkeletalMeshComponentMap;
+
+	void HandleModularSkeletalMeshComponent(TObjectPtr<USkeletalMeshComponent>& SMComp, FName CompName,
+	                                        EAxeModularCharacterSM SMEnum);
 };

@@ -6,6 +6,9 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "AxeBlueprintFunctionLibrary.generated.h"
 
+struct FGameplayAttribute;
+class AAxeCharacterBase;
+class UGameplayEffect;
 class AAxeCharacterPlayer;
 struct FGameplayEffectContext;
 struct FGameplayEffectContextHandle;
@@ -33,4 +36,10 @@ public:
 
 	UFUNCTION(BlueprintPure, Category="AxeBPLibrary|Family")
 	static bool IsFriend(const AActor* ActorA, const AActor* ActorB);
+
+	UFUNCTION(BlueprintCallable, Category="AxeBPLibrary|GameplayEffect Attribute")
+	static bool CanApplyAttributeModifiers(const UGameplayEffect* GameplayEffect, float Level,
+									const FGameplayEffectContextHandle& EffectContext,
+									const AAxeCharacterBase* ToTarget,
+									TArray<FGameplayAttribute>& NotApplyAttributes);
 };
