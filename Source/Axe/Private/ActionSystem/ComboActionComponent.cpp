@@ -99,7 +99,7 @@ TSubclassOf<UAxeGameplayAbility>* UComboActionComponent::GetComboAbilityByInputT
 	
 	UComboTreeNode* NextComboTreeNode = LastComboTreeNode->FindChild(NextInputAbilityTag);
 	
-	if (NextComboTreeNode && IsInComboSwitchWindow())
+	if (NextComboTreeNode)
 	{
 		// 连招
 		return &NextComboTreeNode->AbilityClass;

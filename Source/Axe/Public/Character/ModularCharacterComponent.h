@@ -11,15 +11,16 @@ class AAxeCharacterPlayer;
 UENUM(BlueprintType)
 enum class EAxeModularCharacterSM : uint8
 {
+	None,
 	Gender_Head,
-	Gender_Eyebrows,
+	Gender_Eyebrow,
 	Gender_FacialHair,
 	Gender_Torso,
-	Gender_ArmUpperArm_Right,
-	Gender_ArmUpperArm_Left,
-	Gender_ArmLowerArm_Right,
+	Gender_ArmUpperRight,
+	Gender_ArmUpperLeft,
+	Gender_ArmLowerRight,
+	Gender_ArmLowerLeft,
 	Gender_HandRight,
-	Gender_ArmLowerArm_Left,
 	Gender_HandLeft,
 	Gender_Hips,
 	Gender_LegRight,
@@ -41,6 +42,31 @@ enum class EAxeModularCharacterSM : uint8
 	All_Extra,
 };
 
+UENUM(BlueprintType)
+enum class EModularCharacterGenderType : uint8
+{
+	Female,
+	Male,
+	All
+};
+
+USTRUCT(Blueprintable, BlueprintType)
+struct FModularCharacterSMInfo : public FTableRowBase
+{
+	GENERATED_BODY()
+	FModularCharacterSMInfo()
+	{
+	}
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	EAxeModularCharacterSM ModularMeshEnum = EAxeModularCharacterSM::None;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	EModularCharacterGenderType GenderType = EModularCharacterGenderType::All;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TArray<USkeletalMesh*> ModularMeshList = {};
+};
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class AXE_API UModularCharacterComponent : public UActorComponent
@@ -52,16 +78,46 @@ public:
 	UModularCharacterComponent();
 
 	UFUNCTION(BlueprintCallable)
-	void SetModularMesh();
+	void SetModularMesh(EAxeModularCharacterSM ESM, USkeletalMesh* NewSM);
+	UFUNCTION(BlueprintCallable)
+	void SetAllModularMesh();
+
+
+	UFUNCTION(BlueprintCallable)
+	void GetAllSkeletalMeshesInFolder(const FString& FolderPath, TArray<USkeletalMesh*>& OutSkeletalMeshes);
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
 	UFUNCTION()
+	void ModularCharacterInit();
+
+	UFUNCTION()
 	AAxeCharacterPlayer* GetAxeCharacterPlayerOwner();
+
+	UFUNCTION()
+	void FindModularSMInDataTable(const EAxeModularCharacterSM ESM, const EModularCharacterGenderType GenderType,
+	                              TArray<USkeletalMesh*>& OutSkeletalMeshes);
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	TObjectPtr<UDataTable> DT_ModularCharacterSM;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	TObjectPtr<UMaterial> MaskedMaterial;
 
 private:
 	UPROPERTY()
+	EModularCharacterGenderType CharacterGenderType = EModularCharacterGenderType::Male;
+
+	UPROPERTY()
 	AAxeCharacterPlayer* AxeCharacterPlayerOwner = nullptr;
+
+	// TEST
+	UFUNCTION(BlueprintCallable)
+	void AddRowTest(EAxeModularCharacterSM ESM, EModularCharacterGenderType GenderType,
+	                TArray<USkeletalMesh*> MeshList);
+
+	UFUNCTION(BlueprintCallable)
+	void AddModularSMToDataTableTEST();
 };

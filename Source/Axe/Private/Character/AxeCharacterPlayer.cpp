@@ -75,33 +75,35 @@ AAxeCharacterPlayer::AAxeCharacterPlayer()
 	// ModularCharacterComponent
 	ModularCharacterComponent = CreateDefaultSubobject<UModularCharacterComponent>(TEXT("ModularCharacterComponent"));
 
+	ModularSkeletalMeshComponentMap = TMap<EAxeModularCharacterSM, TWeakObjectPtr<USkeletalMeshComponent>>();
+
 	HandleModularSkeletalMeshComponent(ModularSM_Gender_Head,
 	                                   "Gender_Head",
 	                                   EAxeModularCharacterSM::Gender_Head);
-	HandleModularSkeletalMeshComponent(ModularSM_Gender_Eyebrows,
-	                                   "Gender_Eyebrows",
-	                                   EAxeModularCharacterSM::Gender_Eyebrows);
+	HandleModularSkeletalMeshComponent(ModularSM_Gender_Eyebrow,
+	                                   "Gender_Eyebrow",
+	                                   EAxeModularCharacterSM::Gender_Eyebrow);
 	HandleModularSkeletalMeshComponent(ModularSM_Gender_FacialHair,
 	                                   "Gender_FacialHair",
 	                                   EAxeModularCharacterSM::Gender_FacialHair);
 	HandleModularSkeletalMeshComponent(ModularSM_Gender_Torso,
 	                                   "Gender_Torso",
 	                                   EAxeModularCharacterSM::Gender_Torso);
-	HandleModularSkeletalMeshComponent(ModularSM_Gender_ArmUpperArm_Right,
-	                                   "Gender_ArmUpperArm_Right",
-	                                   EAxeModularCharacterSM::Gender_ArmUpperArm_Right);
-	HandleModularSkeletalMeshComponent(ModularSM_Gender_ArmUpperArm_Left,
-	                                   "Gender_ArmUpperArm_Left",
-	                                   EAxeModularCharacterSM::Gender_ArmUpperArm_Left);
-	HandleModularSkeletalMeshComponent(ModularSM_Gender_ArmLowerArm_Right,
-	                                   "Gender_ArmLowerArm_Right",
-	                                   EAxeModularCharacterSM::Gender_ArmLowerArm_Right);
+	HandleModularSkeletalMeshComponent(ModularSM_Gender_ArmUpperRight,
+	                                   "Gender_ArmUpperRight",
+	                                   EAxeModularCharacterSM::Gender_ArmUpperRight);
+	HandleModularSkeletalMeshComponent(ModularSM_Gender_ArmUpperLeft,
+	                                   "Gender_ArmUpperLeft",
+	                                   EAxeModularCharacterSM::Gender_ArmUpperLeft);
+	HandleModularSkeletalMeshComponent(ModularSM_Gender_ArmLowerRight,
+	                                   "Gender_ArmLowerRight",
+	                                   EAxeModularCharacterSM::Gender_ArmLowerRight);
 	HandleModularSkeletalMeshComponent(ModularSM_Gender_HandRight,
 	                                   "Gender_HandRight",
 	                                   EAxeModularCharacterSM::Gender_HandRight);
-	HandleModularSkeletalMeshComponent(ModularSM_Gender_ArmLowerArm_Left,
-	                                   "Gender_ArmLowerArm_Left",
-	                                   EAxeModularCharacterSM::Gender_ArmLowerArm_Left);
+	HandleModularSkeletalMeshComponent(ModularSM_Gender_ArmLowerLeft,
+	                                   "Gender_ArmLowerLeft",
+	                                   EAxeModularCharacterSM::Gender_ArmLowerLeft);
 	HandleModularSkeletalMeshComponent(ModularSM_Gender_HandLeft,
 	                                   "Gender_HandLeft",
 	                                   EAxeModularCharacterSM::Gender_HandLeft);
@@ -244,8 +246,5 @@ void AAxeCharacterPlayer::HandleModularSkeletalMeshComponent(TObjectPtr<USkeleta
 	SMComp->SetupAttachment(RetargetCharacterMesh);
 	SMComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	if (SMComp)
-	{
-		ModularSkeletalMeshComponentMap.Add(SMEnum, SMComp);
-	}
+	ModularSkeletalMeshComponentMap.Add(SMEnum, SMComp);
 }
