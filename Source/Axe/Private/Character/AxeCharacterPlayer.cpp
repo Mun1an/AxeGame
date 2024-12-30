@@ -128,9 +128,12 @@ AAxeCharacterPlayer::AAxeCharacterPlayer()
 	HandleModularSkeletalMeshComponent(ModularSM_All_Hair,
 	                                   "All_Hair",
 	                                   EAxeModularCharacterSM::All_Hair);
-	HandleModularSkeletalMeshComponent(ModularSM_All_HeadAttachment,
-	                                   "All_HeadAttachment",
-	                                   EAxeModularCharacterSM::All_HeadAttachment);
+	HandleModularSkeletalMeshComponent(ModularSM_All_HeadAttachmentHair,
+	                                   "All_HeadAttachmentHair",
+	                                   EAxeModularCharacterSM::All_HeadAttachmentHair);
+	HandleModularSkeletalMeshComponent(ModularSM_All_HeadAttachmentHelmet,
+									   "All_HeadAttachmentHelmet",
+									   EAxeModularCharacterSM::All_HeadAttachmentHelmet);
 	HandleModularSkeletalMeshComponent(ModularSM_All_ChestAttachment,
 	                                   "All_ChestAttachment",
 	                                   EAxeModularCharacterSM::All_ChestAttachment);

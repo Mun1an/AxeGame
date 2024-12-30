@@ -29,7 +29,8 @@ enum class EAxeModularCharacterSM : uint8
 	All_HeadCoverings_BaseHair,
 	All_HeadCoverings_NoFacialHair,
 	All_Hair,
-	All_HeadAttachment,
+	All_HeadAttachmentHair,
+	All_HeadAttachmentHelmet,
 	All_ChestAttachment,
 	All_BackAttachment,
 	All_ShoulderAttachment_Right,
@@ -50,6 +51,15 @@ enum class EModularCharacterGenderType : uint8
 	All
 };
 
+UENUM(BlueprintType)
+enum class EModularCharacterHeadCoveringsType : uint8
+{
+	None,
+	NoHair,
+	BaseHair,
+	NoFacialHair,
+};
+
 USTRUCT(Blueprintable, BlueprintType)
 struct FModularCharacterSMInfo : public FTableRowBase
 {
@@ -65,7 +75,13 @@ struct FModularCharacterSMInfo : public FTableRowBase
 	EModularCharacterGenderType GenderType = EModularCharacterGenderType::All;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	EModularCharacterHeadCoveringsType HeadCoveringsType = EModularCharacterHeadCoveringsType::None;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TArray<USkeletalMesh*> ModularMeshList = {};
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TArray<EAxeModularCharacterSM> ExclusionModularMeshEnumList = {};
 };
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
@@ -84,7 +100,7 @@ public:
 
 
 	UFUNCTION(BlueprintCallable)
-	void GetAllSkeletalMeshesInFolder(const FString& FolderPath, TArray<USkeletalMesh*>& OutSkeletalMeshes);
+	void GetAllSkeletalMeshesInFolder_Test(const FString& FolderPath, TArray<USkeletalMesh*>& OutSkeletalMeshes);
 
 protected:
 	// Called when the game starts
@@ -97,14 +113,20 @@ protected:
 	AAxeCharacterPlayer* GetAxeCharacterPlayerOwner();
 
 	UFUNCTION()
-	void FindModularSMInDataTable(const EAxeModularCharacterSM ESM, const EModularCharacterGenderType GenderType,
-	                              TArray<USkeletalMesh*>& OutSkeletalMeshes);
+	FModularCharacterSMInfo FindModularSMInfoFromDataTable(const EAxeModularCharacterSM ESM,
+	                                                       const EModularCharacterGenderType GenderType) const;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	TObjectPtr<UDataTable> DT_ModularCharacterSM;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	TObjectPtr<UMaterial> MaskedMaterial;
+	TObjectPtr<UMaterial> ModularMaskedMaterial;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	TObjectPtr<UMaterial> ModularDynamicMaterial;
+
+	UPROPERTY(BlueprintReadOnly)
+	TObjectPtr<UMaterialInstance> ModularDynamicMaterialInstance;
 
 private:
 	UPROPERTY()
@@ -115,9 +137,9 @@ private:
 
 	// TEST
 	UFUNCTION(BlueprintCallable)
-	void AddRowTest(EAxeModularCharacterSM ESM, EModularCharacterGenderType GenderType,
-	                TArray<USkeletalMesh*> MeshList);
+	void AddRow_Test(EAxeModularCharacterSM ESM, EModularCharacterGenderType GenderType,
+	                 TArray<USkeletalMesh*> MeshList);
 
 	UFUNCTION(BlueprintCallable)
-	void AddModularSMToDataTableTEST();
+	void AddModularSMToDataTable_Test();
 };

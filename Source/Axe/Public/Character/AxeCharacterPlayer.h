@@ -146,7 +146,9 @@ private:
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USkeletalMeshComponent> ModularSM_All_Hair;
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<USkeletalMeshComponent> ModularSM_All_HeadAttachment;
+	TObjectPtr<USkeletalMeshComponent> ModularSM_All_HeadAttachmentHair;
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USkeletalMeshComponent> ModularSM_All_HeadAttachmentHelmet;
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USkeletalMeshComponent> ModularSM_All_ChestAttachment;
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))

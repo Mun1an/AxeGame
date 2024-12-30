@@ -34,7 +34,18 @@ void UModularCharacterComponent::SetAllModularMesh()
 {
 	const AAxeCharacterPlayer* Owner = GetAxeCharacterPlayerOwner();
 	USkeletalMeshComponent* RetargetCharacterMesh = Owner->GetRetargetCharacterMesh();
-	
+
+	for (const TTuple<EAxeModularCharacterSM, TWeakObjectPtr<USkeletalMeshComponent>>& Pair : Owner->
+	     GetModularSkeletalMeshComponentMap()
+	)
+	{
+		if (Pair.Value == nullptr)
+		{
+			continue;
+		}
+		Pair.Value.Get()->SetSkinnedAssetAndUpdate(Pair.Value.Get()->GetSkeletalMeshAsset());
+	}
+
 	for (const TTuple<EAxeModularCharacterSM, TWeakObjectPtr<USkeletalMeshComponent>>& Pair : Owner->
 	     GetModularSkeletalMeshComponentMap()
 	)
@@ -47,9 +58,9 @@ void UModularCharacterComponent::SetAllModularMesh()
 	}
 }
 
-void UModularCharacterComponent::AddRowTest(EAxeModularCharacterSM ESM,
-                                            EModularCharacterGenderType GenderType,
-                                            TArray<USkeletalMesh*> MeshList)
+void UModularCharacterComponent::AddRow_Test(EAxeModularCharacterSM ESM,
+                                             EModularCharacterGenderType GenderType,
+                                             TArray<USkeletalMesh*> MeshList)
 {
 	TArray<FModularCharacterSMInfo*> OutRows;
 	DT_ModularCharacterSM->GetAllRows(TEXT(""), OutRows);
@@ -83,10 +94,20 @@ void UModularCharacterComponent::AddRowTest(EAxeModularCharacterSM ESM,
 	DT_ModularCharacterSM->AddRow(RowName, RowTable);
 }
 
-void UModularCharacterComponent::AddModularSMToDataTableTEST()
+void UModularCharacterComponent::AddModularSMToDataTable_Test()
 {
+	if (DT_ModularCharacterSM)
+	{
+		TArray<FName> RowNames = DT_ModularCharacterSM->GetRowNames();
+		for (FName RowName : RowNames)
+		{
+			DT_ModularCharacterSM->RemoveRow(RowName);
+		}
+	}
+
 	TArray<USkeletalMesh*> OutSkeletalMeshes;
-	GetAllSkeletalMeshesInFolder(TEXT("/Game/Assets/ModularCharacters/ModularParts"), OutSkeletalMeshes);
+	GetAllSkeletalMeshesInFolder_Test(TEXT("/Game/Assets/ModularCharacters/ModularParts"), OutSkeletalMeshes);
+
 	for (USkeletalMesh* SMesh : OutSkeletalMeshes)
 	{
 		FString MeshName = SMesh->GetName();
@@ -154,12 +175,12 @@ void UModularCharacterComponent::AddModularSMToDataTableTEST()
 		// UE_LOG(LogTemp, Warning, TEXT("Skeletal Mesh: %s, GenderType: %d, EnumSMValue: %s"), *MeshName,
 		//        static_cast<int32>(GenderType), *EnumSM->GetNameStringByIndex(int32(EnumSMValue)));
 
-		AddRowTest(EnumSMValue, GenderType, {SMesh});
+		AddRow_Test(EnumSMValue, GenderType, {SMesh});
 	}
 }
 
-void UModularCharacterComponent::GetAllSkeletalMeshesInFolder(const FString& FolderPath,
-                                                              TArray<USkeletalMesh*>& OutSkeletalMeshes)
+void UModularCharacterComponent::GetAllSkeletalMeshesInFolder_Test(const FString& FolderPath,
+                                                                   TArray<USkeletalMesh*>& OutSkeletalMeshes)
 {
 	// Get the Asset Registry Module
 	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(
@@ -200,28 +221,83 @@ void UModularCharacterComponent::ModularCharacterInit()
 	const AAxeCharacterPlayer* Owner = GetAxeCharacterPlayerOwner();
 	USkeletalMeshComponent* RetargetCharacterMeshComp = Owner->GetRetargetCharacterMesh();
 
-	check(MaskedMaterial)
-	RetargetCharacterMeshComp->SetMaterial(0, MaskedMaterial);
+	// ModularDynamicMaterial
+	check(ModularDynamicMaterial)
+	ModularDynamicMaterialInstance = RetargetCharacterMeshComp->CreateDynamicMaterialInstance(
+		0, ModularDynamicMaterial);
+	for (TTuple<EAxeModularCharacterSM, TWeakObjectPtr<USkeletalMeshComponent>>&
+	     Pair : Owner->GetModularSkeletalMeshComponentMap())
+	{
+		if (Pair.Value == nullptr)
+		{
+			continue;
+		}
+		USkeletalMeshComponent* SMComponent = Pair.Value.Get();
+		SMComponent->SetMaterial(0, ModularDynamicMaterialInstance);
+	}
+
+	// MaskedMaterial
+	check(ModularMaskedMaterial)
+	RetargetCharacterMeshComp->SetMaterial(0, ModularMaskedMaterial);
 
 	check(DT_ModularCharacterSM)
 
 	UEnum* EnumSM = FindObject<UEnum>(ANY_PACKAGE, TEXT("EAxeModularCharacterSM"), true);
 	int32 NumEnums = EnumSM->NumEnums();
 
+	// Set Gender ModularMesh
 	for (int32 EnumIndex = 0; EnumIndex < NumEnums; ++EnumIndex)
 	{
-		EAxeModularCharacterSM EnumSMValue = static_cast<EAxeModularCharacterSM>(EnumSM->GetValueByIndex(EnumIndex));
-		TArray<USkeletalMesh*> OutSkeletalMeshes;
-		FindModularSMInDataTable(EnumSMValue, CharacterGenderType, OutSkeletalMeshes);
+		const EAxeModularCharacterSM EnumSMValue = static_cast<EAxeModularCharacterSM>(EnumSM->
+			GetValueByIndex(EnumIndex));
 
-		if (OutSkeletalMeshes.Num() > 0)
+		FModularCharacterSMInfo SM_Gender_Info = FindModularSMInfoFromDataTable(EnumSMValue, CharacterGenderType);
+
+		// Gender
+		if (SM_Gender_Info.ModularMeshEnum == EAxeModularCharacterSM::None)
 		{
-			int32 RandomIndex = FMath::RandRange(0, OutSkeletalMeshes.Num() - 1);
-			SetModularMesh(EnumSMValue, OutSkeletalMeshes[RandomIndex]);
+			continue;
+		}
+		
+		// 设置互斥的模块为nullptr
+		for (const EAxeModularCharacterSM& ExclusionModularMeshEnum : SM_Gender_Info.ExclusionModularMeshEnumList)
+		{
+			SetModularMesh(ExclusionModularMeshEnum, nullptr);
+		}
+
+		if (SM_Gender_Info.ModularMeshList.Num() > 0)
+		{
+			const int32 RandomIndex = FMath::RandRange(0, SM_Gender_Info.ModularMeshList.Num() - 1);
+			SetModularMesh(EnumSMValue, SM_Gender_Info.ModularMeshList[RandomIndex]);
 		}
 	}
 
-	// Materials
+	// Set All ModularMesh
+	for (int32 EnumIndex = 0; EnumIndex < NumEnums; ++EnumIndex)
+	{
+		const EAxeModularCharacterSM EnumSMValue = static_cast<EAxeModularCharacterSM>(EnumSM->
+			GetValueByIndex(EnumIndex));
+
+		FModularCharacterSMInfo SM_All_Info = FindModularSMInfoFromDataTable(EnumSMValue, EModularCharacterGenderType::All);
+
+		// Gender
+		if (SM_All_Info.ModularMeshEnum == EAxeModularCharacterSM::None)
+		{
+			continue;
+		}
+		
+		// 设置互斥的模块为nullptr
+		for (const EAxeModularCharacterSM& ExclusionModularMeshEnum : SM_All_Info.ExclusionModularMeshEnumList)
+		{
+			SetModularMesh(ExclusionModularMeshEnum, nullptr);
+		}
+
+		if (SM_All_Info.ModularMeshList.Num() > 0)
+		{
+			const int32 RandomIndex = FMath::RandRange(0, SM_All_Info.ModularMeshList.Num() - 1);
+			SetModularMesh(EnumSMValue, SM_All_Info.ModularMeshList[RandomIndex]);
+		}
+	}
 }
 
 AAxeCharacterPlayer* UModularCharacterComponent::GetAxeCharacterPlayerOwner()
@@ -234,9 +310,8 @@ AAxeCharacterPlayer* UModularCharacterComponent::GetAxeCharacterPlayerOwner()
 	return AxeCharacterPlayerOwner;
 }
 
-void UModularCharacterComponent::FindModularSMInDataTable(EAxeModularCharacterSM ESM,
-                                                          EModularCharacterGenderType GenderType,
-                                                          TArray<USkeletalMesh*>& OutSkeletalMeshes)
+FModularCharacterSMInfo UModularCharacterComponent::FindModularSMInfoFromDataTable(EAxeModularCharacterSM ESM,
+	EModularCharacterGenderType GenderType) const
 {
 	check(DT_ModularCharacterSM)
 
@@ -246,7 +321,8 @@ void UModularCharacterComponent::FindModularSMInDataTable(EAxeModularCharacterSM
 	{
 		if (OutRow->ModularMeshEnum == ESM && OutRow->GenderType == GenderType)
 		{
-			OutSkeletalMeshes = OutRow->ModularMeshList;
+			return *OutRow;
 		}
 	}
+	return FModularCharacterSMInfo();
 }
