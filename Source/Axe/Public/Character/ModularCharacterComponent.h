@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "ModularCharacterComponent.generated.h"
 
+class UItemInstance;
 class AAxeCharacterPlayer;
 
 UENUM(BlueprintType)
@@ -94,10 +95,15 @@ public:
 	UModularCharacterComponent();
 
 	UFUNCTION(BlueprintCallable)
-	void SetModularMesh(EAxeModularCharacterSM ESM, USkeletalMesh* NewSM);
+	USkeletalMesh* GetModularMesh(const EAxeModularCharacterSM ESM);
+	UFUNCTION(BlueprintCallable)
+	void SetModularMesh(EAxeModularCharacterSM ESM, USkeletalMesh* NewSM, bool RemoveExclusionMesh = true);
+
 	UFUNCTION(BlueprintCallable)
 	void SetAllModularMesh();
 
+	UFUNCTION(BlueprintCallable)
+	USkeletalMesh* GetDefaultModularMesh(const EAxeModularCharacterSM ESM) const;
 
 	UFUNCTION(BlueprintCallable)
 	void GetAllSkeletalMeshesInFolder_Test(const FString& FolderPath, TArray<USkeletalMesh*>& OutSkeletalMeshes);
@@ -110,11 +116,16 @@ protected:
 	void ModularCharacterInit();
 
 	UFUNCTION()
+	void RandomSetModularMesh();
+
+	UFUNCTION()
 	AAxeCharacterPlayer* GetAxeCharacterPlayerOwner();
 
 	UFUNCTION()
 	FModularCharacterSMInfo FindModularSMInfoFromDataTable(const EAxeModularCharacterSM ESM,
 	                                                       const EModularCharacterGenderType GenderType) const;
+	UFUNCTION()
+	void OnEquipmentItemChanged(int32 SlotIndex, UItemInstance* NewItemInstance, UItemInstance* OldItemInstance);
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	TObjectPtr<UDataTable> DT_ModularCharacterSM;
@@ -127,6 +138,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<UMaterialInstance> ModularDynamicMaterialInstance;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	TMap<EAxeModularCharacterSM, USkeletalMesh*> DefaultModularMeshMap;
 
 private:
 	UPROPERTY()
@@ -142,4 +156,7 @@ private:
 
 	UFUNCTION(BlueprintCallable)
 	void AddModularSMToDataTable_Test();
+
+	UFUNCTION()
+	void OnAfterUpdateModularMesh();
 };

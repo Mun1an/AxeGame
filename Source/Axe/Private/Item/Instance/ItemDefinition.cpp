@@ -28,21 +28,15 @@ const UItemFragment* UItemDefinition::FindFragmentByClass(TSubclassOf<UItemFragm
 
 const UItemFragment_CommonInfo* UItemDefinition::GetCommonInfoFragment() const
 {
-	const UItemFragment* Fragment = FindFragmentByClass(UItemFragment_CommonInfo::StaticClass());
-	if (Fragment)
-	{
-		const UItemFragment_CommonInfo* ItemFragment_CommonInfo = Cast<UItemFragment_CommonInfo>(Fragment);
-		return ItemFragment_CommonInfo;
-	}
-	return nullptr;
+	return FindFragment<UItemFragment_CommonInfo>();
 }
 
 int32 UItemDefinition::GetItemMaxStackSize() const
 {
-	const UItemFragment* Fragment = FindFragmentByClass(UItemFragment_CommonInfo::StaticClass());
+	const UItemFragment_CommonInfo* Fragment = FindFragment<UItemFragment_CommonInfo>();
 	if (Fragment)
 	{
-		return Cast<UItemFragment_CommonInfo>(Fragment)->ItemMaxStackSize;
+		return Fragment->ItemMaxStackSize;
 	}
 	return 1;
 }

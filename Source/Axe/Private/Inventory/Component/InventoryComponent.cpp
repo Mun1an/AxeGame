@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
 #include "Character/AxeCharacterBase.h"
+#include "Character/AxeCharacterPlayer.h"
 #include "Engine/ActorChannel.h"
 #include "GameplayTag/AxeGameplayTags.h"
 #include "Item/ItemFunctionLibrary.h"
@@ -13,6 +14,7 @@
 #include "Item/Instance/ItemInstance.h"
 #include "Item/ItemFragment/ItemFragment_UI.h"
 #include "Item/ItemFragment/ItemFragment_EquipmentInfo.h"
+#include "Item/ItemFragment/ItemFragment_ModularCharacterMesh.h"
 #include "Net/UnrealNetwork.h"
 
 UInventoryComponent::UInventoryComponent(const FObjectInitializer& ObjectInitializer): Super(ObjectInitializer),
@@ -72,21 +74,24 @@ void UInventoryComponent::ReadyForReplication()
 }
 
 
-void UInventoryComponent::OnInventoryItemChanged(int32 SlotIndex, UItemInstance* ItemInstance, int32 NewCount,
-                                                 int32 OldCount)
+void UInventoryComponent::OnInventoryItemChanged(int32 SlotIndex, UItemInstance* NewItemInstance, int32 NewCount,
+                                                 UItemInstance* OldItemInstance, int32 OldCount)
 {
-	OnInventoryChanged.Broadcast(SlotIndex, ItemInstance, NewCount, OldCount);
+	OnInventoryChangedDelegate.Broadcast(SlotIndex, NewItemInstance, NewCount, OldItemInstance, OldCount);
 
 	//
 	const FInventoryEntry& Entry = GetInventoryEntryByIndex(SlotIndex);
 	if (Entry.EntryTags.HasTag(FAxeGameplayTags::Get().Inventory_Entry_Equipment))
 	{
-		OnEquipmentItemChanged(SlotIndex, ItemInstance);
+		OnEquipmentItemChanged(SlotIndex, NewItemInstance, OldItemInstance);
 	}
 }
 
-void UInventoryComponent::OnEquipmentItemChanged(int32 SlotIndex, UItemInstance* ItemInstance)
+void UInventoryComponent::OnEquipmentItemChanged(int32 SlotIndex, UItemInstance* NewItemInstance,
+                                                 UItemInstance* OldItemInstance)
 {
+	OnEquipmentItemChangedDelegate.Broadcast(SlotIndex, NewItemInstance, OldItemInstance);
+
 	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
 	// TODO 处理下客户端加载
 	if (AxeCharacterOwner == nullptr)
@@ -101,6 +106,7 @@ void UInventoryComponent::OnEquipmentItemChanged(int32 SlotIndex, UItemInstance*
 	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(ASC);
 
 	FEquipmentInfo TotalEquipmentInfo = FEquipmentInfo();
+	// EquipmentEffect
 	if (AxeASC && AxeCharacterOwner->EquipmentEffect)
 	{
 		TArray<FInventoryEntry> EquipmentEntries;
@@ -110,9 +116,8 @@ void UInventoryComponent::OnEquipmentItemChanged(int32 SlotIndex, UItemInstance*
 			if (EquipmentEntry.Instance && EquipmentEntry.Instance->GetItemDef())
 			{
 				const UItemDefinition* ItemDef = GetDefault<UItemDefinition>(EquipmentEntry.Instance->GetItemDef());
-				const UItemFragment* Fragment = ItemDef->
-					FindFragmentByClass(UItemFragment_EquipmentInfo::StaticClass());
-				const UItemFragment_EquipmentInfo* EquipmentFragment = Cast<UItemFragment_EquipmentInfo>(Fragment);
+				const UItemFragment_EquipmentInfo* EquipmentFragment = ItemDef->FindFragment<
+					UItemFragment_EquipmentInfo>();
 				if (EquipmentFragment)
 				{
 					TotalEquipmentInfo.EquipmentDamage += EquipmentFragment->EquipmentInfo.EquipmentDamage;

@@ -5,19 +5,80 @@
 
 #include "AssetRegistry/AssetRegistryModule.h"
 #include "Character/AxeCharacterPlayer.h"
-#include "GameFramework/Character.h"
+#include "Inventory/Component/InventoryComponent.h"
+#include "Item/Instance/ItemDefinition.h"
+#include "Item/Instance/ItemInstance.h"
+#include "Item/ItemFragment/ItemFragment_ModularCharacterMesh.h"
 
 // Sets default values for this component's properties
 UModularCharacterComponent::UModularCharacterComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
+
+	// DefaultModularMeshMap.Add(EAxeModularCharacterSM::Gender_Head, nullptr);
+	// DefaultModularMeshMap.Add(EAxeModularCharacterSM::Gender_Eyebrow, nullptr);
+	// DefaultModularMeshMap.Add(EAxeModularCharacterSM::Gender_FacialHair, nullptr);
+	// DefaultModularMeshMap.Add(EAxeModularCharacterSM::Gender_Torso, nullptr);
+	// DefaultModularMeshMap.Add(EAxeModularCharacterSM::Gender_ArmUpperRight, nullptr);
+	// DefaultModularMeshMap.Add(EAxeModularCharacterSM::Gender_ArmUpperLeft, nullptr);
+	// DefaultModularMeshMap.Add(EAxeModularCharacterSM::Gender_ArmLowerRight, nullptr);
+	// DefaultModularMeshMap.Add(EAxeModularCharacterSM::Gender_ArmLowerLeft, nullptr);
+	// DefaultModularMeshMap.Add(EAxeModularCharacterSM::Gender_HandRight, nullptr);
+	// DefaultModularMeshMap.Add(EAxeModularCharacterSM::Gender_HandLeft, nullptr);
+	// DefaultModularMeshMap.Add(EAxeModularCharacterSM::Gender_Hips, nullptr);
+	// DefaultModularMeshMap.Add(EAxeModularCharacterSM::Gender_LegRight, nullptr);
+	// DefaultModularMeshMap.Add(EAxeModularCharacterSM::Gender_LegLeft, nullptr);
+	// DefaultModularMeshMap.Add(EAxeModularCharacterSM::All_HeadCoverings_NoHair, nullptr);
+	// DefaultModularMeshMap.Add(EAxeModularCharacterSM::All_HeadCoverings_BaseHair, nullptr);
+	// DefaultModularMeshMap.Add(EAxeModularCharacterSM::All_HeadCoverings_NoFacialHair, nullptr);
+	// DefaultModularMeshMap.Add(EAxeModularCharacterSM::All_Hair, nullptr);
+	// DefaultModularMeshMap.Add(EAxeModularCharacterSM::All_HeadAttachmentHair, nullptr);
+	// DefaultModularMeshMap.Add(EAxeModularCharacterSM::All_HeadAttachmentHelmet, nullptr);
+	// DefaultModularMeshMap.Add(EAxeModularCharacterSM::All_ChestAttachment, nullptr);
+	// DefaultModularMeshMap.Add(EAxeModularCharacterSM::All_BackAttachment, nullptr);
+	// DefaultModularMeshMap.Add(EAxeModularCharacterSM::All_ShoulderAttachment_Right, nullptr);
+	// DefaultModularMeshMap.Add(EAxeModularCharacterSM::All_ShoulderAttachment_Left, nullptr);
+	// DefaultModularMeshMap.Add(EAxeModularCharacterSM::All_ElbowAttachment_Right, nullptr);
+	// DefaultModularMeshMap.Add(EAxeModularCharacterSM::All_ElbowAttachment_Left, nullptr);
+	// DefaultModularMeshMap.Add(EAxeModularCharacterSM::All_HipsAttachment, nullptr);
+	// DefaultModularMeshMap.Add(EAxeModularCharacterSM::All_KneeAttachment_Right, nullptr);
+	// DefaultModularMeshMap.Add(EAxeModularCharacterSM::All_KneeAttachment_Left, nullptr);
+	// DefaultModularMeshMap.Add(EAxeModularCharacterSM::All_Extra, nullptr);
 }
 
-void UModularCharacterComponent::SetModularMesh(EAxeModularCharacterSM ESM, USkeletalMesh* NewSM)
-
+USkeletalMesh* UModularCharacterComponent::GetModularMesh(const EAxeModularCharacterSM ESM)
 {
+	const AAxeCharacterPlayer* PlayerOwner = GetAxeCharacterPlayerOwner();
+	TWeakObjectPtr<USkeletalMeshComponent> SMComponent = PlayerOwner->GetModularSkeletalMeshComponentMap().
+	                                                                  FindRef(ESM);
+	if (SMComponent.IsValid())
+	{
+		return SMComponent.Get()->GetSkeletalMeshAsset();
+	}
+	return nullptr;
+}
+
+void UModularCharacterComponent::SetModularMesh(EAxeModularCharacterSM ESM, USkeletalMesh* NewSM,
+                                                bool RemoveExclusionMesh)
+{
+	// 移除互斥的模块
+	if (RemoveExclusionMesh && NewSM)
+	{
+		const FModularCharacterSMInfo ModularSMInfo = FindModularSMInfoFromDataTable(
+			ESM, CharacterGenderType
+		);
+		if (ModularSMInfo.ExclusionModularMeshEnumList.Num() > 0)
+		{
+			for (const EAxeModularCharacterSM& ExclusionModularMeshEnum : ModularSMInfo.ExclusionModularMeshEnumList)
+			{
+				if (GetModularMesh(ExclusionModularMeshEnum))
+				{
+					SetModularMesh(ExclusionModularMeshEnum, nullptr, false);
+				}
+			}
+		}
+	}
+
 	const AAxeCharacterPlayer* Owner = GetAxeCharacterPlayerOwner();
 	USkeletalMeshComponent* RetargetCharacterMesh = Owner->GetRetargetCharacterMesh();
 	USkeletalMeshComponent* SMComponent = Owner->GetModularSkeletalMeshComponentMap().FindOrAdd(ESM).Get();
@@ -28,7 +89,6 @@ void UModularCharacterComponent::SetModularMesh(EAxeModularCharacterSM ESM, USke
 	SMComponent->SetSkinnedAssetAndUpdate(NewSM);
 	SMComponent->SetLeaderPoseComponent(RetargetCharacterMesh);
 }
-
 
 void UModularCharacterComponent::SetAllModularMesh()
 {
@@ -56,6 +116,11 @@ void UModularCharacterComponent::SetAllModularMesh()
 		}
 		Pair.Value.Get()->SetLeaderPoseComponent(RetargetCharacterMesh);
 	}
+}
+
+USkeletalMesh* UModularCharacterComponent::GetDefaultModularMesh(const EAxeModularCharacterSM ESM) const
+{
+	return DefaultModularMeshMap.FindRef(ESM);
 }
 
 void UModularCharacterComponent::AddRow_Test(EAxeModularCharacterSM ESM,
@@ -179,6 +244,7 @@ void UModularCharacterComponent::AddModularSMToDataTable_Test()
 	}
 }
 
+
 void UModularCharacterComponent::GetAllSkeletalMeshesInFolder_Test(const FString& FolderPath,
                                                                    TArray<USkeletalMesh*>& OutSkeletalMeshes)
 {
@@ -213,6 +279,12 @@ void UModularCharacterComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	//
+	AAxeCharacterPlayer* AxeOwner = GetAxeCharacterPlayerOwner();
+	UInventoryComponent* InventoryComponent = AxeOwner->GetInventoryComponent();
+	InventoryComponent->OnEquipmentItemChangedDelegate.AddDynamic(
+		this, &UModularCharacterComponent::OnEquipmentItemChanged);
+
 	ModularCharacterInit();
 }
 
@@ -240,11 +312,17 @@ void UModularCharacterComponent::ModularCharacterInit()
 	check(ModularMaskedMaterial)
 	RetargetCharacterMeshComp->SetMaterial(0, ModularMaskedMaterial);
 
-	check(DT_ModularCharacterSM)
-
 	UEnum* EnumSM = FindObject<UEnum>(ANY_PACKAGE, TEXT("EAxeModularCharacterSM"), true);
 	int32 NumEnums = EnumSM->NumEnums();
 
+	OnAfterUpdateModularMesh();
+}
+
+void UModularCharacterComponent::RandomSetModularMesh()
+{
+	check(DT_ModularCharacterSM)
+	UEnum* EnumSM = FindObject<UEnum>(ANY_PACKAGE, TEXT("EAxeModularCharacterSM"), true);
+	int32 NumEnums = EnumSM->NumEnums();
 	// Set Gender ModularMesh
 	for (int32 EnumIndex = 0; EnumIndex < NumEnums; ++EnumIndex)
 	{
@@ -258,12 +336,6 @@ void UModularCharacterComponent::ModularCharacterInit()
 		{
 			continue;
 		}
-		
-		// 设置互斥的模块为nullptr
-		for (const EAxeModularCharacterSM& ExclusionModularMeshEnum : SM_Gender_Info.ExclusionModularMeshEnumList)
-		{
-			SetModularMesh(ExclusionModularMeshEnum, nullptr);
-		}
 
 		if (SM_Gender_Info.ModularMeshList.Num() > 0)
 		{
@@ -271,25 +343,19 @@ void UModularCharacterComponent::ModularCharacterInit()
 			SetModularMesh(EnumSMValue, SM_Gender_Info.ModularMeshList[RandomIndex]);
 		}
 	}
-
 	// Set All ModularMesh
 	for (int32 EnumIndex = 0; EnumIndex < NumEnums; ++EnumIndex)
 	{
 		const EAxeModularCharacterSM EnumSMValue = static_cast<EAxeModularCharacterSM>(EnumSM->
 			GetValueByIndex(EnumIndex));
 
-		FModularCharacterSMInfo SM_All_Info = FindModularSMInfoFromDataTable(EnumSMValue, EModularCharacterGenderType::All);
+		FModularCharacterSMInfo SM_All_Info = FindModularSMInfoFromDataTable(
+			EnumSMValue, EModularCharacterGenderType::All);
 
 		// Gender
 		if (SM_All_Info.ModularMeshEnum == EAxeModularCharacterSM::None)
 		{
 			continue;
-		}
-		
-		// 设置互斥的模块为nullptr
-		for (const EAxeModularCharacterSM& ExclusionModularMeshEnum : SM_All_Info.ExclusionModularMeshEnumList)
-		{
-			SetModularMesh(ExclusionModularMeshEnum, nullptr);
 		}
 
 		if (SM_All_Info.ModularMeshList.Num() > 0)
@@ -319,10 +385,78 @@ FModularCharacterSMInfo UModularCharacterComponent::FindModularSMInfoFromDataTab
 	DT_ModularCharacterSM->GetAllRows(TEXT(""), OutRows);
 	for (const FModularCharacterSMInfo* OutRow : OutRows)
 	{
-		if (OutRow->ModularMeshEnum == ESM && OutRow->GenderType == GenderType)
+		if (OutRow->ModularMeshEnum == ESM &&
+			(OutRow->GenderType == EModularCharacterGenderType::All || OutRow->GenderType == GenderType))
 		{
 			return *OutRow;
 		}
 	}
 	return FModularCharacterSMInfo();
+}
+
+void UModularCharacterComponent::OnEquipmentItemChanged(int32 SlotIndex, UItemInstance* NewItemInstance,
+                                                        UItemInstance* OldItemInstance)
+{
+	// Equipment Display
+
+	// Remove
+	if (OldItemInstance)
+	{
+		const UItemDefinition* ItemDef = GetDefault<UItemDefinition>(OldItemInstance->GetItemDef());
+		const UItemFragment_ModularCharacterMesh* ModularMeshFragment = ItemDef->FindFragment<
+			UItemFragment_ModularCharacterMesh>();
+		for (const FModularCharacterMeshInfo& ModularCharacterMeshInfo : ModularMeshFragment->ModularCharacterMeshInfos)
+		{
+			SetModularMesh(
+				ModularCharacterMeshInfo.ModularMeshEnum, nullptr, false
+			);
+		}
+	}
+	// Add
+	if (NewItemInstance)
+	{
+		const UItemDefinition* ItemDef = GetDefault<UItemDefinition>(NewItemInstance->GetItemDef());
+		const UItemFragment_ModularCharacterMesh* ModularMeshFragment = ItemDef->FindFragment<
+			UItemFragment_ModularCharacterMesh>();
+		for (const FModularCharacterMeshInfo& ModularCharacterMeshInfo : ModularMeshFragment->ModularCharacterMeshInfos)
+		{
+			SetModularMesh(
+				ModularCharacterMeshInfo.ModularMeshEnum, ModularCharacterMeshInfo.ModularMesh
+			);
+		}
+	}
+
+	OnAfterUpdateModularMesh();
+}
+
+void UModularCharacterComponent::OnAfterUpdateModularMesh()
+{
+	for (const TTuple<EAxeModularCharacterSM, USkeletalMesh*>& Pair : DefaultModularMeshMap)
+	{
+		const USkeletalMesh* NowSkeletalMesh = GetModularMesh(Pair.Key);
+		if (NowSkeletalMesh)
+		{
+			continue;
+		}
+
+		const FModularCharacterSMInfo& TableInfo = FindModularSMInfoFromDataTable(Pair.Key, CharacterGenderType);
+		bool bHasExclusionMesh = false;
+		if (TableInfo.ExclusionModularMeshEnumList.Num() > 0)
+		{
+			// 互斥
+			for (const EAxeModularCharacterSM& ExclusionEnum : TableInfo.ExclusionModularMeshEnumList)
+			{
+				const USkeletalMesh* ExclusionSkeletalMesh = GetModularMesh(ExclusionEnum);
+				if (ExclusionSkeletalMesh)
+				{
+					bHasExclusionMesh = true;
+					break;
+				}
+			}
+		}
+		if (!bHasExclusionMesh)
+		{
+			SetModularMesh(Pair.Key, Pair.Value, false);
+		}
+	}
 }

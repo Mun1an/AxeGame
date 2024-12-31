@@ -16,7 +16,8 @@ void UInventoryWidgetController::SetWidgetControllerParams(const FWidgetControll
 	InventoryComponent = AxePlayerState->GetInventoryComponent();
 
 	// bind
-	InventoryComponent->OnInventoryChanged.AddDynamic(this, &UInventoryWidgetController::OnInventoryChangedCallback);
+	InventoryComponent->OnInventoryChangedDelegate.AddDynamic(
+		this, &UInventoryWidgetController::OnInventoryChangedCallback);
 }
 
 void UInventoryWidgetController::TrySwapItemSlot(int32 FromSlot, int32 ToSlot)
@@ -24,9 +25,10 @@ void UInventoryWidgetController::TrySwapItemSlot(int32 FromSlot, int32 ToSlot)
 	InventoryComponent->ServerSwapItemBySlots(FromSlot, ToSlot);
 }
 
-void UInventoryWidgetController::OnInventoryChangedCallback(int32 SlotIndex, UItemInstance* ItemInstance,
+void UInventoryWidgetController::OnInventoryChangedCallback(int32 SlotIndex, UItemInstance* NewItemInstance,
                                                             int32 NewCount,
+                                                            UItemInstance* OldItemInstance,
                                                             int32 OldCount)
 {
-	OnInventoryChangedInWidgetController.Broadcast(SlotIndex, ItemInstance, NewCount, OldCount);
+	OnInventoryChangedInWidgetController.Broadcast(SlotIndex, NewItemInstance, NewCount, OldCount);
 }

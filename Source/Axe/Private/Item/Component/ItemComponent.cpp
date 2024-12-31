@@ -19,12 +19,12 @@ UStaticMesh* UItemComponent::GetStaticMeshInItemFragment_World()
 		return nullptr;
 	}
 	const UItemDefinition* ItemDefinition = GetDefault<UItemDefinition>(ItemDef);
-	const UItemFragment* Fragment = ItemDefinition->FindFragmentByClass(UItemFragment_World::StaticClass());
-	if (Fragment == nullptr)
+	const UItemFragment_World* ItemFragment_World = ItemDefinition->FindFragment<UItemFragment_World>();
+	if (ItemFragment_World == nullptr)
 	{
 		return nullptr;
 	}
-	return Cast<UItemFragment_World>(Fragment)->StaticMesh;
+	return ItemFragment_World->StaticMesh;
 }
 
 USkeletalMesh* UItemComponent::GetSkeletalMeshInItemFragment_World()
@@ -34,17 +34,15 @@ USkeletalMesh* UItemComponent::GetSkeletalMeshInItemFragment_World()
 		return nullptr;
 	}
 	const UItemDefinition* ItemDefinition = GetDefault<UItemDefinition>(ItemDef);
-	const UItemFragment* Fragment = ItemDefinition->FindFragmentByClass(UItemFragment_World::StaticClass());
-	if (Fragment == nullptr)
+	const UItemFragment_World* ItemFragment_World = ItemDefinition->FindFragment<UItemFragment_World>();
+	if (ItemFragment_World == nullptr)
 	{
 		return nullptr;
 	}
-	return Cast<UItemFragment_World>(Fragment)->SkeletalMesh;
+	return ItemFragment_World->SkeletalMesh;
 }
-
 
 void UItemComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
 }

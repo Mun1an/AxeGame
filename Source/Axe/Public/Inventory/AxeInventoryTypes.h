@@ -33,6 +33,9 @@ struct AXE_API FInventoryEntry : public FFastArraySerializerItem
 	UPROPERTY(BlueprintReadOnly)
 	FGameplayTagContainer EntryTags;
 
+	UPROPERTY(BlueprintReadOnly)
+	TObjectPtr<UItemInstance> LastInstance = nullptr;
+
 	UPROPERTY(NotReplicated)
 	int32 LastObservedCount = INDEX_NONE;
 };

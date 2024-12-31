@@ -33,7 +33,7 @@ public:
 
 protected:
 	UFUNCTION()
-	void OnInventoryChangedCallback(int32 SlotIndex, UItemInstance* ItemInstance, int32 NewCount, int32 OldCount);
+	void OnInventoryChangedCallback(int32 SlotIndex, UItemInstance* NewItemInstance, int32 NewCount, UItemInstance* OldItemInstance,  int32 OldCount);
 
 	UPROPERTY(BlueprintReadOnly, Category="WidgetController")
 	TObjectPtr<UInventoryComponent> InventoryComponent;

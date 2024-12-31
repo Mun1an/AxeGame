@@ -57,13 +57,18 @@ public:
 		return InventoryComponent;
 	}
 
+	FORCEINLINE UModularCharacterComponent* GetModularCharacterComponent() const
+	{
+		return ModularCharacterComponent;
+	}
+
 	//
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnRep_PlayerState() override;
 
 	USkeletalMeshComponent* GetRetargetCharacterMesh() const { return RetargetCharacterMesh; }
 
-	TMap<EAxeModularCharacterSM, TWeakObjectPtr<USkeletalMeshComponent>> GetModularSkeletalMeshComponentMap() const 
+	TMap<EAxeModularCharacterSM, TWeakObjectPtr<USkeletalMeshComponent>> GetModularSkeletalMeshComponentMap() const
 	{
 		return ModularSkeletalMeshComponentMap;
 	}
@@ -110,7 +115,7 @@ private:
 	TObjectPtr<UModularCharacterComponent> ModularCharacterComponent;
 
 	// ModularSkeletalMeshComponent
-	
+
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USkeletalMeshComponent> ModularSM_Gender_Head;
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
@@ -169,7 +174,7 @@ private:
 	TObjectPtr<USkeletalMeshComponent> ModularSM_All_KneeAttachment_Left;
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USkeletalMeshComponent> ModularSM_All_Extra;
-	
+
 	TMap<EAxeModularCharacterSM, TWeakObjectPtr<USkeletalMeshComponent>> ModularSkeletalMeshComponentMap;
 
 	void HandleModularSkeletalMeshComponent(TObjectPtr<USkeletalMeshComponent>& SMComp, FName CompName,

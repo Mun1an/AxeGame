@@ -14,8 +14,12 @@ class UInventoryProcessor;
 class UItemInstance;
 class UTexture2D;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnInventoryChanged, int32, SlotIndex, UItemInstance*, ItemInstance,
-                                              int32, NewCount, int32, OldCount);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnInventoryChangedDelegate, int32, SlotIndex, UItemInstance*,
+                                              NewItemInstance,
+                                              int32, NewCount, UItemInstance*, OldItemInstance, int32, OldCount);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnEquipmentChangedDelegate, int32, SlotIndex, UItemInstance*,
+                                             ItemInstance, UItemInstance*, OldItemInstance);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnSendInventoryItemUIMessage, UTexture2D*, Texture,
                                                FText, ItemName, int32, StackCount);
@@ -34,7 +38,8 @@ public:
 	virtual void InitializeComponent() override;
 
 	//
-	FOnInventoryChanged OnInventoryChanged;
+	FOnInventoryChangedDelegate OnInventoryChangedDelegate;
+	FOnEquipmentChangedDelegate OnEquipmentItemChangedDelegate;
 	FOnSendInventoryItemUIMessage OnSendInventoryItemUIMessage;
 	//
 
@@ -71,7 +76,7 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void ServerSwapItemBySlots(int32 FromSlot, int32 ToSlot);
-	
+
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category=Inventory)
 	void AddInventoryEntry();
 
@@ -98,7 +103,7 @@ public:
 	virtual bool ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch,
 	                                 FReplicationFlags* RepFlags) override;
 	virtual void ReadyForReplication() override;
-	
+
 	//~End of UObject interface
 
 
@@ -106,11 +111,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	int32 InventoryEntryInitSize = 16;
 
-	void OnInventoryItemChanged(int32 SlotIndex, UItemInstance* ItemInstance, int32 NewCount, int32 OldCount);
-	void OnEquipmentItemChanged(int32 SlotIndex, UItemInstance* ItemInstance);
+	void OnInventoryItemChanged(int32 SlotIndex, UItemInstance* NewItemInstance, int32 NewCount,
+	                            UItemInstance* OldItemInstance, int32 OldCount);
+	void OnEquipmentItemChanged(int32 SlotIndex, UItemInstance* NewItemInstance, UItemInstance* OldItemInstance);
 
-	
-	
 private:
 	UPROPERTY(Replicated)
 	FAxeInventoryList InventoryList;

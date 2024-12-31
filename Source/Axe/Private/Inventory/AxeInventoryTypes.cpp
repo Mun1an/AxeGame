@@ -14,7 +14,9 @@ void FAxeInventoryList::PreReplicatedRemove(const TArrayView<int32> RemovedIndic
 		// BroadcastChangeMessage(Stack, /*OldCount=*/ Stack.StackCount, /*NewCount=*/ 0);
 		Stack.LastObservedCount = 0;
 
-		OwnerComponent->OnInventoryItemChanged(Index, Stack.Instance, Stack.StackCount, Stack.LastObservedCount);
+		OwnerComponent->OnInventoryItemChanged(
+			Index, Stack.Instance, Stack.StackCount, Stack.LastInstance, Stack.LastObservedCount
+		);
 	}
 }
 
@@ -38,7 +40,9 @@ void FAxeInventoryList::PostReplicatedChange(const TArrayView<int32> ChangedIndi
 		// BroadcastChangeMessage(Stack, /*OldCount=*/ Stack.LastObservedCount, /*NewCount=*/ Stack.StackCount);
 		Stack.LastObservedCount = Stack.StackCount;
 
-		OwnerComponent->OnInventoryItemChanged(Index, Stack.Instance, Stack.StackCount, Stack.LastObservedCount);
+		OwnerComponent->OnInventoryItemChanged(
+			Index, Stack.Instance, Stack.StackCount, Stack.LastInstance, Stack.LastObservedCount
+		);
 	}
 }
 
@@ -124,12 +128,12 @@ bool FAxeInventoryList::AddItemInternal(UItemInstance* ItemInstance, int32 Stack
 	{
 		return false;
 	}
-	
+
 	if (Entry.Instance && Entry.Instance->GetItemDef() == ItemInstance->GetItemDef())
 	{
 		return ChangeItemStackCount(Entry, StackCount + Entry.StackCount);
 	}
-
+	Entry.LastInstance = Entry.Instance;
 	Entry.Instance = ItemInstance;
 	Entry.StackCount = StackCount;
 
@@ -145,6 +149,7 @@ bool FAxeInventoryList::RemoveItem(int32 SlotIndex, int32 RemoveCount)
 	{
 		return false;
 	}
+	Entry.LastInstance = Entry.Instance;
 	Entry.Instance = nullptr;
 	Entry.StackCount = FMath::Max(0, Entry.StackCount - RemoveCount);
 
@@ -199,12 +204,14 @@ bool FAxeInventoryList::SwapItem(int32 FromSlot, int32 ToSlot)
 		TObjectPtr<UItemInstance> TempItemInstance = FromEntry.Instance;
 		int32 TempStackCount = FromEntry.StackCount;
 
+		FromEntry.LastInstance = FromEntry.Instance;
+		ToEntry.LastInstance = ToEntry.Instance;
+
 		FromEntry.Instance = ToEntry.Instance;
 		FromEntry.StackCount = ToEntry.StackCount;
 		ToEntry.Instance = TempItemInstance;
 		ToEntry.StackCount = TempStackCount;
 	}
-
 	HandleEntryChanged(FromEntry);
 	HandleEntryChanged(ToEntry);
 	return true;
@@ -213,6 +220,7 @@ bool FAxeInventoryList::SwapItem(int32 FromSlot, int32 ToSlot)
 bool FAxeInventoryList::ChangeItemStackCount(FInventoryEntry& Entry, int32 NewCount)
 {
 	Entry.StackCount = NewCount;
+	Entry.LastInstance = Entry.Instance;
 
 	HandleEntryChanged(Entry);
 	return true;
@@ -298,7 +306,8 @@ void FAxeInventoryList::HandleEntryChanged(FInventoryEntry& Entry)
 	}
 
 	OwnerComponent->OnInventoryItemChanged(
-		Entry.SlotIndex, Entry.Instance, Entry.StackCount, Entry.LastObservedCount
+		Entry.SlotIndex, Entry.Instance, Entry.StackCount,
+		Entry.LastInstance, Entry.LastObservedCount
 	);
 	MarkItemDirty(Entry);
 }
