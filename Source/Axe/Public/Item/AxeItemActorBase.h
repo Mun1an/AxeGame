@@ -10,6 +10,7 @@
 #include "Interface/Pickupable.h"
 #include "AxeItemActorBase.generated.h"
 
+class USphereComponent;
 class UItemComponent;
 
 UCLASS(Abstract)
@@ -34,8 +35,14 @@ public:
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TObjectPtr<USphereComponent> SphereComponent;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TObjectPtr<UStaticMeshComponent> ItemStaticMeshComponent;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TObjectPtr<USkeletalMeshComponent> ItemSkeletalMeshComponent;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TObjectPtr<UItemComponent> ItemComponent;
 

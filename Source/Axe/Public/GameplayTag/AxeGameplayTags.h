@@ -119,8 +119,16 @@ struct FAxeGameplayTags
 	FGameplayTag Inventory_Entry_Equipment_Armor_Chestplate;
 	FGameplayTag Inventory_Entry_Equipment_Armor_Leggings;
 	FGameplayTag Inventory_Entry_Equipment_Armor_Boots;
-
 	FGameplayTag Inventory_Entry_Equipment_Weapon;
+
+	FGameplayTag ItemType_None;
+	FGameplayTag ItemType_Food;
+	FGameplayTag ItemType_Equipment_Armor_Helmet;
+	FGameplayTag ItemType_Equipment_Armor_Chestplate;
+	FGameplayTag ItemType_Equipment_Armor_Leggings;
+	FGameplayTag ItemType_Equipment_Armor_Boots;
+	FGameplayTag ItemType_Equipment_Weapon;
+	
 	/**
 	 * Interact
 	 */

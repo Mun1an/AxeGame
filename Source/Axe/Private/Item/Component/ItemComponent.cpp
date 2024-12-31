@@ -24,8 +24,22 @@ UStaticMesh* UItemComponent::GetStaticMeshInItemFragment_World()
 	{
 		return nullptr;
 	}
-	UStaticMesh* ItemStaticMesh = Cast<UItemFragment_World>(Fragment)->StaticMesh;
-	return ItemStaticMesh;
+	return Cast<UItemFragment_World>(Fragment)->StaticMesh;
+}
+
+USkeletalMesh* UItemComponent::GetSkeletalMeshInItemFragment_World()
+{
+	if (!ItemDef)
+	{
+		return nullptr;
+	}
+	const UItemDefinition* ItemDefinition = GetDefault<UItemDefinition>(ItemDef);
+	const UItemFragment* Fragment = ItemDefinition->FindFragmentByClass(UItemFragment_World::StaticClass());
+	if (Fragment == nullptr)
+	{
+		return nullptr;
+	}
+	return Cast<UItemFragment_World>(Fragment)->SkeletalMesh;
 }
 
 

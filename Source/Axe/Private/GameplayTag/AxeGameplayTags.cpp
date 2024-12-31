@@ -101,8 +101,15 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(Inventory_Entry_Equipment_Armor_Chestplate, "Inventory.Entry.Equipment.Armor.Chestplate");
 	AddTag(Inventory_Entry_Equipment_Armor_Leggings, "Inventory.Entry.Equipment.Armor.Leggings");
 	AddTag(Inventory_Entry_Equipment_Armor_Boots, "Inventory.Entry.Equipment.Armor.Boots");
-
 	AddTag(Inventory_Entry_Equipment_Weapon, "Inventory.Entry.Equipment.Weapon");
+	
+	AddTag(ItemType_None,"ItemType.None");
+	AddTag(ItemType_Food,"ItemType.Food");
+	AddTag(ItemType_Equipment_Armor_Helmet,"ItemType.Equipment.Armor.Helmet");
+	AddTag(ItemType_Equipment_Armor_Chestplate,"ItemType.Equipment.Armor.Chestplate");
+	AddTag(ItemType_Equipment_Armor_Leggings,"ItemType.Equipment.Armor.Leggings");
+	AddTag(ItemType_Equipment_Armor_Boots,"ItemType.Equipment.Armor.Boots");
+	AddTag(ItemType_Equipment_Weapon,"ItemType.Equipment.Weapon");
 	/**
 	 * Interact
 	 */
