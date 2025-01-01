@@ -14,6 +14,7 @@ class UComboDataAsset;
 class UGameplayAbility;
 
 DECLARE_MULTICAST_DELEGATE(FOnAbilityInitOverDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnInventoryInitOverDelegate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnActorDeadDelegate, AActor*, DeadActor);
 
 UCLASS()
@@ -58,7 +59,9 @@ public:
 
 	//
 	FOnAbilityInitOverDelegate OnAbilityInitOverDelegate;
+	FOnInventoryInitOverDelegate OnInventoryInitOverDelegate;
 	bool IsAbilityInitOver() const { return bIsAbilityInitOver; }
+	bool IsInventoryInitOver() const { return bIsInventoryInitOver; }
 	//
 
 	//
@@ -84,6 +87,7 @@ public:
 
 protected:
 	bool bIsAbilityInitOver = false;
+	bool bIsInventoryInitOver = false;
 
 	void InitDefaultAttributes();
 	bool GiveStartupAbilities();

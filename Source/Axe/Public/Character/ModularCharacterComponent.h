@@ -14,6 +14,7 @@ enum class EAxeModularCharacterSM : uint8
 {
 	None,
 	Gender_Head,
+	Gender_Head_NoElements,
 	Gender_Eyebrow,
 	Gender_FacialHair,
 	Gender_Torso,
@@ -52,15 +53,6 @@ enum class EModularCharacterGenderType : uint8
 	All
 };
 
-UENUM(BlueprintType)
-enum class EModularCharacterHeadCoveringsType : uint8
-{
-	None,
-	NoHair,
-	BaseHair,
-	NoFacialHair,
-};
-
 USTRUCT(Blueprintable, BlueprintType)
 struct FModularCharacterSMInfo : public FTableRowBase
 {
@@ -74,9 +66,6 @@ struct FModularCharacterSMInfo : public FTableRowBase
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	EModularCharacterGenderType GenderType = EModularCharacterGenderType::All;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	EModularCharacterHeadCoveringsType HeadCoveringsType = EModularCharacterHeadCoveringsType::None;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TArray<USkeletalMesh*> ModularMeshList = {};
@@ -108,6 +97,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void GetAllSkeletalMeshesInFolder_Test(const FString& FolderPath, TArray<USkeletalMesh*>& OutSkeletalMeshes);
 
+	UFUNCTION(BlueprintCallable)
+	void InitExclusionEnumMap();
+	UFUNCTION(BlueprintCallable)
+	void GetExclusionEnumList(const EAxeModularCharacterSM ESM, TArray<EAxeModularCharacterSM>& OutExclusionList);
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -124,6 +118,9 @@ protected:
 	UFUNCTION()
 	FModularCharacterSMInfo FindModularSMInfoFromDataTable(const EAxeModularCharacterSM ESM,
 	                                                       const EModularCharacterGenderType GenderType) const;
+
+	UFUNCTION()
+	void OnInventoryInitOver();
 	UFUNCTION()
 	void OnEquipmentItemChanged(int32 SlotIndex, UItemInstance* NewItemInstance, UItemInstance* OldItemInstance);
 
@@ -148,6 +145,8 @@ private:
 
 	UPROPERTY()
 	AAxeCharacterPlayer* AxeCharacterPlayerOwner = nullptr;
+
+	TMap<EAxeModularCharacterSM, TArray<EAxeModularCharacterSM>> ExclusionEnumCacheMap;
 
 	// TEST
 	UFUNCTION(BlueprintCallable)

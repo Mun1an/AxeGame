@@ -64,17 +64,13 @@ void UModularCharacterComponent::SetModularMesh(EAxeModularCharacterSM ESM, USke
 	// 移除互斥的模块
 	if (RemoveExclusionMesh && NewSM)
 	{
-		const FModularCharacterSMInfo ModularSMInfo = FindModularSMInfoFromDataTable(
-			ESM, CharacterGenderType
-		);
-		if (ModularSMInfo.ExclusionModularMeshEnumList.Num() > 0)
+		TArray<EAxeModularCharacterSM> ExclusionEnums;
+		GetExclusionEnumList(ESM, ExclusionEnums);
+		for (const EAxeModularCharacterSM& ExclusionModularMeshEnum : ExclusionEnums)
 		{
-			for (const EAxeModularCharacterSM& ExclusionModularMeshEnum : ModularSMInfo.ExclusionModularMeshEnumList)
+			if (GetModularMesh(ExclusionModularMeshEnum))
 			{
-				if (GetModularMesh(ExclusionModularMeshEnum))
-				{
-					SetModularMesh(ExclusionModularMeshEnum, nullptr, false);
-				}
+				SetModularMesh(ExclusionModularMeshEnum, nullptr, false);
 			}
 		}
 	}
@@ -274,18 +270,65 @@ void UModularCharacterComponent::GetAllSkeletalMeshesInFolder_Test(const FString
 	}
 }
 
+void UModularCharacterComponent::InitExclusionEnumMap()
+{
+	check(DT_ModularCharacterSM)
+	TArray<FModularCharacterSMInfo*> OutRows;
+	DT_ModularCharacterSM->GetAllRows(TEXT(""), OutRows);
+	for (const FModularCharacterSMInfo* OutRow : OutRows)
+	{
+		if (OutRow->ExclusionModularMeshEnumList.Num() <= 0)
+		{
+			continue;
+		}
+		TArray<EAxeModularCharacterSM>& ExclusionList = ExclusionEnumCacheMap.FindOrAdd(OutRow->ModularMeshEnum);
+		for (const EAxeModularCharacterSM& ExclusionEnum : OutRow->ExclusionModularMeshEnumList)
+		{
+			ExclusionList.AddUnique(ExclusionEnum);
+		}
+		// 添加互斥enum 中的互斥
+		for (const EAxeModularCharacterSM& ExclusionEnum : OutRow->ExclusionModularMeshEnumList)
+		{
+			TArray<EAxeModularCharacterSM>& OtherExclusionList = ExclusionEnumCacheMap.FindOrAdd(ExclusionEnum);
+			OtherExclusionList.AddUnique(OutRow->ModularMeshEnum);
+		}
+	}
+}
+
+void UModularCharacterComponent::GetExclusionEnumList(
+	const EAxeModularCharacterSM ESM, TArray<EAxeModularCharacterSM>& OutExclusionList)
+{
+	OutExclusionList = ExclusionEnumCacheMap.FindRef(ESM);
+}
+
 // Called when the game starts
 void UModularCharacterComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	InitExclusionEnumMap();
 	//
+
+	AAxeCharacterPlayer* AxeOwner = GetAxeCharacterPlayerOwner();
+
+	if (AxeOwner->IsInventoryInitOver())
+	{
+		OnInventoryInitOver();
+	}
+	else
+	{
+		AxeOwner->OnInventoryInitOverDelegate.AddUObject(this, &UModularCharacterComponent::OnInventoryInitOver);
+	}
+
+	ModularCharacterInit();
+}
+
+void UModularCharacterComponent::OnInventoryInitOver()
+{
 	AAxeCharacterPlayer* AxeOwner = GetAxeCharacterPlayerOwner();
 	UInventoryComponent* InventoryComponent = AxeOwner->GetInventoryComponent();
 	InventoryComponent->OnEquipmentItemChangedDelegate.AddDynamic(
 		this, &UModularCharacterComponent::OnEquipmentItemChanged);
-
-	ModularCharacterInit();
 }
 
 void UModularCharacterComponent::ModularCharacterInit()
@@ -394,6 +437,7 @@ FModularCharacterSMInfo UModularCharacterComponent::FindModularSMInfoFromDataTab
 	return FModularCharacterSMInfo();
 }
 
+
 void UModularCharacterComponent::OnEquipmentItemChanged(int32 SlotIndex, UItemInstance* NewItemInstance,
                                                         UItemInstance* OldItemInstance)
 {
@@ -439,19 +483,17 @@ void UModularCharacterComponent::OnAfterUpdateModularMesh()
 			continue;
 		}
 
-		const FModularCharacterSMInfo& TableInfo = FindModularSMInfoFromDataTable(Pair.Key, CharacterGenderType);
 		bool bHasExclusionMesh = false;
-		if (TableInfo.ExclusionModularMeshEnumList.Num() > 0)
+		// 互斥
+		TArray<EAxeModularCharacterSM> ExclusionEnums;
+		GetExclusionEnumList(Pair.Key, ExclusionEnums);
+		for (const EAxeModularCharacterSM& ExclusionEnum : ExclusionEnums)
 		{
-			// 互斥
-			for (const EAxeModularCharacterSM& ExclusionEnum : TableInfo.ExclusionModularMeshEnumList)
+			const USkeletalMesh* ExclusionSkeletalMesh = GetModularMesh(ExclusionEnum);
+			if (ExclusionSkeletalMesh)
 			{
-				const USkeletalMesh* ExclusionSkeletalMesh = GetModularMesh(ExclusionEnum);
-				if (ExclusionSkeletalMesh)
-				{
-					bHasExclusionMesh = true;
-					break;
-				}
+				bHasExclusionMesh = true;
+				break;
 			}
 		}
 		if (!bHasExclusionMesh)

@@ -80,6 +80,9 @@ AAxeCharacterPlayer::AAxeCharacterPlayer()
 	HandleModularSkeletalMeshComponent(ModularSM_Gender_Head,
 	                                   "Gender_Head",
 	                                   EAxeModularCharacterSM::Gender_Head);
+	HandleModularSkeletalMeshComponent(ModularSM_Gender_Head_NoElements,
+	                                   "Gender_Head_NoElements",
+	                                   EAxeModularCharacterSM::Gender_Head_NoElements);
 	HandleModularSkeletalMeshComponent(ModularSM_Gender_Eyebrow,
 	                                   "Gender_Eyebrow",
 	                                   EAxeModularCharacterSM::Gender_Eyebrow);
@@ -132,8 +135,8 @@ AAxeCharacterPlayer::AAxeCharacterPlayer()
 	                                   "All_HeadAttachmentHair",
 	                                   EAxeModularCharacterSM::All_HeadAttachmentHair);
 	HandleModularSkeletalMeshComponent(ModularSM_All_HeadAttachmentHelmet,
-									   "All_HeadAttachmentHelmet",
-									   EAxeModularCharacterSM::All_HeadAttachmentHelmet);
+	                                   "All_HeadAttachmentHelmet",
+	                                   EAxeModularCharacterSM::All_HeadAttachmentHelmet);
 	HandleModularSkeletalMeshComponent(ModularSM_All_ChestAttachment,
 	                                   "All_ChestAttachment",
 	                                   EAxeModularCharacterSM::All_ChestAttachment);
@@ -239,6 +242,9 @@ void AAxeCharacterPlayer::InitInventory()
 	InventoryComponent = AxePlayerState->GetInventoryComponent();
 	InventoryComponent->SetOwnerActor(AxePlayerState);
 	InventoryComponent->SetAvatarActor(this);
+
+	OnInventoryInitOverDelegate.Broadcast();
+	bIsInventoryInitOver = true;
 }
 
 void AAxeCharacterPlayer::HandleModularSkeletalMeshComponent(TObjectPtr<USkeletalMeshComponent>& SMComp,

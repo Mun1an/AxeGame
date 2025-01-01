@@ -127,16 +127,17 @@ AActor* UPreInteract::GetGoodTarget()
 		// 判断是否在指定方向的前方
 		const float DotProduct = FVector::DotProduct(ToTargetDir, TraceDirection);
 		const float Angle = FMath::Acos(DotProduct) * 180.f / PI;
+		float TargetScore = 0;
 		if (Angle > ScanAngleRange)
 		{
-			continue;
+			TargetScore += Angle;
 		}
 		// 结合距离和角度计算分数
 		FVector PlaneNormal = FVector::CrossProduct(TraceDirection, FVector::UpVector);
 		const float PointPlaneDistance = FMath::Abs(
 			FVector::PointPlaneDist(TargetLocation, OwnerLocation, PlaneNormal));
 		const float ToCharacterDistance = (TargetLocation - OwnerLocation).Size();
-		const float TargetScore = PointPlaneDistance * 2 + ToCharacterDistance;
+		TargetScore += PointPlaneDistance * 2 + ToCharacterDistance;
 		if (TargetScore < MinScore)
 		{
 			TargetActor = OutActor;

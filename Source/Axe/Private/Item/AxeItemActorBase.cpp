@@ -8,6 +8,7 @@
 AAxeItemActorBase::AAxeItemActorBase()
 {
 	PrimaryActorTick.bCanEverTick = false;
+	bReplicates = true;
 
 	SphereComponent = CreateDefaultSubobject<USphereComponent>("SphereComponent");
 	RootComponent = SphereComponent;
@@ -19,8 +20,6 @@ AAxeItemActorBase::AAxeItemActorBase()
 	ItemSkeletalMeshComponent->SetupAttachment(GetRootComponent());
 
 	ItemComponent = CreateDefaultSubobject<UItemComponent>("ItemComponent");
-
-	
 }
 
 void AAxeItemActorBase::OnConstruction(const FTransform& Transform)
@@ -28,7 +27,7 @@ void AAxeItemActorBase::OnConstruction(const FTransform& Transform)
 	Super::OnConstruction(Transform);
 
 	check(ItemComponent)
-	
+
 	UStaticMesh* StaticMeshWorld = ItemComponent->GetStaticMeshInItemFragment_World();
 	if (StaticMeshWorld)
 	{
