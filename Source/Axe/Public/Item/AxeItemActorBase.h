@@ -34,19 +34,25 @@ public:
 	virtual void UnHighlightActor() override;
 
 protected:
+	virtual void Tick(float DeltaSeconds) override;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TObjectPtr<USphereComponent> SphereComponent;
-	
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TObjectPtr<UStaticMeshComponent> ItemStaticMeshComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TObjectPtr<USkeletalMeshComponent> ItemSkeletalMeshComponent;
-	
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TObjectPtr<UItemComponent> ItemComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FInteractionOption InteractionOption;
+
+private:
+	float TempRotateYaw = 0;
+	float TempLocateZ = 0;
 
 };

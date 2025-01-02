@@ -6,6 +6,7 @@
 #include "AxeCharacterBase.h"
 #include "Interface/CombatInterface.h"
 #include "Interface/InventoryInterface.h"
+#include "Inventory/Component/InventoryComponent.h"
 #include "Logging/LogMacros.h"
 #include "AxeCharacterPlayer.generated.h"
 
@@ -44,12 +45,12 @@ public:
 
 	virtual FORCEINLINE UStaticMeshComponent* GetWeaponComponent() const override
 	{
-		return Weapon;
+		return WeaponSMComponent;
 	}
 
 	virtual FORCEINLINE UStaticMeshComponent* GetWeaponSecondaryComponent() const override
 	{
-		return WeaponSecondary;
+		return WeaponSecondarySMComponent;
 	}
 
 	virtual FORCEINLINE UInventoryComponent* GetInventoryComponent() const override
@@ -73,6 +74,15 @@ public:
 		return ModularSkeletalMeshComponentMap;
 	}
 
+	// Anim
+	UFUNCTION(BlueprintCallable)
+	void SetLinkedAnimLayerClass(TSubclassOf<UAnimInstance>& InAnimInstanceClass);
+
+	// Weapon
+	void GetCurrentWeaponType(EAxePlayerWeaponType& OutWeaponType) const { OutWeaponType = CurrentWeaponType; }
+	UFUNCTION(BlueprintCallable)
+	void SetCurrentWeaponType(EAxePlayerWeaponType InWeaponType);
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
@@ -80,7 +90,28 @@ protected:
 	void InitAbility();
 	void InitInventory();
 
+	UFUNCTION()
+	void OnCurrentWeaponTypeChanged(EAxePlayerWeaponType InWeaponType);
+	UFUNCTION()
+	void OnLinkedAnimLayerClassChanged();
+	UFUNCTION()
+	void OnEquipmentItemChanged(int32 SlotIndex, UItemInstance* NewItemInstance, UItemInstance* OldItemInstance, FGameplayTagContainer SlotTags);
+
+	// Anim
+	UPROPERTY(BlueprintReadOnly, Category = "Animation")
+	TSubclassOf<UAnimInstance> LinkedAnimLayerClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animation")
+	TMap<EAxePlayerWeaponType, TSubclassOf<UAnimInstance>> WeaponAnimLayerClassMap;
+
+	// Weapon
+	UPROPERTY(BlueprintReadOnly, Category = "Weapon")
+	EAxePlayerWeaponType CurrentWeaponType = EAxePlayerWeaponType::None;
+
 private:
+	void HandleModularSkeletalMeshComponent(TObjectPtr<USkeletalMeshComponent>& SMComp, FName CompName,
+	                                        EAxeModularCharacterSM SMEnum);
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* CameraBoom;
 
@@ -94,13 +125,13 @@ private:
 	TObjectPtr<USkeletalMeshComponent> RetargetCharacterMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Combat")
-	TObjectPtr<UStaticMeshComponent> Weapon;
+	TObjectPtr<UStaticMeshComponent> WeaponSMComponent;
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	FName WeaponSecondaryTipSocketName = FName("WeaponSecondaryHandSocket");
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Combat")
-	TObjectPtr<UStaticMeshComponent> WeaponSecondary;
+	TObjectPtr<UStaticMeshComponent> WeaponSecondarySMComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UComboActionComponent> ComboActionComponent;
@@ -178,7 +209,4 @@ private:
 	TObjectPtr<USkeletalMeshComponent> ModularSM_All_Extra;
 
 	TMap<EAxeModularCharacterSM, TWeakObjectPtr<USkeletalMeshComponent>> ModularSkeletalMeshComponentMap;
-
-	void HandleModularSkeletalMeshComponent(TObjectPtr<USkeletalMeshComponent>& SMComp, FName CompName,
-	                                        EAxeModularCharacterSM SMEnum);
 };

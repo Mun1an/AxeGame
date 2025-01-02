@@ -25,6 +25,18 @@ struct FModularCharacterMeshInfo
 	bool bShowInItemActor = true;
 };
 
+USTRUCT(Blueprintable, BlueprintType)
+struct FCharacterWeaponMeshInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Appearance)
+	UStaticMesh* WeaponMeshStaticMesh = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Appearance)
+	UStaticMesh* WeaponSecondaryStaticMesh = nullptr;
+};
+
 /**
  * 
  */
@@ -41,4 +53,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Appearance)
 	TArray<FModularCharacterMeshInfo> ModularCharacterMeshInfos;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Appearance)
+	FCharacterWeaponMeshInfo CharacterWeaponMeshInfo;
 };

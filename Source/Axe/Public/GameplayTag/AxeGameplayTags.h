@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 
+enum class EAxePlayerWeaponType : uint8;
 /**
  * 
  */
@@ -128,11 +129,18 @@ struct FAxeGameplayTags
 	FGameplayTag ItemType_Equipment_Armor_Leggings;
 	FGameplayTag ItemType_Equipment_Armor_Boots;
 	FGameplayTag ItemType_Equipment_Weapon;
-	
+	FGameplayTag ItemType_Equipment_Weapon_AxeAndShield;
+	FGameplayTag ItemType_Equipment_Weapon_GreatAxe;
+
+	TMap<FGameplayTag, EAxePlayerWeaponType> TagWeaponTypeMap;
+
 	/**
 	 * Interact
 	 */
 	FGameplayTag Ability_Interaction_Activate;
+
+public:
+	EAxePlayerWeaponType GetWeaponTypeByTag(const FGameplayTag& Tag) const;
 
 protected:
 	void AddTag(FGameplayTag& OutTag, const ANSICHAR* TagName = nullptr, const ANSICHAR* TagComment = nullptr,

@@ -9,6 +9,7 @@
 #include "Item/Instance/ItemDefinition.h"
 #include "Item/Instance/ItemInstance.h"
 #include "Item/ItemFragment/ItemFragment_ModularCharacterMesh.h"
+#include "Misc/CoreDelegatesInternal.h"
 
 // Sets default values for this component's properties
 UModularCharacterComponent::UModularCharacterComponent()
@@ -143,10 +144,10 @@ void UModularCharacterComponent::AddRow_Test(EAxeModularCharacterSM ESM,
 	RowTable.GenderType = GenderType;
 	RowTable.ModularMeshList = MeshList;
 
-	UEnum* EnumSM = FindObject<UEnum>(ANY_PACKAGE, TEXT("EAxeModularCharacterSM"), true);
+	UEnum* EnumSM = FindObject<UEnum>(nullptr, TEXT("EAxeModularCharacterSM"), true);
 	FString EnumSMName = EnumSM->GetNameStringByIndex(EnumSM->GetIndexByValue(static_cast<int64>(ESM)));
 
-	UEnum* EnumGender = FindObject<UEnum>(ANY_PACKAGE, TEXT("EModularCharacterGenderType"), true);
+	UEnum* EnumGender = FindObject<UEnum>(nullptr, TEXT("EModularCharacterGenderType"), true);
 	FString EnumGenderName = EnumGender->GetNameStringByIndex(
 		EnumGender->GetIndexByValue(static_cast<int64>(GenderType)));
 
@@ -196,7 +197,7 @@ void UModularCharacterComponent::AddModularSMToDataTable_Test()
 
 		FString NoUnderScoreMeshName = RemainMeshName.Replace(TEXT("_"), TEXT(""));
 
-		UEnum* EnumSM = FindObject<UEnum>(ANY_PACKAGE, TEXT("EAxeModularCharacterSM"), true);
+		UEnum* EnumSM = FindObject<UEnum>(nullptr, TEXT("EAxeModularCharacterSM"), true);
 		int32 NumEnums = EnumSM->NumEnums();
 
 		EAxeModularCharacterSM EnumSMValue = EAxeModularCharacterSM::None;
@@ -328,7 +329,8 @@ void UModularCharacterComponent::OnInventoryInitOver()
 	AAxeCharacterPlayer* AxeOwner = GetAxeCharacterPlayerOwner();
 	UInventoryComponent* InventoryComponent = AxeOwner->GetInventoryComponent();
 	InventoryComponent->OnEquipmentItemChangedDelegate.AddDynamic(
-		this, &UModularCharacterComponent::OnEquipmentItemChanged);
+		this, &UModularCharacterComponent::OnEquipmentItemChanged
+		);
 }
 
 void UModularCharacterComponent::ModularCharacterInit()
@@ -355,16 +357,13 @@ void UModularCharacterComponent::ModularCharacterInit()
 	check(ModularMaskedMaterial)
 	RetargetCharacterMeshComp->SetMaterial(0, ModularMaskedMaterial);
 
-	UEnum* EnumSM = FindObject<UEnum>(ANY_PACKAGE, TEXT("EAxeModularCharacterSM"), true);
-	int32 NumEnums = EnumSM->NumEnums();
-
 	OnAfterUpdateModularMesh();
 }
 
 void UModularCharacterComponent::RandomSetModularMesh()
 {
 	check(DT_ModularCharacterSM)
-	UEnum* EnumSM = FindObject<UEnum>(ANY_PACKAGE, TEXT("EAxeModularCharacterSM"), true);
+	UEnum* EnumSM = FindObject<UEnum>(nullptr, TEXT("EAxeModularCharacterSM"), true);
 	int32 NumEnums = EnumSM->NumEnums();
 	// Set Gender ModularMesh
 	for (int32 EnumIndex = 0; EnumIndex < NumEnums; ++EnumIndex)
@@ -439,21 +438,27 @@ FModularCharacterSMInfo UModularCharacterComponent::FindModularSMInfoFromDataTab
 
 
 void UModularCharacterComponent::OnEquipmentItemChanged(int32 SlotIndex, UItemInstance* NewItemInstance,
-                                                        UItemInstance* OldItemInstance)
+                                                        UItemInstance* OldItemInstance, FGameplayTagContainer SlotTags)
 {
 	// Equipment Display
 
+	bool bUpdateMesh = false;
 	// Remove
 	if (OldItemInstance)
 	{
 		const UItemDefinition* ItemDef = GetDefault<UItemDefinition>(OldItemInstance->GetItemDef());
 		const UItemFragment_ModularCharacterMesh* ModularMeshFragment = ItemDef->FindFragment<
 			UItemFragment_ModularCharacterMesh>();
-		for (const FModularCharacterMeshInfo& ModularCharacterMeshInfo : ModularMeshFragment->ModularCharacterMeshInfos)
+		if (ModularMeshFragment)
 		{
-			SetModularMesh(
-				ModularCharacterMeshInfo.ModularMeshEnum, nullptr, false
-			);
+			for (const FModularCharacterMeshInfo& ModularCharacterMeshInfo : ModularMeshFragment->
+			     ModularCharacterMeshInfos)
+			{
+				SetModularMesh(
+					ModularCharacterMeshInfo.ModularMeshEnum, nullptr, false
+				);
+				bUpdateMesh = true;
+			}
 		}
 	}
 	// Add
@@ -462,15 +467,23 @@ void UModularCharacterComponent::OnEquipmentItemChanged(int32 SlotIndex, UItemIn
 		const UItemDefinition* ItemDef = GetDefault<UItemDefinition>(NewItemInstance->GetItemDef());
 		const UItemFragment_ModularCharacterMesh* ModularMeshFragment = ItemDef->FindFragment<
 			UItemFragment_ModularCharacterMesh>();
-		for (const FModularCharacterMeshInfo& ModularCharacterMeshInfo : ModularMeshFragment->ModularCharacterMeshInfos)
+		if (ModularMeshFragment)
 		{
-			SetModularMesh(
-				ModularCharacterMeshInfo.ModularMeshEnum, ModularCharacterMeshInfo.ModularMesh
-			);
+			for (const FModularCharacterMeshInfo& ModularCharacterMeshInfo : ModularMeshFragment->
+			     ModularCharacterMeshInfos)
+			{
+				SetModularMesh(
+					ModularCharacterMeshInfo.ModularMeshEnum, ModularCharacterMeshInfo.ModularMesh
+				);
+				bUpdateMesh = true;
+			}
 		}
 	}
 
-	OnAfterUpdateModularMesh();
+	if (bUpdateMesh)
+	{
+		OnAfterUpdateModularMesh();
+	}
 }
 
 void UModularCharacterComponent::OnAfterUpdateModularMesh()

@@ -14,12 +14,20 @@ class UInventoryProcessor;
 class UItemInstance;
 class UTexture2D;
 
+UENUM(BlueprintType)
+enum class EAxePlayerWeaponType: uint8
+{
+	None,
+	AxeAndShield,
+	GreatAxe,
+};
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnInventoryChangedDelegate, int32, SlotIndex, UItemInstance*,
                                               NewItemInstance,
                                               int32, NewCount, UItemInstance*, OldItemInstance, int32, OldCount);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnEquipmentChangedDelegate, int32, SlotIndex, UItemInstance*,
-                                             ItemInstance, UItemInstance*, OldItemInstance);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnEquipmentChangedDelegate, int32, SlotIndex, UItemInstance*,
+                                               ItemInstance, UItemInstance*, OldItemInstance, FGameplayTagContainer, SlotTags);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnSendInventoryItemUIMessage, UTexture2D*, Texture,
                                                FText, ItemName, int32, StackCount);
@@ -36,6 +44,14 @@ public:
 	UInventoryComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	virtual void InitializeComponent() override;
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	//~UObject interface
+	virtual bool ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch,
+	                                 FReplicationFlags* RepFlags) override;
+	virtual void ReadyForReplication() override;
+
+	//~End of UObject interface
 
 	//
 	FOnInventoryChangedDelegate OnInventoryChangedDelegate;
@@ -86,34 +102,24 @@ public:
 	UFUNCTION(BlueprintCallable, Category=Inventory)
 	void GetEquipmentEntryArray(TArray<FInventoryEntry>& OutEntries) const;
 
+
+
 protected:
 	UFUNCTION(Client, Reliable)
 	void ClientSendItemUIMessage(UTexture2D* Texture, const FText& ItemName, int32 StackCount);
 
-protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Inventory Layout")
 	TArray<FGameplayTagContainer> CustomInventorySlots;
 
-public:
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	//~UObject interface
-	virtual bool ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch,
-	                                 FReplicationFlags* RepFlags) override;
-	virtual void ReadyForReplication() override;
-
-	//~End of UObject interface
-
-
-protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	int32 InventoryEntryInitSize = 16;
-
 	void OnInventoryItemChanged(int32 SlotIndex, UItemInstance* NewItemInstance, int32 NewCount,
 	                            UItemInstance* OldItemInstance, int32 OldCount);
-	void OnEquipmentItemChanged(int32 SlotIndex, UItemInstance* NewItemInstance, UItemInstance* OldItemInstance);
+	void OnEquipmentItemChanged(int32 SlotIndex, UItemInstance* NewItemInstance, UItemInstance* OldItemInstance, FGameplayTagContainer SlotTags);
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	int32 InventoryEntryInitSize = 16;
 
 private:
 	UPROPERTY(Replicated)

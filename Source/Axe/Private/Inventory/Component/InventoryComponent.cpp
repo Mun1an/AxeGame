@@ -12,6 +12,7 @@
 #include "Item/ItemFunctionLibrary.h"
 #include "Item/Instance/ItemDefinition.h"
 #include "Item/Instance/ItemInstance.h"
+#include "Item/ItemFragment/ItemFragment_CommonInfo.h"
 #include "Item/ItemFragment/ItemFragment_UI.h"
 #include "Item/ItemFragment/ItemFragment_EquipmentInfo.h"
 #include "Item/ItemFragment/ItemFragment_ModularCharacterMesh.h"
@@ -83,15 +84,16 @@ void UInventoryComponent::OnInventoryItemChanged(int32 SlotIndex, UItemInstance*
 	const FInventoryEntry& Entry = GetInventoryEntryByIndex(SlotIndex);
 	if (Entry.EntryTags.HasTag(FAxeGameplayTags::Get().Inventory_Entry_Equipment))
 	{
-		OnEquipmentItemChanged(SlotIndex, NewItemInstance, OldItemInstance);
+		OnEquipmentItemChanged(SlotIndex, NewItemInstance, OldItemInstance, Entry.EntryTags);
 	}
 }
 
 void UInventoryComponent::OnEquipmentItemChanged(int32 SlotIndex, UItemInstance* NewItemInstance,
-                                                 UItemInstance* OldItemInstance)
+                                                 UItemInstance* OldItemInstance, FGameplayTagContainer SlotTags)
 {
-	OnEquipmentItemChangedDelegate.Broadcast(SlotIndex, NewItemInstance, OldItemInstance);
+	OnEquipmentItemChangedDelegate.Broadcast(SlotIndex, NewItemInstance, OldItemInstance, SlotTags);
 
+	//
 	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
 	// TODO 处理下客户端加载
 	if (AxeCharacterOwner == nullptr)
@@ -291,6 +293,7 @@ void UInventoryComponent::GetEquipmentEntryArray(TArray<FInventoryEntry>& OutEnt
 		}
 	}
 }
+
 
 void UInventoryComponent::ClientSendItemUIMessage_Implementation(UTexture2D* Texture, const FText& ItemName,
                                                                  int32 StackCount)

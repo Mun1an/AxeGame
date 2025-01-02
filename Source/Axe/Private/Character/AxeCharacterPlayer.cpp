@@ -13,7 +13,12 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Controller.h"
+#include "GameplayTag/AxeGameplayTags.h"
 #include "Inventory/Component/InventoryComponent.h"
+#include "Item/Instance/ItemDefinition.h"
+#include "Item/Instance/ItemInstance.h"
+#include "Item/ItemFragment/ItemFragment_CommonInfo.h"
+#include "Item/ItemFragment/ItemFragment_ModularCharacterMesh.h"
 #include "PlayerController/AxePlayerController.h"
 #include "PlayerState/AxePlayerState.h"
 #include "UI/HUD/AxeHUD.h"
@@ -58,13 +63,13 @@ AAxeCharacterPlayer::AAxeCharacterPlayer()
 	RetargetCharacterMesh->SetupAttachment(GetMesh());
 	RetargetCharacterMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	Weapon = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Weapon"));
-	Weapon->SetupAttachment(RetargetCharacterMesh, WeaponTipSocketName);
-	Weapon->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	WeaponSMComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Weapon"));
+	WeaponSMComponent->SetupAttachment(RetargetCharacterMesh, WeaponTipSocketName);
+	WeaponSMComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	WeaponSecondary = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponSecondary"));
-	WeaponSecondary->SetupAttachment(RetargetCharacterMesh, WeaponSecondaryTipSocketName);
-	WeaponSecondary->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	WeaponSecondarySMComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponSecondary"));
+	WeaponSecondarySMComponent->SetupAttachment(RetargetCharacterMesh, WeaponSecondaryTipSocketName);
+	WeaponSecondarySMComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	// ComboActionComponent
 	ComboActionComponent = CreateDefaultSubobject<UComboActionComponent>(TEXT("ComboActionComponent"));
 	// ActionCombatComponent
@@ -185,12 +190,39 @@ void AAxeCharacterPlayer::OnRep_PlayerState()
 	InitInventory();
 }
 
+void AAxeCharacterPlayer::SetLinkedAnimLayerClass(TSubclassOf<UAnimInstance>& InAnimInstanceClass)
+{
+	LinkedAnimLayerClass = InAnimInstanceClass;
+	OnLinkedAnimLayerClassChanged();
+}
+
+void AAxeCharacterPlayer::OnLinkedAnimLayerClassChanged()
+{
+	GetMesh()->LinkAnimClassLayers(LinkedAnimLayerClass);
+}
+
+void AAxeCharacterPlayer::SetCurrentWeaponType(EAxePlayerWeaponType InWeaponType)
+{
+	CurrentWeaponType = InWeaponType;
+	OnCurrentWeaponTypeChanged(InWeaponType);
+}
+
+void AAxeCharacterPlayer::OnCurrentWeaponTypeChanged(EAxePlayerWeaponType InWeaponType)
+{
+	TSubclassOf<UAnimInstance>* AnimInstanceClassPtr = WeaponAnimLayerClassMap.Find(InWeaponType);
+	if (AnimInstanceClassPtr)
+	{
+		SetLinkedAnimLayerClass(*AnimInstanceClassPtr);
+	}
+}
 
 void AAxeCharacterPlayer::BeginPlay()
 {
 	// Call the base class  
 	Super::BeginPlay();
 	PrimaryActorTick.bCanEverTick = true;
+
+	SetLinkedAnimLayerClass(LinkedAnimLayerClass);
 }
 
 void AAxeCharacterPlayer::Tick(float DeltaSeconds)
@@ -245,6 +277,47 @@ void AAxeCharacterPlayer::InitInventory()
 
 	OnInventoryInitOverDelegate.Broadcast();
 	bIsInventoryInitOver = true;
+
+	// Init Over
+	InventoryComponent->OnEquipmentItemChangedDelegate.AddDynamic(
+		this, &AAxeCharacterPlayer::OnEquipmentItemChanged
+	);
+}
+
+void AAxeCharacterPlayer::OnEquipmentItemChanged(int32 SlotIndex, UItemInstance* NewItemInstance,
+                                                 UItemInstance* OldItemInstance, FGameplayTagContainer SlotTags)
+{
+	const FAxeGameplayTags AxeGameplayTags = FAxeGameplayTags::Get();
+
+	// Weapon
+	if (SlotTags.HasTag(AxeGameplayTags.Inventory_Entry_Equipment_Weapon))
+	{
+		if (NewItemInstance)
+		{
+			const UItemDefinition* NewItemDef = GetDefault<UItemDefinition>(NewItemInstance->GetItemDef());
+			const UItemFragment_ModularCharacterMesh* MeshFragment = NewItemDef->FindFragment<UItemFragment_ModularCharacterMesh>();
+
+			// Set Weapon Mesh
+			WeaponSMComponent->SetStaticMesh(MeshFragment->CharacterWeaponMeshInfo.WeaponMeshStaticMesh);
+			WeaponSecondarySMComponent->SetStaticMesh(MeshFragment->CharacterWeaponMeshInfo.WeaponSecondaryStaticMesh);
+
+			// Set Weapon Type
+			const UItemFragment_CommonInfo* CommonInfo = NewItemDef->FindFragment<UItemFragment_CommonInfo>();
+			if (CommonInfo)
+			{
+				const EAxePlayerWeaponType NewWeaponType = AxeGameplayTags.GetWeaponTypeByTag(
+					CommonInfo->ItemTypeTag);
+				SetCurrentWeaponType(NewWeaponType);
+			}
+		}
+		else
+		{
+			WeaponSMComponent->SetStaticMesh(nullptr);
+			WeaponSecondarySMComponent->SetStaticMesh(nullptr);
+			
+			SetCurrentWeaponType(EAxePlayerWeaponType::None);
+		}
+	}
 }
 
 void AAxeCharacterPlayer::HandleModularSkeletalMeshComponent(TObjectPtr<USkeletalMeshComponent>& SMComp,

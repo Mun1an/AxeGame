@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "ModularCharacterComponent.generated.h"
 
+struct FGameplayTagContainer;
 class UItemInstance;
 class AAxeCharacterPlayer;
 
@@ -122,7 +123,7 @@ protected:
 	UFUNCTION()
 	void OnInventoryInitOver();
 	UFUNCTION()
-	void OnEquipmentItemChanged(int32 SlotIndex, UItemInstance* NewItemInstance, UItemInstance* OldItemInstance);
+	void OnEquipmentItemChanged(int32 SlotIndex, UItemInstance* NewItemInstance, UItemInstance* OldItemInstance, FGameplayTagContainer SlotTags);
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	TObjectPtr<UDataTable> DT_ModularCharacterSM;

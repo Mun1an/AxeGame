@@ -7,7 +7,7 @@
 
 AAxeItemActorBase::AAxeItemActorBase()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
 
 	SphereComponent = CreateDefaultSubobject<USphereComponent>("SphereComponent");
@@ -80,5 +80,24 @@ void AAxeItemActorBase::UnHighlightActor()
 	if (ItemSkeletalMeshComponent && ItemSkeletalMeshComponent->GetSkeletalMeshAsset())
 	{
 		ItemSkeletalMeshComponent->SetRenderCustomDepth(false);
+	}
+}
+
+void AAxeItemActorBase::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	TempRotateYaw += 0.5f;
+	TempRotateYaw = FMath::Fmod(TempRotateYaw, 360.f);
+
+	// TempLocateZ = FMath::Sin(FMath::DegreesToRadians(TempRotateYaw)) * 5.f;
+
+	if (ItemStaticMeshComponent && ItemStaticMeshComponent->GetStaticMesh())
+	{
+		ItemStaticMeshComponent->SetRelativeRotation(FRotator(0, TempRotateYaw, 0));
+	}
+	if (ItemSkeletalMeshComponent && ItemSkeletalMeshComponent->GetSkeletalMeshAsset())
+	{
+		ItemSkeletalMeshComponent->SetRelativeRotation(FRotator(0, TempRotateYaw, 0));
 	}
 }

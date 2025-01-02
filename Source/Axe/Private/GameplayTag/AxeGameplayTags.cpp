@@ -4,6 +4,7 @@
 #include "GameplayTag/AxeGameplayTags.h"
 
 #include "GameplayTagsManager.h"
+#include "Inventory/Component/InventoryComponent.h"
 
 FAxeGameplayTags FAxeGameplayTags::Instance;
 
@@ -102,14 +103,20 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(Inventory_Entry_Equipment_Armor_Leggings, "Inventory.Entry.Equipment.Armor.Leggings");
 	AddTag(Inventory_Entry_Equipment_Armor_Boots, "Inventory.Entry.Equipment.Armor.Boots");
 	AddTag(Inventory_Entry_Equipment_Weapon, "Inventory.Entry.Equipment.Weapon");
-	
-	AddTag(ItemType_None,"ItemType.None");
-	AddTag(ItemType_Food,"ItemType.Food");
-	AddTag(ItemType_Equipment_Armor_Helmet,"ItemType.Equipment.Armor.Helmet");
-	AddTag(ItemType_Equipment_Armor_Chestplate,"ItemType.Equipment.Armor.Chestplate");
-	AddTag(ItemType_Equipment_Armor_Leggings,"ItemType.Equipment.Armor.Leggings");
-	AddTag(ItemType_Equipment_Armor_Boots,"ItemType.Equipment.Armor.Boots");
-	AddTag(ItemType_Equipment_Weapon,"ItemType.Equipment.Weapon");
+
+	AddTag(ItemType_None, "ItemType.None");
+	AddTag(ItemType_Food, "ItemType.Food");
+	AddTag(ItemType_Equipment_Armor_Helmet, "ItemType.Equipment.Armor.Helmet");
+	AddTag(ItemType_Equipment_Armor_Chestplate, "ItemType.Equipment.Armor.Chestplate");
+	AddTag(ItemType_Equipment_Armor_Leggings, "ItemType.Equipment.Armor.Leggings");
+	AddTag(ItemType_Equipment_Armor_Boots, "ItemType.Equipment.Armor.Boots");
+	AddTag(ItemType_Equipment_Weapon, "ItemType.Equipment.Weapon");
+	AddTag(ItemType_Equipment_Weapon_AxeAndShield, "ItemType.Equipment.Weapon.AxeAndShield");
+	AddTag(ItemType_Equipment_Weapon_GreatAxe, "ItemType.Equipment.Weapon.GreatAxe");
+
+	TagWeaponTypeMap.Add(ItemType_Equipment_Weapon_AxeAndShield, EAxePlayerWeaponType::AxeAndShield);
+	TagWeaponTypeMap.Add(ItemType_Equipment_Weapon_GreatAxe, EAxePlayerWeaponType::GreatAxe);
+
 	/**
 	 * Interact
 	 */
@@ -142,6 +149,7 @@ void FAxeGameplayTags::InitNativeGameplayTags()
 	Instance.AddAllTags(GameplayTagsManager);
 }
 
+
 void FAxeGameplayTags::AddTag(FGameplayTag& OutTag, const ANSICHAR* TagName, const ANSICHAR* TagComment,
                               bool bIsAttributesTag)
 {
@@ -160,4 +168,14 @@ void FAxeGameplayTags::AddTag(FGameplayTag& OutTag, const ANSICHAR* TagName, con
 	{
 		AllAttributesList.Add(OutTag);
 	}
+}
+
+EAxePlayerWeaponType FAxeGameplayTags::GetWeaponTypeByTag(const FGameplayTag& Tag) const
+{
+	const EAxePlayerWeaponType* AxePlayerWeaponType = TagWeaponTypeMap.Find(Tag);
+	if (AxePlayerWeaponType)
+	{
+		return *AxePlayerWeaponType;
+	}
+	return EAxePlayerWeaponType::None;
 }
