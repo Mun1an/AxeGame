@@ -4,6 +4,8 @@
 
 #include "Components/SphereComponent.h"
 #include "Item/Component/ItemComponent.h"
+#include "Item/Instance/ItemDefinition.h"
+#include "Item/ItemFragment/ItemFragment_World.h"
 
 AAxeItemActorBase::AAxeItemActorBase()
 {
@@ -27,17 +29,29 @@ void AAxeItemActorBase::OnConstruction(const FTransform& Transform)
 	Super::OnConstruction(Transform);
 
 	check(ItemComponent)
-
-	UStaticMesh* StaticMeshWorld = ItemComponent->GetStaticMeshInItemFragment_World();
-	if (StaticMeshWorld)
+	UClass* ItemDef = ItemComponent->GetItemDef();
+	if (ItemDef)
 	{
-		ItemStaticMeshComponent->SetStaticMesh(StaticMeshWorld);
-	}
+		const UItemDefinition* ItemDefinition = GetDefault<UItemDefinition>(ItemDef);
+		const UItemFragment_World* ItemFragment_World = ItemDefinition->FindFragment<UItemFragment_World>();
+		if (ItemFragment_World)
+		{
+			FVector MeshScale = ItemFragment_World->MeshScale;
 
-	USkeletalMesh* SkeletalMeshWorld = ItemComponent->GetSkeletalMeshInItemFragment_World();
-	if (SkeletalMeshWorld)
-	{
-		ItemSkeletalMeshComponent->SetSkeletalMesh(SkeletalMeshWorld);
+			UStaticMesh* StaticMeshWorld = ItemFragment_World->StaticMesh;
+			if (StaticMeshWorld)
+			{
+				ItemStaticMeshComponent->SetStaticMesh(StaticMeshWorld);
+				ItemStaticMeshComponent->SetRelativeScale3D(MeshScale);
+			}
+
+			USkeletalMesh* SkeletalMeshWorld = ItemFragment_World->SkeletalMesh;
+			if (SkeletalMeshWorld)
+			{
+				ItemSkeletalMeshComponent->SetSkeletalMesh(SkeletalMeshWorld);
+				ItemStaticMeshComponent->SetRelativeScale3D(MeshScale);
+			}
+		}
 	}
 }
 

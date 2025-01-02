@@ -27,6 +27,8 @@ protected:
 	virtual void OnAbilityEnded(UGameplayAbility* Ability);
 	virtual void SetIsUsingBlockingAbility();
 
+	virtual void OnDead() override;
+
 	UPROPERTY()
 	TObjectPtr<AAxeAIController> AxeAIController;
 

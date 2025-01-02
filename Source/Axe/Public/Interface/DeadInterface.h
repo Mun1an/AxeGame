@@ -27,4 +27,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual bool IsAlive() const = 0;
+
+	UFUNCTION()
+	virtual void OnDead() = 0;
 };

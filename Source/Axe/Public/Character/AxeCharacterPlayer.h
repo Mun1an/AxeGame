@@ -10,6 +10,7 @@
 #include "Logging/LogMacros.h"
 #include "AxeCharacterPlayer.generated.h"
 
+class UWeaponTypeDataAsset;
 enum class EAxeModularCharacterSM : uint8;
 class UModularCharacterComponent;
 class UInventoryComponent;
@@ -91,18 +92,19 @@ protected:
 	void InitInventory();
 
 	UFUNCTION()
-	void OnCurrentWeaponTypeChanged(EAxePlayerWeaponType InWeaponType);
+	void OnCurrentWeaponTypeChanged(EAxePlayerWeaponType NewWeaponType, EAxePlayerWeaponType OldWeaponType);
 	UFUNCTION()
 	void OnLinkedAnimLayerClassChanged();
 	UFUNCTION()
-	void OnEquipmentItemChanged(int32 SlotIndex, UItemInstance* NewItemInstance, UItemInstance* OldItemInstance, FGameplayTagContainer SlotTags);
+	void OnEquipmentItemChanged(int32 SlotIndex, UItemInstance* NewItemInstance, UItemInstance* OldItemInstance,
+	                            FGameplayTagContainer SlotTags);
 
 	// Anim
 	UPROPERTY(BlueprintReadOnly, Category = "Animation")
 	TSubclassOf<UAnimInstance> LinkedAnimLayerClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animation")
-	TMap<EAxePlayerWeaponType, TSubclassOf<UAnimInstance>> WeaponAnimLayerClassMap;
+	TMap<EAxePlayerWeaponType, UWeaponTypeDataAsset*> WeaponTypeDataAssetMap;
 
 	// Weapon
 	UPROPERTY(BlueprintReadOnly, Category = "Weapon")

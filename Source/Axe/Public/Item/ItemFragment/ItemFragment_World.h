@@ -24,4 +24,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Appearance)
 	TObjectPtr<USkeletalMesh> SkeletalMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Appearance)
+	FVector MeshScale = FVector(1.0f, 1.0f, 1.0f);
 };

@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ActiveGameplayEffectHandle.h"
 #include "GameplayTagContainer.h"
 #include "ActionSystem/AxeActionComponentBase.h"
 #include "ComboActionComponent.generated.h"
@@ -16,6 +15,7 @@ class AAxeCharacterPlayer;
 class UComboTreeNode;
 class UComboTree;
 class UComboDataAsset;
+
 /**
  * 客户端逻辑
  */
@@ -28,36 +28,32 @@ public:
 	UComboActionComponent();
 	void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
-	UPROPERTY(EditAnywhere, Category="Abilities|Combo")
-	TObjectPtr<UComboDataAsset> ComboDataAsset;
+	UPROPERTY(EditDefaultsOnly, Category="Abilities|Combo")
+	TObjectPtr<UComboDataAsset> DefaultComboDataAsset;
 
 	UFUNCTION()
-	void InitComboAbilityTree();
+	void InitComboAbilityTree(const UComboDataAsset* InComboDataAsset);
 	//
 	UComboTree* GetComboAbilityTree() const { return ComboAbilityTree; }
 	UFUNCTION()
 	UAxeGameplayAbility* GetActivatedComboAbility();
 
-	TSubclassOf<UAxeGameplayAbility>* GetComboAbilityByInputTag(const FGameplayTag& NextInputAbilityTag);
+	TSubclassOf<UAxeGameplayAbility>* GetNextComboAbilityByInputTag(const FGameplayTag& NextInputAbilityTag);
 	bool IsNextComboAbility(const UGameplayAbility* Ability);
 
 	bool IsInComboSwitchWindow() const { return bIsInComboWindow; }
 
 	//
-	void OnComboAbilityActivated(UGameplayAbility* Ability);
-	void OnComboAbilityEnded(UGameplayAbility* Ability);
+	void OnAbilityActivated(UGameplayAbility* Ability);
+	void OnAbilityEnded(UGameplayAbility* Ability);
 	//
 	UFUNCTION()
 	void AnsComboSwitchWindowStart(UAnimNotifyState* NotifyState);
-	// UFUNCTION()
-	// void AnsComboSwitchWindowTick();
 	UFUNCTION()
 	void AnsComboSwitchWindowEnd(UAnimNotifyState* NotifyState);
 	//
 	UFUNCTION()
 	void AnsComboInputCacheStart();
-	// UFUNCTION()
-	// void AnsComboInputCacheTick();
 	UFUNCTION()
 	void AnsComboInputCacheEnd();
 
@@ -71,7 +67,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	virtual void OnAbilityInitOver() override;
-	
+
 	void OnNotifyAbilityActivated(UGameplayAbility* Ability);
 	void OnNotifyAbilityEnded(UGameplayAbility* Ability);
 	void OnAbilityInputTagPressed(const FGameplayTag InputTag);

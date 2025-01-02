@@ -27,7 +27,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnInventoryChangedDelegate, int32
                                               int32, NewCount, UItemInstance*, OldItemInstance, int32, OldCount);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnEquipmentChangedDelegate, int32, SlotIndex, UItemInstance*,
-                                               ItemInstance, UItemInstance*, OldItemInstance, FGameplayTagContainer, SlotTags);
+                                              ItemInstance, UItemInstance*, OldItemInstance, FGameplayTagContainer,
+                                              SlotTags);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnSendInventoryItemUIMessage, UTexture2D*, Texture,
                                                FText, ItemName, int32, StackCount);
@@ -102,7 +103,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category=Inventory)
 	void GetEquipmentEntryArray(TArray<FInventoryEntry>& OutEntries) const;
 
-
+	UFUNCTION(BlueprintCallable, Category=Inventory)
+	void RefreshInventoryItemEntryChange();
 
 protected:
 	UFUNCTION(Client, Reliable)
@@ -111,12 +113,10 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Inventory Layout")
-	TArray<FGameplayTagContainer> CustomInventorySlots;
-
 	void OnInventoryItemChanged(int32 SlotIndex, UItemInstance* NewItemInstance, int32 NewCount,
 	                            UItemInstance* OldItemInstance, int32 OldCount);
-	void OnEquipmentItemChanged(int32 SlotIndex, UItemInstance* NewItemInstance, UItemInstance* OldItemInstance, FGameplayTagContainer SlotTags);
+	void OnEquipmentItemChanged(int32 SlotIndex, UItemInstance* NewItemInstance, UItemInstance* OldItemInstance,
+	                            FGameplayTagContainer SlotTags);
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	int32 InventoryEntryInitSize = 16;

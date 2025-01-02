@@ -294,6 +294,18 @@ void UInventoryComponent::GetEquipmentEntryArray(TArray<FInventoryEntry>& OutEnt
 	}
 }
 
+void UInventoryComponent::RefreshInventoryItemEntryChange()
+{
+	// 调用触发所有的 Inventory Entry Item Change
+	for (const FInventoryEntry& Entry : InventoryList.Entries)
+	{
+		OnInventoryItemChanged(
+			Entry.SlotIndex, Entry.Instance, Entry.StackCount,
+			Entry.LastInstance, Entry.LastObservedCount
+		);
+	}
+}
+
 
 void UInventoryComponent::ClientSendItemUIMessage_Implementation(UTexture2D* Texture, const FText& ItemName,
                                                                  int32 StackCount)

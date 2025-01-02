@@ -20,9 +20,6 @@ public:
 	TSubclassOf<UItemDefinition> GetItemDef() const { return ItemDef; }
 	int32 GetStackCount() const { return StackCount; }
 	
-	UStaticMesh* GetStaticMeshInItemFragment_World();
-	USkeletalMesh* GetSkeletalMeshInItemFragment_World();
-
 protected:
 	virtual void BeginPlay() override;
 

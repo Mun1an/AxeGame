@@ -60,7 +60,7 @@ void AAxeCharacterMob::OnAbilityEnded(UGameplayAbility* Ability)
 void AAxeCharacterMob::SetIsUsingBlockingAbility()
 {
 	check(AxeAIController)
-	
+
 	const UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(AbilitySystemComponent);
 	TArray<FGameplayAbilitySpecHandle> SpecHandles;
 	AxeASC->GetAbilitySpecHandlesByActivationGroup(
@@ -76,4 +76,11 @@ void AAxeCharacterMob::SetIsUsingBlockingAbility()
 		bIsUsingBlockingAbility = false;
 	}
 	AxeAIController->GetBlackboardComponent()->SetValueAsBool(FName("IsUsingBlockingAbility"), bIsUsingBlockingAbility);
+}
+
+void AAxeCharacterMob::OnDead()
+{
+	Super::OnDead();
+
+	AxeAIController->GetBlackboardComponent()->SetValueAsBool(FName("IsDead"), bIsDead);
 }

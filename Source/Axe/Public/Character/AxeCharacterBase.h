@@ -82,6 +82,7 @@ public:
 	void SetDeath();
 	UFUNCTION(BlueprintCallable)
 	void SetDeathWithParams(const FVector DeathImpulse);
+	virtual void OnDead() override;
 
 	FOnActorDeadDelegate OnActorDeadDelegate;
 

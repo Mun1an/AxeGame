@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
-#include "Abilities/GameplayAbility.h"
 #include "AbilitySystem/Ability/AxeGameplayAbility.h"
 #include "Engine/DataAsset.h"
 #include "ComboDataAsset.generated.h"
@@ -19,7 +18,7 @@ struct FComboAbilityInfo
 	FGameplayTag InputTag;
 
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<UAxeGameplayAbility> AbilityClass;
+	FGameplayTag ComboAbilityTag;
 };
 
 USTRUCT()
@@ -104,7 +103,6 @@ public:
 	{
 		Root = RootNode;
 	}
-
 	//
 };
 
