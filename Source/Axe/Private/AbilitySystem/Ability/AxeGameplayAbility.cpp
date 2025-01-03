@@ -356,6 +356,8 @@ void UAxeGameplayAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 		AutoTargetActor = nullptr;
 		GetOrFindAutoTargetActor();
 	}
+
+	ResetAbilityIgnoreMoveInput();
 }
 
 void UAxeGameplayAbility::EndAbility(const FGameplayAbilitySpecHandle Handle,
@@ -370,6 +372,9 @@ void UAxeGameplayAbility::EndAbility(const FGameplayAbilitySpecHandle Handle,
 	{
 		SetIgnoreClientMovementErrorChecksAndCorrection(false);
 	}
+
+	// Reset Ignore Move Input
+	ResetAbilityIgnoreMoveInput();
 }
 
 bool UAxeGameplayAbility::CheckCost(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
@@ -700,6 +705,34 @@ AAxeCharacterBase* UAxeGameplayAbility::FindOneGoodTargetByMoveInput(float Spher
 	return TargetCharacter;
 }
 
+void UAxeGameplayAbility::SetAbilityIgnoreMoveInput(bool bIsIgnore)
+{
+	const AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
+	AbilityIgnoreMoveInputCount += bIsIgnore ? 1 : -1;
+	AbilityIgnoreMoveInputCount = FMath::Max(AbilityIgnoreMoveInputCount, 0);
+
+	if (AController* Controller = AxeCharacterOwner->GetController())
+	{
+		Controller->SetIgnoreMoveInput(bIsIgnore);
+	}
+}
+
+void UAxeGameplayAbility::ResetAbilityIgnoreMoveInput()
+{
+	if (AbilityIgnoreMoveInputCount > 0)
+	{
+		AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
+		if (AController* Controller = AxeCharacterOwner->GetController())
+		{
+			for (int i = 0; i < AbilityIgnoreMoveInputCount; ++i)
+			{
+				Controller->SetIgnoreMoveInput(false);
+			}
+		}
+		AbilityIgnoreMoveInputCount = 0;
+	}
+}
+
 void UAxeGameplayAbility::An_AbilitySkillState_NotifyBegin(UAnimNotify* AnimNotify)
 {
 	// UE_LOG(LogTemp, Warning, TEXT("An_BackSwing_NotifyBegin"));
@@ -773,11 +806,7 @@ void UAxeGameplayAbility::Ans_IgnoreInput_NotifyBegin(UAnimNotifyState* AnimNoti
 {
 	if (IsLocallyControlled())
 	{
-		AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
-		if (AController* Controller = AxeCharacterOwner->GetController())
-		{
-			Controller->SetIgnoreMoveInput(true);
-		}
+		SetAbilityIgnoreMoveInput(true);
 	}
 }
 
@@ -785,11 +814,7 @@ void UAxeGameplayAbility::Ans_IgnoreInput_NotifyEnd(UAnimNotifyState* AnimNotify
 {
 	if (IsLocallyControlled())
 	{
-		AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
-		if (AController* Controller = AxeCharacterOwner->GetController())
-		{
-			Controller->SetIgnoreMoveInput(false);
-		}
+		SetAbilityIgnoreMoveInput(false);
 	}
 }
 
@@ -800,6 +825,8 @@ void UAxeGameplayAbility::Ans_MotionWrap_NotifyBegin(UAnimNotifyState* AnimNotif
 	{
 		return;
 	}
+	// Set Ignore Move Input
+	SetAbilityIgnoreMoveInput(true);
 	UAxeMotionWrapAnimNotifyState* AxeANS = Cast<UAxeMotionWrapAnimNotifyState>(AnimNotifyState);
 	if (!AxeANS)
 	{
@@ -810,12 +837,6 @@ void UAxeGameplayAbility::Ans_MotionWrap_NotifyBegin(UAnimNotifyState* AnimNotif
 	if (AttachTarget == nullptr)
 	{
 		return;
-	}
-	// SetIgnoreMoveInput
-	if (AController* Controller = AxeCharacterOwner->GetController())
-	{
-		Controller->SetIgnoreMoveInput(true);
-		bHasSetIgnoreMoveInputByMotionWrap = true;
 	}
 	const FVector TargetLocation = AttachTarget->GetActorLocation();
 	const FVector OwnerLocation = AxeCharacterOwner->GetActorLocation();
@@ -865,13 +886,8 @@ void UAxeGameplayAbility::Ans_MotionWrap_NotifyBegin(UAnimNotifyState* AnimNotif
 
 void UAxeGameplayAbility::Ans_MotionWrap_NotifyEnd(UAnimNotifyState* AnimNotifyState)
 {
-	if (IsLocallyControlled() && bHasSetIgnoreMoveInputByMotionWrap)
+	if (IsLocallyControlled())
 	{
-		AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
-		if (AController* Controller = AxeCharacterOwner->GetController())
-		{
-			Controller->SetIgnoreMoveInput(false);
-			bHasSetIgnoreMoveInputByMotionWrap = false;
-		}
+		SetAbilityIgnoreMoveInput(false);
 	}
 }

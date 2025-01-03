@@ -170,21 +170,22 @@ void UShieldBlockAbility::OnIncomingDamageEffectApplied(AActor* Source, FGamepla
 	if (NowStamina <= 0)
 	{
 		TransformToShieldStagger(Source);
-		return;
 	}
 }
 
 void UShieldBlockAbility::TransformToShieldParry(AActor* Source)
 {
+	if (!ShieldParryAbilityClass)
+	{
+		return;
+	}
 	FAxeGameplayTags AxeGameplayTags = FAxeGameplayTags::Get();
+	UAxeAbilitySystemComponent* AxeASC = GetAxeAbilitySystemComponentFromActorInfo();
 	// self
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
-	UAxeAbilitySystemComponent* AxeASC = GetAxeAbilitySystemComponentFromActorInfo();
-	if (ShieldParryAbilityClass)
-	{
-		AxeASC->TryActivateAbilityByClass(ShieldParryAbilityClass);
-	}
-	// Source
+	// TryActivateAbilityByClass
+	AxeASC->TryActivateAbilityByClass(ShieldParryAbilityClass);
+	// Source HitReact
 	AAxeCharacterBase* SourceAxeCharacterBase = Cast<AAxeCharacterBase>(Source);
 	if (SourceAxeCharacterBase)
 	{

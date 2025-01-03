@@ -14,43 +14,20 @@ UComboGameplayAbility::UComboGameplayAbility(const FObjectInitializer& ObjectIni
 {
 	bUseClientMovement = true;
 	bNeedAutoSearchTarget = true;
+
+	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 }
 
-// bool UComboGameplayAbility::CanActivateAbility_ByLastReplaceCondition(const FGameplayAbilitySpecHandle Handle,
-// 											 const FGameplayAbilityActorInfo* ActorInfo,
-// 											 const FGameplayTagContainer* SourceTags,
-// 											 const FGameplayTagContainer* TargetTags,
-// 											 FGameplayTagContainer* OptionalRelevantTags) const
-// {
-// 	if (Super::CanActivateAbility_ByLastReplaceCondition(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags))
-// 	{
-// 		return true;
-// 	}
-//
-// 	if (IsLocallyControlled())
-// 	{
-// 		if (AAxeCharacterPlayer* CharacterPlayer = Cast<AAxeCharacterPlayer>(Actor))
-// 		{
-// 			if (CharacterPlayer->IsLocallyControlled())
-// 			{
-// 				UComboActionComponent* ComboActionComponent = CharacterPlayer->GetComboActionComponent();
-// 				bool bIsNextComboAbility = ComboActionComponent->IsNextComboAbility(NewAbility);
-// 				bool bIsInComboSwitchWindow = ComboActionComponent->IsInComboSwitchWindow();
-// 				if (bIsNextComboAbility && bIsInComboSwitchWindow)
-// 				{
-// 					return true;
-// 				}
-// 			}
-// 		}
-// 	}
-// 	else
-// 	{
-// 		return true;
-// 	}
-//
-//
-// 	return false;
-// }
+void UComboGameplayAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
+                                            const FGameplayAbilityActorInfo* ActorInfo,
+                                            const FGameplayAbilityActivationInfo ActivationInfo,
+                                            const FGameplayEventData* TriggerEventData)
+{
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+
+	AbilityTask_HitTrace = nullptr;
+	HasHitTargetSet.Empty();
+}
 
 void UComboGameplayAbility::Ans_ComboInputCache_NotifyBegin(UAnimNotifyState* AnimNotifyState)
 {
@@ -125,6 +102,8 @@ void UComboGameplayAbility::Ans_HitTrace_NotifyBegin(UAnimNotifyState* AnimNotif
 	);
 	AbilityTask_HitTrace->HitTraceDelegate.AddDynamic(this, &UComboGameplayAbility::OnHitTrace);
 	AbilityTask_HitTrace->ReadyForActivation();
+
+	HasHitTargetSet.Empty();
 }
 
 void UComboGameplayAbility::Ans_HitTrace_NotifyEnd(UAnimNotifyState* AnimNotifyState)
@@ -170,6 +149,7 @@ void UComboGameplayAbility::OnHitTrace(const FHitResult& HitResults)
 {
 	OnHitTraceBP(HitResults);
 
+	// Hit Once
 	if (IsFirstHitTarget(HitResults.GetActor()))
 	{
 		// ApplyDamage

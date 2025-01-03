@@ -35,9 +35,9 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(Ability_Attack_MeleeCombo_B2, "Ability.Attack.MeleeCombo.B2");
 	AddTag(Ability_Attack_MeleeCombo_B3, "Ability.Attack.MeleeCombo.B3");
 
-	AddTag(Ability_Skill_ShieldDefense, "Ability.Skill.ShieldDefense");
-	AddTag(Ability_Skill_ShieldParry, "Ability.Skill.ShieldParry");
-	AddTag(Ability_Skill_ShieldStagger, "Ability.Skill.ShieldStagger");
+	AddTag(Ability_Skill_Defense_Block, "Ability.Skill.Defense.Block");
+	AddTag(Ability_Skill_Defense_Parry, "Ability.Skill.Defense.Parry");
+	AddTag(Ability_Skill_Defense_Stagger, "Ability.Skill.Defense.Stagger");
 	AddTag(Ability_Skill_LeapAttack, "Ability.Skill.LeapAttack");
 	AddTag(Ability_Skill_ThrowAxe, "Ability.Skill.ThrowAxe");
 	AddTag(Ability_Skill_Roar, "Ability.Skill.Roar");

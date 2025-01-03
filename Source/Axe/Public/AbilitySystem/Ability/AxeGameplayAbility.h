@@ -131,7 +131,8 @@ public:
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	                        const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility,
 	                        bool bWasCancelled);
-	virtual bool CheckCost(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, OUT FGameplayTagContainer* OptionalRelevantTags = nullptr) const override;
+	virtual bool CheckCost(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+	                       OUT FGameplayTagContainer* OptionalRelevantTags = nullptr) const override;
 
 protected:
 	/**
@@ -209,6 +210,11 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	AAxeCharacterBase* FindOneGoodTargetByMoveInput(float SphereRadius = 300,
 	                                                float TraceAngleRange = 60.f);
+	UFUNCTION(BlueprintCallable)
+	void SetAbilityIgnoreMoveInput(bool bIsIgnore);
+	UFUNCTION(BlueprintCallable)
+	void ResetAbilityIgnoreMoveInput();
+	int32 AbilityIgnoreMoveInputCount = 0;
 
 	UFUNCTION()
 	void An_AbilitySkillState_NotifyBegin(UAnimNotify* AnimNotify);
@@ -234,7 +240,4 @@ protected:
 
 	UFUNCTION()
 	void Ans_MotionWrap_NotifyEnd(UAnimNotifyState* AnimNotifyState);
-
-	//
-	bool bHasSetIgnoreMoveInputByMotionWrap = false;
 };

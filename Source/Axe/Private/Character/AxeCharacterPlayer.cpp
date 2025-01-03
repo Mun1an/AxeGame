@@ -336,7 +336,14 @@ void AAxeCharacterPlayer::OnEquipmentItemChanged(int32 SlotIndex, UItemInstance*
 
 			// Set Weapon Mesh
 			WeaponSMComponent->SetStaticMesh(MeshFragment->CharacterWeaponMeshInfo.WeaponMeshStaticMesh);
+			WeaponSMComponent->SetRelativeLocation(MeshFragment->CharacterWeaponMeshInfo.WeaponOffset);
+			WeaponSMComponent->SetRelativeRotation(MeshFragment->CharacterWeaponMeshInfo.WeaponRotation);
+			WeaponSMComponent->SetRelativeScale3D(MeshFragment->CharacterWeaponMeshInfo.WeaponScale);
+			
 			WeaponSecondarySMComponent->SetStaticMesh(MeshFragment->CharacterWeaponMeshInfo.WeaponSecondaryStaticMesh);
+			WeaponSecondarySMComponent->SetRelativeLocation(MeshFragment->CharacterWeaponMeshInfo.WeaponOffset);
+			WeaponSecondarySMComponent->SetRelativeRotation(MeshFragment->CharacterWeaponMeshInfo.WeaponRotation);
+			WeaponSecondarySMComponent->SetRelativeScale3D(MeshFragment->CharacterWeaponMeshInfo.WeaponScale);
 
 			// Set Weapon Type
 			const UItemFragment_CommonInfo* CommonInfo = NewItemDef->FindFragment<UItemFragment_CommonInfo>();

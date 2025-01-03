@@ -35,6 +35,24 @@ struct FCharacterWeaponMeshInfo
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Appearance)
 	UStaticMesh* WeaponSecondaryStaticMesh = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Appearance)
+	FVector WeaponOffset = FVector(0.0f, 0.0f, 0.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Appearance)
+	FRotator WeaponRotation =  FRotator(0.0f, 0.0f, 0.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Appearance)
+	FVector WeaponScale = FVector(1.0f, 1.0f, 1.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Appearance)
+	FVector WeaponSecondaryOffset = FVector(0.0f, 0.0f, 0.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Appearance)
+	FRotator WeaponSecondaryRotation = FRotator(0.0f, 0.0f, 0.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Appearance)
+	FVector WeaponSecondaryScale = FVector(1.0f, 1.0f, 1.0f);
 };
 
 /**

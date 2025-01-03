@@ -22,7 +22,10 @@ class AXE_API UComboGameplayAbility : public UAxeDamageGameplayAbility, public I
 
 public:
 	UComboGameplayAbility(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
-
+	//
+	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+	                             const FGameplayAbilityActivationInfo ActivationInfo,
+	                             const FGameplayEventData* TriggerEventData) override;
 	// IComboAbilityInterface
 	virtual void Ans_Combo_NotifyBegin(UAnimNotifyState* AnimNotifyState) override;
 	virtual void Ans_Combo_NotifyEnd(UAnimNotifyState* AnimNotifyState) override;
@@ -67,8 +70,8 @@ protected:
 	UPROPERTY(EditAnywhere, Category="HitTrace")
 	bool bHitTraceIgnoreSelf = true;
 
-	UPROPERTY()
-	TArray<AActor*> IgnoreActors;
+	UPROPERTY(BlueprintReadWrite, Category="HitTrace")
+	TArray<AActor*> IgnoreActors = {};
 
 	//
 	UPROPERTY()
@@ -77,5 +80,5 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	bool IsFirstHitTarget(AActor* Target);
 	UPROPERTY()
-	TSet<AActor*> HasHitTargetSet;
+	TSet<AActor*> HasHitTargetSet = TSet<AActor*>();
 };

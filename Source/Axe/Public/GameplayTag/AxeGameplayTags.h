@@ -43,9 +43,10 @@ struct FAxeGameplayTags
 	FGameplayTag Ability_Attack_MeleeCombo_B2;
 	FGameplayTag Ability_Attack_MeleeCombo_B3;
 
-	FGameplayTag Ability_Skill_ShieldDefense;
-	FGameplayTag Ability_Skill_ShieldParry;
-	FGameplayTag Ability_Skill_ShieldStagger;
+	FGameplayTag Ability_Skill_Defense_Block;
+	FGameplayTag Ability_Skill_Defense_Parry;
+	FGameplayTag Ability_Skill_Defense_Stagger;
+	
 	FGameplayTag Ability_Skill_LeapAttack;
 	FGameplayTag Ability_Skill_ThrowAxe;
 	FGameplayTag Ability_Skill_Roar;
