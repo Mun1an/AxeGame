@@ -3,6 +3,3 @@
 
 #include "AbilitySystem/Effect/AxeGameplayEffect.h"
 
-#include "AbilitySystemComponent.h"
-#include "Character/AxeCharacterBase.h"
-

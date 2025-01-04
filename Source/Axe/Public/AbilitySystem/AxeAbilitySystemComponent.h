@@ -94,6 +94,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	UGameplayAbility* GetActiveAbilityByTag(const FGameplayTag& Tag);
 
+	UFUNCTION(BlueprintCallable)
+	class UDamageExecution* GetEffectDamageExecution();
+
 protected:
 	virtual void OnRep_ActivateAbilities() override;
 	void TryActivateAbilitiesOnSpawn();

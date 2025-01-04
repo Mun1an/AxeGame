@@ -6,6 +6,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystem/Ability/AxeGameplayAbility.h"
 #include "AbilitySystem/Ability/HitReact/HitReactBase.h"
+#include "AbilitySystem/Executions/DamageExecution.h"
 #include "ActionSystem/ComboActionComponent.h"
 #include "ActionSystem/ComboDataAsset.h"
 #include "Character/AxeCharacterPlayer.h"
@@ -471,6 +472,16 @@ UGameplayAbility* UAxeAbilitySystemComponent::GetActiveAbilityByTag(const FGamep
 		{
 			return AbilitySpec.Ability;
 		}
+	}
+	return nullptr;
+}
+
+UDamageExecution* UAxeAbilitySystemComponent::GetEffectDamageExecution()
+{
+	UObject* Object = UDamageExecution::StaticClass()->ClassDefaultObject;
+	if (Object)
+	{
+		return Cast<UDamageExecution>(Object);
 	}
 	return nullptr;
 }
