@@ -71,13 +71,17 @@ bool FAxeGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, boo
 		{
 			RepBits |= 1 << 15;
 		}
-		if (!KnockbackForce.IsZero())
+		if (DamageSpecialExpression != EDamageSpecialExpression::None)
 		{
 			RepBits |= 1 << 16;
 		}
+		if (!KnockbackForce.IsZero())
+		{
+			RepBits |= 1 << 17;
+		}
 	}
 
-	Ar.SerializeBits(&RepBits, 16);
+	Ar.SerializeBits(&RepBits, 17);
 
 	if (RepBits & (1 << 0))
 	{
@@ -165,6 +169,10 @@ bool FAxeGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, boo
 		DamageType->NetSerialize(Ar, Map, bOutSuccess);
 	}
 	if (RepBits & (1 << 16))
+	{
+		Ar << DamageSpecialExpression;
+	}
+	if (RepBits & (1 << 17))
 	{
 		KnockbackForce.NetSerialize(Ar, Map, bOutSuccess);
 	}

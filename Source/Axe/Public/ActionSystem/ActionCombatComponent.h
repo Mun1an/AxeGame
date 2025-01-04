@@ -7,6 +7,7 @@
 #include "ActionSystem/AxeActionComponentBase.h"
 #include "ActionCombatComponent.generated.h"
 
+enum class EDamageSpecialExpression : uint8;
 class UDamageTextWidgetComponent;
 enum class ELaunchCharacterDirection : uint8;
 class UGameplayEffect;
@@ -36,8 +37,7 @@ public:
 	TSubclassOf<UDamageTextWidgetComponent> DamageTextWidgetComponentClass;
 
 	UFUNCTION(Client, Reliable)
-	void ShowDamageNumber(const float Damage, ACharacter* TargetCharacter, const bool bIsCriticalHit,
-	                      const bool bIsEvasiveHit, const bool bIsBlocked, const FVector ShowLocation);
+	void ShowDamageNumber(const float Damage, ACharacter* TargetCharacter, EDamageSpecialExpression DamageSpecialExpression, const FVector ShowLocation);
 
 protected:
 	virtual void BeginPlay() override;

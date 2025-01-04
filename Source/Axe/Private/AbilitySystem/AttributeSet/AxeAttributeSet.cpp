@@ -300,16 +300,14 @@ void UAxeAttributeSet::ShowDamageFloatingText(AAxeCharacterBase* SourceCharacter
 
 	const FHitResult* HitResult = AxeEffectContext->GetHitResult();
 	const FVector ShowLocation = HitResult->ImpactPoint;
-	const bool bIsCriticalHit = AxeEffectContext->IsCriticalHit();
-	const bool bIsEvasiveHit = AxeEffectContext->IsEvasive();
-	const bool bIsBlocked = AxeEffectContext->IsBlocked();
+	EDamageSpecialExpression DamageSpecialExpression = AxeEffectContext->GetDamageSpecialExpression();
 
 	if (Cast<AAxeCharacterPlayer>(SourceCharacter))
 	{
 		AAxeCharacterPlayer* AxeCharacterPlayer = Cast<AAxeCharacterPlayer>(SourceCharacter);
 		UActionCombatComponent* ActionCombatComponent = AxeCharacterPlayer->GetActionCombatComponent();
 		ActionCombatComponent->ShowDamageNumber(
-			Damage, TargetCharacter, bIsCriticalHit, bIsEvasiveHit, bIsBlocked, ShowLocation
+			Damage, TargetCharacter, DamageSpecialExpression, ShowLocation
 		);
 	}
 	if (Cast<AAxeCharacterPlayer>(TargetCharacter))
@@ -317,7 +315,7 @@ void UAxeAttributeSet::ShowDamageFloatingText(AAxeCharacterBase* SourceCharacter
 		AAxeCharacterPlayer* AxeCharacterPlayer = Cast<AAxeCharacterPlayer>(TargetCharacter);
 		UActionCombatComponent* ActionCombatComponent = AxeCharacterPlayer->GetActionCombatComponent();
 		ActionCombatComponent->ShowDamageNumber(
-			Damage, TargetCharacter, bIsCriticalHit, bIsEvasiveHit, bIsBlocked, ShowLocation
+			Damage, TargetCharacter, DamageSpecialExpression, ShowLocation
 		);
 	}
 }

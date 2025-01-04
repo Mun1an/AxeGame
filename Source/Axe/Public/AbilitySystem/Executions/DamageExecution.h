@@ -30,6 +30,9 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 	bool bIsBlocked = false;
+
+	UPROPERTY(BlueprintReadWrite)
+	bool bIsParried = false;
 };
 
 /**

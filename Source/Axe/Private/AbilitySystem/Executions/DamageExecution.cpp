@@ -53,7 +53,14 @@ void UDamageExecution::Execute_Implementation(const FGameplayEffectCustomExecuti
 	OnCalDamageDelegate.Broadcast(DamageCal);
 
 	Damage = DamageCal->Damage;
-	AxeEffectContext->SetBlocked(DamageCal->bIsBlocked);
+	if (DamageCal->bIsBlocked)
+	{
+		AxeEffectContext->SetDamageSpecialExpression(EDamageSpecialExpression::BeBlocked);
+	}
+	if (DamageCal->bIsParried)
+	{
+		AxeEffectContext->SetDamageSpecialExpression(EDamageSpecialExpression::BeParried);
+	}
 
 	// TODO
 	AxeEffectContext->SetDamageType(AxeGameplayTags.Damage_Physical);
@@ -111,7 +118,7 @@ void UDamageExecution::CalCritical(const FGameplayEffectCustomExecutionParameter
 	if (bIsCritical)
 	{
 		DamageCoefficient = DamageCoefficient * CriticalHitDamage;
-		AxeEffectContext->SetCriticalHit(true);
+		AxeEffectContext->SetDamageSpecialExpression(EDamageSpecialExpression::CriticalHit);
 	}
 	Damage = Damage * DamageCoefficient;
 }
@@ -140,5 +147,5 @@ void UDamageExecution::CalBlocked(const FGameplayEffectCustomExecutionParameters
 	}
 
 	Damage = 0.f;
-	AxeEffectContext->SetBlocked(true);
+	AxeEffectContext->SetDamageSpecialExpression(EDamageSpecialExpression::BeBlocked);
 }

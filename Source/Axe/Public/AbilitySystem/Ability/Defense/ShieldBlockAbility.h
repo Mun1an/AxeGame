@@ -67,9 +67,9 @@ protected:
 	bool CanApplyEffectAttributeModifiers(FGameplayEffectSpecHandle& EffectSpecHandle);
 
 	UFUNCTION()
-	void TransformToShieldParry(AActor* Source);
+	bool TransformToShieldParry(AActor* Source);
 	UFUNCTION()
-	void TransformToShieldStagger(AActor* Source);
+	bool TransformToShieldStagger(AActor* Source);
 
 	UFUNCTION(BlueprintCallable)
 	bool IsInBlockAngle(AActor* AttackSource) const;

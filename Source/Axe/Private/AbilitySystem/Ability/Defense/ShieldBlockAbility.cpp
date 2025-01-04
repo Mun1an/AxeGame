@@ -120,6 +120,7 @@ void UShieldBlockAbility::OnBeDamagedCal(UDamageCalInfo* DamageCalInfo)
 	if (bIsPrepareParry)
 	{
 		TransformToShieldParry(DamageSourceActor);
+		DamageCalInfo->bIsParried = true;
 		return;
 	}
 
@@ -162,18 +163,19 @@ bool UShieldBlockAbility::ApplyShieldBlockDamageCostEffect(float CostValue)
 	return ActiveGameplayEffectHandle.IsValid();
 }
 
-void UShieldBlockAbility::TransformToShieldParry(AActor* Source)
+bool UShieldBlockAbility::TransformToShieldParry(AActor* Source)
 {
+	bool bResult = false;
 	if (!ShieldParryAbilityClass)
 	{
-		return;
+		return false;
 	}
 	FAxeGameplayTags AxeGameplayTags = FAxeGameplayTags::Get();
 	UAxeAbilitySystemComponent* AxeASC = GetAxeAbilitySystemComponentFromActorInfo();
 	// self
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 	// TryActivateAbilityByClass
-	AxeASC->TryActivateAbilityByClass(ShieldParryAbilityClass);
+	bResult |= AxeASC->TryActivateAbilityByClass(ShieldParryAbilityClass);
 	// Source HitReact
 	AAxeCharacterBase* SourceAxeCharacterBase = Cast<AAxeCharacterBase>(Source);
 	if (SourceAxeCharacterBase)
@@ -182,18 +184,21 @@ void UShieldBlockAbility::TransformToShieldParry(AActor* Source)
 		UAxeAbilitySystemComponent* SourceAxeASC = Cast<UAxeAbilitySystemComponent>(SourceASC);
 		SourceAxeASC->TryActivateHitReactAbility(AxeGameplayTags.Ability_HitReact_Light, FHitResult());
 	}
+	return bResult;
 }
 
-void UShieldBlockAbility::TransformToShieldStagger(AActor* Source)
+bool UShieldBlockAbility::TransformToShieldStagger(AActor* Source)
 {
+	bool bResult = false;
 	FAxeGameplayTags AxeGameplayTags = FAxeGameplayTags::Get();
 	// self
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 	UAxeAbilitySystemComponent* AxeASC = GetAxeAbilitySystemComponentFromActorInfo();
 	if (ShieldStaggerAbilityClass)
 	{
-		AxeASC->TryActivateAbilityByClass(ShieldStaggerAbilityClass);
+		bResult |= AxeASC->TryActivateAbilityByClass(ShieldStaggerAbilityClass);
 	}
+	return bResult;
 }
 
 bool UShieldBlockAbility::IsInBlockAngle(AActor* AttackSource) const

@@ -44,19 +44,29 @@ struct FDamageEffectParams
 	// float KnockbackChance = 0.f;
 };
 
+UENUM(BlueprintType)
+enum class EDamageSpecialExpression : uint8
+{
+	None,
+	CriticalHit,
+	BeEvaded,
+	BeBlocked,
+	BeParried,
+};
+
 USTRUCT(BlueprintType)
 struct FAxeGameplayEffectContext : public FGameplayEffectContext
 {
 	GENERATED_BODY()
 
-	bool IsCriticalHit() const { return bIsCriticalHit; }
-	void SetCriticalHit(const bool Value) { bIsCriticalHit = Value; }
-
-	bool IsEvasive() const { return bIsEvasive; }
-	void SetEvasive(const bool Value) { bIsEvasive = Value; }
-
-	bool IsBlocked() const { return bIsBlocked; }
-	void SetBlocked(const bool Value) { bIsBlocked = Value; }
+	// bool IsCriticalHit() const { return bIsCriticalHit; }
+	// void SetCriticalHit(const bool Value) { bIsCriticalHit = Value; }
+	//
+	// bool IsEvasive() const { return bIsEvasive; }
+	// void SetEvasive(const bool Value) { bIsEvasive = Value; }
+	//
+	// bool IsBlocked() const { return bIsBlocked; }
+	// void SetBlocked(const bool Value) { bIsBlocked = Value; }
 
 	bool IsSuccessfulDebuff() const { return bIsSuccessfulDebuff; }
 	void SetSuccessfulDebuff(const bool Value) { bIsSuccessfulDebuff = Value; }
@@ -76,6 +86,12 @@ struct FAxeGameplayEffectContext : public FGameplayEffectContext
 	FGameplayTag GetDamageType() const { return *DamageType.Get(); }
 	void SetDamageType(const TSharedPtr<FGameplayTag>& Value) { DamageType = Value; }
 	void SetDamageType(const FGameplayTag& Value) { DamageType = MakeShared<FGameplayTag>(Value); }
+
+	EDamageSpecialExpression GetDamageSpecialExpression() const { return DamageSpecialExpression; }
+	void SetDamageSpecialExpression(EDamageSpecialExpression NewValue)
+	{
+		DamageSpecialExpression = NewValue;
+	}
 
 	FVector GetKnockbackForce() const { return KnockbackForce; }
 	void SetKnockbackForce(const FVector& Value) { KnockbackForce = Value; }
@@ -106,6 +122,9 @@ protected:
 	float DebuffFrequency = 0.f;
 
 	TSharedPtr<FGameplayTag> DamageType = nullptr;
+
+	UPROPERTY()
+	EDamageSpecialExpression DamageSpecialExpression = EDamageSpecialExpression::None;
 
 	UPROPERTY()
 	FVector KnockbackForce = FVector::ZeroVector;
