@@ -32,10 +32,15 @@ void UAxeDamageGameplayAbility::ApplyDamageToTarget(AAxeCharacterBase* TargetCha
 	DamageEffectParam.DamageType = DamageType;
 	DamageEffectParam.EffectLevel = EffectLevel;
 	DamageEffectParam.HitResult = HitResult;
+	if (KnockbackVector.IsNearlyZero())
+	{
+		DamageEffectParam.KnockbackVector = GetDefaultKnockbackVector(TargetCharacter);
+	}
+	DamageEffectParam.KnockbackForceMagnitude = KnockbackForceMagnitude;
 
 	DamageEffectParam.DamageValue = GetTotalDamage();
 
-	AxeASC->ApplyDamageEffectToTarget(TargetASC, DamageEffectParam);
+	AxeASC->ApplyDamageEffect(GetAxeCharacterOwner(), TargetCharacter, DamageEffectParam);
 }
 
 float UAxeDamageGameplayAbility::GetOwnerCharacterBaseDamageAttr()
@@ -55,4 +60,14 @@ float UAxeDamageGameplayAbility::GetTotalDamage()
 {
 	const float BaseDamage = GetOwnerCharacterBaseDamageAttr();
 	return FixedDamage + BaseDamageCoefficient * BaseDamage;
+}
+
+FVector UAxeDamageGameplayAbility::GetDefaultKnockbackVector(AActor* TargetActor) const
+{
+	AAxeCharacterBase* Owner = GetAxeCharacterOwner();
+	FVector OwnerLocation = Owner->GetActorLocation();
+	OwnerLocation.Z = 0;
+	FVector TargetLocation = TargetActor->GetActorLocation();
+	TargetLocation.Z = 0;
+	return (TargetLocation - OwnerLocation).GetSafeNormal();
 }

@@ -24,6 +24,8 @@ class AXE_API AAxeCharacterBase : public ACharacter, public IAbilitySystemInterf
 
 public:
 	AAxeCharacterBase();
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+
 
 protected:
 	virtual void BeginPlay() override;
@@ -80,11 +82,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetDeath();
-	UFUNCTION(BlueprintCallable)
-	void SetDeathWithParams(const FVector DeathImpulse);
+	
 	virtual void OnDead() override;
 
 	FOnActorDeadDelegate OnActorDeadDelegate;
+
+	void SetDeathImpulseVector(FVector NewDeathImpulseVector) { DeathImpulseVector = NewDeathImpulseVector; }
 
 protected:
 	bool bIsAbilityInitOver = false;
@@ -108,7 +111,10 @@ protected:
 
 	bool bIsDead = false;
 	UPROPERTY(EditAnywhere, Category="Combat")
-	float DeadLifeSpan = 5.0f;
+	float DeadLifeSpan = 3.0f;
 	UFUNCTION(NetMulticast, Reliable)
-	virtual void MulticastDeath(const FVector DeathImpulse);
+	virtual void MulticastDeath(FVector InDeathImpulseVector);
+
+private:
+	FVector DeathImpulseVector = FVector::Zero();
 };

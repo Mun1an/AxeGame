@@ -80,12 +80,12 @@ void AAxeProjectile::OnOverlapOverlap(UPrimitiveComponent* OverlappedComponent, 
 
 	if (HasAuthority())
 	{
-		UAbilitySystemComponent* OtherASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor);
-		if (OtherASC)
+		UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(SourceActor);
+		if (SourceASC)
 		{
 			// Damage
-			UAxeAbilitySystemComponent* OtherAxeASC = Cast<UAxeAbilitySystemComponent>(OtherASC);
-			OtherAxeASC->ApplyDamageEffectToSelf(SourceActor, DamageEffectParams);
+			UAxeAbilitySystemComponent* SourceAxeASC = Cast<UAxeAbilitySystemComponent>(SourceASC);
+			SourceAxeASC->ApplyDamageEffect(SourceActor, OtherActor, DamageEffectParams);
 		}
 		Destroy();
 	}
@@ -98,7 +98,7 @@ void AAxeProjectile::Destroyed()
 		LoopingSoundComponent->Stop();
 		LoopingSoundComponent->DestroyComponent();
 	}
-	
+
 	UGameplayStatics::PlaySoundAtLocation(
 		this,
 		ImpactSound,

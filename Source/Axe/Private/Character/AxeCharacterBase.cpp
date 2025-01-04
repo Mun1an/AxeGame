@@ -8,6 +8,7 @@
 #include "Axe/Axe.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 AAxeCharacterBase::AAxeCharacterBase()
@@ -16,6 +17,11 @@ AAxeCharacterBase::AAxeCharacterBase()
 	PrimaryActorTick.bCanEverTick = true;
 
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Projectile, ECR_Overlap);
+}
+
+void AAxeCharacterBase::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 }
 
 // Called when the game starts or when spawned
@@ -64,13 +70,9 @@ void AAxeCharacterBase::SetRotationRateByWalkSpeed()
 
 void AAxeCharacterBase::SetDeath()
 {
-	SetDeathWithParams(FVector::ZeroVector);
-}
-
-void AAxeCharacterBase::SetDeathWithParams(const FVector DeathImpulse)
-{
 	SetLifeSpan(DeadLifeSpan);
-	MulticastDeath(DeathImpulse);
+	
+	MulticastDeath(DeathImpulseVector);
 
 	OnDead();
 }
@@ -117,7 +119,7 @@ bool AAxeCharacterBase::GiveStartupAbilities()
 	return true;
 }
 
-void AAxeCharacterBase::MulticastDeath_Implementation(const FVector DeathImpulse)
+void AAxeCharacterBase::MulticastDeath_Implementation(FVector InDeathImpulseVector)
 {
 	bIsDead = true;
 
@@ -128,5 +130,5 @@ void AAxeCharacterBase::MulticastDeath_Implementation(const FVector DeathImpulse
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	// Impulse
-	GetMesh()->AddImpulse(DeathImpulse, NAME_None, true);
+	GetMesh()->AddImpulse(InDeathImpulseVector, NAME_None, true);
 }

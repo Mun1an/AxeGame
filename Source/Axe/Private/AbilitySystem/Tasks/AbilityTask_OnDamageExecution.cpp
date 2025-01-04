@@ -65,7 +65,7 @@ void UAbilityTask_OnDamageExecution::InitDamageExecutionCDO()
 		if (ASC)
 		{
 			UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(ASC);
-			DamageExecutionCDO = AxeASC->GetEffectDamageExecution();
+			DamageExecutionCDO = AxeASC->GetEffectDamageExecutionCDO();
 		}
 	}
 }

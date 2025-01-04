@@ -27,6 +27,10 @@ struct FDamageEffectParams
 	float EffectLevel = 1.f;
 	UPROPERTY(BlueprintReadWrite)
 	FHitResult HitResult = FHitResult();
+	UPROPERTY(BlueprintReadWrite)
+	FVector KnockbackVector = FVector::ZeroVector;
+	UPROPERTY(BlueprintReadWrite)
+	float KnockbackForceMagnitude = 0.f;
 
 	// UPROPERTY(BlueprintReadWrite)
 	// float DebuffChance = 0.f;
@@ -36,10 +40,6 @@ struct FDamageEffectParams
 	// float DebuffDuration = 0.f;
 	// UPROPERTY(BlueprintReadWrite)
 	// float DebuffFrequency = 0.f;
-	// UPROPERTY(BlueprintReadWrite)
-	// float KnockbackForceMagnitude = 0.f;
-	// UPROPERTY(BlueprintReadWrite)
-	// FVector KnockbackForce = FVector::ZeroVector;
 	// UPROPERTY(BlueprintReadWrite)
 	// float KnockbackChance = 0.f;
 };
@@ -88,13 +88,17 @@ struct FAxeGameplayEffectContext : public FGameplayEffectContext
 	void SetDamageType(const FGameplayTag& Value) { DamageType = MakeShared<FGameplayTag>(Value); }
 
 	EDamageSpecialExpression GetDamageSpecialExpression() const { return DamageSpecialExpression; }
+
 	void SetDamageSpecialExpression(EDamageSpecialExpression NewValue)
 	{
 		DamageSpecialExpression = NewValue;
 	}
 
-	FVector GetKnockbackForce() const { return KnockbackForce; }
-	void SetKnockbackForce(const FVector& Value) { KnockbackForce = Value; }
+	FVector GetKnockbackVector() const { return KnockbackVector; }
+	void SetKnockbackVector(const FVector& Value) { KnockbackVector = Value; }
+
+	float GetKnockbackForceMagnitude() const { return KnockbackForceMagnitude; }
+	void SetKnockbackForceMagnitude(const float NewValue) { KnockbackForceMagnitude = NewValue; }
 
 	virtual UScriptStruct* GetScriptStruct() const override
 	{
@@ -127,7 +131,9 @@ protected:
 	EDamageSpecialExpression DamageSpecialExpression = EDamageSpecialExpression::None;
 
 	UPROPERTY()
-	FVector KnockbackForce = FVector::ZeroVector;
+	FVector KnockbackVector = FVector::ZeroVector;
+	UPROPERTY()
+	float KnockbackForceMagnitude = 1.f;
 };
 
 template <>

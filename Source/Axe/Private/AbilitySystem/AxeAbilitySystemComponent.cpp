@@ -4,6 +4,7 @@
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystem/AxeBlueprintFunctionLibrary.h"
 #include "AbilitySystem/Ability/AxeGameplayAbility.h"
 #include "AbilitySystem/Ability/HitReact/HitReactBase.h"
 #include "AbilitySystem/Executions/DamageExecution.h"
@@ -333,38 +334,40 @@ FActiveGameplayEffectHandle UAxeAbilitySystemComponent::ApplyEffectToSelfByClass
 	return ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), this);
 }
 
-bool UAxeAbilitySystemComponent::ApplyDamageEffectToTarget(UAbilitySystemComponent* TargetASC,
-                                                           const FDamageEffectParams& Params)
+bool UAxeAbilitySystemComponent::ApplyDamageEffect(AActor* SourceActor, AActor* TargetActor,
+                                                   const FDamageEffectParams& Params)
 {
 	checkf(Params.DamageEffectClass, TEXT("DamageEffectClass is nullptr"));
-
 	FGameplayEffectContextHandle ContextHandle = MakeEffectContext();
-	ContextHandle.AddSourceObject(GetAxeCharacterOwner());
+	ContextHandle.AddSourceObject(SourceActor);
 	ContextHandle.AddHitResult(Params.HitResult);
+	FAxeGameplayEffectContext& AxeEffectContext = UAxeBlueprintFunctionLibrary::GetAxeGameplayEffectContext(
+		ContextHandle
+	);
+	AxeEffectContext.SetKnockbackVector(Params.KnockbackVector);
+	AxeEffectContext.SetKnockbackForceMagnitude(Params.KnockbackForceMagnitude);
+
 	const FGameplayEffectSpecHandle SpecHandle = MakeOutgoingSpec(
 		Params.DamageEffectClass, Params.EffectLevel, ContextHandle
 	);
+	// Tag
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
 		SpecHandle, Params.DamageType, Params.DamageValue
 	);
-	ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), TargetASC);
-	return true;
-}
 
-bool UAxeAbilitySystemComponent::ApplyDamageEffectToSelf(AActor* FromTarget, const FDamageEffectParams& Params)
-{
-	checkf(Params.DamageEffectClass, TEXT("DamageEffectClass is nullptr"));
+	const AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
 
-	FGameplayEffectContextHandle ContextHandle = MakeEffectContext();
-	ContextHandle.AddSourceObject(FromTarget);
-	ContextHandle.AddHitResult(Params.HitResult);
-	const FGameplayEffectSpecHandle SpecHandle = MakeOutgoingSpec(
-		Params.DamageEffectClass, Params.EffectLevel, ContextHandle
-	);
-	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
-		SpecHandle, Params.DamageType, Params.DamageValue
-	);
-	ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+	if (AxeCharacterOwner == TargetActor)
+	{
+		ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+	}
+	else
+	{
+		ApplyGameplayEffectSpecToTarget(
+			*SpecHandle.Data.Get(),
+			UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor)
+		);
+	}
 	return true;
 }
 
@@ -476,7 +479,7 @@ UGameplayAbility* UAxeAbilitySystemComponent::GetActiveAbilityByTag(const FGamep
 	return nullptr;
 }
 
-UDamageExecution* UAxeAbilitySystemComponent::GetEffectDamageExecution()
+UDamageExecution* UAxeAbilitySystemComponent::GetEffectDamageExecutionCDO()
 {
 	UObject* Object = UDamageExecution::StaticClass()->ClassDefaultObject;
 	if (Object)

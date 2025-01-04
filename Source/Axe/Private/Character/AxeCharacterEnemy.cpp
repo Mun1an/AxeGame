@@ -60,9 +60,9 @@ UMobOverlayWidgetController* AAxeCharacterEnemy::GetMobOverlayWidgetController(c
 	return MobOverlayWidgetController;
 }
 
-void AAxeCharacterEnemy::MulticastDeath_Implementation(const FVector DeathImpulse)
+void AAxeCharacterEnemy::MulticastDeath_Implementation(FVector InDeathImpulseVector)
 {
-	Super::MulticastDeath_Implementation(DeathImpulse);
+	Super::MulticastDeath_Implementation(InDeathImpulseVector);
 
 	HealthBar->SetVisibility(false);
 }

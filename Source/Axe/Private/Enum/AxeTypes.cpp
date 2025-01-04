@@ -75,13 +75,17 @@ bool FAxeGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, boo
 		{
 			RepBits |= 1 << 16;
 		}
-		if (!KnockbackForce.IsZero())
+		if (!KnockbackVector.IsZero())
 		{
 			RepBits |= 1 << 17;
 		}
+		if (KnockbackForceMagnitude > 0.f)
+		{
+			RepBits |= 1 << 18;
+		}
 	}
 
-	Ar.SerializeBits(&RepBits, 17);
+	Ar.SerializeBits(&RepBits, 18);
 
 	if (RepBits & (1 << 0))
 	{
@@ -174,7 +178,11 @@ bool FAxeGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, boo
 	}
 	if (RepBits & (1 << 17))
 	{
-		KnockbackForce.NetSerialize(Ar, Map, bOutSuccess);
+		KnockbackVector.NetSerialize(Ar, Map, bOutSuccess);
+	}
+	if (RepBits & (1 << 18))
+	{
+		Ar << KnockbackForceMagnitude;
 	}
 
 	//

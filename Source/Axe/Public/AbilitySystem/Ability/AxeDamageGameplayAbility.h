@@ -23,24 +23,33 @@ public:
 protected:
 	UFUNCTION(BlueprintCallable)
 	float GetOwnerCharacterBaseDamageAttr();
-	
+
 	UFUNCTION(BlueprintCallable)
 	float GetTotalDamage();
-	
-	UPROPERTY(EditDefaultsOnly, Category="Damage")
+
+	UFUNCTION(BlueprintCallable)
+	FVector GetDefaultKnockbackVector(AActor* TargetActor) const;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Damage")
 	TSubclassOf<UGameplayEffect> DamageEffectClass;
 
-	UPROPERTY(EditDefaultsOnly, Category="Damage")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Damage")
 	FGameplayTag DamageType;
 
 	// 固定伤害
-	UPROPERTY(EditDefaultsOnly, Category="Damage")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Damage")
 	float FixedDamage = 0.f;
 
 	// 基础伤害系数，伤害 = 基础伤害系数 * BaseDamage属性
-	UPROPERTY(EditDefaultsOnly, Category="Damage")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Damage")
 	float BaseDamageCoefficient = 1.f;
 
-	UPROPERTY(EditDefaultsOnly, Category="Damage")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Damage")
 	float EffectLevel = 1.f;
+
+	UPROPERTY(BlueprintReadWrite, Category="Damage")
+	FVector KnockbackVector = FVector::ZeroVector;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Damage")
+	float KnockbackForceMagnitude = 1.f;
 };

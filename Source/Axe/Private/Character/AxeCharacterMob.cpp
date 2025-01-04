@@ -49,38 +49,41 @@ void AAxeCharacterMob::BeginPlay()
 
 void AAxeCharacterMob::OnAbilityActivated(UGameplayAbility* Ability)
 {
-	SetIsUsingBlockingAbility();
+	UAxeGameplayAbility* AxeGameplayAbility = Cast<UAxeGameplayAbility>(Ability);
+	EAxeAbilityActivationGroup AbilityActivationGroup = AxeGameplayAbility->GetActivationGroup();
+	if (AbilityActivationGroup != EAxeAbilityActivationGroup::Independent)
+	{
+		IsUsingBlockingAbilityCount++;
+		SetIsUsingBlockingAbility();
+	}
 }
 
 void AAxeCharacterMob::OnAbilityEnded(UGameplayAbility* Ability)
 {
-	SetIsUsingBlockingAbility();
+	UAxeGameplayAbility* AxeGameplayAbility = Cast<UAxeGameplayAbility>(Ability);
+	EAxeAbilityActivationGroup AbilityActivationGroup = AxeGameplayAbility->GetActivationGroup();
+	if (AbilityActivationGroup != EAxeAbilityActivationGroup::Independent)
+	{
+		IsUsingBlockingAbilityCount--;
+		IsUsingBlockingAbilityCount = FMath::Max(IsUsingBlockingAbilityCount, 0);
+		SetIsUsingBlockingAbility();
+	}
 }
 
 void AAxeCharacterMob::SetIsUsingBlockingAbility()
 {
-	check(AxeAIController)
-
-	const UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(AbilitySystemComponent);
-	TArray<FGameplayAbilitySpecHandle> SpecHandles;
-	AxeASC->GetAbilitySpecHandlesByActivationGroup(
-		SpecHandles,
-		EAxeAbilityActivationGroup::Exclusive_Blocking
+	AxeAIController->GetBlackboardComponent()->SetValueAsBool(
+		FName("IsUsingBlockingAbility"),
+		IsUsingBlockingAbilityCount > 0
 	);
-	if (SpecHandles.Num() > 0)
-	{
-		bIsUsingBlockingAbility = true;
-	}
-	else
-	{
-		bIsUsingBlockingAbility = false;
-	}
-	AxeAIController->GetBlackboardComponent()->SetValueAsBool(FName("IsUsingBlockingAbility"), bIsUsingBlockingAbility);
 }
 
 void AAxeCharacterMob::OnDead()
 {
 	Super::OnDead();
 
-	AxeAIController->GetBlackboardComponent()->SetValueAsBool(FName("IsDead"), bIsDead);
+	if (AxeAIController)
+	{
+		AxeAIController->GetBlackboardComponent()->SetValueAsBool(FName("IsDead"), bIsDead);
+	}
 }

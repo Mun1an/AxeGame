@@ -72,8 +72,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FActiveGameplayEffectHandle ApplyEffectToSelfByClass(const TSubclassOf<UGameplayEffect>& EffectClass,
 	                                                     const float Level);
-	bool ApplyDamageEffectToTarget(UAbilitySystemComponent* TargetASC, const FDamageEffectParams& Params);
-	bool ApplyDamageEffectToSelf(AActor* FromTarget, const FDamageEffectParams& Params);
+	bool ApplyDamageEffect(AActor* SourceActor, AActor* TargetActor, const FDamageEffectParams& Params);
 
 	bool ApplyEquipmentEffectToSelf(const TSubclassOf<UGameplayEffect>& EffectClass, FEquipmentInfo EquipmentInfo);
 
@@ -95,7 +94,7 @@ public:
 	UGameplayAbility* GetActiveAbilityByTag(const FGameplayTag& Tag);
 
 	UFUNCTION(BlueprintCallable)
-	class UDamageExecution* GetEffectDamageExecution();
+	class UDamageExecution* GetEffectDamageExecutionCDO();
 
 protected:
 	virtual void OnRep_ActivateAbilities() override;

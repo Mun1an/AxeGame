@@ -35,6 +35,6 @@ protected:
 	UPROPERTY(EditAnywhere, Category="AI")
 	TObjectPtr<UBehaviorTree> BehaviorTree;
 
-	UPROPERTY(BlueprintReadOnly)
-	bool bIsUsingBlockingAbility = false;
+	UPROPERTY()
+	int32 IsUsingBlockingAbilityCount = 0;
 };

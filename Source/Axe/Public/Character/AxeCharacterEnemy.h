@@ -41,7 +41,7 @@ protected:
 	TSubclassOf<UMobOverlayWidgetController> MobOverlayWidgetControllerClass;
 	UMobOverlayWidgetController* GetMobOverlayWidgetController(const FWidgetControllerParams& Params);
 
-	virtual void MulticastDeath_Implementation(const FVector DeathImpulse) override;
+	virtual void MulticastDeath_Implementation(FVector InDeathImpulseVector) override;
 
 	UPROPERTY()
 	AActor* CombatTarget;

@@ -251,6 +251,9 @@ void UAxeAttributeSet::HandleIncomingDamageEffect(const FEffectProperties& Props
 	const FAxeGameplayTags AxeGameplayTags = FAxeGameplayTags::Get();
 	const FHitResult* HitResult = AxeEffectContext->GetHitResult();
 	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
+	const FVector KnockbackVector = AxeEffectContext->GetKnockbackVector();
+	const float KnockbackForceMagnitude = AxeEffectContext->GetKnockbackForceMagnitude();
+
 	//
 	SetIncomingDamage(0.f);
 	bool bFatal = false;
@@ -272,10 +275,12 @@ void UAxeAttributeSet::HandleIncomingDamageEffect(const FEffectProperties& Props
 	}
 	if (bFatal)
 	{
-		FVector DeathImpulse = AxeCharacterOwner->GetActorLocation() - HitResult->ImpactPoint;
+		FVector DeathImpulse = KnockbackVector;
 		DeathImpulse.Normalize();
-		DeathImpulse *= (FMath::RandRange(0.5f, 1.f) * 10000);
-		AxeCharacterOwner->SetDeathWithParams(DeathImpulse);
+		DeathImpulse.Z += 0.1;
+		DeathImpulse *= KnockbackForceMagnitude * 20000;
+		AxeCharacterOwner->SetDeathImpulseVector(DeathImpulse);
+		AxeCharacterOwner->SetDeath();
 		return;
 	}
 	// 死后return
@@ -285,6 +290,12 @@ void UAxeAttributeSet::HandleIncomingDamageEffect(const FEffectProperties& Props
 	if (LocalIncomingDamage > 0.f && AxeASC)
 	{
 		AxeASC->TryActivateHitReactAbility(AxeGameplayTags.Ability_HitReact_Light, *HitResult, Props.SourceCharacter);
+	}
+	// KnockBack
+	if (LocalIncomingDamage > 0.f)
+	{
+		FVector LaunchVector = KnockbackVector * KnockbackForceMagnitude * 500;
+		AxeCharacterOwner->LaunchCharacter(LaunchVector, false, false);
 	}
 }
 
