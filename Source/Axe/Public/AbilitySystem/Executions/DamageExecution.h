@@ -33,6 +33,9 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 	bool bIsParried = false;
+
+	UPROPERTY(BlueprintReadWrite)
+	bool bIsEvaded = false;
 };
 
 /**

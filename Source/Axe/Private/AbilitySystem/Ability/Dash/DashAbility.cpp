@@ -3,7 +3,11 @@
 
 #include "AbilitySystem/Ability/Dash/DashAbility.h"
 
+#include "AbilitySystem/Ability/Defense/ShieldBlockAbility.h"
+#include "AbilitySystem/Executions/DamageExecution.h"
+#include "AbilitySystem/Tasks/AbilityTask_OnDamageExecution.h"
 #include "ActionSystem/ComboActionComponent.h"
+#include "Anim/CustomNameAnimNotifyState.h"
 #include "Character/AxeCharacterBase.h"
 #include "Enum/AxeEnum.h"
 
@@ -38,6 +42,28 @@ ELaunchCharacterDirection UDashAbility::GetDashDirectionByMovementVector(const F
 	return ELaunchCharacterDirection::Lc_Backward;
 }
 
+void UDashAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+                                   const FGameplayAbilityActivationInfo ActivationInfo,
+                                   const FGameplayEventData* TriggerEventData)
+{
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+	bIsInEvade = false;
+
+	AActor* OwningActor = GetAxeCharacterOwner();
+	UAbilityTask_OnDamageExecution* AbilityTask_OnDamageExecution =
+		UAbilityTask_OnDamageExecution::CreateOnBeDamagedExecutionTask(this, OwningActor);
+	AbilityTask_OnDamageExecution->OnBeDamagedExecutionDelegate.AddDynamic(this, &UDashAbility::OnBeDamagedCal);
+	AbilityTask_OnDamageExecution->ReadyForActivation();
+}
+
+void UDashAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+                              const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility,
+                              bool bWasCancelled)
+{
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+	bIsInEvade = false;
+}
+
 void UDashAbility::Ans_ComboInputCache_NotifyBegin(UAnimNotifyState* AnimNotifyState)
 {
 	if (IsLocallyControlled())
@@ -59,6 +85,37 @@ void UDashAbility::Ans_ComboInputCache_NotifyEnd(UAnimNotifyState* AnimNotifySta
 		{
 			ComboActionComponent->AnsComboInputCacheEnd();
 		}
+	}
+}
+
+void UDashAbility::Ans_CustomName_NotifyBegin(UAnimNotifyState* AnimNotifyState)
+{
+	Super::Ans_CustomName_NotifyBegin(AnimNotifyState);
+	const FName CustomName = Cast<UCustomNameAnimNotifyState>(AnimNotifyState)->CustomName;
+	if (CustomName == DashEvadeCustomAnsName)
+	{
+		// 闪避的无敌时间
+		bIsInEvade = true;
+	}
+}
+
+void UDashAbility::Ans_CustomName_NotifyEnd(UAnimNotifyState* AnimNotifyState)
+{
+	Super::Ans_CustomName_NotifyEnd(AnimNotifyState);
+	const FName CustomName = Cast<UCustomNameAnimNotifyState>(AnimNotifyState)->CustomName;
+	if (CustomName == DashEvadeCustomAnsName)
+	{
+		// 闪避的无敌时间
+		bIsInEvade = false;
+	}
+}
+
+void UDashAbility::OnBeDamagedCal(UDamageCalInfo* DamageCalInfo)
+{
+	if (bIsInEvade)
+	{
+		DamageCalInfo->Damage = 0;
+		DamageCalInfo->bIsEvaded = true;
 	}
 }
 

@@ -17,6 +17,7 @@
 #include "Anim/AxeMotionWrapAnimNotifyState.h"
 #include "Anim/ComboAnimNotifyState.h"
 #include "Anim/ComboInputCacheAnimNotifyState.h"
+#include "Anim/CustomNameAnimNotifyState.h"
 #include "Anim/HitTraceAnimNotifyState.h"
 #include "Anim/IgnoreInputAnimNotifyState.h"
 #include "Anim/LaunchCharacterNotifyState.h"
@@ -516,6 +517,20 @@ void UAxeGameplayAbility::AddMontageNotifyStateTask(UAnimMontage* LocalAnimMonta
 			this, &UAxeGameplayAbility::An_CustomName_NotifyBegin);
 		AT_CustomName_An->ReadyForActivation();
 	}
+
+	if (MontageNotifyStateClassesCache.Contains(UCustomNameAnimNotifyState::StaticClass()))
+	{
+		UAbilityTask_MontageNotify* AT_CustomName_Ans = UAbilityTask_MontageNotify::CreateMontageNotifyStateTask(
+			this, LocalAnimMontage,
+			UCustomNameAnimNotifyState::StaticClass()
+		);
+		AT_CustomName_Ans->MontageNotifyStateStartDelegate.AddDynamic(
+			this, &UAxeGameplayAbility::Ans_CustomName_NotifyBegin);
+		AT_CustomName_Ans->MontageNotifyStateEndDelegate.AddDynamic(
+			this, &UAxeGameplayAbility::Ans_CustomName_NotifyEnd);
+		AT_CustomName_Ans->ReadyForActivation();
+	}
+
 	// AbilitySkillState
 	if (MontageNotifyClassesCache.Contains(UAbilitySkillStageAnimNotify::StaticClass()))
 	{
@@ -747,6 +762,18 @@ void UAxeGameplayAbility::An_CustomName_NotifyBegin(UAnimNotify* AnimNotify)
 {
 	const FName CustomName = Cast<UCustomNameAnimNotify>(AnimNotify)->CustomName;
 	BP_OnCustomNameNotifyBegin(CustomName);
+}
+
+void UAxeGameplayAbility::Ans_CustomName_NotifyBegin(UAnimNotifyState* AnimNotifyState)
+{
+	const FName CustomName = Cast<UCustomNameAnimNotifyState>(AnimNotifyState)->CustomName;
+	BP_OnCustomNameAnsBegin(CustomName);
+}
+
+void UAxeGameplayAbility::Ans_CustomName_NotifyEnd(UAnimNotifyState* AnimNotifyState)
+{
+	const FName CustomName = Cast<UCustomNameAnimNotifyState>(AnimNotifyState)->CustomName;
+	BP_OnCustomNameAnsEnd(CustomName);
 }
 
 void UAxeGameplayAbility::Ans_LaunchCharacter_NotifyBegin(UAnimNotifyState* AnimNotifyState)

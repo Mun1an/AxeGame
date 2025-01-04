@@ -225,6 +225,15 @@ protected:
 	void BP_OnCustomNameNotifyBegin(FName CustomName);
 
 	UFUNCTION()
+	virtual void Ans_CustomName_NotifyBegin(UAnimNotifyState* AnimNotifyState);
+	UFUNCTION(BlueprintImplementableEvent)
+	void BP_OnCustomNameAnsBegin(FName CustomName);
+	UFUNCTION()
+	virtual void Ans_CustomName_NotifyEnd(UAnimNotifyState* AnimNotifyState);
+	UFUNCTION(BlueprintImplementableEvent)
+	void BP_OnCustomNameAnsEnd(FName CustomName);
+
+	UFUNCTION()
 	void Ans_LaunchCharacter_NotifyBegin(UAnimNotifyState* AnimNotifyState);
 	UFUNCTION()
 	void Ans_LaunchCharacter_NotifyEnd(UAnimNotifyState* AnimNotifyState);

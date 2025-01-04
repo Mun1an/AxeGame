@@ -61,6 +61,10 @@ void UDamageExecution::Execute_Implementation(const FGameplayEffectCustomExecuti
 	{
 		AxeEffectContext->SetDamageSpecialExpression(EDamageSpecialExpression::BeParried);
 	}
+	if (DamageCal->bIsEvaded)
+	{
+		AxeEffectContext->SetDamageSpecialExpression(EDamageSpecialExpression::BeEvaded);
+	}
 
 	// TODO
 	AxeEffectContext->SetDamageType(AxeGameplayTags.Damage_Physical);
