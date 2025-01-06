@@ -203,11 +203,12 @@ void UAxeGameplayAbility::TryActivateAbilityOnSpawn(const FGameplayAbilityActorI
 	}
 }
 
-bool UAxeGameplayAbility::CanActivateAbility_ByLastReplaceCondition(const FGameplayAbilitySpecHandle Handle,
-                                                                    const FGameplayAbilityActorInfo* ActorInfo,
-                                                                    const FGameplayTagContainer* SourceTags,
-                                                                    const FGameplayTagContainer* TargetTags,
-                                                                    FGameplayTagContainer* OptionalRelevantTags) const
+bool UAxeGameplayAbility::CanActivateAbility_ByNowAbilityReplaceCondition(const FGameplayAbilitySpecHandle Handle,
+                                                                          const FGameplayAbilityActorInfo* ActorInfo,
+                                                                          const FGameplayTagContainer* SourceTags,
+                                                                          const FGameplayTagContainer* TargetTags,
+                                                                          FGameplayTagContainer* OptionalRelevantTags)
+const
 {
 	/*
 	 * 根据上个技能的状态来判断是否可以使用技能
@@ -222,28 +223,28 @@ bool UAxeGameplayAbility::CanActivateAbility_ByLastReplaceCondition(const FGamep
 	}
 
 	// 获取Exclusive_ReplaceableByCondition的使用中的技能
-	TArray<FGameplayAbilitySpecHandle> SpecHandles;
+	TArray<FGameplayAbilitySpecHandle> ReplaceableSpecHandles;
 	AxeASC->GetAbilitySpecHandlesByActivationGroup(
-		SpecHandles,
+		ReplaceableSpecHandles,
 		EAxeAbilityActivationGroup::Exclusive_ReplaceableByCondition
 	);
 
-	for (const FGameplayAbilitySpecHandle& SpecHandle : SpecHandles)
+	for (const FGameplayAbilitySpecHandle& SpecHandle : ReplaceableSpecHandles)
 	{
-		FGameplayAbilitySpec* GameplayAbilitySpec = AxeASC->FindAbilitySpecFromHandle(SpecHandle);
-		if (!GameplayAbilitySpec)
+		FGameplayAbilitySpec* NowAbilitySpec = AxeASC->FindAbilitySpecFromHandle(SpecHandle);
+		if (!NowAbilitySpec)
 		{
 			continue;
 		}
-		TArray<UGameplayAbility*> GameplayAbilities = GameplayAbilitySpec->GetAbilityInstances();
-		for (UGameplayAbility* LastGameplayAbility : GameplayAbilities)
+		TArray<UGameplayAbility*> NowGameplayAbilities = NowAbilitySpec->GetAbilityInstances();
+		for (UGameplayAbility* NowGameplayAbility : NowGameplayAbilities)
 		{
-			if (!LastGameplayAbility)
+			if (!NowGameplayAbility)
 			{
 				continue;
 			}
-			bool EachResult = CanActivateAbility_ByLastReplaceCondition_EachProxy(LastGameplayAbility, ActorInfo);
-			if (EachResult)
+			bool bCanReplace = Cast<UAxeGameplayAbility>(NowGameplayAbility)->CanReplaceByNewAbility(this);
+			if (bCanReplace)
 			{
 				return true;
 			}
@@ -253,43 +254,32 @@ bool UAxeGameplayAbility::CanActivateAbility_ByLastReplaceCondition(const FGamep
 	return false;
 }
 
-bool UAxeGameplayAbility::CanActivateAbility_ByLastReplaceCondition_EachProxy(
-	UGameplayAbility* LastAbility, const FGameplayAbilityActorInfo* ActorInfo) const
+bool UAxeGameplayAbility::CanReplaceByNewAbility(const UGameplayAbility* NewAbilityCDO) const
 {
-	// 此对象this是 CDO , LastAbility 不是CDO
-
-	AAxeCharacterPlayer* CharacterPlayer = Cast<AAxeCharacterPlayer>(GetAxeCharacterOwner(ActorInfo));
-	if (!CharacterPlayer)
-	{
-		return false;
-	}
-
+	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
+	AAxeCharacterPlayer* CharacterPlayer = Cast<AAxeCharacterPlayer>(AxeCharacterOwner);
 	// 单纯客户端判断了，服务端默认 return true
-	if (CharacterPlayer->IsLocallyControlled())
+	if (CharacterPlayer && CharacterPlayer->IsLocallyControlled())
 	{
 		// Client
-
+		// TODO 继承
 		// Check Combo
 		UComboActionComponent* ComboActionComponent = CharacterPlayer->GetComboActionComponent();
-		bool bIsNextComboAbility = ComboActionComponent->IsNextComboAbility(this);
+		bool bIsNextComboAbility = ComboActionComponent->IsNextComboAbility(NewAbilityCDO);
 		bool bIsInComboSwitchWindow = ComboActionComponent->IsInComboSwitchWindow();
 		if (bIsNextComboAbility && bIsInComboSwitchWindow)
 		{
 			return true;
 		}
-
 		// Check 后摇状态
-		const UAxeGameplayAbility* LastAxeAbility = Cast<UAxeGameplayAbility>(LastAbility);
-		const EAbilitySkillStage SkillStage = LastAxeAbility->GetCurrentAbilitySkillStage();
+		const EAbilitySkillStage SkillStage = GetCurrentAbilitySkillStage();
 		if (bCanReplacedInBackSwing && SkillStage == EAbilitySkillStage::ASS_BackSwing)
 		{
 			return true;
 		}
-
 		//
 		return false;
 	}
-
 	// Server
 	return true;
 }
@@ -318,7 +308,7 @@ bool UAxeGameplayAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Ha
 	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(ActorInfo->AbilitySystemComponent.Get());
 	bool bIsActivationGroupBlocked = AxeASC->IsActivationGroupBlocked(ActivationGroup, this);
 
-	bool bCanActivateAbility_ByLastReplaceCondition = CanActivateAbility_ByLastReplaceCondition(
+	bool bCanActivateAbility_ByLastReplaceCondition = CanActivateAbility_ByNowAbilityReplaceCondition(
 		Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
 
 

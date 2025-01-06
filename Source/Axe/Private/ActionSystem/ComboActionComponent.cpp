@@ -39,31 +39,19 @@ void UComboActionComponent::InitComboAbilityTree(const UComboDataAsset* InComboD
 	ComboAbilityTree->SetRoot(RootNode);
 	LastComboTreeNode = ComboAbilityTree->Root;
 
-	AActor* Owner = GetOwner();
-	UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Owner);
-	if (!ASC)
-	{
-		return;
-	}
-	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(ASC);
-
 	for (const FComboAbilityInfoList& AbilityInfo : InComboDataAsset->ComboAbilityInfo)
 	{
 		UComboTreeNode* CurrentNode = RootNode;
 		for (const FComboAbilityInfo& ComboInfo : AbilityInfo.ComboAbilityTagSequence)
 		{
-			UComboTreeNode* ChildNode = CurrentNode->FindChild(ComboInfo.InputTag);
+			UComboTreeNode* ChildNode = CurrentNode->FindChildByInputTag(ComboInfo.InputTag);
 			if (!ChildNode)
 			{
 				ChildNode = NewObject<UComboTreeNode>();
-				ChildNode->IndexTag = ComboInfo.InputTag;
+				ChildNode->InputTag = ComboInfo.InputTag;
 
-				const UGameplayAbility* Ability = AxeASC->GetActiveAbilityByTag(ComboInfo.ComboAbilityTag);
-				if (Ability)
-				{
-					ChildNode->AbilityClass = Ability->GetClass();
-					CurrentNode->AddTreeChild(ChildNode);
-				}
+				ChildNode->AbilityTag = ComboInfo.ComboAbilityTag;
+				CurrentNode->AddTreeChild(ChildNode);
 			}
 			CurrentNode = ChildNode;
 		}
@@ -126,40 +114,42 @@ void UComboActionComponent::OnAbilityInputTagPressed(const FGameplayTag InputTag
 /**
  * Combo
  */
-TSubclassOf<UAxeGameplayAbility>* UComboActionComponent::GetNextComboAbilityByInputTag(
+FGameplayTag UComboActionComponent::GetNextComboAbilityTagByInputTag(
 	const FGameplayTag& NextInputAbilityTag)
 {
 	if (!IsValid(ComboAbilityTree))
 	{
-		return nullptr;
+		return FGameplayTag::EmptyTag;
 	}
 
-	UComboTreeNode* NextComboTreeNode = LastComboTreeNode->FindChild(NextInputAbilityTag);
+	UComboTreeNode* NextComboTreeNode = LastComboTreeNode->FindChildByInputTag(NextInputAbilityTag);
 
 	if (NextComboTreeNode && IsInComboSwitchWindow())
 	{
 		// 连招
-		return &NextComboTreeNode->AbilityClass;
+		return NextComboTreeNode->AbilityTag;
 	}
 	// 不是连招
 	// 从根节点开始查找新的连招
-	if (UComboTreeNode* NewNextComboTreeNode = ComboAbilityTree->Root->FindChild(NextInputAbilityTag))
+	if (const UComboTreeNode* NewNextComboTreeNode = ComboAbilityTree->Root->FindChildByInputTag(NextInputAbilityTag))
 	{
-		return &NewNextComboTreeNode->AbilityClass;
+		return NewNextComboTreeNode->AbilityTag;
 	}
-	return nullptr;
+	return FGameplayTag::EmptyTag;
 }
 
 bool UComboActionComponent::IsNextComboAbility(const UGameplayAbility* Ability)
 {
-	UComboTreeNode* ChildNode = LastComboTreeNode->FindChildByAbilityClass(Ability->GetClass());
+	const FGameplayTag AbilityTag = AxeAbilitySystemComponent->GetAbilityTag(Ability);
+	const UComboTreeNode* ChildNode = LastComboTreeNode->FindChildByAbilityTag(AbilityTag);
 	return ChildNode != nullptr;
 }
 
 void UComboActionComponent::OnAbilityActivated(UGameplayAbility* Ability)
 {
+	const FGameplayTag AbilityTag = AxeAbilitySystemComponent->GetAbilityTag(Ability);
 	// LastComboTreeNode
-	if (UComboTreeNode* NextComboTreeNode = LastComboTreeNode->FindChildByAbilityClass(Ability->GetClass()))
+	if (UComboTreeNode* NextComboTreeNode = LastComboTreeNode->FindChildByAbilityTag(AbilityTag))
 	{
 		// 是连招
 		LastComboTreeNode = NextComboTreeNode;
@@ -167,8 +157,7 @@ void UComboActionComponent::OnAbilityActivated(UGameplayAbility* Ability)
 	else
 	{
 		// 不是连招
-		if (UComboTreeNode* NewNextComboTreeNode = ComboAbilityTree->Root->FindChildByAbilityClass(
-			Ability->GetClass()))
+		if (UComboTreeNode* NewNextComboTreeNode = ComboAbilityTree->Root->FindChildByAbilityTag(AbilityTag))
 		{
 			LastComboTreeNode = NewNextComboTreeNode;
 		}
@@ -178,7 +167,7 @@ void UComboActionComponent::OnAbilityActivated(UGameplayAbility* Ability)
 		}
 	}
 	// ActivatedComboAbility
-	if (LastComboTreeNode->AbilityClass)
+	if (LastComboTreeNode->AbilityTag.IsValid())
 	{
 		ActivatedComboAbility = Cast<UAxeGameplayAbility>(Ability);
 	}
@@ -190,7 +179,8 @@ void UComboActionComponent::OnAbilityActivated(UGameplayAbility* Ability)
 
 void UComboActionComponent::OnAbilityEnded(UGameplayAbility* Ability)
 {
-	if (Ability->GetClass() != LastComboTreeNode->AbilityClass)
+	const FGameplayTag AbilityTag = AxeAbilitySystemComponent->GetAbilityTag(Ability);
+	if (AbilityTag.IsValid() && !AbilityTag.MatchesTagExact(LastComboTreeNode->AbilityTag))
 	{
 		// 连招结束 （不是被连招取消）
 		LastComboTreeNode = ComboAbilityTree->Root;
@@ -225,8 +215,8 @@ void UComboActionComponent::AnsComboSwitchWindowEnd(UAnimNotifyState* NotifyStat
 		bool bIsInterrupted = AxeAnimNotifyStateBase->GetIsInterrupted();
 
 		// 重置连招树
-		if (!bIsInterrupted && ActivatedComboAbility && LastComboTreeNode->AbilityClass == ActivatedComboAbility->
-			GetClass())
+		FGameplayTag ActivatedTag = AxeAbilitySystemComponent->GetAbilityTag(ActivatedComboAbility);
+		if (!bIsInterrupted && ActivatedComboAbility && LastComboTreeNode->AbilityTag.MatchesTagExact(ActivatedTag))
 		{
 			LastComboTreeNode = ComboAbilityTree->Root;
 		}

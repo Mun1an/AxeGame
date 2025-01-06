@@ -88,6 +88,9 @@ public:
 	FGameplayAbilitySpecHandle GetAbilityHandleByAbilityTag(const FGameplayTag& AbilityTag);
 
 	UFUNCTION(BlueprintCallable)
+	FGameplayTag GetAbilityTag(const UGameplayAbility* Ability);
+	
+	UFUNCTION(BlueprintCallable)
 	FGameplayTag GetCooldownTagsByAbilitySpecHandle(const FGameplayAbilitySpecHandle& Handle);
 
 	UFUNCTION(BlueprintCallable)

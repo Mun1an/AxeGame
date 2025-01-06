@@ -118,13 +118,13 @@ void UAxeAbilitySystemComponent::TryActivateAbilityAndCheck_Client(FGameplayAbil
 	if (InputTag.IsValid() && IsValid(AxeCharacterPlayer))
 	{
 		UComboActionComponent* ComboActionComponent = AxeCharacterPlayer->GetComboActionComponent();
-		TSubclassOf<UAxeGameplayAbility>* AbilityClass = ComboActionComponent->GetNextComboAbilityByInputTag(InputTag);
-		if (AbilityClass)
+		const FGameplayTag NextComboAbilityTag = ComboActionComponent->GetNextComboAbilityTagByInputTag(InputTag);
+		if (NextComboAbilityTag.IsValid())
 		{
-			FGameplayAbilitySpec* NewAbilitySpec = FindAbilitySpecFromClass(*AbilityClass);
-			if (NewAbilitySpec)
+			FGameplayAbilitySpecHandle NewSpecHandle = GetAbilityHandleByAbilityTag(NextComboAbilityTag);
+			if (NewSpecHandle.IsValid())
 			{
-				AbilitySpecHandle = NewAbilitySpec->Handle;
+				AbilitySpecHandle = NewSpecHandle;
 			}
 		}
 	}
@@ -453,6 +453,15 @@ FGameplayAbilitySpecHandle UAxeAbilitySystemComponent::GetAbilityHandleByAbility
 		}
 	}
 	return FGameplayAbilitySpecHandle();
+}
+
+FGameplayTag UAxeAbilitySystemComponent::GetAbilityTag(const UGameplayAbility* Ability)
+{
+	if (Ability->AbilityTags.Num() == 0)
+	{
+		return FGameplayTag::EmptyTag;
+	}
+	return Ability->AbilityTags.GetByIndex(0);
 }
 
 FGameplayTag UAxeAbilitySystemComponent::GetCooldownTagsByAbilitySpecHandle(const FGameplayAbilitySpecHandle& Handle)

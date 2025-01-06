@@ -38,7 +38,7 @@ public:
 	UFUNCTION()
 	UAxeGameplayAbility* GetActivatedComboAbility();
 
-	TSubclassOf<UAxeGameplayAbility>* GetNextComboAbilityByInputTag(const FGameplayTag& NextInputAbilityTag);
+	FGameplayTag GetNextComboAbilityTagByInputTag(const FGameplayTag& NextInputAbilityTag);
 	bool IsNextComboAbility(const UGameplayAbility* Ability);
 
 	bool IsInComboSwitchWindow() const { return bIsInComboWindow; }

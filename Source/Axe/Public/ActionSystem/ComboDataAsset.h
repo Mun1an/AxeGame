@@ -45,10 +45,10 @@ public:
 	}
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Tree")
-	FGameplayTag IndexTag;
+	FGameplayTag InputTag;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Tree")
-	TSubclassOf<UAxeGameplayAbility> AbilityClass;
+	FGameplayTag AbilityTag;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Tree")
 	TArray<UComboTreeNode*> ChildrenList;
@@ -60,11 +60,11 @@ public:
 	}
 
 	UFUNCTION(BlueprintCallable, Category = "Tree")
-	UComboTreeNode* FindChild(const FGameplayTag& ChildIndexTag)
+	UComboTreeNode* FindChildByInputTag(const FGameplayTag& ChildInputTag)
 	{
 		for (UComboTreeNode* Child : ChildrenList)
 		{
-			if (Child->IndexTag.IsValid() && ChildIndexTag.IsValid() && Child->IndexTag.MatchesTagExact(ChildIndexTag))
+			if (Child->InputTag.IsValid() && ChildInputTag.IsValid() && Child->InputTag.MatchesTagExact(ChildInputTag))
 			{
 				return Child;
 			}
@@ -72,11 +72,11 @@ public:
 		return nullptr;
 	}
 
-	UComboTreeNode* FindChildByAbilityClass(const TSubclassOf<UAxeGameplayAbility>& AbilityCls)
+	UComboTreeNode* FindChildByAbilityTag(const FGameplayTag FindAbilityTag)
 	{
 		for (UComboTreeNode* Child : ChildrenList)
 		{
-			if (Child->AbilityClass == AbilityCls)
+			if (Child->AbilityTag.IsValid() && Child->AbilityTag.MatchesTagExact(FindAbilityTag))
 			{
 				return Child;
 			}
@@ -103,6 +103,7 @@ public:
 	{
 		Root = RootNode;
 	}
+
 	//
 };
 

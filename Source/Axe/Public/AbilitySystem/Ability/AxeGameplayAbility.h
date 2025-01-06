@@ -42,6 +42,7 @@ enum class EAxeAbilityActivationGroup : uint8
 	// Ability blocks all other exclusive abilities from activating.
 	Exclusive_Blocking,
 
+	//
 	Max
 };
 
@@ -104,14 +105,13 @@ public:
 
 	void TryActivateAbilityOnSpawn(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) const;
 
-	virtual bool CanActivateAbility_ByLastReplaceCondition(const FGameplayAbilitySpecHandle Handle,
-	                                                       const FGameplayAbilityActorInfo* ActorInfo,
-	                                                       const FGameplayTagContainer* SourceTags,
-	                                                       const FGameplayTagContainer* TargetTags,
-	                                                       FGameplayTagContainer* OptionalRelevantTags) const;
-	virtual bool CanActivateAbility_ByLastReplaceCondition_EachProxy(UGameplayAbility* LastAbility,
-	                                                                 const FGameplayAbilityActorInfo* ActorInfo) const;
+	virtual bool CanActivateAbility_ByNowAbilityReplaceCondition(const FGameplayAbilitySpecHandle Handle,
+	                                                             const FGameplayAbilityActorInfo* ActorInfo,
+	                                                             const FGameplayTagContainer* SourceTags,
+	                                                             const FGameplayTagContainer* TargetTags,
+	                                                             FGameplayTagContainer* OptionalRelevantTags) const;
 
+	virtual bool CanReplaceByNewAbility(const UGameplayAbility* NewAbilityCDO) const;
 	/**
 	 *  base virtual
 	 */
