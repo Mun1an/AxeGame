@@ -10,6 +10,7 @@
 #include "Logging/LogMacros.h"
 #include "AxeCharacterPlayer.generated.h"
 
+class AWeaponEquipmentItemActor;
 class UWeaponTypeDataAsset;
 enum class EAxeModularCharacterSM : uint8;
 class UModularCharacterComponent;
@@ -34,24 +35,36 @@ public:
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
 	// ICombatInterface
-	virtual FORCEINLINE UComboActionComponent* GetComboActionComponent() const override
+	virtual UComboActionComponent* GetComboActionComponent_Implementation() const override
 	{
 		return ComboActionComponent;
 	}
 
-	virtual FORCEINLINE UActionCombatComponent* GetActionCombatComponent() const override
+	virtual UActionCombatComponent* GetActionCombatComponent_Implementation() const override
 	{
 		return ActionCombatComponent;
 	}
 
-	virtual FORCEINLINE UStaticMeshComponent* GetWeaponComponent() const override
+	virtual AWeaponEquipmentItemActor* GetWeaponEquipmentActor_Implementation() const override
 	{
-		return WeaponSMComponent;
+		return WeaponEquipmentActor;
 	}
 
-	virtual FORCEINLINE UStaticMeshComponent* GetWeaponSecondaryComponent() const override
+	virtual AWeaponEquipmentItemActor* GetWeaponEquipmentActorSecondary_Implementation() const override
 	{
-		return WeaponSecondarySMComponent;
+		return WeaponEquipmentActorSecondary;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	void SetWeaponEquipmentActor(AWeaponEquipmentItemActor* InWeaponEquipmentActor)
+	{
+		WeaponEquipmentActor = InWeaponEquipmentActor;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	void SetWeaponEquipmentActorSecondary(AWeaponEquipmentItemActor* InWeaponEquipmentActor)
+	{
+		WeaponEquipmentActorSecondary = InWeaponEquipmentActor;
 	}
 
 	virtual FORCEINLINE UInventoryComponent* GetInventoryComponent() const override
@@ -108,6 +121,12 @@ protected:
 
 	// Weapon
 	UPROPERTY(BlueprintReadOnly, Category = "Weapon")
+	AWeaponEquipmentItemActor* WeaponEquipmentActor = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Weapon")
+	AWeaponEquipmentItemActor* WeaponEquipmentActorSecondary = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Weapon")
 	EAxePlayerWeaponType CurrentWeaponType = EAxePlayerWeaponType::None;
 
 private:
@@ -120,20 +139,8 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera;
 
-	UPROPERTY(EditAnywhere, Category = "Combat")
-	FName WeaponTipSocketName = FName("WeaponHandSocket");
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Mesh")
 	TObjectPtr<USkeletalMeshComponent> RetargetCharacterMesh;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Combat")
-	TObjectPtr<UStaticMeshComponent> WeaponSMComponent;
-
-	UPROPERTY(EditAnywhere, Category = "Combat")
-	FName WeaponSecondaryTipSocketName = FName("WeaponSecondaryHandSocket");
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Combat")
-	TObjectPtr<UStaticMeshComponent> WeaponSecondarySMComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UComboActionComponent> ComboActionComponent;

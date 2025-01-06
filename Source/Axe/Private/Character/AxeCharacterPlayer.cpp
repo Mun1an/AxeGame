@@ -64,13 +64,13 @@ AAxeCharacterPlayer::AAxeCharacterPlayer()
 	RetargetCharacterMesh->SetupAttachment(GetMesh());
 	RetargetCharacterMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	WeaponSMComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Weapon"));
-	WeaponSMComponent->SetupAttachment(RetargetCharacterMesh, WeaponTipSocketName);
-	WeaponSMComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-	WeaponSecondarySMComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponSecondary"));
-	WeaponSecondarySMComponent->SetupAttachment(RetargetCharacterMesh, WeaponSecondaryTipSocketName);
-	WeaponSecondarySMComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	// WeaponSMComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Weapon"));
+	// WeaponSMComponent->SetupAttachment(RetargetCharacterMesh, WeaponTipSocketName);
+	// WeaponSMComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	//
+	// WeaponSecondarySMComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponSecondary"));
+	// WeaponSecondarySMComponent->SetupAttachment(RetargetCharacterMesh, WeaponSecondaryTipSocketName);
+	// WeaponSecondarySMComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	// ComboActionComponent
 	ComboActionComponent = CreateDefaultSubobject<UComboActionComponent>(TEXT("ComboActionComponent"));
 	// ActionCombatComponent
@@ -247,7 +247,7 @@ void AAxeCharacterPlayer::OnCurrentWeaponTypeChanged(const EAxePlayerWeaponType 
 
 	if (NewWeaponTypeDataAsset->WeaponComboDataAsset)
 	{
-		GetComboActionComponent()->InitComboAbilityTree(NewWeaponTypeDataAsset->WeaponComboDataAsset);
+		GetComboActionComponent_Implementation()->InitComboAbilityTree(NewWeaponTypeDataAsset->WeaponComboDataAsset);
 	}
 }
 
@@ -335,15 +335,15 @@ void AAxeCharacterPlayer::OnEquipmentItemChanged(int32 SlotIndex, UItemInstance*
 				UItemFragment_ModularCharacterMesh>();
 
 			// Set Weapon Mesh
-			WeaponSMComponent->SetStaticMesh(MeshFragment->CharacterWeaponMeshInfo.WeaponMeshStaticMesh);
-			WeaponSMComponent->SetRelativeLocation(MeshFragment->CharacterWeaponMeshInfo.WeaponOffset);
-			WeaponSMComponent->SetRelativeRotation(MeshFragment->CharacterWeaponMeshInfo.WeaponRotation);
-			WeaponSMComponent->SetRelativeScale3D(MeshFragment->CharacterWeaponMeshInfo.WeaponScale);
-			
-			WeaponSecondarySMComponent->SetStaticMesh(MeshFragment->CharacterWeaponMeshInfo.WeaponSecondaryStaticMesh);
-			WeaponSecondarySMComponent->SetRelativeLocation(MeshFragment->CharacterWeaponMeshInfo.WeaponOffset);
-			WeaponSecondarySMComponent->SetRelativeRotation(MeshFragment->CharacterWeaponMeshInfo.WeaponRotation);
-			WeaponSecondarySMComponent->SetRelativeScale3D(MeshFragment->CharacterWeaponMeshInfo.WeaponScale);
+			// WeaponSMComponent->SetStaticMesh(MeshFragment->CharacterWeaponMeshInfo.WeaponMeshStaticMesh);
+			// WeaponSMComponent->SetRelativeLocation(MeshFragment->CharacterWeaponMeshInfo.WeaponOffset);
+			// WeaponSMComponent->SetRelativeRotation(MeshFragment->CharacterWeaponMeshInfo.WeaponRotation);
+			// WeaponSMComponent->SetRelativeScale3D(MeshFragment->CharacterWeaponMeshInfo.WeaponScale);
+			//
+			// WeaponSecondarySMComponent->SetStaticMesh(MeshFragment->CharacterWeaponMeshInfo.WeaponSecondaryStaticMesh);
+			// WeaponSecondarySMComponent->SetRelativeLocation(MeshFragment->CharacterWeaponMeshInfo.WeaponOffset);
+			// WeaponSecondarySMComponent->SetRelativeRotation(MeshFragment->CharacterWeaponMeshInfo.WeaponRotation);
+			// WeaponSecondarySMComponent->SetRelativeScale3D(MeshFragment->CharacterWeaponMeshInfo.WeaponScale);
 
 			// Set Weapon Type
 			const UItemFragment_CommonInfo* CommonInfo = NewItemDef->FindFragment<UItemFragment_CommonInfo>();
@@ -356,9 +356,6 @@ void AAxeCharacterPlayer::OnEquipmentItemChanged(int32 SlotIndex, UItemInstance*
 		}
 		else
 		{
-			WeaponSMComponent->SetStaticMesh(nullptr);
-			WeaponSecondarySMComponent->SetStaticMesh(nullptr);
-
 			SetCurrentWeaponType(EAxePlayerWeaponType::None);
 		}
 	}

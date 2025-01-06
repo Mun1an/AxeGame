@@ -1,13 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "Item/AxeItemActorBase.h"
+#include "Item/AxeWorldItemActorBase.h"
 
 #include "Components/SphereComponent.h"
 #include "Item/Component/ItemComponent.h"
 #include "Item/Instance/ItemDefinition.h"
 #include "Item/ItemFragment/ItemFragment_World.h"
 
-AAxeItemActorBase::AAxeItemActorBase()
+AAxeWorldItemActorBase::AAxeWorldItemActorBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
@@ -24,7 +24,7 @@ AAxeItemActorBase::AAxeItemActorBase()
 	ItemComponent = CreateDefaultSubobject<UItemComponent>("ItemComponent");
 }
 
-void AAxeItemActorBase::OnConstruction(const FTransform& Transform)
+void AAxeWorldItemActorBase::OnConstruction(const FTransform& Transform)
 {
 	Super::OnConstruction(Transform);
 
@@ -56,22 +56,22 @@ void AAxeItemActorBase::OnConstruction(const FTransform& Transform)
 }
 
 
-void AAxeItemActorBase::GetInteractionOptions(FInteractionOption& OutOptions)
+void AAxeWorldItemActorBase::GetInteractionOptions(FInteractionOption& OutOptions)
 {
 	OutOptions = InteractionOption;
 }
 
-TSubclassOf<UItemDefinition> AAxeItemActorBase::GetPickupableItemDef()
+TSubclassOf<UItemDefinition> AAxeWorldItemActorBase::GetPickupableItemDef()
 {
 	return ItemComponent->GetItemDef();
 }
 
-int32 AAxeItemActorBase::GetPickupableItemCount()
+int32 AAxeWorldItemActorBase::GetPickupableItemCount()
 {
 	return ItemComponent->GetStackCount();
 }
 
-void AAxeItemActorBase::HighlightActor()
+void AAxeWorldItemActorBase::HighlightActor()
 {
 	if (ItemStaticMeshComponent && ItemStaticMeshComponent->GetStaticMesh())
 	{
@@ -85,7 +85,7 @@ void AAxeItemActorBase::HighlightActor()
 	}
 }
 
-void AAxeItemActorBase::UnHighlightActor()
+void AAxeWorldItemActorBase::UnHighlightActor()
 {
 	if (ItemStaticMeshComponent && ItemStaticMeshComponent->GetStaticMesh())
 	{
@@ -97,7 +97,7 @@ void AAxeItemActorBase::UnHighlightActor()
 	}
 }
 
-void AAxeItemActorBase::Tick(float DeltaSeconds)
+void AAxeWorldItemActorBase::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 

@@ -9,6 +9,7 @@
 #include "AbilitySystem/Tasks/AbilityTask_HitTrace.h"
 #include "ActionSystem/ComboActionComponent.h"
 #include "Character/AxeCharacterPlayer.h"
+#include "Item/ItemActor/WeaponEquipmentItemActor.h"
 
 UComboGameplayAbility::UComboGameplayAbility(const FObjectInitializer& ObjectInitializer): Super(ObjectInitializer)
 {
@@ -16,6 +17,8 @@ UComboGameplayAbility::UComboGameplayAbility(const FObjectInitializer& ObjectIni
 	bNeedAutoSearchTarget = true;
 
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+
+	WeaponTrail_GC_Tag = FAxeGameplayTags::Get().GameplayCue_WeaponTrail_Axe;
 }
 
 void UComboGameplayAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -89,21 +92,29 @@ void UComboGameplayAbility::Ans_HitTrace_NotifyBegin(UAnimNotifyState* AnimNotif
 	{
 		return;
 	}
-	AbilityTask_HitTrace = UAbilityTask_HitTrace::CreateHitTraceTask(
-		this,
-		AxeCharacterOwner,
-		HitTraceMeshComponent,
-		HitTraceStartSocketName,
-		HitTraceEndSocketName,
-		HitTraceRadius,
-		HitTraceObjectTypes,
-		bHitTraceIgnoreSelf,
-		IgnoreActors
-	);
-	AbilityTask_HitTrace->HitTraceDelegate.AddDynamic(this, &UComboGameplayAbility::OnHitTrace);
-	AbilityTask_HitTrace->ReadyForActivation();
+	if (HitTraceMeshComponent)
+	{
+		AbilityTask_HitTrace = UAbilityTask_HitTrace::CreateHitTraceTask(
+			this,
+			AxeCharacterOwner,
+			HitTraceMeshComponent,
+			HitTraceStartSocketName,
+			HitTraceEndSocketName,
+			HitTraceRadius,
+			HitTraceObjectTypes,
+			bHitTraceIgnoreSelf,
+			IgnoreActors
+		);
+		AbilityTask_HitTrace->HitTraceDelegate.AddDynamic(this, &UComboGameplayAbility::OnHitTrace);
+		AbilityTask_HitTrace->ReadyForActivation();
+	}
 
 	HasHitTargetSet.Empty();
+
+	// WeaponTrail GameplayCue
+	FGameplayCueParameters GameplayCueParameters = FGameplayCueParameters();
+	GameplayCueParameters.TargetAttachComponent = HitTraceMeshComponent;
+	K2_AddGameplayCueWithParams(WeaponTrail_GC_Tag, GameplayCueParameters, true);
 }
 
 void UComboGameplayAbility::Ans_HitTrace_NotifyEnd(UAnimNotifyState* AnimNotifyState)
@@ -116,6 +127,9 @@ void UComboGameplayAbility::Ans_HitTrace_NotifyEnd(UAnimNotifyState* AnimNotifyS
 			AbilityTask_HitTrace->EndTask();
 		}
 	}
+
+	// WeaponTrail GameplayCue
+	K2_RemoveGameplayCue(WeaponTrail_GC_Tag);
 }
 
 void UComboGameplayAbility::SetHitTraceDefaultValue()
@@ -124,11 +138,12 @@ void UComboGameplayAbility::SetHitTraceDefaultValue()
 	if (IsValid(AxeCharacterOwner))
 	{
 		ICombatInterface* CombatInterface = Cast<ICombatInterface>(AxeCharacterOwner);
-		if (!HitTraceMeshComponent)
+		if (CombatInterface)
 		{
-			if (CombatInterface)
+			AWeaponEquipmentItemActor* WeaponActor = CombatInterface->GetWeaponEquipmentActor_Implementation();
+			if (WeaponActor)
 			{
-				HitTraceMeshComponent = CombatInterface->GetWeaponComponent();
+				HitTraceMeshComponent = WeaponActor->GetHitTraceMeshComponent();
 			}
 		}
 	}

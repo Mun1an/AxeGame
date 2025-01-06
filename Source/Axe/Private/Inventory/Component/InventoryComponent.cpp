@@ -10,11 +10,14 @@
 #include "Engine/ActorChannel.h"
 #include "GameplayTag/AxeGameplayTags.h"
 #include "Item/ItemFunctionLibrary.h"
+#include "Item/Instance/EquipmentItemDefinition.h"
+#include "Item/Instance/EquipmentItemInstance.h"
 #include "Item/Instance/ItemDefinition.h"
 #include "Item/Instance/ItemInstance.h"
 #include "Item/ItemFragment/ItemFragment_CommonInfo.h"
 #include "Item/ItemFragment/ItemFragment_UI.h"
 #include "Item/ItemFragment/ItemFragment_EquipmentInfo.h"
+#include "Item/ItemFragment/ItemFragment_EquippableItem.h"
 #include "Item/ItemFragment/ItemFragment_ModularCharacterMesh.h"
 #include "Net/UnrealNetwork.h"
 
@@ -106,6 +109,18 @@ void UInventoryComponent::OnEquipmentItemChanged(int32 SlotIndex, UItemInstance*
 		return;
 	}
 	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(ASC);
+
+	//
+	UEquipmentItemInstance* NewEquipmentInstance = Cast<UEquipmentItemInstance>(NewItemInstance);
+	UEquipmentItemInstance* OldEquipmentInstance = Cast<UEquipmentItemInstance>(OldItemInstance);
+	if (NewEquipmentInstance)
+	{
+		NewEquipmentInstance->OnEquipped();
+	}
+	if (OldEquipmentInstance)
+	{
+		OldEquipmentInstance->OnUnequipped();
+	}
 
 	FEquipmentInfo TotalEquipmentInfo = FEquipmentInfo();
 	// EquipmentEffect
@@ -218,15 +233,25 @@ FInventoryEntry& UInventoryComponent::GetInventoryEntryByIndex(int32 Index)
 	return InventoryList.GetInventoryEntryByIndex(Index);
 }
 
-UItemInstance* UInventoryComponent::AddItemDefinition(TSubclassOf<UItemDefinition> ItemDef, int32 StackCount,
-                                                      int32 Index)
+UItemInstance* UInventoryComponent::CreateItemInstanceByDefinition(TSubclassOf<UItemDefinition> ItemDef)
 {
-	if (ItemDef == nullptr)
+	if (!ItemDef)
 	{
 		return nullptr;
 	}
-	UItemInstance* ItemInstance = NewObject<UItemInstance>(GetOwner());
+	const UItemDefinition* ItemDefinition = ItemDef->GetDefaultObject<UItemDefinition>();
+	const UClass* InstanceClass = ItemDefinition->ItemInstanceClass;
+	UItemInstance* ItemInstance = NewObject<UItemInstance>(GetOwner(), InstanceClass);
 	ItemInstance->SetItemDef(ItemDef);
+	ItemInstance->SetPawn(GetAxeCharacterOwner());
+	return ItemInstance;
+}
+
+UItemInstance* UInventoryComponent::AddItemInstanceByDefinitionCreated(TSubclassOf<UItemDefinition> ItemDef,
+                                                                       int32 StackCount,
+                                                                       int32 Index)
+{
+	UItemInstance* ItemInstance = CreateItemInstanceByDefinition(ItemDef);
 	AddItemInstance(ItemInstance, StackCount, Index);
 	return ItemInstance;
 }

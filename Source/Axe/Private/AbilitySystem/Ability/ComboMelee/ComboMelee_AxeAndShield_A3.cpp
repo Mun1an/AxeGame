@@ -5,6 +5,7 @@
 
 #include "Character/AxeCharacterBase.h"
 #include "Interface/CombatInterface.h"
+#include "Item/ItemActor/WeaponEquipmentItemActor.h"
 
 void UComboMelee_AxeAndShield_A3::SetHitTraceDefaultValue()
 {
@@ -16,7 +17,11 @@ void UComboMelee_AxeAndShield_A3::SetHitTraceDefaultValue()
 		{
 			if (CombatInterface)
 			{
-				HitTraceMeshComponent = CombatInterface->GetWeaponSecondaryComponent();
+				AWeaponEquipmentItemActor* WeaponActor = CombatInterface->GetWeaponEquipmentActorSecondary_Implementation();
+				if (WeaponActor)
+				{
+					HitTraceMeshComponent = WeaponActor->GetHitTraceMeshComponent();
+				}
 			}
 		}
 	}

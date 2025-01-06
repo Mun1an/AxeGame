@@ -21,7 +21,9 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual bool IsSupportedForNetworking() const override { return true; }
 
-public:
+	APawn* GetPawn() const { return OwningPawn; }
+	void SetPawn(APawn* InPawn) { OwningPawn = InPawn; }
+
 	const TSubclassOf<UItemDefinition>& GetItemDef()
 	{
 		return ItemDef;
@@ -30,8 +32,10 @@ public:
 	void SetItemDef(TSubclassOf<UItemDefinition> InDef);
 
 protected:
-
 	// The item definition
 	UPROPERTY(Replicated, BlueprintReadOnly)
 	TSubclassOf<UItemDefinition> ItemDef;
+
+	UPROPERTY(Replicated, BlueprintReadOnly)
+	TObjectPtr<APawn> OwningPawn = nullptr;
 };

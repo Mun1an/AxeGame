@@ -11,13 +11,16 @@ class UItemFragment;
 /**
  * 
  */
-UCLASS(Blueprintable, Const, Abstract)
+UCLASS(Blueprintable, Const, Abstract, BlueprintType)
 class AXE_API UItemDefinition : public UObject
 {
 	GENERATED_BODY()
 
 public:
 	UItemDefinition(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Display)
+	TSubclassOf<UItemInstance> ItemInstanceClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Display)
 	FText DisplayName;

@@ -257,14 +257,14 @@ const
 bool UAxeGameplayAbility::CanReplaceByNewAbility(const UGameplayAbility* NewAbilityCDO) const
 {
 	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
-	AAxeCharacterPlayer* CharacterPlayer = Cast<AAxeCharacterPlayer>(AxeCharacterOwner);
+	ICombatInterface* CombatInterface = Cast<ICombatInterface>(AxeCharacterOwner);
 	// 单纯客户端判断了，服务端默认 return true
-	if (CharacterPlayer && CharacterPlayer->IsLocallyControlled())
+	if (AxeCharacterOwner && CombatInterface && AxeCharacterOwner->IsLocallyControlled())
 	{
 		// Client
 		// TODO 继承
 		// Check Combo
-		UComboActionComponent* ComboActionComponent = CharacterPlayer->GetComboActionComponent();
+		UComboActionComponent* ComboActionComponent = CombatInterface->GetComboActionComponent_Implementation();
 		bool bIsNextComboAbility = ComboActionComponent->IsNextComboAbility(NewAbilityCDO);
 		bool bIsInComboSwitchWindow = ComboActionComponent->IsInComboSwitchWindow();
 		if (bIsNextComboAbility && bIsInComboSwitchWindow)
@@ -419,7 +419,7 @@ UActionCombatComponent* UAxeGameplayAbility::GetActionCombatComponent() const
 		ICombatInterface* CombatInterface = Cast<ICombatInterface>(AxeCharacterOwner);
 		if (CombatInterface)
 		{
-			return CombatInterface->GetActionCombatComponent();
+			return CombatInterface->GetActionCombatComponent_Implementation();
 		}
 	}
 	return nullptr;
@@ -433,7 +433,7 @@ UComboActionComponent* UAxeGameplayAbility::GetComboActionComponent() const
 		ICombatInterface* CombatInterface = Cast<ICombatInterface>(AxeCharacterOwner);
 		if (CombatInterface)
 		{
-			return CombatInterface->GetComboActionComponent();
+			return CombatInterface->GetComboActionComponent_Implementation();
 		}
 	}
 	return nullptr;

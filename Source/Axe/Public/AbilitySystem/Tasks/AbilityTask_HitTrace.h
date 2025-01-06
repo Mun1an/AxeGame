@@ -26,7 +26,7 @@ public:
 	static UAbilityTask_HitTrace* CreateHitTraceTask(
 		UGameplayAbility* OwningAbility,
 		AAxeCharacterBase* Character,
-		UStaticMeshComponent* TraceMeshComponent,
+		UMeshComponent* TraceMeshComponent,
 		FName BeginSocketName,
 		FName EndSocketName,
 		float Radius,
@@ -51,7 +51,7 @@ protected:
 	AAxeCharacterBase* Character;
 
 	UPROPERTY()
-	UStaticMeshComponent* TraceMeshComponent;
+	UMeshComponent* TraceMeshComponent;
 
 	UPROPERTY()
 	FName BeginSocketName;

@@ -8,19 +8,19 @@
 #include "Interface/HighLight.h"
 #include "Interface/InteractableInterface.h"
 #include "Interface/Pickupable.h"
-#include "AxeItemActorBase.generated.h"
+#include "AxeWorldItemActorBase.generated.h"
 
 class USphereComponent;
 class UItemComponent;
 
 UCLASS(Abstract)
-class AXE_API AAxeItemActorBase : public AActor, public IInteractableInterface, public IPickupable, public IHighLight
+class AXE_API AAxeWorldItemActorBase : public AActor, public IInteractableInterface, public IPickupable, public IHighLight
 
 {
 	GENERATED_BODY()
 
 public:
-	AAxeItemActorBase();
+	AAxeWorldItemActorBase();
 	virtual void OnConstruction(const FTransform& Transform) override;
 	// IInteractableInterface
 	virtual void GetInteractionOptions(FInteractionOption& OutOptions) override;

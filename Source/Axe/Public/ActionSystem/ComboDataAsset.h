@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
-#include "AbilitySystem/Ability/AxeGameplayAbility.h"
 #include "Engine/DataAsset.h"
 #include "ComboDataAsset.generated.h"
 

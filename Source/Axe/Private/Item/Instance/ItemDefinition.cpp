@@ -3,12 +3,14 @@
 
 #include "Item/Instance/ItemDefinition.h"
 
+#include "Item/Instance/ItemInstance.h"
 #include "Item/ItemFragment/ItemFragment.h"
 #include "Item/ItemFragment/ItemFragment_CommonInfo.h"
 
 
 UItemDefinition::UItemDefinition(const FObjectInitializer& ObjectInitializer): Super(ObjectInitializer)
 {
+	ItemInstanceClass = UItemInstance::StaticClass();
 }
 
 const UItemFragment* UItemDefinition::FindFragmentByClass(TSubclassOf<UItemFragment> FragmentClass) const

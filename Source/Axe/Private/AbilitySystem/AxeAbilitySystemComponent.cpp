@@ -112,12 +112,13 @@ void UAxeAbilitySystemComponent::TryActivateAbilityAndCheck_Client(FGameplayAbil
 {
 	const FGameplayAbilitySpec* AbilitySpec = FindAbilitySpecFromHandle(AbilitySpecHandle);
 	const FGameplayTag InputTag = Cast<UAxeGameplayAbility>(AbilitySpec->Ability)->InputTag;
-	const AAxeCharacterPlayer* AxeCharacterPlayer = Cast<AAxeCharacterPlayer>(GetAxeCharacterOwner());
 
+	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
+	ICombatInterface* CombatInterface = Cast<ICombatInterface>(AxeCharacterOwner);
 	// Combo
-	if (InputTag.IsValid() && IsValid(AxeCharacterPlayer))
+	if (InputTag.IsValid() && CombatInterface)
 	{
-		UComboActionComponent* ComboActionComponent = AxeCharacterPlayer->GetComboActionComponent();
+		UComboActionComponent* ComboActionComponent = CombatInterface->GetComboActionComponent_Implementation();
 		const FGameplayTag NextComboAbilityTag = ComboActionComponent->GetNextComboAbilityTagByInputTag(InputTag);
 		if (NextComboAbilityTag.IsValid())
 		{

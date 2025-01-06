@@ -9,7 +9,7 @@
 
 UAbilityTask_HitTrace* UAbilityTask_HitTrace::CreateHitTraceTask(UGameplayAbility* OwningAbility,
                                                                  AAxeCharacterBase* Character,
-                                                                 UStaticMeshComponent* TraceMeshComponent,
+                                                                 UMeshComponent* TraceMeshComponent,
                                                                  FName BeginSocketName,
                                                                  FName EndSocketName,
                                                                  float Radius,

@@ -313,18 +313,16 @@ void UAxeAttributeSet::ShowDamageFloatingText(AAxeCharacterBase* SourceCharacter
 	const FVector ShowLocation = HitResult->ImpactPoint;
 	EDamageSpecialExpression DamageSpecialExpression = AxeEffectContext->GetDamageSpecialExpression();
 
-	if (Cast<AAxeCharacterPlayer>(SourceCharacter))
+	if (AAxeCharacterPlayer* AxeCharacterPlayer = Cast<AAxeCharacterPlayer>(SourceCharacter))
 	{
-		AAxeCharacterPlayer* AxeCharacterPlayer = Cast<AAxeCharacterPlayer>(SourceCharacter);
-		UActionCombatComponent* ActionCombatComponent = AxeCharacterPlayer->GetActionCombatComponent();
+		UActionCombatComponent* ActionCombatComponent = AxeCharacterPlayer->GetActionCombatComponent_Implementation();
 		ActionCombatComponent->ShowDamageNumber(
 			Damage, TargetCharacter, DamageSpecialExpression, ShowLocation
 		);
 	}
-	if (Cast<AAxeCharacterPlayer>(TargetCharacter))
+	if (AAxeCharacterPlayer* AxeCharacterPlayer = Cast<AAxeCharacterPlayer>(TargetCharacter))
 	{
-		AAxeCharacterPlayer* AxeCharacterPlayer = Cast<AAxeCharacterPlayer>(TargetCharacter);
-		UActionCombatComponent* ActionCombatComponent = AxeCharacterPlayer->GetActionCombatComponent();
+		UActionCombatComponent* ActionCombatComponent = AxeCharacterPlayer->GetActionCombatComponent_Implementation();
 		ActionCombatComponent->ShowDamageNumber(
 			Damage, TargetCharacter, DamageSpecialExpression, ShowLocation
 		);

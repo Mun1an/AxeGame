@@ -41,6 +41,9 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	FGameplayTag WeaponHit_GC_Tag;
 
+	UPROPERTY(EditDefaultsOnly)
+	FGameplayTag WeaponTrail_GC_Tag;
+	
 	UFUNCTION()
 	void CreateHitParticle(const FHitResult& HitResult);
 
@@ -53,7 +56,7 @@ public:
 protected:
 	// HitTrace
 	UPROPERTY()
-	UStaticMeshComponent* HitTraceMeshComponent = nullptr;
+	UMeshComponent* HitTraceMeshComponent = nullptr;
 
 	UPROPERTY(EditAnywhere, Category="HitTrace")
 	FName HitTraceStartSocketName = FName("Bottom");

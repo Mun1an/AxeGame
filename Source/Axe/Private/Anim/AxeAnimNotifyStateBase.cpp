@@ -82,7 +82,7 @@ UComboActionComponent* UAxeAnimNotifyStateBase::GetPlayerComboActionComponent(co
 {
 	if (AAxeCharacterPlayer* AxeCharacterPlayer = GetPlayerCharacter(MeshComp))
 	{
-		return AxeCharacterPlayer->GetComboActionComponent();
+		return AxeCharacterPlayer->GetComboActionComponent_Implementation();
 	}
 	return nullptr;
 }
