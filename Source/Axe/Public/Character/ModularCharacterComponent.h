@@ -102,6 +102,8 @@ public:
 	void InitExclusionEnumMap();
 	UFUNCTION(BlueprintCallable)
 	void GetExclusionEnumList(const EAxeModularCharacterSM ESM, TArray<EAxeModularCharacterSM>& OutExclusionList);
+	UFUNCTION()
+	void OnAfterUpdateModularMesh();
 
 protected:
 	// Called when the game starts
@@ -120,10 +122,11 @@ protected:
 	FModularCharacterSMInfo FindModularSMInfoFromDataTable(const EAxeModularCharacterSM ESM,
 	                                                       const EModularCharacterGenderType GenderType) const;
 
-	UFUNCTION()
-	void OnInventoryInitOver();
-	UFUNCTION()
-	void OnEquipmentItemChanged(int32 SlotIndex, UItemInstance* NewItemInstance, UItemInstance* OldItemInstance, FGameplayTagContainer SlotTags);
+	// UFUNCTION()
+	// void OnInventoryInitOver();
+	// UFUNCTION()
+	// void OnEquipmentItemChanged(int32 SlotIndex, UItemInstance* NewItemInstance, UItemInstance* OldItemInstance,
+	//                             FGameplayTagContainer SlotTags);
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	TObjectPtr<UDataTable> DT_ModularCharacterSM;
@@ -156,7 +159,4 @@ private:
 
 	UFUNCTION(BlueprintCallable)
 	void AddModularSMToDataTable_Test();
-
-	UFUNCTION()
-	void OnAfterUpdateModularMesh();
 };

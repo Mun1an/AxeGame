@@ -50,11 +50,11 @@ UModularCharacterComponent::UModularCharacterComponent()
 USkeletalMesh* UModularCharacterComponent::GetModularMesh(const EAxeModularCharacterSM ESM)
 {
 	const AAxeCharacterPlayer* PlayerOwner = GetAxeCharacterPlayerOwner();
-	TWeakObjectPtr<USkeletalMeshComponent> SMComponent = PlayerOwner->GetModularSkeletalMeshComponentMap().
-	                                                                  FindRef(ESM);
-	if (SMComponent.IsValid())
+	TObjectPtr<USkeletalMeshComponent> SMComponent = PlayerOwner->GetModularSkeletalMeshComponentMap().
+	                                                              FindRef(ESM);
+	if (SMComponent)
 	{
-		return SMComponent.Get()->GetSkeletalMeshAsset();
+		return SMComponent->GetSkeletalMeshAsset();
 	}
 	return nullptr;
 }
@@ -92,7 +92,7 @@ void UModularCharacterComponent::SetAllModularMesh()
 	const AAxeCharacterPlayer* Owner = GetAxeCharacterPlayerOwner();
 	USkeletalMeshComponent* RetargetCharacterMesh = Owner->GetRetargetCharacterMesh();
 
-	for (const TTuple<EAxeModularCharacterSM, TWeakObjectPtr<USkeletalMeshComponent>>& Pair : Owner->
+	for (const TTuple<EAxeModularCharacterSM, TObjectPtr<USkeletalMeshComponent>>& Pair : Owner->
 	     GetModularSkeletalMeshComponentMap()
 	)
 	{
@@ -103,7 +103,7 @@ void UModularCharacterComponent::SetAllModularMesh()
 		Pair.Value.Get()->SetSkinnedAssetAndUpdate(Pair.Value.Get()->GetSkeletalMeshAsset());
 	}
 
-	for (const TTuple<EAxeModularCharacterSM, TWeakObjectPtr<USkeletalMeshComponent>>& Pair : Owner->
+	for (const TTuple<EAxeModularCharacterSM, TObjectPtr<USkeletalMeshComponent>>& Pair : Owner->
 	     GetModularSkeletalMeshComponentMap()
 	)
 	{
@@ -310,28 +310,28 @@ void UModularCharacterComponent::BeginPlay()
 	InitExclusionEnumMap();
 	//
 
-	AAxeCharacterPlayer* AxeOwner = GetAxeCharacterPlayerOwner();
+	// AAxeCharacterPlayer* AxeOwner = GetAxeCharacterPlayerOwner();
 
-	if (AxeOwner->IsInventoryInitOver())
-	{
-		OnInventoryInitOver();
-	}
-	else
-	{
-		AxeOwner->OnInventoryInitOverDelegate.AddUObject(this, &UModularCharacterComponent::OnInventoryInitOver);
-	}
+	// if (AxeOwner->IsInventoryInitOver())
+	// {
+	// 	OnInventoryInitOver();
+	// }
+	// else
+	// {
+	// 	AxeOwner->OnInventoryInitOverDelegate.AddUObject(this, &UModularCharacterComponent::OnInventoryInitOver);
+	// }
 
 	ModularCharacterInit();
 }
 
-void UModularCharacterComponent::OnInventoryInitOver()
-{
-	AAxeCharacterPlayer* AxeOwner = GetAxeCharacterPlayerOwner();
-	UInventoryComponent* InventoryComponent = AxeOwner->GetInventoryComponent();
-	InventoryComponent->OnEquipmentItemChangedDelegate.AddDynamic(
-		this, &UModularCharacterComponent::OnEquipmentItemChanged
-		);
-}
+// void UModularCharacterComponent::OnInventoryInitOver()
+// {
+// AAxeCharacterPlayer* AxeOwner = GetAxeCharacterPlayerOwner();
+// UInventoryComponent* InventoryComponent = AxeOwner->GetInventoryComponent();
+// InventoryComponent->OnEquipmentItemChangedDelegate.AddDynamic(
+// 	this, &UModularCharacterComponent::OnEquipmentItemChanged
+// 	);
+// }
 
 void UModularCharacterComponent::ModularCharacterInit()
 {
@@ -340,9 +340,10 @@ void UModularCharacterComponent::ModularCharacterInit()
 
 	// ModularDynamicMaterial
 	check(ModularDynamicMaterial)
+
 	ModularDynamicMaterialInstance = RetargetCharacterMeshComp->CreateDynamicMaterialInstance(
 		0, ModularDynamicMaterial);
-	for (TTuple<EAxeModularCharacterSM, TWeakObjectPtr<USkeletalMeshComponent>>&
+	for (TTuple<EAxeModularCharacterSM, TObjectPtr<USkeletalMeshComponent>>&
 	     Pair : Owner->GetModularSkeletalMeshComponentMap())
 	{
 		if (Pair.Value == nullptr)
@@ -437,54 +438,54 @@ FModularCharacterSMInfo UModularCharacterComponent::FindModularSMInfoFromDataTab
 }
 
 
-void UModularCharacterComponent::OnEquipmentItemChanged(int32 SlotIndex, UItemInstance* NewItemInstance,
-                                                        UItemInstance* OldItemInstance, FGameplayTagContainer SlotTags)
-{
-	// Equipment Display
-
-	bool bUpdateMesh = false;
-	// Remove
-	if (OldItemInstance)
-	{
-		const UItemDefinition* ItemDef = GetDefault<UItemDefinition>(OldItemInstance->GetItemDef());
-		const UItemFragment_ModularCharacterMesh* ModularMeshFragment = ItemDef->FindFragment<
-			UItemFragment_ModularCharacterMesh>();
-		if (ModularMeshFragment)
-		{
-			for (const FModularCharacterMeshInfo& ModularCharacterMeshInfo : ModularMeshFragment->
-			     ModularCharacterMeshInfos)
-			{
-				SetModularMesh(
-					ModularCharacterMeshInfo.ModularMeshEnum, nullptr, false
-				);
-				bUpdateMesh = true;
-			}
-		}
-	}
-	// Add
-	if (NewItemInstance)
-	{
-		const UItemDefinition* ItemDef = GetDefault<UItemDefinition>(NewItemInstance->GetItemDef());
-		const UItemFragment_ModularCharacterMesh* ModularMeshFragment = ItemDef->FindFragment<
-			UItemFragment_ModularCharacterMesh>();
-		if (ModularMeshFragment)
-		{
-			for (const FModularCharacterMeshInfo& ModularCharacterMeshInfo : ModularMeshFragment->
-			     ModularCharacterMeshInfos)
-			{
-				SetModularMesh(
-					ModularCharacterMeshInfo.ModularMeshEnum, ModularCharacterMeshInfo.ModularMesh
-				);
-				bUpdateMesh = true;
-			}
-		}
-	}
-
-	if (bUpdateMesh)
-	{
-		OnAfterUpdateModularMesh();
-	}
-}
+// void UModularCharacterComponent::OnEquipmentItemChanged(int32 SlotIndex, UItemInstance* NewItemInstance,
+//                                                         UItemInstance* OldItemInstance, FGameplayTagContainer SlotTags)
+// {
+// 	// Equipment Display
+//
+// 	bool bUpdateMesh = false;
+// 	// Remove
+// 	if (OldItemInstance)
+// 	{
+// 		const UItemDefinition* ItemDef = GetDefault<UItemDefinition>(OldItemInstance->GetItemDef());
+// 		const UItemFragment_ModularCharacterMesh* ModularMeshFragment = ItemDef->FindFragment<
+// 			UItemFragment_ModularCharacterMesh>();
+// 		if (ModularMeshFragment)
+// 		{
+// 			for (const FModularCharacterMeshInfo& ModularCharacterMeshInfo : ModularMeshFragment->
+// 			     ModularCharacterMeshInfos)
+// 			{
+// 				SetModularMesh(
+// 					ModularCharacterMeshInfo.ModularMeshEnum, nullptr, false
+// 				);
+// 				bUpdateMesh = true;
+// 			}
+// 		}
+// 	}
+// 	// Add
+// 	if (NewItemInstance)
+// 	{
+// 		const UItemDefinition* ItemDef = GetDefault<UItemDefinition>(NewItemInstance->GetItemDef());
+// 		const UItemFragment_ModularCharacterMesh* ModularMeshFragment = ItemDef->FindFragment<
+// 			UItemFragment_ModularCharacterMesh>();
+// 		if (ModularMeshFragment)
+// 		{
+// 			for (const FModularCharacterMeshInfo& ModularCharacterMeshInfo : ModularMeshFragment->
+// 			     ModularCharacterMeshInfos)
+// 			{
+// 				SetModularMesh(
+// 					ModularCharacterMeshInfo.ModularMeshEnum, ModularCharacterMeshInfo.ModularMesh
+// 				);
+// 				bUpdateMesh = true;
+// 			}
+// 		}
+// 	}
+//
+// 	if (bUpdateMesh)
+// 	{
+// 		OnAfterUpdateModularMesh();
+// 	}
+// }
 
 void UModularCharacterComponent::OnAfterUpdateModularMesh()
 {

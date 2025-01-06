@@ -37,7 +37,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USkeletalMeshComponent> ModularSM_5;
 
-	TArray<TWeakObjectPtr<USkeletalMeshComponent>> ModularSMList;
+	TArray<TObjectPtr<USkeletalMeshComponent>> ModularSMList;
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)

@@ -81,7 +81,7 @@ AAxeCharacterPlayer::AAxeCharacterPlayer()
 	// ModularCharacterComponent
 	ModularCharacterComponent = CreateDefaultSubobject<UModularCharacterComponent>(TEXT("ModularCharacterComponent"));
 
-	ModularSkeletalMeshComponentMap = TMap<EAxeModularCharacterSM, TWeakObjectPtr<USkeletalMeshComponent>>();
+	ModularSkeletalMeshComponentMap = TMap<EAxeModularCharacterSM, TObjectPtr<USkeletalMeshComponent>>();
 
 	HandleModularSkeletalMeshComponent(ModularSM_Gender_Head,
 	                                   "Gender_Head",

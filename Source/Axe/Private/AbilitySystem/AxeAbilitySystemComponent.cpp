@@ -382,7 +382,10 @@ bool UAxeAbilitySystemComponent::ApplyEquipmentEffectToSelf(const TSubclassOf<UG
 	const FGameplayEffectSpecHandle SpecHandle = MakeOutgoingSpec(
 		EffectClass, 1, ContextHandle
 	);
-
+	if (SpecHandle.IsValid())
+	{
+		return false;
+	}
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
 		SpecHandle, FAxeGameplayTags::Get().Effect_Magnitude_Damage, EquipmentInfo.EquipmentDamage
 	);

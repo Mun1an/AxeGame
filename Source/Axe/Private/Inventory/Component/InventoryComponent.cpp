@@ -113,18 +113,18 @@ void UInventoryComponent::OnEquipmentItemChanged(int32 SlotIndex, UItemInstance*
 	//
 	UEquipmentItemInstance* NewEquipmentInstance = Cast<UEquipmentItemInstance>(NewItemInstance);
 	UEquipmentItemInstance* OldEquipmentInstance = Cast<UEquipmentItemInstance>(OldItemInstance);
-	if (NewEquipmentInstance)
-	{
-		NewEquipmentInstance->OnEquipped();
-	}
 	if (OldEquipmentInstance)
 	{
 		OldEquipmentInstance->OnUnequipped();
 	}
-
+	if (NewEquipmentInstance)
+	{
+		NewEquipmentInstance->OnEquipped();
+	}
 	FEquipmentInfo TotalEquipmentInfo = FEquipmentInfo();
+	
 	// EquipmentEffect
-	if (AxeASC && AxeCharacterOwner->EquipmentEffect)
+	if (AxeCharacterOwner->HasAuthority() && AxeASC && IsValid(AxeCharacterOwner->EquipmentEffect))
 	{
 		TArray<FInventoryEntry> EquipmentEntries;
 		GetEquipmentEntryArray(EquipmentEntries);
@@ -143,8 +143,8 @@ void UInventoryComponent::OnEquipmentItemChanged(int32 SlotIndex, UItemInstance*
 				}
 			}
 		}
+		AxeASC->ApplyEquipmentEffectToSelf(AxeCharacterOwner->EquipmentEffect, TotalEquipmentInfo);
 	}
-	AxeASC->ApplyEquipmentEffectToSelf(AxeCharacterOwner->EquipmentEffect, TotalEquipmentInfo);
 }
 
 bool UInventoryComponent::SetOwnerActor(AActor* InOwnerActor)

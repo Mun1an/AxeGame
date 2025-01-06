@@ -83,7 +83,7 @@ public:
 
 	USkeletalMeshComponent* GetRetargetCharacterMesh() const { return RetargetCharacterMesh; }
 
-	TMap<EAxeModularCharacterSM, TWeakObjectPtr<USkeletalMeshComponent>> GetModularSkeletalMeshComponentMap() const
+	TMap<EAxeModularCharacterSM, TObjectPtr<USkeletalMeshComponent>> GetModularSkeletalMeshComponentMap() const
 	{
 		return ModularSkeletalMeshComponentMap;
 	}
@@ -217,5 +217,5 @@ private:
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USkeletalMeshComponent> ModularSM_All_Extra;
 
-	TMap<EAxeModularCharacterSM, TWeakObjectPtr<USkeletalMeshComponent>> ModularSkeletalMeshComponentMap;
+	TMap<EAxeModularCharacterSM, TObjectPtr<USkeletalMeshComponent>> ModularSkeletalMeshComponentMap;
 };

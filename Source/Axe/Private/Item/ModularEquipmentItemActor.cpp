@@ -36,7 +36,7 @@ void AModularEquipmentItemActor::OnConstruction(const FTransform& Transform)
 			ModularCharacterMeshInfos;
 
 		int32 MeshIndex = -1;
-		for (TWeakObjectPtr<USkeletalMeshComponent> SMComponent : ModularSMList)
+		for (TObjectPtr<USkeletalMeshComponent> SMComponent : ModularSMList)
 		{
 			MeshIndex++;
 
@@ -82,7 +82,7 @@ void AModularEquipmentItemActor::HighlightActor()
 {
 	Super::HighlightActor();
 
-	for (TWeakObjectPtr<USkeletalMeshComponent> SMComponent : ModularSMList)
+	for (TObjectPtr<USkeletalMeshComponent> SMComponent : ModularSMList)
 	{
 		SMComponent.Get()->SetRenderCustomDepth(true);
 		SMComponent.Get()->SetCustomDepthStencilValue(250);
@@ -93,7 +93,7 @@ void AModularEquipmentItemActor::UnHighlightActor()
 {
 	Super::UnHighlightActor();
 
-	for (TWeakObjectPtr<USkeletalMeshComponent> SMComponent : ModularSMList)
+	for (TObjectPtr<USkeletalMeshComponent> SMComponent : ModularSMList)
 	{
 		SMComponent.Get()->SetRenderCustomDepth(false);
 	}
