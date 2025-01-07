@@ -14,13 +14,7 @@ class UInventoryProcessor;
 class UItemInstance;
 class UTexture2D;
 
-UENUM(BlueprintType)
-enum class EAxePlayerWeaponType: uint8
-{
-	None,
-	AxeAndShield,
-	GreatAxe,
-};
+
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnInventoryChangedDelegate, int32, SlotIndex, UItemInstance*,
                                               NewItemInstance,

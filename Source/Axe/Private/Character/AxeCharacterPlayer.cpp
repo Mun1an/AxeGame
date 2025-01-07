@@ -15,7 +15,7 @@
 #include "GameFramework/Controller.h"
 #include "GameplayTag/AxeGameplayTags.h"
 #include "Inventory/Component/InventoryComponent.h"
-#include "Item/WeaponTypeDataAsset.h"
+#include "Item/WeaponDataAsset.h"
 #include "Item/Instance/ItemDefinition.h"
 #include "Item/Instance/ItemInstance.h"
 #include "Item/ItemFragment/ItemFragment_CommonInfo.h"
@@ -202,53 +202,9 @@ void AAxeCharacterPlayer::OnLinkedAnimLayerClassChanged()
 	GetMesh()->LinkAnimClassLayers(LinkedAnimLayerClass);
 }
 
-void AAxeCharacterPlayer::SetCurrentWeaponType(EAxePlayerWeaponType InWeaponType)
+void AAxeCharacterPlayer::ResetLinkedAnimLayerClass()
 {
-	const EAxePlayerWeaponType OldWeaponType = CurrentWeaponType;
-	CurrentWeaponType = InWeaponType;
-	OnCurrentWeaponTypeChanged(InWeaponType, OldWeaponType);
-}
-
-void AAxeCharacterPlayer::OnCurrentWeaponTypeChanged(const EAxePlayerWeaponType NewWeaponType,
-                                                     const EAxePlayerWeaponType OldWeaponType)
-{
-	UWeaponTypeDataAsset* NewWeaponTypeDataAsset = WeaponTypeDataAssetMap.FindRef(NewWeaponType);
-	UWeaponTypeDataAsset* OldWeaponTypeDataAsset = WeaponTypeDataAssetMap.FindRef(OldWeaponType);
-	if (!NewWeaponTypeDataAsset || !OldWeaponTypeDataAsset)
-	{
-		return;
-	}
-	UAbilitySystemComponent* ASC = GetAbilitySystemComponent();
-	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(ASC);
-	
-	if (HasAuthority() && OldWeaponTypeDataAsset->WeaponAbilities.Num() > 0)
-	{
-		// Remove Old Weapon Abilities
-		for (const TSubclassOf<UGameplayAbility>& Ability : OldWeaponTypeDataAsset->WeaponAbilities)
-		{
-			FGameplayTag AbilityGameplayTag = Ability.GetDefaultObject()->AbilityTags.First();
-			FGameplayAbilitySpecHandle Handle = AxeASC->GetAbilityHandleByAbilityTag(AbilityGameplayTag);
-			AxeASC->ClearAbility(Handle);
-		}
-	}
-	if (HasAuthority() && NewWeaponTypeDataAsset->WeaponAbilities.Num() > 0)
-	{
-		// Add New Weapon Abilities
-		for (const TSubclassOf<UGameplayAbility>& Ability : NewWeaponTypeDataAsset->WeaponAbilities)
-		{
-			AxeASC->GiveAbilityByAbilityAndLevel(Ability, 1);
-		}
-	}
-
-	if (NewWeaponTypeDataAsset->WeaponAnimLayerClass)
-	{
-		SetLinkedAnimLayerClass(NewWeaponTypeDataAsset->WeaponAnimLayerClass);
-	}
-
-	if (NewWeaponTypeDataAsset->WeaponComboDataAsset)
-	{
-		GetComboActionComponent_Implementation()->InitComboAbilityTree(NewWeaponTypeDataAsset->WeaponComboDataAsset);
-	}
+	SetLinkedAnimLayerClass(DefaultLinkedAnimLayerClass);
 }
 
 void AAxeCharacterPlayer::BeginPlay()
@@ -257,7 +213,7 @@ void AAxeCharacterPlayer::BeginPlay()
 	Super::BeginPlay();
 	PrimaryActorTick.bCanEverTick = true;
 
-	SetLinkedAnimLayerClass(LinkedAnimLayerClass);
+	SetLinkedAnimLayerClass(DefaultLinkedAnimLayerClass);
 }
 
 void AAxeCharacterPlayer::Tick(float DeltaSeconds)
@@ -314,51 +270,6 @@ void AAxeCharacterPlayer::InitInventory()
 	bIsInventoryInitOver = true;
 
 	// Init Over
-	InventoryComponent->OnEquipmentItemChangedDelegate.AddDynamic(
-		this, &AAxeCharacterPlayer::OnEquipmentItemChanged
-	);
-	InventoryComponent->RefreshInventoryItemEntryChange();
-}
-
-void AAxeCharacterPlayer::OnEquipmentItemChanged(int32 SlotIndex, UItemInstance* NewItemInstance,
-                                                 UItemInstance* OldItemInstance, FGameplayTagContainer SlotTags)
-{
-	const FAxeGameplayTags AxeGameplayTags = FAxeGameplayTags::Get();
-
-	// Weapon
-	if (SlotTags.HasTag(AxeGameplayTags.Inventory_Entry_Equipment_Weapon))
-	{
-		if (NewItemInstance)
-		{
-			const UItemDefinition* NewItemDef = GetDefault<UItemDefinition>(NewItemInstance->GetItemDef());
-			const UItemFragment_ModularCharacterMesh* MeshFragment = NewItemDef->FindFragment<
-				UItemFragment_ModularCharacterMesh>();
-
-			// Set Weapon Mesh
-			// WeaponSMComponent->SetStaticMesh(MeshFragment->CharacterWeaponMeshInfo.WeaponMeshStaticMesh);
-			// WeaponSMComponent->SetRelativeLocation(MeshFragment->CharacterWeaponMeshInfo.WeaponOffset);
-			// WeaponSMComponent->SetRelativeRotation(MeshFragment->CharacterWeaponMeshInfo.WeaponRotation);
-			// WeaponSMComponent->SetRelativeScale3D(MeshFragment->CharacterWeaponMeshInfo.WeaponScale);
-			//
-			// WeaponSecondarySMComponent->SetStaticMesh(MeshFragment->CharacterWeaponMeshInfo.WeaponSecondaryStaticMesh);
-			// WeaponSecondarySMComponent->SetRelativeLocation(MeshFragment->CharacterWeaponMeshInfo.WeaponOffset);
-			// WeaponSecondarySMComponent->SetRelativeRotation(MeshFragment->CharacterWeaponMeshInfo.WeaponRotation);
-			// WeaponSecondarySMComponent->SetRelativeScale3D(MeshFragment->CharacterWeaponMeshInfo.WeaponScale);
-
-			// Set Weapon Type
-			const UItemFragment_CommonInfo* CommonInfo = NewItemDef->FindFragment<UItemFragment_CommonInfo>();
-			if (CommonInfo)
-			{
-				const EAxePlayerWeaponType NewWeaponType = AxeGameplayTags.GetWeaponTypeByTag(
-					CommonInfo->ItemTypeTag);
-				SetCurrentWeaponType(NewWeaponType);
-			}
-		}
-		else
-		{
-			SetCurrentWeaponType(EAxePlayerWeaponType::None);
-		}
-	}
 }
 
 void AAxeCharacterPlayer::HandleModularSkeletalMeshComponent(TObjectPtr<USkeletalMeshComponent>& SMComp,

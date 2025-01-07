@@ -52,7 +52,7 @@ void UEquipmentItemInstance::SpawnEquipmentActors(const TArray<FAxeEquipmentActo
 	{
 		AttachTarget = AxeCharacterPlayer->GetRetargetCharacterMesh();
 	}
-	
+
 	for (const FAxeEquipmentActorToSpawn& SpawnInfo : ActorsToSpawn)
 	{
 		AActor* NewActor = GetWorld()->SpawnActorDeferred<AActor>(SpawnInfo.ActorToSpawn, FTransform::Identity,
@@ -75,6 +75,7 @@ void UEquipmentItemInstance::DestroyEquipmentActors()
 			Actor->Destroy();
 		}
 	}
+	SpawnedActors.Empty();
 }
 
 void UEquipmentItemInstance::OnEquipped()

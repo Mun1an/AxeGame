@@ -8,6 +8,7 @@
 
 #include "WeaponItemInstance.generated.h"
 
+class UAbilitySystemComponent;
 struct FAxeEquipmentActorToSpawn;
 class AActor;
 class APawn;
@@ -28,4 +29,9 @@ public:
 	
 	virtual void OnEquipped() override;
 	virtual void OnUnequipped() override;
+
+	
+protected:
+	UAbilitySystemComponent* GetAbilitySystemComponent();
+	
 };

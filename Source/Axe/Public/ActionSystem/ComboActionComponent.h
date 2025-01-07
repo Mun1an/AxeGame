@@ -33,6 +33,8 @@ public:
 
 	UFUNCTION()
 	void InitComboAbilityTree(const UComboDataAsset* InComboDataAsset);
+	UFUNCTION()
+	void ResetComboAbilityTree();
 	//
 	UComboTree* GetComboAbilityTree() const { return ComboAbilityTree; }
 	UFUNCTION()

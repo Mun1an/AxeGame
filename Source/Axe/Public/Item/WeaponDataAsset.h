@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
 #include "Inventory/Component/InventoryComponent.h"
-#include "WeaponTypeDataAsset.generated.h"
+#include "WeaponDataAsset.generated.h"
 
 class UGameplayAbility;
 class UComboDataAsset;
@@ -13,13 +13,12 @@ class UComboDataAsset;
  * 
  */
 UCLASS()
-class AXE_API UWeaponTypeDataAsset : public UDataAsset
+class AXE_API UWeaponDataAsset : public UDataAsset
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	EAxePlayerWeaponType WeaponType = EAxePlayerWeaponType::None;
+	
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UAnimInstance> WeaponAnimLayerClass;

@@ -21,15 +21,10 @@ public:
 	{
 		EntryTags = FGameplayTagContainer();
 		EntryTags.AddTag(FAxeGameplayTags::Get().Inventory_Entry_Bag);
-
-		ItemTypeTag = FAxeGameplayTags::Get().ItemType_None;
 	}
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Appearance)
 	FGameplayTagContainer EntryTags;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Appearance)
-	FGameplayTag ItemTypeTag;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Appearance)
 	int32 ItemMaxStackSize = 1;

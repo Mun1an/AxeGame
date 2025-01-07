@@ -58,6 +58,14 @@ void UComboActionComponent::InitComboAbilityTree(const UComboDataAsset* InComboD
 	}
 }
 
+void UComboActionComponent::ResetComboAbilityTree()
+{
+	ComboAbilityTree = NewObject<UComboTree>();
+	UComboTreeNode* RootNode = NewObject<UComboTreeNode>();
+	ComboAbilityTree->SetRoot(RootNode);
+	LastComboTreeNode = ComboAbilityTree->Root;
+}
+
 void UComboActionComponent::OnAbilityInitOver()
 {
 	Super::OnAbilityInitOver();

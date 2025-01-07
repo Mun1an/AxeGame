@@ -4,9 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "EquipmentItemDefinition.h"
+#include "Inventory/Component/InventoryComponent.h"
 #include "WeaponItemDefinition.generated.h"
 
-
+UENUM(BlueprintType)
+enum class EAxePlayerWeaponType: uint8
+{
+	None,
+	AxeAndShield,
+	GreatAxe,
+};
+class UWeaponDataAsset;
 /**
  * 
  */
@@ -17,4 +25,10 @@ class AXE_API UWeaponItemDefinition : public UEquipmentItemDefinition
 
 public:
 	UWeaponItemDefinition(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	EAxePlayerWeaponType WeaponType = EAxePlayerWeaponType::None;
+	
+	UPROPERTY(EditDefaultsOnly, Category=Weapon)
+	TObjectPtr<UWeaponDataAsset> WeaponDataAsset;
 };

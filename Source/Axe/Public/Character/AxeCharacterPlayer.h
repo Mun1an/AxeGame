@@ -11,7 +11,7 @@
 #include "AxeCharacterPlayer.generated.h"
 
 class AWeaponEquipmentItemActor;
-class UWeaponTypeDataAsset;
+class UWeaponDataAsset;
 enum class EAxeModularCharacterSM : uint8;
 class UModularCharacterComponent;
 class UInventoryComponent;
@@ -91,11 +91,13 @@ public:
 	// Anim
 	UFUNCTION(BlueprintCallable)
 	void SetLinkedAnimLayerClass(TSubclassOf<UAnimInstance>& InAnimInstanceClass);
+	UFUNCTION(BlueprintCallable)
+	TSubclassOf<UAnimInstance> GetDefaultLinkedAnimLayerClass() const { return DefaultLinkedAnimLayerClass; }
+
+	UFUNCTION(BlueprintCallable)
+	void ResetLinkedAnimLayerClass();
 
 	// Weapon
-	void GetCurrentWeaponType(EAxePlayerWeaponType& OutWeaponType) const { OutWeaponType = CurrentWeaponType; }
-	UFUNCTION(BlueprintCallable)
-	void SetCurrentWeaponType(EAxePlayerWeaponType InWeaponType);
 
 protected:
 	virtual void BeginPlay() override;
@@ -105,19 +107,14 @@ protected:
 	void InitInventory();
 
 	UFUNCTION()
-	void OnCurrentWeaponTypeChanged(EAxePlayerWeaponType NewWeaponType, EAxePlayerWeaponType OldWeaponType);
-	UFUNCTION()
 	void OnLinkedAnimLayerClassChanged();
-	UFUNCTION()
-	void OnEquipmentItemChanged(int32 SlotIndex, UItemInstance* NewItemInstance, UItemInstance* OldItemInstance,
-	                            FGameplayTagContainer SlotTags);
 
 	// Anim
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animation")
+	TSubclassOf<UAnimInstance> DefaultLinkedAnimLayerClass;
+
 	UPROPERTY(BlueprintReadOnly, Category = "Animation")
 	TSubclassOf<UAnimInstance> LinkedAnimLayerClass;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animation")
-	TMap<EAxePlayerWeaponType, UWeaponTypeDataAsset*> WeaponTypeDataAssetMap;
 
 	// Weapon
 	UPROPERTY(BlueprintReadOnly, Category = "Weapon")
@@ -125,9 +122,6 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Weapon")
 	AWeaponEquipmentItemActor* WeaponEquipmentActorSecondary = nullptr;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Weapon")
-	EAxePlayerWeaponType CurrentWeaponType = EAxePlayerWeaponType::None;
 
 private:
 	void HandleModularSkeletalMeshComponent(TObjectPtr<USkeletalMeshComponent>& SMComp, FName CompName,
