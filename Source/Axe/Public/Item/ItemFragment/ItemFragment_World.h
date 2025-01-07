@@ -6,6 +6,30 @@
 #include "Item/ItemFragment/ItemFragment.h"
 #include "ItemFragment_World.generated.h"
 
+class ADisplayItemActor;
+
+USTRUCT(BlueprintType)
+struct FAxeWorldDisplayMeshInfo
+
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TObjectPtr<UStaticMesh> StaticMesh = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TObjectPtr<USkeletalMesh> SkeletalMesh = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FVector MeshOffset = FVector(0.0f, 0.0f, 0.0f);
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FRotator MeshRotator = FRotator(0.0f, 0.0f, 0.0f);
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FVector MeshScale = FVector(1.0f, 1.0f, 1.0f);
+};
+
 /**
  * 
  */
@@ -20,11 +44,8 @@ public:
 	}
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Appearance)
-	TObjectPtr<UStaticMesh> StaticMesh;
+	TSubclassOf<ADisplayItemActor> DisplayItemActorClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Appearance)
-	TObjectPtr<USkeletalMesh> SkeletalMesh;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Appearance)
-	FVector MeshScale = FVector(1.0f, 1.0f, 1.0f);
+	TArray<FAxeWorldDisplayMeshInfo> AxeWorldDisplayMeshInfos;
 };

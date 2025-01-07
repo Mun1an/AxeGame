@@ -6,6 +6,7 @@
 #include "Item/ItemFragment/ItemFragment.h"
 #include "ItemDefinition.generated.h"
 
+class AAxeWorldItemActor;
 class UItemFragment_CommonInfo;
 class UItemFragment;
 /**

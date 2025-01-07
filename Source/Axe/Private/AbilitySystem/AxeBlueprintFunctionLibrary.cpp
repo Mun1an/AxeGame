@@ -81,8 +81,9 @@ bool UAxeBlueprintFunctionLibrary::IsFriend(const AActor* ActorA, const AActor* 
 }
 
 bool UAxeBlueprintFunctionLibrary::CanApplyAttributeModifiers(const UGameplayEffect* GameplayEffect, float Level,
-	const FGameplayEffectContextHandle& EffectContext, const AAxeCharacterBase* ToTarget,
-	TArray<FGameplayAttribute>& NotApplyAttributes)
+                                                              const FGameplayEffectContextHandle& EffectContext,
+                                                              const AAxeCharacterBase* ToTarget,
+                                                              TArray<FGameplayAttribute>& NotApplyAttributes)
 {
 	FGameplayEffectSpec Spec(GameplayEffect, EffectContext, Level);
 
@@ -114,6 +115,32 @@ bool UAxeBlueprintFunctionLibrary::CanApplyAttributeModifiers(const UGameplayEff
 	if (NotApplyAttributes.Num() > 0)
 	{
 		return false;
+	}
+	return true;
+}
+
+bool UAxeBlueprintFunctionLibrary::SetHighLight(UMeshComponent* MeshComponent, bool bHighLight, int32 StencilValue)
+{
+	if (!MeshComponent)
+	{
+		return false;
+	}
+	MeshComponent->SetCustomDepthStencilValue(StencilValue);
+	MeshComponent->SetRenderCustomDepth(bHighLight);
+	return true;
+}
+
+bool UAxeBlueprintFunctionLibrary::SetHighLights(const TArray<UMeshComponent*>& MeshComponents, bool bHighLight,
+	int32 StencilValue)
+{
+	for (UMeshComponent* MeshComponent : MeshComponents)
+	{
+		if (!MeshComponent)
+		{
+			continue;
+		}
+		MeshComponent->SetCustomDepthStencilValue(StencilValue);
+		MeshComponent->SetRenderCustomDepth(bHighLight);
 	}
 	return true;
 }

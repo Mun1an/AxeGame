@@ -4,14 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
-#include "Item/AxeWorldItemActorBase.h"
+#include "Item/AxeWorldItemActor.h"
 #include "ModularEquipmentItemActor.generated.h"
 
 /**
  * 
  */
 UCLASS(Abstract)
-class AXE_API AModularEquipmentItemActor : public AAxeWorldItemActorBase
+class AXE_API AModularEquipmentItemActor : public AAxeWorldItemActor
 {
 	GENERATED_BODY()
 

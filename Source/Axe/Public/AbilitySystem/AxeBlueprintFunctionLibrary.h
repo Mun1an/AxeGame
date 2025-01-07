@@ -39,7 +39,13 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="AxeBPLibrary|GameplayEffect Attribute")
 	static bool CanApplyAttributeModifiers(const UGameplayEffect* GameplayEffect, float Level,
-									const FGameplayEffectContextHandle& EffectContext,
-									const AAxeCharacterBase* ToTarget,
-									TArray<FGameplayAttribute>& NotApplyAttributes);
+	                                       const FGameplayEffectContextHandle& EffectContext,
+	                                       const AAxeCharacterBase* ToTarget,
+	                                       TArray<FGameplayAttribute>& NotApplyAttributes);
+
+	UFUNCTION(BlueprintCallable, Category="AxeBPLibrary|HighLight")
+	static bool SetHighLight(UMeshComponent* MeshComponent, bool bHighLight, int32 StencilValue = 250);
+	UFUNCTION(BlueprintCallable, Category="AxeBPLibrary|HighLight")
+	static bool SetHighLights(const TArray<UMeshComponent*>& MeshComponents, bool bHighLight, int32 StencilValue = 250);
+
 };
