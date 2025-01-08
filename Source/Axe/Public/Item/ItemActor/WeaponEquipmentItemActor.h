@@ -27,10 +27,11 @@ public:
 	UNiagaraComponent* GetWeaponTrailNiagaraComponent() const { return WeaponTrailNiagaraComponent; }
 
 	UFUNCTION(BlueprintCallable)
-	void SetWeaponTrail(bool bEnable);
-	UFUNCTION(BlueprintCallable)
-	void ResetWeaponTrail();
-
+	void SetWeaponTrail(bool bEnable, bool IsOverride = false);
+	
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastSetWeaponTrail(bool bEnable);
+	
 protected:
 	virtual void BeginPlay() override;
 

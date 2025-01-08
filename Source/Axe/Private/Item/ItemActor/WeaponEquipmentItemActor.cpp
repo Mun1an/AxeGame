@@ -16,6 +16,7 @@ AWeaponEquipmentItemActor::AWeaponEquipmentItemActor()
 	WeaponTrailNiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("WeaponTrailNiagaraComponent"));
 	WeaponTrailNiagaraComponent->SetupAttachment(StaticMeshComponent, WeaponTrailAttachSocketName);
 	WeaponTrailNiagaraComponent->SetAutoActivate(false);
+	WeaponTrailNiagaraComponent->SetIsReplicated(true);
 }
 
 UMeshComponent* AWeaponEquipmentItemActor::GetHitTraceMeshComponent() const
@@ -23,24 +24,34 @@ UMeshComponent* AWeaponEquipmentItemActor::GetHitTraceMeshComponent() const
 	return StaticMeshComponent;
 }
 
-void AWeaponEquipmentItemActor::SetWeaponTrail(bool bEnable)
+void AWeaponEquipmentItemActor::SetWeaponTrail(bool bEnable, bool IsOverride)
 {
 	WeaponTrailEnableCount += bEnable ? 1 : -1;
 	WeaponTrailEnableCount = FMath::Max(WeaponTrailEnableCount, 0);
+	if (!bEnable && IsOverride)
+	{
+		WeaponTrailEnableCount = 0;
+	}
 	if (WeaponTrailEnableCount > 0)
 	{
-		WeaponTrailNiagaraComponent->Activate();
+		MulticastSetWeaponTrail(true);
 	}
-	else if (WeaponTrailEnableCount <= 0)
+	else
 	{
-		WeaponTrailNiagaraComponent->Deactivate();
+		MulticastSetWeaponTrail(false);
 	}
 }
 
-void AWeaponEquipmentItemActor::ResetWeaponTrail()
+void AWeaponEquipmentItemActor::MulticastSetWeaponTrail_Implementation(bool bEnable)
 {
-	WeaponTrailEnableCount = 0;
-	WeaponTrailNiagaraComponent->Deactivate();
+	if (bEnable)
+	{
+		WeaponTrailNiagaraComponent->Activate();
+	}
+	else
+	{
+		WeaponTrailNiagaraComponent->Deactivate();
+	}
 }
 
 void AWeaponEquipmentItemActor::BeginPlay()

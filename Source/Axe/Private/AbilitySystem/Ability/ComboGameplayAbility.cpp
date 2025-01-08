@@ -48,12 +48,12 @@ void UComboGameplayAbility::EndAbility(const FGameplayAbilitySpecHandle Handle,
 	if (AWeaponEquipmentItemActor* WeaponActor = AxeCharacterPlayer->
 		GetWeaponEquipmentActor_Implementation())
 	{
-		WeaponActor->ResetWeaponTrail();
+		WeaponActor->SetWeaponTrail(false, true);
 	}
 	if (AWeaponEquipmentItemActor* WeaponSecondaryActor = AxeCharacterPlayer->
 		GetWeaponEquipmentActorSecondary_Implementation())
 	{
-		WeaponSecondaryActor->ResetWeaponTrail();
+		WeaponSecondaryActor->SetWeaponTrail(false, true);
 	}
 }
 
