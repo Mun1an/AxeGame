@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "Item/ItemFragment/ItemFragment.h"
 #include "ItemDefinition.generated.h"
 
@@ -20,13 +21,16 @@ class AXE_API UItemDefinition : public UObject
 public:
 	UItemDefinition(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Display)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Item)
+	FGameplayTag ItemTypeTag;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Item)
 	TSubclassOf<UItemInstance> ItemInstanceClass;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Display)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Item)
 	FText DisplayName;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Display, Instanced)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=Fragment, Instanced)
 	TArray<TObjectPtr<UItemFragment>> Fragments;
 
 	const UItemFragment* FindFragmentByClass(TSubclassOf<UItemFragment> FragmentClass) const;

@@ -2,6 +2,7 @@
 
 #include "Item/Instance/EquipmentItemInstance.h"
 
+#include "AbilitySystem/AxeAbilitySystemComponent.h"
 #include "Character/AxeCharacterPlayer.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/Character.h"
@@ -85,6 +86,22 @@ void UEquipmentItemInstance::OnEquipped()
 
 	const UEquipmentItemDefinition* EquipmentDef = GetDefault<UEquipmentItemDefinition>(GetItemDef());
 	SpawnEquipmentActors(EquipmentDef->ActorsToSpawn);
+
+	AAxeCharacterPlayer* AxeCharacterPlayer = Cast<AAxeCharacterPlayer>(GetPawn());
+	UAbilitySystemComponent* ASC = GetAbilitySystemComponent();
+	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(ASC);
+
+	const UEquipmentItemDefinition* EquipmentItemDefinition = GetItemDef()->GetDefaultObject<
+		UEquipmentItemDefinition>();
+
+	if (AxeCharacterPlayer->HasAuthority() && AxeASC && IsValid(EquipmentItemDefinition->EquipmentEffect))
+	{
+		FActiveGameplayEffectHandle EffectHandle = AxeASC->ApplyEquipmentEffectToSelf(
+			EquipmentItemDefinition->EquipmentEffect, EquipmentItemDefinition->EquipmentAttrInfo,
+			EquipmentItemDefinition->ItemTypeTag
+		);
+		EquipmentEffectHandle = EffectHandle;
+	}
 }
 
 void UEquipmentItemInstance::OnUnequipped()
@@ -93,4 +110,27 @@ void UEquipmentItemInstance::OnUnequipped()
 	K2_OnUnequipped();
 
 	DestroyEquipmentActors();
+
+	AAxeCharacterPlayer* AxeCharacterPlayer = Cast<AAxeCharacterPlayer>(GetPawn());
+	UAbilitySystemComponent* ASC = GetAbilitySystemComponent();
+	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(ASC);
+	if (AxeCharacterPlayer->HasAuthority() && AxeASC && EquipmentEffectHandle.IsValid())
+	{
+		if (EquipmentEffectHandle.IsValid())
+		{
+			AxeASC->RemoveActiveGameplayEffect(EquipmentEffectHandle);
+			EquipmentEffectHandle = FActiveGameplayEffectHandle();
+		}
+	}
+}
+
+UAbilitySystemComponent* UEquipmentItemInstance::GetAbilitySystemComponent()
+{
+	APawn* Pawn = GetPawn();
+	IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(Pawn);
+	if (AbilitySystemInterface)
+	{
+		return AbilitySystemInterface->GetAbilitySystemComponent();
+	}
+	return nullptr;
 }

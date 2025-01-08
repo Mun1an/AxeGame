@@ -2,11 +2,13 @@
 
 #pragma once
 
+#include "ActiveGameplayEffectHandle.h"
 #include "ItemInstance.h"
 #include "Engine/World.h"
 
 #include "EquipmentItemInstance.generated.h"
 
+class UAbilitySystemComponent;
 struct FAxeEquipmentActorToSpawn;
 class AActor;
 class APawn;
@@ -37,6 +39,8 @@ protected:
 	// 	virtual void RegisterReplicationFragments(UE::Net::FFragmentRegistrationContext& Context, UE::Net::EFragmentRegistrationFlags RegistrationFlags) override;
 	// #endif // UE_WITH_IRIS
 
+	UAbilitySystemComponent* GetAbilitySystemComponent();
+
 	UFUNCTION(BlueprintImplementableEvent, Category=Equipment, meta=(DisplayName="OnEquipped"))
 	void K2_OnEquipped();
 
@@ -47,4 +51,5 @@ protected:
 	TArray<TObjectPtr<AActor>> SpawnedActors;
 
 private:
+	FActiveGameplayEffectHandle EquipmentEffectHandle;
 };

@@ -32,6 +32,6 @@ public:
 
 	
 protected:
-	UAbilitySystemComponent* GetAbilitySystemComponent();
+	
 	
 };

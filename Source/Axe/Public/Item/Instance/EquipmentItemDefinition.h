@@ -7,9 +7,10 @@
 #include "Item/ItemActor/EquipmentItemActor.h"
 #include "EquipmentItemDefinition.generated.h"
 
+class UGameplayEffect;
 class UEquipmentItemInstance;
 //
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FAxeEquipmentActorToSpawn
 {
 	GENERATED_BODY()
@@ -26,6 +27,21 @@ struct FAxeEquipmentActorToSpawn
 
 	UPROPERTY(EditAnywhere, Category=Equipment)
 	FTransform AttachTransform;
+};
+
+USTRUCT(BlueprintType)
+struct FEquipmentAttrInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Appearance)
+	float EquipmentDamage = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Appearance)
+	float EquipmentArmor = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Appearance)
+	float EquipmentMaxHealth = 0.0f;
 };
 
 /**
@@ -45,4 +61,10 @@ public:
 	// Actors to spawn on the pawn when this is equipped
 	UPROPERTY(EditDefaultsOnly, Category=Equipment)
 	TArray<FAxeEquipmentActorToSpawn> ActorsToSpawn;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Attr")
+	FEquipmentAttrInfo EquipmentAttrInfo;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Effect")
+	TSubclassOf<UGameplayEffect> EquipmentEffect;
 };

@@ -9,11 +9,10 @@
 #include "AbilitySystem/Ability/HitReact/HitReactBase.h"
 #include "AbilitySystem/Executions/DamageExecution.h"
 #include "ActionSystem/ComboActionComponent.h"
-#include "ActionSystem/ComboDataAsset.h"
 #include "Character/AxeCharacterPlayer.h"
 #include "Enum/AxeTypes.h"
 #include "GameplayTag/AxeGameplayTags.h"
-#include "Item/ItemFragment/ItemFragment_EquipmentInfo.h"
+#include "Item/Instance/EquipmentItemDefinition.h"
 
 
 UAxeAbilitySystemComponent::UAxeAbilitySystemComponent()
@@ -372,8 +371,10 @@ bool UAxeAbilitySystemComponent::ApplyDamageEffect(AActor* SourceActor, AActor* 
 	return true;
 }
 
-bool UAxeAbilitySystemComponent::ApplyEquipmentEffectToSelf(const TSubclassOf<UGameplayEffect>& EffectClass,
-                                                            const FEquipmentInfo EquipmentInfo)
+FActiveGameplayEffectHandle UAxeAbilitySystemComponent::ApplyEquipmentEffectToSelf(
+	const TSubclassOf<UGameplayEffect>& EffectClass,
+	const FEquipmentAttrInfo EquipmentInfo,
+	FGameplayTag ItemTypeTag)
 {
 	FGameplayEffectContextHandle ContextHandle = MakeEffectContext();
 	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
@@ -382,10 +383,6 @@ bool UAxeAbilitySystemComponent::ApplyEquipmentEffectToSelf(const TSubclassOf<UG
 	const FGameplayEffectSpecHandle SpecHandle = MakeOutgoingSpec(
 		EffectClass, 1, ContextHandle
 	);
-	if (SpecHandle.IsValid())
-	{
-		return false;
-	}
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
 		SpecHandle, FAxeGameplayTags::Get().Effect_Magnitude_Damage, EquipmentInfo.EquipmentDamage
 	);
@@ -395,13 +392,8 @@ bool UAxeAbilitySystemComponent::ApplyEquipmentEffectToSelf(const TSubclassOf<UG
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
 		SpecHandle, FAxeGameplayTags::Get().Effect_Magnitude_MaxHealth, EquipmentInfo.EquipmentMaxHealth
 	);
-	if (EquipmentEffectHandle.IsValid())
-	{
-		RemoveActiveGameplayEffect(EquipmentEffectHandle);
-	}
-	EquipmentEffectHandle = ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
-
-	return true;
+	FActiveGameplayEffectHandle GameplayEffectSpecToSelf = ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+	return GameplayEffectSpecToSelf;
 }
 
 void UAxeAbilitySystemComponent::ExecuteDelegateToGetAbilitySpec(const FAbilitySpecDataDelegate& Delegate)

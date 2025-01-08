@@ -7,6 +7,7 @@
 #include "Ability/AxeGameplayAbility.h"
 #include "AxeAbilitySystemComponent.generated.h"
 
+struct FEquipmentAttrInfo;
 struct FEquipmentInfo;
 struct FDamageEffectParams;
 class AAxeCharacterBase;
@@ -74,7 +75,8 @@ public:
 	                                                     const float Level);
 	bool ApplyDamageEffect(AActor* SourceActor, AActor* TargetActor, const FDamageEffectParams& Params);
 
-	bool ApplyEquipmentEffectToSelf(const TSubclassOf<UGameplayEffect>& EffectClass, FEquipmentInfo EquipmentInfo);
+	FActiveGameplayEffectHandle ApplyEquipmentEffectToSelf(const TSubclassOf<UGameplayEffect>& EffectClass,
+	                                                       FEquipmentAttrInfo EquipmentInfo, FGameplayTag ItemTypeTag);
 
 	//
 	void ExecuteDelegateToGetAbilitySpec(const FAbilitySpecDataDelegate& Delegate);
@@ -89,7 +91,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	FGameplayTag GetAbilityTag(const UGameplayAbility* Ability);
-	
+
 	UFUNCTION(BlueprintCallable)
 	FGameplayTag GetCooldownTagsByAbilitySpecHandle(const FGameplayAbilitySpecHandle& Handle);
 
@@ -106,5 +108,4 @@ protected:
 private:
 	TMap<EAxeAbilityActivationGroup, TArray<FGameplayAbilitySpecHandle>> ActivationGroupMap;
 
-	FActiveGameplayEffectHandle EquipmentEffectHandle;
 };

@@ -121,30 +121,6 @@ void UInventoryComponent::OnEquipmentItemChanged(int32 SlotIndex, UItemInstance*
 	{
 		NewEquipmentInstance->OnEquipped();
 	}
-	FEquipmentInfo TotalEquipmentInfo = FEquipmentInfo();
-	
-	// EquipmentEffect
-	if (AxeCharacterOwner->HasAuthority() && AxeASC && IsValid(AxeCharacterOwner->EquipmentEffect))
-	{
-		TArray<FInventoryEntry> EquipmentEntries;
-		GetEquipmentEntryArray(EquipmentEntries);
-		for (const FInventoryEntry& EquipmentEntry : EquipmentEntries)
-		{
-			if (EquipmentEntry.Instance && EquipmentEntry.Instance->GetItemDef())
-			{
-				const UItemDefinition* ItemDef = GetDefault<UItemDefinition>(EquipmentEntry.Instance->GetItemDef());
-				const UItemFragment_EquipmentInfo* EquipmentFragment = ItemDef->FindFragment<
-					UItemFragment_EquipmentInfo>();
-				if (EquipmentFragment)
-				{
-					TotalEquipmentInfo.EquipmentDamage += EquipmentFragment->EquipmentInfo.EquipmentDamage;
-					TotalEquipmentInfo.EquipmentArmor += EquipmentFragment->EquipmentInfo.EquipmentArmor;
-					TotalEquipmentInfo.EquipmentMaxHealth += EquipmentFragment->EquipmentInfo.EquipmentMaxHealth;
-				}
-			}
-		}
-		AxeASC->ApplyEquipmentEffectToSelf(AxeCharacterOwner->EquipmentEffect, TotalEquipmentInfo);
-	}
 }
 
 bool UInventoryComponent::SetOwnerActor(AActor* InOwnerActor)

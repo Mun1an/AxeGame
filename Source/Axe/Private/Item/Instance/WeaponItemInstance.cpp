@@ -114,13 +114,3 @@ void UWeaponItemInstance::OnUnequipped()
 	}
 }
 
-UAbilitySystemComponent* UWeaponItemInstance::GetAbilitySystemComponent()
-{
-	APawn* Pawn = GetPawn();
-	IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(Pawn);
-	if (AbilitySystemInterface)
-	{
-		return AbilitySystemInterface->GetAbilitySystemComponent();
-	}
-	return nullptr;
-}
