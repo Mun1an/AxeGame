@@ -26,6 +26,4 @@ public:
 	virtual void Ans_HitTrace_NotifyBegin(UAnimNotifyState* AnimNotifyState) = 0;
 	UFUNCTION()
 	virtual void Ans_HitTrace_NotifyEnd(UAnimNotifyState* AnimNotifyState) = 0;
-	UFUNCTION()
-	virtual void OnHitTrace(const FHitResult& HitResults) = 0;
 };

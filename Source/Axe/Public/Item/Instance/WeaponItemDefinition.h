@@ -13,6 +13,7 @@ enum class EAxePlayerWeaponType: uint8
 	None,
 	AxeAndShield,
 	GreatAxe,
+	DualAxe,
 };
 class UWeaponDataAsset;
 /**

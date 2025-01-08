@@ -9,6 +9,7 @@
 #include "AbilitySystem/Interaction/HitTraceAbilityInterface.h"
 #include "ComboGameplayAbility.generated.h"
 
+class AWeaponEquipmentItemActor;
 class UNiagaraComponent;
 class UNiagaraSystem;
 /**
@@ -26,6 +27,8 @@ public:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	                             const FGameplayAbilityActivationInfo ActivationInfo,
 	                             const FGameplayEventData* TriggerEventData) override;
+
+	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 	// IComboAbilityInterface
 	virtual void Ans_Combo_NotifyBegin(UAnimNotifyState* AnimNotifyState) override;
 	virtual void Ans_Combo_NotifyEnd(UAnimNotifyState* AnimNotifyState) override;
@@ -35,53 +38,46 @@ public:
 	// IHitTraceInterface 
 	virtual void Ans_HitTrace_NotifyBegin(UAnimNotifyState* AnimNotifyState) override;
 	virtual void Ans_HitTrace_NotifyEnd(UAnimNotifyState* AnimNotifyState) override;
-	virtual void SetHitTraceDefaultValue();
+	AWeaponEquipmentItemActor* GetHitTraceWeaponActorByEnum(EHitTraceWeaponHandIndex HitTraceWeaponHand);
 
 	//
 	UPROPERTY(EditDefaultsOnly)
 	FGameplayTag WeaponHit_GC_Tag;
 
 	UPROPERTY(EditDefaultsOnly)
-	FGameplayTag WeaponTrail_GC_Tag;
-	
+	FGameplayTag WeaponWave_GC_Tag;
+
 	UFUNCTION()
 	void CreateHitParticle(const FHitResult& HitResult);
 
 	UFUNCTION()
-	virtual void OnHitTrace(const FHitResult& HitResults) override;
+	virtual void OnHitTrace(const FHitResult& HitResults);
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnHitTraceBP(const FHitResult HitResult);
 
 protected:
 	// HitTrace
-	UPROPERTY()
-	UMeshComponent* HitTraceMeshComponent = nullptr;
+	UPROPERTY(EditAnywhere, Category="HitTrace")
+	FName HitTraceDefaultStartSocketName = FName("Bottom");
 
 	UPROPERTY(EditAnywhere, Category="HitTrace")
-	FName HitTraceStartSocketName = FName("Bottom");
+	FName HitTraceDefaultEndSocketName = FName("Top");
 
 	UPROPERTY(EditAnywhere, Category="HitTrace")
-	FName HitTraceEndSocketName = FName("Top");
+	float HitTraceDefaultRadius = 15.f;
 
 	UPROPERTY(EditAnywhere, Category="HitTrace")
-	float HitTraceRadius = 15.f;
+	TArray<TEnumAsByte<EObjectTypeQuery>> HitTraceDefaultObjectTypes = {UEngineTypes::ConvertToObjectType(ECC_Pawn)};
 
 	UPROPERTY(EditAnywhere, Category="HitTrace")
-	TArray<TEnumAsByte<EObjectTypeQuery>> HitTraceObjectTypes = {UEngineTypes::ConvertToObjectType(ECC_Pawn)};
-
-	UPROPERTY(EditAnywhere, Category="HitTrace")
-	bool bHitTraceIgnoreSelf = true;
+	bool bHitTraceDefaultIgnoreSelf = true;
 
 	UPROPERTY(BlueprintReadWrite, Category="HitTrace")
-	TArray<AActor*> IgnoreActors = {};
+	TArray<AActor*> HitTraceDefaultIgnoreActors = {};
 
 	//
 	UPROPERTY()
-	UAbilityTask_HitTrace* AbilityTask_HitTrace = nullptr;
+	TMap<UAnimNotifyState*, UAbilityTask_HitTrace*> AnimNotifyStateToHitTraceTaskMap;
 
-	UFUNCTION(BlueprintCallable)
-	bool IsFirstHitTarget(AActor* Target);
-	UPROPERTY()
-	TSet<AActor*> HasHitTargetSet = TSet<AActor*>();
 };

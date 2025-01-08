@@ -5,6 +5,7 @@
 
 #include "GameplayTagsManager.h"
 #include "Inventory/Component/InventoryComponent.h"
+#include "Item/Instance/WeaponItemDefinition.h"
 
 FAxeGameplayTags FAxeGameplayTags::Instance;
 
@@ -45,7 +46,7 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(Ability_HitReact_Light, "Ability.HitReact.Light");
 	AddTag(Ability_HitReact_Heavy, "Ability.HitReact.Heavy");
 
-	AddTag(GameplayCue_WeaponTrail_Axe, "GameplayCue.WeaponTrail.Axe");
+	AddTag(GameplayCue_WeaponWave_Axe, "GameplayCue.WeaponWave.Axe");
 	AddTag(GameplayCue_WeaponHit_Axe, "GameplayCue.WeaponHit.Axe");
 	AddTag(GameplayCue_WeaponHit_Shield, "GameplayCue.WeaponHit.Shield");
 	AddTag(GameplayCue_ShieldParry, "GameplayCue.ShieldParry");
@@ -113,9 +114,11 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(ItemType_Equipment_Weapon, "ItemType.Equipment.Weapon");
 	AddTag(ItemType_Equipment_Weapon_AxeAndShield, "ItemType.Equipment.Weapon.AxeAndShield");
 	AddTag(ItemType_Equipment_Weapon_GreatAxe, "ItemType.Equipment.Weapon.GreatAxe");
+	AddTag(ItemType_Equipment_Weapon_DualAxe, "ItemType.Equipment.Weapon.DualAxe");
 
 	TagWeaponTypeMap.Add(ItemType_Equipment_Weapon_AxeAndShield, EAxePlayerWeaponType::AxeAndShield);
 	TagWeaponTypeMap.Add(ItemType_Equipment_Weapon_GreatAxe, EAxePlayerWeaponType::GreatAxe);
+	TagWeaponTypeMap.Add(ItemType_Equipment_Weapon_DualAxe, EAxePlayerWeaponType::DualAxe);
 
 	/**
 	 * Interact

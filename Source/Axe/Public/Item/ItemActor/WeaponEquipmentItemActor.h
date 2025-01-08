@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "EquipmentItemActor.h"
+#include "NiagaraComponent.h"
 #include "GameFramework/Actor.h"
 #include "WeaponEquipmentItemActor.generated.h"
 
@@ -22,10 +23,34 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual UMeshComponent* GetHitTraceMeshComponent() const;
 
+	UFUNCTION(BlueprintCallable)
+	UNiagaraComponent* GetWeaponTrailNiagaraComponent() const { return WeaponTrailNiagaraComponent; }
+
+	UFUNCTION(BlueprintCallable)
+	void SetWeaponTrail(bool bEnable);
+	UFUNCTION(BlueprintCallable)
+	void ResetWeaponTrail();
+
 protected:
+	virtual void BeginPlay() override;
+
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Components")
 	USceneComponent* SceneComponent;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Components")
 	UStaticMeshComponent* StaticMeshComponent;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Components")
+	UNiagaraComponent* WeaponTrailNiagaraComponent;
+
+	UPROPERTY(EditDefaultsOnly, Category = "WeaponTrail")
+	FName WeaponTrailAttachSocketName = FName("WeaponTrail");
+
+	UPROPERTY(EditDefaultsOnly, Category = "WeaponTrail")
+	FName WeaponTrailNiagaraWidthVariableName = FName("Particles.RibbonWidth");
+
+	UPROPERTY(EditDefaultsOnly, Category = "WeaponTrail")
+	float WeaponTrailWidth = 50.f;
+
+	int32 WeaponTrailEnableCount = 0;
 };

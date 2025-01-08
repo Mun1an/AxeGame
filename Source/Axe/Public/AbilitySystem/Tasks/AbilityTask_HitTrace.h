@@ -9,6 +9,7 @@
 class AAxeCharacterBase;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHitTraceDelegate, const FHitResult&, HitResults);
+// DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FHitTraceDelegate, const FHitResult&, HitResults, const UAbilityTask_HitTrace*, Task);
 
 /**
  * 
@@ -19,6 +20,7 @@ class AXE_API UAbilityTask_HitTrace : public UAbilityTask
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(BlueprintAssignable)
 	FHitTraceDelegate HitTraceDelegate;
 
 	UFUNCTION(BlueprintCallable, Category="Ability|Tasks",

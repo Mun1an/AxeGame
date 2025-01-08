@@ -54,7 +54,7 @@ struct FAxeGameplayTags
 	FGameplayTag Ability_HitReact_Light;
 	FGameplayTag Ability_HitReact_Heavy;
 	//
-	FGameplayTag GameplayCue_WeaponTrail_Axe;
+	FGameplayTag GameplayCue_WeaponWave_Axe;
 	FGameplayTag GameplayCue_WeaponHit_Axe;
 	FGameplayTag GameplayCue_WeaponHit_Shield;
 	FGameplayTag GameplayCue_ShieldParry;
@@ -132,6 +132,7 @@ struct FAxeGameplayTags
 	FGameplayTag ItemType_Equipment_Weapon;
 	FGameplayTag ItemType_Equipment_Weapon_AxeAndShield;
 	FGameplayTag ItemType_Equipment_Weapon_GreatAxe;
+	FGameplayTag ItemType_Equipment_Weapon_DualAxe;
 
 	TMap<FGameplayTag, EAxePlayerWeaponType> TagWeaponTypeMap;
 

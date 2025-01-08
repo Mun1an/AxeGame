@@ -27,3 +27,10 @@ enum class EItemType: uint8
 	Item,
 	Max
 };
+
+UENUM(BlueprintType)
+enum class EHitTraceWeaponHandIndex : uint8
+{
+	WeaponHandIndex,
+	WeaponSecondaryHandIndex
+};

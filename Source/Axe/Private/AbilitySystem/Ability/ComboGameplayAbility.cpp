@@ -8,6 +8,7 @@
 #include "GameplayTag/AxeGameplayTags.h"
 #include "AbilitySystem/Tasks/AbilityTask_HitTrace.h"
 #include "ActionSystem/ComboActionComponent.h"
+#include "Anim/HitTraceAnimNotifyState.h"
 #include "Character/AxeCharacterPlayer.h"
 #include "Item/ItemActor/WeaponEquipmentItemActor.h"
 
@@ -18,7 +19,9 @@ UComboGameplayAbility::UComboGameplayAbility(const FObjectInitializer& ObjectIni
 
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 
-	WeaponTrail_GC_Tag = FAxeGameplayTags::Get().GameplayCue_WeaponTrail_Axe;
+	WeaponWave_GC_Tag = FAxeGameplayTags::Get().GameplayCue_WeaponWave_Axe;
+
+	AnimNotifyStateToHitTraceTaskMap = TMap<UAnimNotifyState*, UAbilityTask_HitTrace*>();
 }
 
 void UComboGameplayAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -28,8 +31,30 @@ void UComboGameplayAbility::ActivateAbility(const FGameplayAbilitySpecHandle Han
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	AbilityTask_HitTrace = nullptr;
-	HasHitTargetSet.Empty();
+	AnimNotifyStateToHitTraceTaskMap.Empty();
+}
+
+void UComboGameplayAbility::EndAbility(const FGameplayAbilitySpecHandle Handle,
+                                       const FGameplayAbilityActorInfo* ActorInfo,
+                                       const FGameplayAbilityActivationInfo ActivationInfo,
+                                       bool bReplicateEndAbility, bool bWasCancelled)
+{
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+
+	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
+	AAxeCharacterPlayer* AxeCharacterPlayer = Cast<AAxeCharacterPlayer>(AxeCharacterOwner);
+
+	// Weapon Trail
+	if (AWeaponEquipmentItemActor* WeaponActor = AxeCharacterPlayer->
+		GetWeaponEquipmentActor_Implementation())
+	{
+		WeaponActor->ResetWeaponTrail();
+	}
+	if (AWeaponEquipmentItemActor* WeaponSecondaryActor = AxeCharacterPlayer->
+		GetWeaponEquipmentActorSecondary_Implementation())
+	{
+		WeaponSecondaryActor->ResetWeaponTrail();
+	}
 }
 
 void UComboGameplayAbility::Ans_ComboInputCache_NotifyBegin(UAnimNotifyState* AnimNotifyState)
@@ -84,69 +109,98 @@ void UComboGameplayAbility::Ans_Combo_NotifyEnd(UAnimNotifyState* AnimNotifyStat
 //
 void UComboGameplayAbility::Ans_HitTrace_NotifyBegin(UAnimNotifyState* AnimNotifyState)
 {
-	SetHitTraceDefaultValue();
-
 	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
 	ICombatInterface* CombatInterface = Cast<ICombatInterface>(AxeCharacterOwner);
 	if (!CombatInterface)
 	{
 		return;
 	}
-	if (HitTraceMeshComponent)
+	UHitTraceAnimNotifyState* HitTraceAnimNotifyState = Cast<UHitTraceAnimNotifyState>(AnimNotifyState);
+	if (!HitTraceAnimNotifyState)
 	{
-		AbilityTask_HitTrace = UAbilityTask_HitTrace::CreateHitTraceTask(
-			this,
-			AxeCharacterOwner,
-			HitTraceMeshComponent,
-			HitTraceStartSocketName,
-			HitTraceEndSocketName,
-			HitTraceRadius,
-			HitTraceObjectTypes,
-			bHitTraceIgnoreSelf,
-			IgnoreActors
-		);
-		AbilityTask_HitTrace->HitTraceDelegate.AddDynamic(this, &UComboGameplayAbility::OnHitTrace);
-		AbilityTask_HitTrace->ReadyForActivation();
+		return;
+	}
+	AWeaponEquipmentItemActor* WeaponActor = GetHitTraceWeaponActorByEnum(HitTraceAnimNotifyState->HitTraceWeaponHand);
+	if (!WeaponActor)
+	{
+		return;
 	}
 
-	HasHitTargetSet.Empty();
+	UMeshComponent* HitTraceMeshComponent = WeaponActor->GetHitTraceMeshComponent();
+	UAbilityTask_HitTrace* AbilityTask_HitTrace = UAbilityTask_HitTrace::CreateHitTraceTask(
+		this,
+		AxeCharacterOwner,
+		HitTraceMeshComponent,
+		HitTraceDefaultStartSocketName,
+		HitTraceDefaultEndSocketName,
+		HitTraceDefaultRadius,
+		HitTraceDefaultObjectTypes,
+		bHitTraceDefaultIgnoreSelf,
+		HitTraceDefaultIgnoreActors
+	);
+	AbilityTask_HitTrace->HitTraceDelegate.AddDynamic(this, &UComboGameplayAbility::OnHitTrace);
+	AbilityTask_HitTrace->ReadyForActivation();
+
+	AnimNotifyStateToHitTraceTaskMap.Add(AnimNotifyState, AbilityTask_HitTrace);
 
 	// WeaponTrail GameplayCue
-	FGameplayCueParameters GameplayCueParameters = FGameplayCueParameters();
-	GameplayCueParameters.TargetAttachComponent = HitTraceMeshComponent;
-	K2_AddGameplayCueWithParams(WeaponTrail_GC_Tag, GameplayCueParameters, true);
+	K2_AddGameplayCueWithParams(WeaponWave_GC_Tag, FGameplayCueParameters(), true);
+
+	WeaponActor->SetWeaponTrail(true);
 }
 
 void UComboGameplayAbility::Ans_HitTrace_NotifyEnd(UAnimNotifyState* AnimNotifyState)
 {
-	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
-	if (AxeCharacterOwner->IsLocallyControlled())
+	// AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
+	// if (AxeCharacterOwner->IsLocallyControlled())
+	// {
+	// 	
+	// }
+	UAbilityTask_HitTrace* AbilityTask_HitTrace = AnimNotifyStateToHitTraceTaskMap.FindRef(AnimNotifyState);
+	if (IsValid(AbilityTask_HitTrace))
 	{
-		if (IsValid(AbilityTask_HitTrace))
-		{
-			AbilityTask_HitTrace->EndTask();
-		}
+		AbilityTask_HitTrace->EndTask();
+		AnimNotifyStateToHitTraceTaskMap.Remove(AnimNotifyState);
 	}
 
-	// WeaponTrail GameplayCue
-	K2_RemoveGameplayCue(WeaponTrail_GC_Tag);
+	UHitTraceAnimNotifyState* HitTraceAnimNotifyState = Cast<UHitTraceAnimNotifyState>(AnimNotifyState);
+	if (HitTraceAnimNotifyState)
+	{
+		AWeaponEquipmentItemActor* WeaponActor = GetHitTraceWeaponActorByEnum(
+			HitTraceAnimNotifyState->HitTraceWeaponHand);
+		WeaponActor->SetWeaponTrail(false);
+	}
 }
 
-void UComboGameplayAbility::SetHitTraceDefaultValue()
+AWeaponEquipmentItemActor* UComboGameplayAbility::GetHitTraceWeaponActorByEnum(
+	const EHitTraceWeaponHandIndex HitTraceWeaponHand)
 {
 	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
-	if (IsValid(AxeCharacterOwner))
+	if (!IsValid(AxeCharacterOwner))
 	{
-		ICombatInterface* CombatInterface = Cast<ICombatInterface>(AxeCharacterOwner);
-		if (CombatInterface)
-		{
-			AWeaponEquipmentItemActor* WeaponActor = CombatInterface->GetWeaponEquipmentActor_Implementation();
-			if (WeaponActor)
-			{
-				HitTraceMeshComponent = WeaponActor->GetHitTraceMeshComponent();
-			}
-		}
+		return nullptr;
 	}
+	ICombatInterface* CombatInterface = Cast<ICombatInterface>(AxeCharacterOwner);
+	if (!CombatInterface)
+	{
+		return nullptr;
+	}
+
+	AWeaponEquipmentItemActor* WeaponActor = CombatInterface->
+		GetWeaponEquipmentActor_Implementation();
+	AWeaponEquipmentItemActor* WeaponActorSecond = CombatInterface->
+		GetWeaponEquipmentActorSecondary_Implementation();
+
+	switch (HitTraceWeaponHand)
+	{
+	case EHitTraceWeaponHandIndex::WeaponHandIndex:
+		return WeaponActor;
+	case EHitTraceWeaponHandIndex::WeaponSecondaryHandIndex:
+		return WeaponActorSecond;
+	default:
+		break;
+	}
+	return nullptr;
 }
 
 void UComboGameplayAbility::CreateHitParticle(const FHitResult& HitResult)
@@ -164,32 +218,18 @@ void UComboGameplayAbility::OnHitTrace(const FHitResult& HitResults)
 {
 	OnHitTraceBP(HitResults);
 
-	// Hit Once
-	if (IsFirstHitTarget(HitResults.GetActor()))
+	// ApplyDamage
+	if (HasAuthority(&CurrentActivationInfo))
 	{
-		// ApplyDamage
-		if (HasAuthority(&CurrentActivationInfo))
-		{
-			AAxeCharacterBase* AxeCharacterBase = Cast<AAxeCharacterBase>(HitResults.GetActor());
-			ApplyDamageToTarget(AxeCharacterBase, HitResults);
-		}
-
-		SetActiveMontagePauseFrame(0.08, 0.1);
-		//
-		if (IsLocallyControlled())
-		{
-			ShakeCamera();
-		}
-		CreateHitParticle(HitResults);
+		AAxeCharacterBase* AxeCharacterBase = Cast<AAxeCharacterBase>(HitResults.GetActor());
+		ApplyDamageToTarget(AxeCharacterBase, HitResults);
 	}
-}
 
-bool UComboGameplayAbility::IsFirstHitTarget(AActor* Target)
-{
-	if (HasHitTargetSet.Contains(Target))
+	SetActiveMontagePauseFrame(0.08, 0.1);
+	//
+	if (IsLocallyControlled())
 	{
-		return false;
+		ShakeCamera();
 	}
-	HasHitTargetSet.Add(Target);
-	return true;
+	CreateHitParticle(HitResults);
 }

@@ -171,11 +171,11 @@ void AAxeWorldItemActor::InitDisplayItemActor()
 		}
 		return;
 	}
-	if (IsValid(DisplayItemActor) && DisplayItemActor->GetClass() == DisplayItemActorClass && DisplayItemActor->
-		GetAttachParentActor() == this)
-	{
-		return;
-	}
+	// if (IsValid(DisplayItemActor) && DisplayItemActor->GetClass() == DisplayItemActorClass && DisplayItemActor->
+	// 	GetAttachParentActor() == this)
+	// {
+	// 	return;
+	// }
 	//
 	if (IsValid(DisplayItemActor))
 	{
