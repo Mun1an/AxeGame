@@ -7,6 +7,7 @@
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEffectApplied_Self.h"
 #include "Abilities/Tasks/AbilityTask_WaitInputRelease.h"
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
+#include "AbilitySystem/AxeBlueprintFunctionLibrary.h"
 #include "AbilitySystem/AttributeSet/AxeAttributeSet.h"
 #include "AbilitySystem/Executions/DamageExecution.h"
 #include "AbilitySystem/Tasks/AbilityTask_OnDamageExecution.h"
@@ -31,7 +32,11 @@ void UShieldBlockAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handl
                                           const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-
+	
+	bIsBlocking = false;
+	bIsPrepareParry = false;
+	bIsParrying = false;
+	
 	// AbilityTask_WaitInputRelease
 	UAbilityTask_WaitInputRelease* AbilityTask_WaitInputRelease =
 		UAbilityTask_WaitInputRelease::WaitInputRelease(this, false);
@@ -43,30 +48,31 @@ void UShieldBlockAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 		UAbilityTask_OnDamageExecution::CreateOnBeDamagedExecutionTask(this, OwningActor);
 	AbilityTask_OnDamageExecution->OnBeDamagedExecutionDelegate.AddDynamic(this, &UShieldBlockAbility::OnBeDamagedCal);
 	AbilityTask_OnDamageExecution->ReadyForActivation();
-
-	// const FAxeGameplayTags AxeGameplayTags = FAxeGameplayTags::Get();
-	// FGameplayTagRequirements SourceTagRequirements = FGameplayTagRequirements();
-	// SourceTagRequirements.RequireTags.AddTag(AxeGameplayTags.Effect_Asset_Damage);
 	//
-	// UAbilityTask_WaitGameplayEffectApplied_Self* AbilityTask_WaitGameplayEffectApplied_Self =
-	// 	UAbilityTask_WaitGameplayEffectApplied_Self::WaitGameplayEffectAppliedToSelf(
-	// 		this,
-	// 		FGameplayTargetDataFilterHandle(),
-	// 		SourceTagRequirements,
-	// 		FGameplayTagRequirements(),
-	// 		false,
-	// 		nullptr,
-	// 		false
-	// 	);
-	// AbilityTask_WaitGameplayEffectApplied_Self->OnApplied.AddDynamic(this, &UShieldBlockAbility::OnEffectApplied);
-	// AbilityTask_WaitGameplayEffectApplied_Self->ReadyForActivation();
-	//
-	SetIsBlocking(true);
-	SetIsPrepareParry(true);
+	const FAxeGameplayTags AxeGameplayTags = FAxeGameplayTags::Get();
+	FGameplayTagRequirements SourceTagRequirements = FGameplayTagRequirements();
+	SourceTagRequirements.RequireTags.AddTag(AxeGameplayTags.Effect_Asset_Damage);
+	UAbilityTask_WaitGameplayEffectApplied_Self* AbilityTask_WaitGameplayEffectApplied_Self =
+		UAbilityTask_WaitGameplayEffectApplied_Self::WaitGameplayEffectAppliedToSelf(
+			this,
+			FGameplayTargetDataFilterHandle(),
+			SourceTagRequirements,
+			FGameplayTagRequirements(),
+			false,
+			nullptr,
+			false
+		);
+	AbilityTask_WaitGameplayEffectApplied_Self->OnApplied.AddDynamic(this, &UShieldBlockAbility::OnEffectApplied);
+	AbilityTask_WaitGameplayEffectApplied_Self->ReadyForActivation();
 
+	//
 	UAbilityTask_WaitDelay* AbilityTask_WaitDelay = UAbilityTask_WaitDelay::WaitDelay(this, PrePareParryTime);
 	AbilityTask_WaitDelay->OnFinish.AddDynamic(this, &UShieldBlockAbility::OnPrePareParryFinished);
 	AbilityTask_WaitDelay->ReadyForActivation();
+
+	//
+	SetIsBlocking(true);
+	SetIsPrepareParry(true);
 }
 
 void UShieldBlockAbility::OnPrePareParryFinished()
@@ -110,29 +116,43 @@ void UShieldBlockAbility::OnBeDamagedCal(UDamageCalInfo* DamageCalInfo)
 	{
 		return;
 	}
-	float CostValue = DamageCalInfo->Damage;
-	CostValue = FMath::Abs(CostValue) * -1;
 
+	//
 	DamageCalInfo->Damage = 0;
 	DamageCalInfo->bIsBlocked = true;
 
 	// ShieldParry
 	if (bIsPrepareParry)
 	{
-		TransformToShieldParry(DamageSourceActor);
+		bIsParrying = true;
 		DamageCalInfo->bIsParried = true;
-		return;
+		TransformToShieldParry(DamageSourceActor);
 	}
+}
 
-	// Cost
-	ApplyShieldBlockDamageCostEffect(CostValue);
+void UShieldBlockAbility::JumpBlockMontageToHitSection(FName SectionName)
+{
+	ClientJumpBlockMontageToHitSection(SectionName);
+}
 
-	// ShieldStagger
-	float NowStamina = Cast<UAxeAttributeSet>(GetAxeCharacterOwner()->GetAttributeSet())->GetStamina();
-	if (NowStamina <= 0)
+void UShieldBlockAbility::ClientJumpBlockMontageToHitSection_Implementation(FName SectionName)
+{
+	UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
+	if (!ASC)
 	{
-		TransformToShieldStagger(DamageSourceActor);
-		return;
+		return ;
+	}
+	const FGameplayAbilityActorInfo* ActorInfo = GetCurrentActorInfo();
+	if (ActorInfo == nullptr)
+	{
+		return ;
+	}
+	UAnimInstance* AnimInstance = ActorInfo->GetAnimInstance();
+	if (ASC->GetAnimatingAbility() == this && ASC->GetCurrentMontage() == AbilityMontage)
+	{
+		// Unbind delegates so they don't get called as well
+		FAnimMontageInstance* MontageInstance = AnimInstance->GetActiveInstanceForMontage(AbilityMontage);
+		MontageInstance->JumpToSectionName(SectionName);
 	}
 }
 
@@ -239,6 +259,7 @@ void UShieldBlockAbility::SetIsBlocking(bool NewIsBlocking)
 void UShieldBlockAbility::SetIsPrepareParry(bool NewIsPrepareParry)
 {
 	bIsPrepareParry = NewIsPrepareParry;
+	bIsParrying = false;
 
 	FAxeGameplayTags AxeGameplayTags = FAxeGameplayTags::Get();
 	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
@@ -253,49 +274,50 @@ void UShieldBlockAbility::SetIsPrepareParry(bool NewIsPrepareParry)
 	}
 }
 
-// void UShieldBlockAbility::OnEffectApplied(AActor* Source, FGameplayEffectSpecHandle SpecHandle,
-//                                           FActiveGameplayEffectHandle ActiveHandle)
-// {
-// 	FGameplayEffectSpec* GameplayEffectSpec = SpecHandle.Data.Get();
-//
-// 	UAxeAbilitySystemComponent* AxeASC = GetAxeAbilitySystemComponentFromActorInfo();
-// 	const UAttributeSet* AttributeSet = AxeASC->GetAttributeSet(UAxeAttributeSet::StaticClass());
-// 	const UAxeAttributeSet* AxeAttributeSet = Cast<UAxeAttributeSet>(AttributeSet);
-//
-// 	TArray<FGameplayEffectModifiedAttribute> ModifiedAttributes = GameplayEffectSpec->ModifiedAttributes;
-// 	for (FGameplayEffectModifiedAttribute& ModifiedAttribute : ModifiedAttributes)
-// 	{
-// 		if (ModifiedAttribute.Attribute == AxeAttributeSet->GetIncomingDamageAttribute())
-// 		{
-// 			OnIncomingDamageEffectApplied(Source, SpecHandle, ActiveHandle);
-// 			break;
-// 		}
-// 	}
-// }
+void UShieldBlockAbility::OnEffectApplied(AActor* Source, FGameplayEffectSpecHandle SpecHandle,
+                                          FActiveGameplayEffectHandle ActiveHandle)
+{
+	FGameplayEffectSpec* GameplayEffectSpec = SpecHandle.Data.Get();
 
-// void UShieldBlockAbility::OnIncomingDamageEffectApplied(AActor* Source, FGameplayEffectSpecHandle SpecHandle,
-//                                                         FActiveGameplayEffectHandle ActiveHandle)
-// {
-// 	bool bIsInBlockAngle = IsInBlockAngle(Source);
-// 	if (!bIsInBlockAngle)
-// 	{
-// 		return;
-// 	}
-// 	// ShieldParry
-// 	if (bIsPrepareParry)
-// 	{
-// 		TransformToShieldParry(Source);
-// 		return;
-// 	}
-// 	// Cost
-// 	float CostValue = SpecHandle.Data.Get()->GetSetByCallerMagnitude(FAxeGameplayTags::Get().Damage_Physical);
-// 	CostValue = FMath::Abs(CostValue) * -1;
-// 	ApplyShieldBlockDamageCostEffect(CostValue);
-//
-// 	// ShieldStagger
-// 	float NowStamina = Cast<UAxeAttributeSet>(GetAxeCharacterOwner()->GetAttributeSet())->GetStamina();
-// 	if (NowStamina <= 0)
-// 	{
-// 		TransformToShieldStagger(Source);
-// 	}
-// }
+	UAxeAbilitySystemComponent* AxeASC = GetAxeAbilitySystemComponentFromActorInfo();
+	const UAttributeSet* AttributeSet = AxeASC->GetAttributeSet(UAxeAttributeSet::StaticClass());
+	const UAxeAttributeSet* AxeAttributeSet = Cast<UAxeAttributeSet>(AttributeSet);
+
+	TArray<FGameplayEffectModifiedAttribute> ModifiedAttributes = GameplayEffectSpec->ModifiedAttributes;
+	for (FGameplayEffectModifiedAttribute& ModifiedAttribute : ModifiedAttributes)
+	{
+		if (ModifiedAttribute.Attribute == AxeAttributeSet->GetIncomingDamageAttribute())
+		{
+			OnIncomingDamageEffectApplied(Source, SpecHandle, ActiveHandle);
+			break;
+		}
+	}
+}
+
+void UShieldBlockAbility::OnIncomingDamageEffectApplied(AActor* Source, FGameplayEffectSpecHandle SpecHandle,
+                                                        FActiveGameplayEffectHandle ActiveHandle)
+{
+	FGameplayEffectContextHandle EffectContextHandle = SpecHandle.Data.Get()->GetContext();
+	FAxeGameplayEffectContext AxeEffectContext = UAxeBlueprintFunctionLibrary::GetAxeGameplayEffectContext(
+		EffectContextHandle);
+	const float PreDamageValue = AxeEffectContext.GetPreDamageValue();
+	UObject* SourceObject = AxeEffectContext.GetSourceObject();
+	AActor* DamageSourceActor = Cast<AActor>(SourceObject);
+
+	if (PreDamageValue > 0 && !bIsParrying)
+	{
+		// JumpBlockMontageToHitSection
+		JumpBlockMontageToHitSection();
+
+		// Cost
+		float CostValue = FMath::Abs(PreDamageValue) * -1;
+		ApplyShieldBlockDamageCostEffect(CostValue);
+
+		// ShieldStagger
+		float NowStamina = Cast<UAxeAttributeSet>(GetAxeCharacterOwner()->GetAttributeSet())->GetStamina();
+		if (NowStamina <= 0)
+		{
+			TransformToShieldStagger(DamageSourceActor);
+		}
+	}
+}

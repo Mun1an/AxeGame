@@ -33,7 +33,7 @@ void UDamageExecution::Execute_Implementation(const FGameplayEffectCustomExecuti
 	UAbilitySystemComponent* TargetASC = ExecutionParams.GetTargetAbilitySystemComponent();
 	const UAxeAbilitySystemComponent* TargetAxeASC = Cast<UAxeAbilitySystemComponent>(TargetASC);
 	AAxeCharacterBase* TargetCharacter = TargetAxeASC->GetAxeCharacterOwner();
-	
+
 	FAxeGameplayTags& AxeGameplayTags = FAxeGameplayTags::Get();
 	//
 	float Damage = 0.f;
@@ -42,7 +42,7 @@ void UDamageExecution::Execute_Implementation(const FGameplayEffectCustomExecuti
 	//
 	CalCritical(ExecutionParams, EvaluateParameters, AxeEffectContext, Damage);
 	//
-	// CalBlocked(ExecutionParams, EvaluateParameters, AxeEffectContext, Damage);
+	AxeEffectContext->SetPreDamageValue(Damage);
 
 	// Broadcast
 	UDamageCalInfo* DamageCal = NewObject<UDamageCalInfo>();
@@ -125,31 +125,4 @@ void UDamageExecution::CalCritical(const FGameplayEffectCustomExecutionParameter
 		AxeEffectContext->SetDamageSpecialExpression(EDamageSpecialExpression::CriticalHit);
 	}
 	Damage = Damage * DamageCoefficient;
-}
-
-void UDamageExecution::CalBlocked(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
-                                  FAggregatorEvaluateParameters EvaluateParameters,
-                                  FAxeGameplayEffectContext* AxeEffectContext, float& Damage) const
-{
-	FAxeGameplayTags& AxeGameplayTags = FAxeGameplayTags::Get();
-	UAbilitySystemComponent* TargetASC = ExecutionParams.GetTargetAbilitySystemComponent();
-	if (!TargetASC)
-	{
-		return;
-	}
-	bool bIsBlocking = TargetASC->GetOwnedGameplayTags().HasTag(AxeGameplayTags.State_Blocking);
-	if (!bIsBlocking)
-	{
-		return;
-	}
-	UAxeAbilitySystemComponent* TargetAxeASC = Cast<UAxeAbilitySystemComponent>(TargetASC);
-	UGameplayAbility* Ability = TargetAxeASC->GetActiveAbilityByTag(
-		AxeGameplayTags.Ability_Skill_Defense_Block
-	);
-	if (Ability)
-	{
-	}
-
-	Damage = 0.f;
-	AxeEffectContext->SetDamageSpecialExpression(EDamageSpecialExpression::BeBlocked);
 }

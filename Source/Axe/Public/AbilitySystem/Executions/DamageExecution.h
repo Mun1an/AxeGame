@@ -62,7 +62,4 @@ private:
 	void CalCritical(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
 	                 FAggregatorEvaluateParameters EvaluateParameters, FAxeGameplayEffectContext* AxeEffectContext,
 	                 float& Damage) const;
-	void CalBlocked(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
-	                FAggregatorEvaluateParameters EvaluateParameters, FAxeGameplayEffectContext* AxeEffectContext,
-	                float& Damage) const;
 };

@@ -9,7 +9,7 @@ bool FAxeGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, boo
 		{
 			RepBits |= 1 << 0;
 		}
-		if (bReplicateEffectCauser && EffectCauser.IsValid() )
+		if (bReplicateEffectCauser && EffectCauser.IsValid())
 		{
 			RepBits |= 1 << 1;
 		}
@@ -33,7 +33,7 @@ bool FAxeGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, boo
 		{
 			RepBits |= 1 << 6;
 		}
-		
+
 		// Add new RepBits here
 		if (bIsCriticalHit)
 		{
@@ -83,9 +83,13 @@ bool FAxeGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, boo
 		{
 			RepBits |= 1 << 18;
 		}
+		if (PreDamageValue > 0.f)
+		{
+			RepBits |= 1 << 19;
+		}
 	}
 
-	Ar.SerializeBits(&RepBits, 18);
+	Ar.SerializeBits(&RepBits, 19);
 
 	if (RepBits & (1 << 0))
 	{
@@ -127,7 +131,7 @@ bool FAxeGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, boo
 	{
 		bHasWorldOrigin = false;
 	}
-	
+
 	// Add new RepBits here
 	if (RepBits & (1 << 7))
 	{
@@ -183,6 +187,10 @@ bool FAxeGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, boo
 	if (RepBits & (1 << 18))
 	{
 		Ar << KnockbackForceMagnitude;
+	}
+	if (RepBits & (1 << 19))
+	{
+		Ar << PreDamageValue;
 	}
 
 	//

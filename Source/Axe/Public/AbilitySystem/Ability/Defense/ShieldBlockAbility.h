@@ -42,26 +42,30 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSubclassOf<UGameplayEffect> ShieldBlockDamageCostEffectCls;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float BlockAngle = 90.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float PrePareParryTime = 1.0f;
 
 	UPROPERTY(BlueprintReadOnly)
 	bool bIsBlocking = false;
 	UPROPERTY(BlueprintReadOnly)
 	bool bIsPrepareParry = false;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float PrePareParryTime = 1.0f;
+	UPROPERTY(BlueprintReadOnly)
+	bool bIsParrying = false;
+	
 	UFUNCTION()
 	void OnPrePareParryFinished();
 
 	UFUNCTION()
 	void OnInputReleased(float TimeHeld);
-	// UFUNCTION()
-	// void OnEffectApplied(AActor* Source, FGameplayEffectSpecHandle SpecHandle,
-	//                      FActiveGameplayEffectHandle ActiveHandle);
-	// UFUNCTION()
-	// void OnIncomingDamageEffectApplied(AActor* Source, FGameplayEffectSpecHandle SpecHandle,
-	//                                    FActiveGameplayEffectHandle ActiveHandle);
+	UFUNCTION()
+	void OnEffectApplied(AActor* Source, FGameplayEffectSpecHandle SpecHandle,
+	                     FActiveGameplayEffectHandle ActiveHandle);
+	UFUNCTION()
+	void OnIncomingDamageEffectApplied(AActor* Source, FGameplayEffectSpecHandle SpecHandle,
+	                                   FActiveGameplayEffectHandle ActiveHandle);
 
 	bool ApplyShieldBlockDamageCostEffect(float CostValue);
 	bool CanApplyEffectAttributeModifiers(FGameplayEffectSpecHandle& EffectSpecHandle);
@@ -77,5 +81,9 @@ protected:
 	UFUNCTION()
 	void OnBeDamagedCal(UDamageCalInfo* DamageCalInfo);
 
+	UFUNCTION()
+	void JumpBlockMontageToHitSection(FName SectionName = FName("Hit"));
+	UFUNCTION(Reliable, Client)
+	void ClientJumpBlockMontageToHitSection(FName SectionName);
 private:
 };

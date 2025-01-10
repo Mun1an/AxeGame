@@ -100,6 +100,10 @@ struct FAxeGameplayEffectContext : public FGameplayEffectContext
 	float GetKnockbackForceMagnitude() const { return KnockbackForceMagnitude; }
 	void SetKnockbackForceMagnitude(const float NewValue) { KnockbackForceMagnitude = NewValue; }
 
+	float GetPreDamageValue() const { return PreDamageValue; }
+	void SetPreDamageValue(const float NewValue) { PreDamageValue = NewValue; }
+
+	// virtual
 	virtual UScriptStruct* GetScriptStruct() const override
 	{
 		return FAxeGameplayEffectContext::StaticStruct();
@@ -134,6 +138,9 @@ protected:
 	FVector KnockbackVector = FVector::ZeroVector;
 	UPROPERTY()
 	float KnockbackForceMagnitude = 1.f;
+
+	UPROPERTY()
+	float PreDamageValue = 0.f;
 };
 
 template <>

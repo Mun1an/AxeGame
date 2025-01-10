@@ -134,6 +134,8 @@ public:
 	virtual bool CheckCost(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	                       OUT FGameplayTagContainer* OptionalRelevantTags = nullptr) const override;
 
+	FGameplayTagContainer GetCancelAbilitiesTag() const;
+	
 protected:
 	/**
 	 * Ability Props

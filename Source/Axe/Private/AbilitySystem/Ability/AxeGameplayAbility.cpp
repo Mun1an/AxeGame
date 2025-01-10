@@ -277,7 +277,17 @@ bool UAxeGameplayAbility::CanReplaceByNewAbility(const UGameplayAbility* NewAbil
 		{
 			return true;
 		}
-		//
+		// Cancel Ability Tag
+		const UAxeGameplayAbility* AxeNewAbilityCDO = Cast<UAxeGameplayAbility>(NewAbilityCDO);
+		if (AxeNewAbilityCDO)
+		{
+			FGameplayTagContainer CancelTags = AxeNewAbilityCDO->GetCancelAbilitiesTag();
+			if (CancelTags.IsValid() && AbilityTags.IsValid() && AbilityTags.HasAny(CancelTags))
+			{
+				return true;
+			}
+		}
+
 		return false;
 	}
 	// Server
@@ -398,6 +408,11 @@ bool UAxeGameplayAbility::CheckCost(const FGameplayAbilitySpecHandle Handle, con
 	}
 
 	return bResult;
+}
+
+FGameplayTagContainer UAxeGameplayAbility::GetCancelAbilitiesTag() const
+{
+	return CancelAbilitiesWithTag;
 }
 
 
