@@ -6,6 +6,7 @@
 #include "UObject/Interface.h"
 #include "Pickupable.generated.h"
 
+class UItemInstance;
 class UItemDefinition;
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI, BlueprintType, meta = (CannotImplementInterfaceInBlueprint))
@@ -24,8 +25,8 @@ class AXE_API IPickupable
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	UFUNCTION(BlueprintCallable)
-	virtual TSubclassOf<UItemDefinition> GetPickupableItemDef() = 0;
-	
+	virtual UItemInstance* GetPickupableItemInstance() = 0;
+
 	UFUNCTION(BlueprintCallable)
 	virtual int32 GetPickupableItemCount() = 0;
 };

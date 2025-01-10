@@ -30,7 +30,7 @@ struct FAxeEquipmentActorToSpawn
 };
 
 USTRUCT(BlueprintType)
-struct FEquipmentAttrInfo
+struct FEquipmentDefaultLevelInfo
 {
 	GENERATED_BODY()
 
@@ -63,7 +63,7 @@ public:
 	TArray<FAxeEquipmentActorToSpawn> ActorsToSpawn;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Attr")
-	FEquipmentAttrInfo EquipmentAttrInfo;
+	FEquipmentDefaultLevelInfo EquipmentDefaultLevelInfo;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Effect")
 	TSubclassOf<UGameplayEffect> EquipmentEffect;

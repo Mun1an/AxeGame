@@ -3,7 +3,6 @@
 #pragma once
 
 #include "EquipmentItemInstance.h"
-#include "ItemInstance.h"
 #include "Engine/World.h"
 
 #include "ArmorItemInstance.generated.h"

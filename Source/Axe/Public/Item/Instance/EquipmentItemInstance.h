@@ -3,6 +3,7 @@
 #pragma once
 
 #include "ActiveGameplayEffectHandle.h"
+#include "EquipmentItemDefinition.h"
 #include "ItemInstance.h"
 #include "Engine/World.h"
 
@@ -12,6 +13,43 @@ class UAbilitySystemComponent;
 struct FAxeEquipmentActorToSpawn;
 class AActor;
 class APawn;
+
+USTRUCT(Blueprintable)
+struct FEquipmentItemInstanceInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	int32 EquipmentLevel = 1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Appearance)
+	float EquipmentDamage = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Appearance)
+	float EquipmentArmor = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Appearance)
+	float EquipmentMaxHealth = 0.0f;
+
+	void CalDamage(float DefaultValue)
+	{
+		EquipmentDamage = DefaultValue * (1 + EquipmentLevel * 0.2f);
+		EquipmentDamage += FMath::RoundToFloat(EquipmentDamage * 0.1f) * FMath::RandRange(-1, 1);
+		EquipmentDamage = FMath::Max(0.0f, EquipmentDamage);
+	}
+	void CalArmor(float DefaultValue)
+	{
+		EquipmentArmor = DefaultValue * (1 + EquipmentLevel * 0.2f);
+		EquipmentArmor += FMath::RoundToFloat(EquipmentArmor * 0.1f) * FMath::RandRange(-1, 1);
+		EquipmentArmor = FMath::Max(0.0f, EquipmentArmor);
+	}
+	void CalMaxHealth(float DefaultValue)
+	{
+		EquipmentMaxHealth = DefaultValue * (1 + EquipmentLevel * 0.2f);
+		EquipmentMaxHealth += FMath::RoundToFloat(EquipmentMaxHealth * 0.1f) * FMath::RandRange(-1, 1);
+		EquipmentMaxHealth = FMath::Max(0.0f, EquipmentMaxHealth);
+	}
+};
 
 /**
  *
@@ -23,6 +61,7 @@ class UEquipmentItemInstance : public UItemInstance
 
 public:
 	UEquipmentItemInstance(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
 	UFUNCTION(BlueprintPure, Category=Equipment)
 	TArray<AActor*> GetSpawnedActors() const { return SpawnedActors; }
@@ -33,6 +72,15 @@ public:
 	virtual void OnEquipped();
 	virtual void OnUnequipped();
 
+	FEquipmentItemInstanceInfo& GetEquipmentItemInstanceInfo();
+	void SetEquipmentItemInstanceInfo(const FEquipmentItemInstanceInfo& InEquipmentItemInstanceInfo);
+
+	void InitEquipmentItemInstanceInfoByLevel(int32 EquipmentLevel);
+
+	virtual void OnItemInstanceCreated() override;
+
+	virtual FString GetItemDescription() override;
+	
 protected:
 	// #if UE_WITH_IRIS
 	// 	/** Register all replication fragments */
@@ -49,6 +97,10 @@ protected:
 
 	UPROPERTY(Replicated)
 	TArray<TObjectPtr<AActor>> SpawnedActors;
+
+	// Equipment
+	UPROPERTY(Replicated, BlueprintReadWrite, Category=EquipmentInstance)
+	FEquipmentItemInstanceInfo EquipmentItemInstanceInfo;
 
 private:
 	FActiveGameplayEffectHandle EquipmentEffectHandle;

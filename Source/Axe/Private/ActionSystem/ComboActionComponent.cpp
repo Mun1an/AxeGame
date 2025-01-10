@@ -223,10 +223,13 @@ void UComboActionComponent::AnsComboSwitchWindowEnd(UAnimNotifyState* NotifyStat
 		bool bIsInterrupted = AxeAnimNotifyStateBase->GetIsInterrupted();
 
 		// 重置连招树
-		FGameplayTag ActivatedTag = AxeAbilitySystemComponent->GetAbilityTag(ActivatedComboAbility);
-		if (!bIsInterrupted && ActivatedComboAbility && LastComboTreeNode->AbilityTag.MatchesTagExact(ActivatedTag))
+		if (!bIsInterrupted && ActivatedComboAbility)
 		{
-			LastComboTreeNode = ComboAbilityTree->Root;
+			FGameplayTag ActivatedTag = AxeAbilitySystemComponent->GetAbilityTag(ActivatedComboAbility);
+			if (ActivatedTag.IsValid() && LastComboTreeNode->AbilityTag.MatchesTagExact(ActivatedTag))
+			{
+				LastComboTreeNode = ComboAbilityTree->Root;
+			}
 		}
 	}
 }

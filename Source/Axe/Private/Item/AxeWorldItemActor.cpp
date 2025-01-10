@@ -7,14 +7,15 @@
 #include "Item/DisplayItemActor/DisplayItemActor.h"
 #include "Item/Instance/ItemDefinition.h"
 #include "Item/ItemFragment/ItemFragment_World.h"
+#include "Net/UnrealNetwork.h"
 
 AAxeWorldItemActor::AAxeWorldItemActor()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
 
-	SphereComponent = CreateDefaultSubobject<USphereComponent>("SphereComponent");
-	RootComponent = SphereComponent;
+	BoxCollisionComponent = CreateDefaultSubobject<UBoxComponent>("BoxComponent");
+	RootComponent = BoxCollisionComponent;
 
 	SceneComponent = CreateDefaultSubobject<USceneComponent>("SceneComponent");
 	SceneComponent->SetupAttachment(GetRootComponent());
@@ -26,6 +27,12 @@ AAxeWorldItemActor::AAxeWorldItemActor()
 	ItemSkeletalMeshComponent->SetupAttachment(GetRootComponent());
 
 	ItemComponent = CreateDefaultSubobject<UItemComponent>("ItemComponent");
+}
+
+void AAxeWorldItemActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ThisClass, DisplayItemActor);
 }
 
 void AAxeWorldItemActor::OnConstruction(const FTransform& Transform)
@@ -41,9 +48,9 @@ void AAxeWorldItemActor::GetInteractionOptions(FInteractionOption& OutOptions)
 	OutOptions = InteractionOption;
 }
 
-TSubclassOf<UItemDefinition> AAxeWorldItemActor::GetPickupableItemDef()
+UItemInstance* AAxeWorldItemActor::GetPickupableItemInstance()
 {
-	return ItemComponent->GetItemDef();
+	return ItemComponent->GetItemInstance();
 }
 
 int32 AAxeWorldItemActor::GetPickupableItemCount()
@@ -74,6 +81,12 @@ void AAxeWorldItemActor::UnHighlightActor()
 	{
 		DisplayItemActor->UnHighlightActor();
 	}
+}
+
+void AAxeWorldItemActor::BeginPlay()
+{
+	Super::BeginPlay();
+	InitDisplayItemActor();
 }
 
 void AAxeWorldItemActor::Tick(float DeltaSeconds)
@@ -154,7 +167,7 @@ void AAxeWorldItemActor::InitDisplayItemActor()
 	// DisplayActor
 	TArray<AActor*> AttachedActors;
 	GetAttachedActors(AttachedActors);
-	
+
 	UClass* DisplayItemActorClass = ItemFragment_World->DisplayItemActorClass;
 	if (!DisplayItemActorClass)
 	{

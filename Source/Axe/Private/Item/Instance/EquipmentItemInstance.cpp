@@ -29,6 +29,7 @@ void UEquipmentItemInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ThisClass, SpawnedActors);
+	DOREPLIFETIME(ThisClass, EquipmentItemInstanceInfo);
 }
 
 // #if UE_WITH_IRIS
@@ -83,11 +84,14 @@ void UEquipmentItemInstance::OnEquipped()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("OnEquipped"));
 	K2_OnEquipped();
+	AAxeCharacterPlayer* AxeCharacterPlayer = Cast<AAxeCharacterPlayer>(GetPawn());
 
 	const UEquipmentItemDefinition* EquipmentDef = GetDefault<UEquipmentItemDefinition>(GetItemDef());
-	SpawnEquipmentActors(EquipmentDef->ActorsToSpawn);
+	if (AxeCharacterPlayer && AxeCharacterPlayer->HasAuthority())
+	{
+		SpawnEquipmentActors(EquipmentDef->ActorsToSpawn);
+	}
 
-	AAxeCharacterPlayer* AxeCharacterPlayer = Cast<AAxeCharacterPlayer>(GetPawn());
 	UAbilitySystemComponent* ASC = GetAbilitySystemComponent();
 	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(ASC);
 
@@ -97,7 +101,7 @@ void UEquipmentItemInstance::OnEquipped()
 	if (AxeCharacterPlayer->HasAuthority() && AxeASC && IsValid(EquipmentItemDefinition->EquipmentEffect))
 	{
 		FActiveGameplayEffectHandle EffectHandle = AxeASC->ApplyEquipmentEffectToSelf(
-			EquipmentItemDefinition->EquipmentEffect, EquipmentItemDefinition->EquipmentAttrInfo,
+			EquipmentItemDefinition->EquipmentEffect, EquipmentItemInstanceInfo,
 			EquipmentItemDefinition->ItemTypeTag
 		);
 		EquipmentEffectHandle = EffectHandle;
@@ -108,10 +112,13 @@ void UEquipmentItemInstance::OnUnequipped()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("OnUnequipped"));
 	K2_OnUnequipped();
-
-	DestroyEquipmentActors();
-
 	AAxeCharacterPlayer* AxeCharacterPlayer = Cast<AAxeCharacterPlayer>(GetPawn());
+
+	if (AxeCharacterPlayer && AxeCharacterPlayer->HasAuthority())
+	{
+		DestroyEquipmentActors();
+	}
+
 	UAbilitySystemComponent* ASC = GetAbilitySystemComponent();
 	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(ASC);
 	if (AxeCharacterPlayer->HasAuthority() && AxeASC && EquipmentEffectHandle.IsValid())
@@ -122,6 +129,41 @@ void UEquipmentItemInstance::OnUnequipped()
 			EquipmentEffectHandle = FActiveGameplayEffectHandle();
 		}
 	}
+}
+
+FEquipmentItemInstanceInfo& UEquipmentItemInstance::GetEquipmentItemInstanceInfo()
+{
+	return EquipmentItemInstanceInfo;
+}
+
+void UEquipmentItemInstance::SetEquipmentItemInstanceInfo(const FEquipmentItemInstanceInfo& InEquipmentItemInstanceInfo)
+{
+	EquipmentItemInstanceInfo = InEquipmentItemInstanceInfo;
+}
+
+void UEquipmentItemInstance::InitEquipmentItemInstanceInfoByLevel(int32 EquipmentLevel)
+{
+	const UEquipmentItemDefinition* EquipmentDef = GetDefault<UEquipmentItemDefinition>(GetItemDef());
+	EquipmentItemInstanceInfo.EquipmentLevel = EquipmentLevel;
+	EquipmentItemInstanceInfo.CalDamage(EquipmentDef->EquipmentDefaultLevelInfo.EquipmentDamage);
+	EquipmentItemInstanceInfo.CalArmor(EquipmentDef->EquipmentDefaultLevelInfo.EquipmentArmor);
+	EquipmentItemInstanceInfo.CalMaxHealth(EquipmentDef->EquipmentDefaultLevelInfo.EquipmentMaxHealth);
+}
+
+void UEquipmentItemInstance::OnItemInstanceCreated()
+{
+	Super::OnItemInstanceCreated();
+	InitEquipmentItemInstanceInfoByLevel(1);
+}
+
+FString UEquipmentItemInstance::GetItemDescription()
+{
+	return FString::Printf(
+		TEXT(
+			"伤害：%d"
+		),
+		FMath::RoundToInt(EquipmentItemInstanceInfo.EquipmentDamage)
+	);
 }
 
 UAbilitySystemComponent* UEquipmentItemInstance::GetAbilitySystemComponent()

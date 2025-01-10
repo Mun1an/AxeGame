@@ -31,6 +31,11 @@ public:
 
 	void SetItemDef(TSubclassOf<UItemDefinition> InDef);
 
+	virtual void OnItemInstanceCreated();
+
+	UFUNCTION(BlueprintCallable, Category = "Item")
+	virtual FString GetItemDescription();
+
 protected:
 	// The item definition
 	UPROPERTY(Replicated, BlueprintReadOnly)

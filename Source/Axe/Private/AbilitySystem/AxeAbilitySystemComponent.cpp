@@ -13,6 +13,7 @@
 #include "Enum/AxeTypes.h"
 #include "GameplayTag/AxeGameplayTags.h"
 #include "Item/Instance/EquipmentItemDefinition.h"
+#include "Item/Instance/EquipmentItemInstance.h"
 
 
 UAxeAbilitySystemComponent::UAxeAbilitySystemComponent()
@@ -373,7 +374,7 @@ bool UAxeAbilitySystemComponent::ApplyDamageEffect(AActor* SourceActor, AActor* 
 
 FActiveGameplayEffectHandle UAxeAbilitySystemComponent::ApplyEquipmentEffectToSelf(
 	const TSubclassOf<UGameplayEffect>& EffectClass,
-	const FEquipmentAttrInfo EquipmentInfo,
+	const FEquipmentItemInstanceInfo EquipmentInfo,
 	FGameplayTag ItemTypeTag)
 {
 	FGameplayEffectContextHandle ContextHandle = MakeEffectContext();

@@ -21,3 +21,12 @@ void UItemInstance::SetItemDef(TSubclassOf<UItemDefinition> InDef)
 {
 	ItemDef = InDef;
 }
+
+void UItemInstance::OnItemInstanceCreated()
+{
+}
+
+FString UItemInstance::GetItemDescription()
+{
+	return FString();
+}

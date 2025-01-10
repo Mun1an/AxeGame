@@ -209,32 +209,10 @@ FInventoryEntry& UInventoryComponent::GetInventoryEntryByIndex(int32 Index)
 	return InventoryList.GetInventoryEntryByIndex(Index);
 }
 
-UItemInstance* UInventoryComponent::CreateItemInstanceByDefinition(TSubclassOf<UItemDefinition> ItemDef)
-{
-	if (!ItemDef)
-	{
-		return nullptr;
-	}
-	const UItemDefinition* ItemDefinition = ItemDef->GetDefaultObject<UItemDefinition>();
-	const UClass* InstanceClass = ItemDefinition->ItemInstanceClass;
-	UItemInstance* ItemInstance = NewObject<UItemInstance>(GetOwner(), InstanceClass);
-	ItemInstance->SetItemDef(ItemDef);
-	ItemInstance->SetPawn(GetAxeCharacterOwner());
-	return ItemInstance;
-}
-
-UItemInstance* UInventoryComponent::AddItemInstanceByDefinitionCreated(TSubclassOf<UItemDefinition> ItemDef,
-                                                                       int32 StackCount,
-                                                                       int32 Index)
-{
-	UItemInstance* ItemInstance = CreateItemInstanceByDefinition(ItemDef);
-	AddItemInstance(ItemInstance, StackCount, Index);
-	return ItemInstance;
-}
-
 void UInventoryComponent::AddItemInstance(UItemInstance* ItemInstance, int32 StackCount, int32 Index)
 {
 	InventoryList.AddItem(ItemInstance, StackCount, Index);
+	ItemInstance->SetPawn(GetAxeCharacterOwner());
 
 	if (IsUsingRegisteredSubObjectList() && IsReadyForReplication() && ItemInstance)
 	{

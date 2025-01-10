@@ -74,12 +74,6 @@ public:
 	FInventoryEntry& GetInventoryEntryByIndex(int32 Index);
 
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category=Inventory)
-	UItemInstance* CreateItemInstanceByDefinition(TSubclassOf<UItemDefinition> ItemDef);
-	
-	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category=Inventory)
-	UItemInstance* AddItemInstanceByDefinitionCreated(TSubclassOf<UItemDefinition> ItemDef, int32 StackCount = 1, int32 Index = -1);
-
-	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category=Inventory)
 	void AddItemInstance(UItemInstance* ItemInstance, int32 StackCount = 1, int32 Index = -1);
 
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category=Inventory)
