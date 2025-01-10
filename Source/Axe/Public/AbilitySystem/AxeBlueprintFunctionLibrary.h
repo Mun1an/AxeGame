@@ -48,4 +48,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category="AxeBPLibrary|HighLight")
 	static bool SetHighLights(const TArray<UMeshComponent*>& MeshComponents, bool bHighLight, int32 StencilValue = 250);
 
+	UFUNCTION(BlueprintCallable, Category="AxeBPLibrary|Pawn")
+	static APawn* GetLocalPawn(const UObject* WorldContextObject);
 };

@@ -4,6 +4,7 @@
 #include "Anim/AxeAnimNotifyStateBase.h"
 
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
+#include "AbilitySystem/AxeBlueprintFunctionLibrary.h"
 #include "Character/AxeCharacterPlayer.h"
 #include "PlayerController/AxePlayerController.h"
 
@@ -14,12 +15,13 @@ void UAxeAnimNotifyStateBase::NotifyBegin(USkeletalMeshComponent* MeshComp, UAni
 	Super::NotifyBegin(MeshComp, Animation, TotalDuration, EventReference);
 	NotifyStateDuration = TotalDuration;
 
-	const AAxeCharacterBase* AxeCharacterBase = GetAxeCharacterBase(MeshComp);
+	APawn* AnimPawn = MeshComp->GetAnimInstance()->TryGetPawnOwner();
+	APawn* LocalPawn = UAxeBlueprintFunctionLibrary::GetLocalPawn(MeshComp);
 
-	if (AxeCharacterBase)
+	if (AnimPawn)
 	{
-		AnimNotifyStateBeginDelegate.Broadcast(this);
-		if (AxeCharacterBase->IsLocallyControlled())
+		AnimNotifyStateBeginDelegate.Broadcast(this, AnimPawn, LocalPawn);
+		if (AnimPawn->IsLocallyControlled())
 		{
 			bIsNotifyStateEnded = false;
 			bIsInterrupted = false;
@@ -32,12 +34,14 @@ void UAxeAnimNotifyStateBase::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimS
 {
 	Super::NotifyEnd(MeshComp, Animation, EventReference);
 
-	const AAxeCharacterBase* AxeCharacterBase = GetAxeCharacterBase(MeshComp);
+	APawn* AnimPawn = MeshComp->GetAnimInstance()->TryGetPawnOwner();
+	APawn* LocalPawn = UAxeBlueprintFunctionLibrary::GetLocalPawn(MeshComp);
 
-	if (AxeCharacterBase)
+	if (AnimPawn)
 	{
-		AnimNotifyStateEndDelegate.Broadcast(this);
-		if (AxeCharacterBase->IsLocallyControlled())
+		AnimNotifyStateEndDelegate.Broadcast(this, AnimPawn, LocalPawn);
+
+		if (AnimPawn->IsLocallyControlled())
 		{
 			bIsNotifyStateEnded = true;
 			bIsInterrupted = false;

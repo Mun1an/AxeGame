@@ -144,3 +144,19 @@ bool UAxeBlueprintFunctionLibrary::SetHighLights(const TArray<UMeshComponent*>& 
 	}
 	return true;
 }
+
+APawn* UAxeBlueprintFunctionLibrary::GetLocalPawn(const UObject* WorldContextObject)
+{
+	const UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	if (!World)
+	{
+		return nullptr;
+	}
+	const APlayerController* FirstLocalPlayerController = GEngine->GetFirstLocalPlayerController(World);
+	if (!FirstLocalPlayerController)
+	{
+		return nullptr;
+	}
+	APawn* LocalPawn = FirstLocalPlayerController->GetPawn();
+	return LocalPawn;
+}

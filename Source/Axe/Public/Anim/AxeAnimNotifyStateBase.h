@@ -13,7 +13,7 @@ class UComboActionComponent;
 class AAxePlayerController;
 class USkeletalMeshComponent;
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FAnimNotifyStateDelegate, UAnimNotifyState*);
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FAnimNotifyStateDelegate, UAnimNotifyState*, APawn*, APawn*);
 /**
  * 
  */

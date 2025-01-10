@@ -3,6 +3,7 @@
 
 #include "AbilitySystem/Tasks/AbilityTask_MontageNotify.h"
 
+#include "AbilitySystemComponent.h"
 #include "GameplayTasksComponent.h"
 #include "AbilitySystem/Ability/AxeGameplayAbility.h"
 #include "Anim/AxeAnimNotifyStateBase.h"
@@ -57,7 +58,8 @@ void UAbilityTask_MontageNotify::Activate()
 
 	InitTaskAuthority();
 
-	TArray<FAnimNotifyEvent> AnimNotifyEvents = AbilityMontage->Notifies;
+	// FAnimMontageInstance* AbilityMontageInstance = GetAbilityMontageInstance();
+	const TArray<FAnimNotifyEvent>& AnimNotifyEvents = AbilityMontage->Notifies;
 
 	if (IsValid(NotifyClass))
 	{
@@ -77,9 +79,32 @@ void UAbilityTask_MontageNotify::OnDestroy(bool AbilityEnded)
 	Super::OnDestroy(AbilityEnded);
 }
 
-void UAbilityTask_MontageNotify::NotifyActivate(TArray<FAnimNotifyEvent> AnimNotifyEvents)
+FAnimMontageInstance* UAbilityTask_MontageNotify::GetAbilityMontageInstance()
 {
-	for (FAnimNotifyEvent& AnimNotifyEvent : AnimNotifyEvents)
+	const FGameplayAbilityActorInfo* ActorInfo = Ability->GetCurrentActorInfo();
+	if (ActorInfo == nullptr)
+	{
+		return nullptr;
+	}
+	UAnimInstance* AnimInstance = ActorInfo->GetAnimInstance();
+	if (AnimInstance == nullptr)
+	{
+		return nullptr;
+	}
+	UAbilitySystemComponent* ASC = AbilitySystemComponent.Get();
+	if (ASC && Ability)
+	{
+		if (ASC->GetAnimatingAbility() == Ability && ASC->GetCurrentMontage() == AbilityMontage)
+		{
+			return AnimInstance->GetActiveInstanceForMontage(AbilityMontage);
+		}
+	}
+	return nullptr;
+}
+
+void UAbilityTask_MontageNotify::NotifyActivate(const TArray<FAnimNotifyEvent>& AnimNotifyEvents)
+{
+	for (const FAnimNotifyEvent& AnimNotifyEvent : AnimNotifyEvents)
 	{
 		if (AnimNotifyEvent.Notify.GetClass() == NotifyClass)
 		{
@@ -131,9 +156,9 @@ void UAbilityTask_MontageNotify::NotifyEnd()
 	}
 }
 
-void UAbilityTask_MontageNotify::NotifyStateActivate(TArray<FAnimNotifyEvent> AnimNotifyEvents)
+void UAbilityTask_MontageNotify::NotifyStateActivate(const TArray<FAnimNotifyEvent>&  AnimNotifyEvents)
 {
-	for (FAnimNotifyEvent& AnimNotifyEvent : AnimNotifyEvents)
+	for (const FAnimNotifyEvent& AnimNotifyEvent : AnimNotifyEvents)
 	{
 		if (AnimNotifyEvent.NotifyStateClass.GetClass() == NotifyStateClass)
 		{
@@ -192,7 +217,7 @@ void UAbilityTask_MontageNotify::NotifyStateEnd()
 			if (!bIsNotifyStateEnded)
 			{
 				AnimNotifyStateBase->SetIsInterrupted(true);
-				AnimNotifyStateEnd(AnimNotifyStateBase);
+				AnimNotifyStateEnd(AnimNotifyStateBase, AxeCharacter, AxeCharacter);
 			}
 		}
 	}
@@ -212,7 +237,8 @@ void UAbilityTask_MontageNotify::AnimNotifyBegin(UAnimNotify* AnimNotify)
 	}
 }
 
-void UAbilityTask_MontageNotify::AnimNotifyStateBegin(UAnimNotifyState* AnimNotifyState)
+void UAbilityTask_MontageNotify::AnimNotifyStateBegin(UAnimNotifyState* AnimNotifyState, APawn* AnimPawn,
+                                                      APawn* LocalPawn)
 {
 	// fixme 单进程多人有bug 先这样移除
 	if (ShouldBroadcastAbilityTaskDelegates())
@@ -225,7 +251,8 @@ void UAbilityTask_MontageNotify::AnimNotifyStateBegin(UAnimNotifyState* AnimNoti
 	}
 }
 
-void UAbilityTask_MontageNotify::AnimNotifyStateEnd(UAnimNotifyState* AnimNotifyState)
+void UAbilityTask_MontageNotify::AnimNotifyStateEnd(UAnimNotifyState* AnimNotifyState, APawn* AnimPawn,
+                                                    APawn* LocalPawn)
 {
 	// fixme 单进程多人有bug 先这样移除
 	if (ShouldBroadcastAbilityTaskDelegates())
