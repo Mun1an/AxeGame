@@ -10,6 +10,16 @@
 #include "Item/Instance/ItemInstance.h"
 #include "Item/ItemFragment/ItemFragment.h"
 
+const UItemSubsystem* UItemFunctionLibrary::GetItemSubsystem(UObject* WorldContextObject)
+{
+	const UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	if (!World)
+	{
+		return nullptr;
+	}
+	return World->GetGameInstance()->GetSubsystem<UItemSubsystem>();
+}
+
 const UItemFragment* UItemFunctionLibrary::FindItemDefinitionFragment(TSubclassOf<UItemDefinition> ItemDef,
                                                                       TSubclassOf<UItemFragment> FragmentClass)
 {
@@ -37,14 +47,15 @@ UItemInstance* UItemFunctionLibrary::CreateItemInstance(UObject* WorldContextObj
 	return ItemInstance;
 }
 
-UEquipmentItemInstance* UItemFunctionLibrary::CreateEquipmentItemInstanceWithLevel(UObject* WorldContextObject,
-	TSubclassOf<UEquipmentItemDefinition> EquipmentItemDef,
-	int32 Level)
+UEquipmentItemInstance* UItemFunctionLibrary::CreateEquipmentItemInstance(UObject* WorldContextObject,
+                                                                          TSubclassOf<UEquipmentItemDefinition>
+                                                                          EquipmentItemDef,
+                                                                          int32 Level, EEquipmentRarity EquipmentRarity)
 {
 	UItemInstance* ItemInstance = CreateItemInstance(WorldContextObject, EquipmentItemDef);
 	if (UEquipmentItemInstance* EquipmentItemInstance = Cast<UEquipmentItemInstance>(ItemInstance))
 	{
-		EquipmentItemInstance->InitEquipmentItemInstanceInfoByLevel(Level);
+		EquipmentItemInstance->InitEquipmentItemInstanceInfo(Level, EquipmentRarity);
 		return EquipmentItemInstance;
 	}
 	return nullptr;
@@ -69,4 +80,19 @@ AAxeWorldItemActor* UItemFunctionLibrary::CreateWorldItemActor(UObject* WorldCon
 	ItemActor->InitDisplayItemActor();
 
 	return ItemActor;
+}
+
+FEquipmentRarityInfo UItemFunctionLibrary::GetEquipmentRarityInfo(UObject* WorldContextObject,
+                                                                  EEquipmentRarity EquipmentRarity)
+{
+	const UItemSubsystem* ItemSubsystem = GetItemSubsystem(WorldContextObject);
+	if (ItemSubsystem)
+	{
+		UEquipmentRarityDataAsset* RarityDataAsset = ItemSubsystem->GetEquipmentRarityDataAsset();
+		if (RarityDataAsset)
+		{
+			return RarityDataAsset->GetEquipmentRarityInfo(EquipmentRarity);
+		}
+	}
+	return FEquipmentRarityInfo::Empty;
 }

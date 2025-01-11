@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameplayTag/GameplayTagStack.h"
 #include "ItemInstance.generated.h"
 
 class UItemDefinition;
@@ -35,7 +34,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Item")
 	virtual FString GetItemDescription();
-
+	
 protected:
 	// The item definition
 	UPROPERTY(Replicated, BlueprintReadOnly)

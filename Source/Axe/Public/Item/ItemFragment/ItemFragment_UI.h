@@ -24,4 +24,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Appearance)
 	FText DisplayName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Appearance)
+	FText DefaultDescription;
 };

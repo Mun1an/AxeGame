@@ -5,11 +5,6 @@
 
 #include "AssetRegistry/AssetRegistryModule.h"
 #include "Character/AxeCharacterPlayer.h"
-#include "Inventory/Component/InventoryComponent.h"
-#include "Item/Instance/ItemDefinition.h"
-#include "Item/Instance/ItemInstance.h"
-#include "Item/ItemFragment/ItemFragment_ModularCharacterMesh.h"
-#include "Misc/CoreDelegatesInternal.h"
 
 // Sets default values for this component's properties
 UModularCharacterComponent::UModularCharacterComponent()

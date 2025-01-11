@@ -6,6 +6,7 @@
 #include "Engine/DeveloperSettings.h"
 #include "AxeItemSettings.generated.h"
 
+class UEquipmentRarityDataAsset;
 class UDataTable;
 /**
  * 
@@ -18,6 +19,6 @@ class AXE_API UAxeItemSettings : public UDeveloperSettings
 public:
 	UAxeItemSettings(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
-	// UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Config, Category = "Item")
-	// TSoftObjectPtr<UDataTable> ItemDefDataTable;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Config, Category=Item)
+	TSoftObjectPtr<UEquipmentRarityDataAsset> EquipmentRarityDataAsset;
 };

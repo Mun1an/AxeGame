@@ -4,8 +4,7 @@
 
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
 #include "Character/AxeCharacterPlayer.h"
-#include "Components/SkeletalMeshComponent.h"
-#include "GameFramework/Character.h"
+#include "Item/ItemFunctionLibrary.h"
 #include "Item/Instance/EquipmentItemDefinition.h"
 #include "Net/UnrealNetwork.h"
 
@@ -141,10 +140,11 @@ void UEquipmentItemInstance::SetEquipmentItemInstanceInfo(const FEquipmentItemIn
 	EquipmentItemInstanceInfo = InEquipmentItemInstanceInfo;
 }
 
-void UEquipmentItemInstance::InitEquipmentItemInstanceInfoByLevel(int32 EquipmentLevel)
+void UEquipmentItemInstance::InitEquipmentItemInstanceInfo(int32 EquipmentLevel, EEquipmentRarity EquipmentRarity)
 {
 	const UEquipmentItemDefinition* EquipmentDef = GetDefault<UEquipmentItemDefinition>(GetItemDef());
 	EquipmentItemInstanceInfo.EquipmentLevel = EquipmentLevel;
+	EquipmentItemInstanceInfo.EquipmentRarity = EquipmentRarity;
 	EquipmentItemInstanceInfo.CalDamage(EquipmentDef->EquipmentDefaultLevelInfo.EquipmentDamage);
 	EquipmentItemInstanceInfo.CalArmor(EquipmentDef->EquipmentDefaultLevelInfo.EquipmentArmor);
 	EquipmentItemInstanceInfo.CalMaxHealth(EquipmentDef->EquipmentDefaultLevelInfo.EquipmentMaxHealth);
@@ -153,16 +153,19 @@ void UEquipmentItemInstance::InitEquipmentItemInstanceInfoByLevel(int32 Equipmen
 void UEquipmentItemInstance::OnItemInstanceCreated()
 {
 	Super::OnItemInstanceCreated();
-	InitEquipmentItemInstanceInfoByLevel(1);
+	InitEquipmentItemInstanceInfo(1);
 }
 
 FString UEquipmentItemInstance::GetItemDescription()
 {
 	return FString::Printf(
 		TEXT(
-			"伤害：%d"
+			"等级：%d \n"
+			"伤害：%d "
 		),
-		FMath::RoundToInt(EquipmentItemInstanceInfo.EquipmentDamage)
+		EquipmentItemInstanceInfo.EquipmentLevel,
+		FMath::RoundToInt(EquipmentItemInstanceInfo.EquipmentDamage
+		)
 	);
 }
 

@@ -4,6 +4,9 @@
 #include "Item/Instance/ItemInstance.h"
 
 #include "Engine/ActorChannel.h"
+#include "Item/ItemFunctionLibrary.h"
+#include "Item/Instance/ItemDefinition.h"
+#include "Item/ItemFragment/ItemFragment_UI.h"
 #include "Net/UnrealNetwork.h"
 
 UItemInstance::UItemInstance(const FObjectInitializer& ObjectInitializer): Super(ObjectInitializer)
@@ -28,5 +31,12 @@ void UItemInstance::OnItemInstanceCreated()
 
 FString UItemInstance::GetItemDescription()
 {
+	if (const UItemDefinition* ItemDefinition = ItemDef->GetDefaultObject<UItemDefinition>())
+	{
+		if (const UItemFragment_UI* ItemFragment_UI = ItemDefinition->FindFragment<UItemFragment_UI>())
+		{
+			return ItemFragment_UI->DefaultDescription.ToString();
+		}
+	}
 	return FString();
 }
