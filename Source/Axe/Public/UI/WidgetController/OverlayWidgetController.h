@@ -64,11 +64,20 @@ public:
 	UPROPERTY(BlueprintAssignable, Category="Message")
 	FOnSendTipsMessageUISignature OnSendTipsMessageUISignature;
 
+	UPROPERTY(BlueprintAssignable, Category="GAS|Xp")
+	FOnPlayerStatChangedSignature OnXpChangedDelegate;
+
+	UPROPERTY(BlueprintAssignable, Category="GAS|Level")
+	FOnPlayerStatChangedSignature OnPlayerLevelChangedDelegate;
+
 protected:
 	void HealthChanged(const FOnAttributeChangeData& Data) const;
 	void MaxHealthChanged(const FOnAttributeChangeData& Data) const;
 	void StaminaChanged(const FOnAttributeChangeData& Data) const;
 	void MaxStaminaChanged(const FOnAttributeChangeData& Data) const;
+
+	void OnXpChanged(int32 NewXp);
+	void OnPlayerLevelChanged(int32 NewLevel);
 
 	UFUNCTION()
 	void SendInventoryItemUIMessage(UTexture2D* Texture, FText ItemName, int32 StackCount);

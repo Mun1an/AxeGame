@@ -10,6 +10,8 @@
 
 class UAttributeSet;
 class UInventoryComponent;
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerStateValueChanged, int32)
 /**
  * 
  */
@@ -25,7 +27,41 @@ public:
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
 
 	virtual UInventoryComponent* GetInventoryComponent() const override;
-	
+
+	//
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE int32 GetPlayerLevel() const { return PlayerLevel; }
+
+	UFUNCTION(BlueprintCallable)
+	void SetPlayerLevel(const float NewLevel, bool bCheckXp = true);
+	UFUNCTION(BlueprintCallable)
+	void AddToPlayerLevel(const float AddLevel);
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE int32 GetPlayerXp() const { return Xp; }
+
+	UFUNCTION(BlueprintCallable)
+	void SetPlayerXp(const float NewXp);
+	UFUNCTION(BlueprintCallable)
+	void AddToPlayerXp(const float AddXp);
+
+	UFUNCTION(BlueprintCallable)
+	int32 GetNewLevelByTotalXp(int32 TotalXp) const;
+
+	// 每级升至下一级(FromLevel + 1)所需单级经验
+	UFUNCTION(BlueprintCallable)
+	int32 GetOneNextLevelRequireXp(int32 FromLevel) const;
+
+	// 获取等级所需经验
+	UFUNCTION(BlueprintCallable)
+	int32 GetLevelXpThreshold(int32 Level) const;
+
+	UFUNCTION(BlueprintCallable)
+	float GetXpPercent() const;
+
+	FOnPlayerStateValueChanged OnXpChangedDelegate;
+	FOnPlayerStateValueChanged OnLevelChangedDelegate;
+
 protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
@@ -35,4 +71,24 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UInventoryComponent> InventoryComponent;
+
+private:
+	UPROPERTY(VisibleAnywhere)
+	int32 MaxPlayerLevel = 30;
+
+	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_Level)
+	int32 PlayerLevel = 1;
+
+	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_Xp)
+	int32 Xp = 0;
+
+	// 升级所需总经验列表
+	TArray<int32> LevelXpThresholds;
+
+	UFUNCTION()
+	void OnRep_Level(int32 OldValue);
+	UFUNCTION()
+	void OnRep_Xp(int32 OldValue);
+
+	void InitializeLevelXpThresholds();
 };

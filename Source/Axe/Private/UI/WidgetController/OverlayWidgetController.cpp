@@ -57,6 +57,7 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 	).AddUObject(this, &UOverlayWidgetController::MaxStaminaChanged);
 
 	//
+	const ULocalPlayer* LocalPlayer = PlayerController->GetLocalPlayer();
 	AxeASC->AbilitiesGivenDelegate.AddUObject(this, &UOverlayWidgetController::BroadcastAbilityInfo);
 
 	// item
@@ -65,9 +66,13 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 
 
 	// TipsMessage
-	const ULocalPlayer* LocalPlayer = PlayerController->GetLocalPlayer();
 	UTipsMessageSubsystem* TipsMessageSubsystem = LocalPlayer->GetGameInstance()->GetSubsystem<UTipsMessageSubsystem>();
 	TipsMessageSubsystem->OnSendTipsMessageSignature.AddDynamic(this, &UOverlayWidgetController::OnSendTipsMessage);
+
+	// PlayerStateValue
+	AAxePlayerState* AxePS = GetAxePlayerState();
+	AxePS->OnXpChangedDelegate.AddUObject(this, &UOverlayWidgetController::OnXpChanged);
+	AxePS->OnLevelChangedDelegate.AddUObject(this, &UOverlayWidgetController::OnPlayerLevelChanged);
 }
 
 void UOverlayWidgetController::BroadcastAbilityInfo()
@@ -118,6 +123,16 @@ void UOverlayWidgetController::StaminaChanged(const FOnAttributeChangeData& Data
 void UOverlayWidgetController::MaxStaminaChanged(const FOnAttributeChangeData& Data) const
 {
 	OnMaxStaminaChanged.Broadcast(Data.NewValue);
+}
+
+void UOverlayWidgetController::OnXpChanged(int32 NewXp)
+{
+	OnXpChangedDelegate.Broadcast(NewXp);
+}
+
+void UOverlayWidgetController::OnPlayerLevelChanged(int32 NewLevel)
+{
+	OnPlayerLevelChangedDelegate.Broadcast(NewLevel);
 }
 
 void UOverlayWidgetController::SendInventoryItemUIMessage(UTexture2D* Texture, FText ItemName, int32 StackCount)

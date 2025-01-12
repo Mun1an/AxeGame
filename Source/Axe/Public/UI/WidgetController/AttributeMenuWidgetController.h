@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "OverlayWidgetController.h"
 #include "UI/WidgetController/AxeWidgetControllerBase.h"
 #include "AttributeMenuWidgetController.generated.h"
 
@@ -27,8 +28,17 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Attributes")
 	FAttributeInfoSignature AttributeInfoSignature;
 
+	UPROPERTY(BlueprintAssignable, Category="GAS|Xp")
+	FOnPlayerStatChangedSignature OnXpChangedDelegate;
+
+	UPROPERTY(BlueprintAssignable, Category="GAS|Level")
+	FOnPlayerStatChangedSignature OnPlayerLevelChangedDelegate;
+	
 protected:
 	void BroadcastAttributeInfo(const FGameplayTag& Tag, const FGameplayAttribute& Attribute);
+
+	void OnXpChanged(int32 NewXp);
+	void OnPlayerLevelChanged(int32 NewLevel);
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	TObjectPtr<UAttributeUIDataAsset> AttributeDataAsset;
