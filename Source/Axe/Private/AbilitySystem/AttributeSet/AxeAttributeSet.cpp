@@ -13,6 +13,7 @@
 #include "Character/AxeCharacterPlayer.h"
 #include "Enum/AxeTypes.h"
 #include "Net/UnrealNetwork.h"
+#include "PlayerState/AxePlayerState.h"
 
 UAxeAttributeSet::UAxeAttributeSet()
 {
@@ -126,6 +127,10 @@ void UAxeAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbac
 	if (Data.EvaluatedData.Attribute == GetIncomingDamageAttribute())
 	{
 		HandleIncomingDamageEffect(EffectProperties);
+	}
+	if (Data.EvaluatedData.Attribute == GetIncomingXpAttribute())
+	{
+		HandleIncomingXpEffect(EffectProperties);
 	}
 }
 
@@ -296,6 +301,29 @@ void UAxeAttributeSet::HandleIncomingDamageEffect(const FEffectProperties& Props
 	{
 		FVector LaunchVector = KnockbackVector * KnockbackForceMagnitude * 500;
 		AxeCharacterOwner->LaunchCharacter(LaunchVector, false, false);
+	}
+}
+
+void UAxeAttributeSet::HandleIncomingXpEffect(const FEffectProperties& Props)
+{
+	const float LocalIncomingXp = GetIncomingXp();
+
+	const FGameplayEffectContext* GameplayEffectContext = Props.EffectContextHandle.Get();
+	const FAxeGameplayEffectContext* AxeEffectContext = UAxeBlueprintFunctionLibrary::GetAxeGameplayEffectContext(
+		GameplayEffectContext);
+	const FAxeGameplayTags AxeGameplayTags = FAxeGameplayTags::Get();
+
+	//
+	SetIncomingXp(0.f);
+
+	//
+	if (Props.TargetCharacter)
+	{
+		if (APlayerState* PlayerState = Props.TargetCharacter->GetPlayerState())
+		{
+			AAxePlayerState* AxePS = Cast<AAxePlayerState>(PlayerState);
+			AxePS->AddToPlayerXp(LocalIncomingXp);
+		}
 	}
 }
 

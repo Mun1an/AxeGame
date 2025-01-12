@@ -113,7 +113,7 @@ float AAxePlayerState::GetXpPercent() const
 	const int32 LevelXpThreshold = GetLevelXpThreshold(PlayerLevel);
 	const int32 NextLevelXpThreshold = GetLevelXpThreshold(PlayerLevel + 1);
 	float Per = static_cast<float>(Xp - LevelXpThreshold) / static_cast<float>(NextLevelXpThreshold - LevelXpThreshold);
-	Per = Per == 1 ? 0.f : Per;
+	Per = Per >= 1 ? 0.f : Per;
 	return Per;
 }
 

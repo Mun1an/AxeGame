@@ -92,6 +92,7 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(Effect_Magnitude_Stamina, "Effect.Magnitude.Stamina");
 	AddTag(Effect_Magnitude_Armor, "Effect.Magnitude.Armor");
 	AddTag(Effect_Magnitude_MaxHealth, "Effect.Magnitude.MaxHealth");
+	AddTag(Effect_Magnitude_IncomingXp, "Effect.Magnitude.IncomingXp");
 
 	/**
 	 * Item

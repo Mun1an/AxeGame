@@ -9,6 +9,8 @@
 #include "AbilitySystem/Ability/HitReact/HitReactBase.h"
 #include "AbilitySystem/Executions/DamageExecution.h"
 #include "ActionSystem/ComboActionComponent.h"
+#include "AssetManager/AxeAssetManager.h"
+#include "AssetManager/AxeGameData.h"
 #include "Character/AxeCharacterPlayer.h"
 #include "Enum/AxeTypes.h"
 #include "GameplayTag/AxeGameplayTags.h"
@@ -392,6 +394,24 @@ FActiveGameplayEffectHandle UAxeAbilitySystemComponent::ApplyEquipmentEffectToSe
 	);
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
 		SpecHandle, FAxeGameplayTags::Get().Effect_Magnitude_MaxHealth, EquipmentInfo.EquipmentMaxHealth
+	);
+	FActiveGameplayEffectHandle GameplayEffectSpecToSelf = ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+	return GameplayEffectSpecToSelf;
+}
+
+FActiveGameplayEffectHandle UAxeAbilitySystemComponent::ApplyIncomingXpEffect(AActor* SourceActor, int32 XpValue)
+{
+	FGameplayEffectContextHandle ContextHandle = MakeEffectContext();
+	ContextHandle.AddSourceObject(SourceActor);
+
+	const TSubclassOf<UGameplayEffect> EffectClass = UAxeAssetManager::GetSubclass(
+		UAxeGameData::Get().GE_IncomingXp_SetByCaller);
+
+	const FGameplayEffectSpecHandle SpecHandle = MakeOutgoingSpec(
+		EffectClass, 1, ContextHandle
+	);
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
+		SpecHandle, FAxeGameplayTags::Get().Effect_Magnitude_IncomingXp, XpValue
 	);
 	FActiveGameplayEffectHandle GameplayEffectSpecToSelf = ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 	return GameplayEffectSpecToSelf;

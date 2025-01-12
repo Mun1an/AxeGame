@@ -110,7 +110,7 @@ struct FAxeGameplayTags
 	FGameplayTag Effect_Magnitude_Stamina;
 	FGameplayTag Effect_Magnitude_Armor;
 	FGameplayTag Effect_Magnitude_MaxHealth;
-
+	FGameplayTag Effect_Magnitude_IncomingXp;
 
 	/**
 	 * Item

@@ -147,6 +147,10 @@ public:
 	FGameplayAttributeData IncomingDamage;
 	ATTRIBUTE_ACCESSORS(UAxeAttributeSet, IncomingDamage);
 
+	UPROPERTY(BlueprintReadOnly, Category = "Meta Attributes")
+	FGameplayAttributeData IncomingXp;
+	ATTRIBUTE_ACCESSORS(UAxeAttributeSet, IncomingXp);
+
 	/**
 	 * @brief OnRep func
 	 */
@@ -194,6 +198,7 @@ private:
 
 	void SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const;
 	void HandleIncomingDamageEffect(const FEffectProperties& Props);
+	void HandleIncomingXpEffect(const FEffectProperties& Props);
 
 
 	void ShowDamageFloatingText(AAxeCharacterBase* SourceCharacter, AAxeCharacterBase* TargetCharacter,

@@ -77,8 +77,11 @@ public:
 	bool ApplyDamageEffect(AActor* SourceActor, AActor* TargetActor, const FDamageEffectParams& Params);
 
 	FActiveGameplayEffectHandle ApplyEquipmentEffectToSelf(const TSubclassOf<UGameplayEffect>& EffectClass,
-	                                                       FEquipmentItemInstanceInfo EquipmentInfo, FGameplayTag ItemTypeTag);
+	                                                       FEquipmentItemInstanceInfo EquipmentInfo,
+	                                                       FGameplayTag ItemTypeTag);
 
+	UFUNCTION(BlueprintCallable)
+	FActiveGameplayEffectHandle ApplyIncomingXpEffect(AActor* SourceActor, int32 XpValue);
 	//
 	void ExecuteDelegateToGetAbilitySpec(const FAbilitySpecDataDelegate& Delegate);
 	//
@@ -108,5 +111,4 @@ protected:
 
 private:
 	TMap<EAxeAbilityActivationGroup, TArray<FGameplayAbilitySpecHandle>> ActivationGroupMap;
-
 };
