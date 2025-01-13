@@ -28,11 +28,14 @@ struct FAxeGameplayTags
 	FGameplayTag InputTag_Defense;
 	FGameplayTag InputTag_Interact;
 	FGameplayTag InputTag_Jump;
+	FGameplayTag InputTag_Action_UseItem;
 
 	FGameplayTag Ability_Attack_LightAttack;
 	FGameplayTag Ability_Attack_HeavyAttack;
 	FGameplayTag Ability_Move_Dash;
 	FGameplayTag Ability_Move_Jump;
+	
+	FGameplayTag Ability_Action_UseItem;
 
 	FGameplayTag Ability_Attack_MeleeCombo_A1;
 	FGameplayTag Ability_Attack_MeleeCombo_A2;
@@ -117,6 +120,7 @@ struct FAxeGameplayTags
 	 * Item
 	 */
 	FGameplayTag Inventory_Entry_Bag;
+	FGameplayTag Inventory_Entry_UseBar;
 	FGameplayTag Inventory_Entry_Equipment;
 	FGameplayTag Inventory_Entry_Equipment_Armor_Helmet;
 	FGameplayTag Inventory_Entry_Equipment_Armor_Chestplate;

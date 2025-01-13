@@ -6,19 +6,14 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
 #include "Character/AxeCharacterBase.h"
-#include "Character/AxeCharacterPlayer.h"
 #include "Engine/ActorChannel.h"
 #include "GameplayTag/AxeGameplayTags.h"
 #include "Item/ItemFunctionLibrary.h"
-#include "Item/Instance/EquipmentItemDefinition.h"
 #include "Item/Instance/EquipmentItemInstance.h"
 #include "Item/Instance/ItemDefinition.h"
 #include "Item/Instance/ItemInstance.h"
 #include "Item/ItemFragment/ItemFragment_CommonInfo.h"
 #include "Item/ItemFragment/ItemFragment_UI.h"
-#include "Item/ItemFragment/ItemFragment_EquipmentInfo.h"
-#include "Item/ItemFragment/ItemFragment_EquippableItem.h"
-#include "Item/ItemFragment/ItemFragment_ModularCharacterMesh.h"
 #include "Net/UnrealNetwork.h"
 
 UInventoryComponent::UInventoryComponent(const FObjectInitializer& ObjectInitializer): Super(ObjectInitializer),
@@ -32,6 +27,8 @@ UInventoryComponent::UInventoryComponent(const FObjectInitializer& ObjectInitial
 void UInventoryComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
+
+	InitInventoryEntry();
 }
 
 void UInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -158,35 +155,47 @@ AAxeCharacterBase* UInventoryComponent::GetAxeCharacterOwner() const
 void UInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
+}
 
+void UInventoryComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+}
+
+void UInventoryComponent::InitInventoryEntry()
+{
 	// init slot
 	if (GetOwnerRole() == ROLE_Authority)
 	{
+		FAxeGameplayTags AxeGameplayTags = FAxeGameplayTags::Get();
+
 		// inv
 		for (int i = 0; i < InventoryEntryInitSize; ++i)
 		{
 			AddInventoryEntry();
 		}
 
-		FAxeGameplayTags AxeGameplayTags = FAxeGameplayTags::Get();
+		// UseBar
+		const FGameplayTagContainer UseBar(AxeGameplayTags.Inventory_Entry_UseBar);
+		for (int i = 0; i < UseBarEntryInitSize; ++i)
+		{
+			InventoryList.AddEntry(UseBar);
+		}
 
-		FGameplayTagContainer Armor_Helmet(AxeGameplayTags.Inventory_Entry_Equipment_Armor_Helmet);
+		// Equipment Armor
+		const FGameplayTagContainer Armor_Helmet(AxeGameplayTags.Inventory_Entry_Equipment_Armor_Helmet);
 		InventoryList.AddEntry(Armor_Helmet);
-		FGameplayTagContainer Armor_Chestplate(AxeGameplayTags.Inventory_Entry_Equipment_Armor_Chestplate);
+		const FGameplayTagContainer Armor_Chestplate(AxeGameplayTags.Inventory_Entry_Equipment_Armor_Chestplate);
 		InventoryList.AddEntry(Armor_Chestplate);
-		FGameplayTagContainer Armor_Leggings(AxeGameplayTags.Inventory_Entry_Equipment_Armor_Leggings);
+		const FGameplayTagContainer Armor_Leggings(AxeGameplayTags.Inventory_Entry_Equipment_Armor_Leggings);
 		InventoryList.AddEntry(Armor_Leggings);
-		FGameplayTagContainer Armor_Boots(AxeGameplayTags.Inventory_Entry_Equipment_Armor_Boots);
+		const FGameplayTagContainer Armor_Boots(AxeGameplayTags.Inventory_Entry_Equipment_Armor_Boots);
 		InventoryList.AddEntry(Armor_Boots);
 
-		FGameplayTagContainer Weapon(AxeGameplayTags.Inventory_Entry_Equipment_Weapon);
+		// Equipment Weapon
+		const FGameplayTagContainer Weapon(AxeGameplayTags.Inventory_Entry_Equipment_Weapon);
 		InventoryList.AddEntry(Weapon);
 	}
-}
-
-void UInventoryComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-	Super::EndPlay(EndPlayReason);
 }
 
 int32 UInventoryComponent::GetInventoryEntriesSize() const
@@ -273,6 +282,18 @@ void UInventoryComponent::GetEquipmentEntryArray(TArray<FInventoryEntry>& OutEnt
 	}
 }
 
+void UInventoryComponent::GetUseItemEntryArray(TArray<FInventoryEntry>& OutEntries) const
+{
+	FAxeGameplayTags AxeGameplayTags = FAxeGameplayTags::Get();
+	for (const FInventoryEntry& Entry : InventoryList.Entries)
+	{
+		if (Entry.EntryTags.HasTag(AxeGameplayTags.Inventory_Entry_UseBar))
+		{
+			OutEntries.Add(Entry);
+		}
+	}
+}
+
 void UInventoryComponent::RefreshInventoryItemEntryChange()
 {
 	// 调用触发所有的 Inventory Entry Item Change
@@ -283,6 +304,11 @@ void UInventoryComponent::RefreshInventoryItemEntryChange()
 			Entry.LastInstance, Entry.LastObservedCount
 		);
 	}
+}
+
+bool UInventoryComponent::CheckEntryHasTag(const FGameplayTag CheckTag, FInventoryEntry& Entry)
+{
+	return Entry.EntryTags.HasTag(CheckTag);
 }
 
 

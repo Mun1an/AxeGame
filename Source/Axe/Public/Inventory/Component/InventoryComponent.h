@@ -15,7 +15,6 @@ class UItemInstance;
 class UTexture2D;
 
 
-
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnInventoryChangedDelegate, int32, SlotIndex, UItemInstance*,
                                               NewItemInstance,
                                               int32, NewCount, UItemInstance*, OldItemInstance, int32, OldCount);
@@ -47,7 +46,7 @@ public:
 	virtual void ReadyForReplication() override;
 
 	//~End of UObject interface
-
+	void InitInventoryEntry();
 	//
 	FOnInventoryChangedDelegate OnInventoryChangedDelegate;
 	FOnEquipmentChangedDelegate OnEquipmentItemChangedDelegate;
@@ -95,7 +94,13 @@ public:
 	void GetEquipmentEntryArray(TArray<FInventoryEntry>& OutEntries) const;
 
 	UFUNCTION(BlueprintCallable, Category=Inventory)
+	void GetUseItemEntryArray(TArray<FInventoryEntry>& OutEntries) const;
+
+	UFUNCTION(BlueprintCallable, Category=Inventory)
 	void RefreshInventoryItemEntryChange();
+
+	UFUNCTION(BlueprintCallable, Category=Inventory)
+	bool CheckEntryHasTag(const FGameplayTag CheckTag, FInventoryEntry& Entry);
 
 protected:
 	UFUNCTION(Client, Reliable)
@@ -104,6 +109,7 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
+
 	void OnInventoryItemChanged(int32 SlotIndex, UItemInstance* NewItemInstance, int32 NewCount,
 	                            UItemInstance* OldItemInstance, int32 OldCount);
 	void OnEquipmentItemChanged(int32 SlotIndex, UItemInstance* NewItemInstance, UItemInstance* OldItemInstance,
@@ -111,6 +117,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	int32 InventoryEntryInitSize = 16;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	int32 UseBarEntryInitSize = 4;
 
 private:
 	UPROPERTY(Replicated)

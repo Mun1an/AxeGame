@@ -6,6 +6,8 @@
 #include "Item/ItemFragment/ItemFragment.h"
 #include "Item/ItemFragment/ItemFragment_CommonInfo.h"
 
+FInventoryEntry FInventoryEntry::Empty;
+
 void FAxeInventoryList::PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize)
 {
 	for (int32 Index : RemovedIndices)
@@ -48,7 +50,11 @@ void FAxeInventoryList::PostReplicatedChange(const TArrayView<int32> ChangedIndi
 
 FInventoryEntry& FAxeInventoryList::GetInventoryEntryByIndex(int32 Index)
 {
-	return Entries[Index];
+	if (Entries.IsValidIndex(Index))
+	{
+		return Entries[Index];
+	}
+	return FInventoryEntry::Empty;
 }
 
 TArray<UItemInstance*> FAxeInventoryList::GetAllItems() const

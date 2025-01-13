@@ -5,8 +5,9 @@
 
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
 #include "AbilitySystem/AttributeSet/AxeAttributeSet.h"
+#include "Character/AxeCharacterPlayer.h"
+#include "GameplayTag/AxeGameplayTags.h"
 #include "Inventory/Component/InventoryComponent.h"
-#include "PlayerController/AxePlayerController.h"
 #include "PlayerState/AxePlayerState.h"
 #include "TipsMessage/TipsMessageSubsystem.h"
 #include "UI/WidgetController/InventoryWidgetController.h"
@@ -73,6 +74,12 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 	AAxePlayerState* AxePS = GetAxePlayerState();
 	AxePS->OnXpChangedDelegate.AddUObject(this, &UOverlayWidgetController::OnXpChanged);
 	AxePS->OnLevelChangedDelegate.AddUObject(this, &UOverlayWidgetController::OnPlayerLevelChanged);
+
+	// UseItemBar
+	InventoryComponent->OnInventoryChangedDelegate.AddDynamic(
+		this, &UOverlayWidgetController::OnInventoryChangedCallback);
+
+	//
 }
 
 void UOverlayWidgetController::BroadcastAbilityInfo()
@@ -143,4 +150,17 @@ void UOverlayWidgetController::SendInventoryItemUIMessage(UTexture2D* Texture, F
 void UOverlayWidgetController::OnSendTipsMessage(const FString& Message)
 {
 	OnSendTipsMessageUISignature.Broadcast(Message);
+}
+
+void UOverlayWidgetController::OnInventoryChangedCallback(int32 SlotIndex, UItemInstance* NewItemInstance,
+                                                          int32 NewCount, UItemInstance* OldItemInstance,
+                                                          int32 OldCount)
+{
+	const FAxeGameplayTags AxeGameplayTags = FAxeGameplayTags::Get();
+	FInventoryEntry& Entry = InventoryComponent->GetInventoryEntryByIndex(SlotIndex);
+	const bool bHasUseItemBarTag = InventoryComponent->CheckEntryHasTag(AxeGameplayTags.Inventory_Entry_UseBar, Entry);
+	if (bHasUseItemBarTag)
+	{
+		OnUseItemBarChangedDelegate.Broadcast(SlotIndex, NewItemInstance, NewCount, OldCount);
+	}
 }

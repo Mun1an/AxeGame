@@ -18,6 +18,8 @@ struct AXE_API FInventoryEntry : public FFastArraySerializerItem
 	{
 	}
 
+	static FInventoryEntry Empty;
+
 	friend FInventoryList;
 	friend UInventoryComponent;
 

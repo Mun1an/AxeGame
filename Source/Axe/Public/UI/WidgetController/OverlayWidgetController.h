@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
 #include "AxeWidgetControllerBase.h"
+#include "InventoryWidgetController.h"
 #include "AbilitySystem/Data/AbilityUIDataAsset.h"
 #include "OverlayWidgetController.generated.h"
 
@@ -25,6 +26,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnSendInventoryItemUIMessageSign
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSendTipsMessageUISignature, const FString&, Message);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilityInfoSignature, const FAxeAbilityUIInfo&, AbilityInfo);
+
 
 /**
  * 
@@ -70,6 +72,9 @@ public:
 	UPROPERTY(BlueprintAssignable, Category="GAS|Level")
 	FOnPlayerStatChangedSignature OnPlayerLevelChangedDelegate;
 
+	UPROPERTY(BlueprintAssignable, Category="Inventory")
+	FOnInventoryChangedInWidgetController OnUseItemBarChangedDelegate;
+
 protected:
 	void HealthChanged(const FOnAttributeChangeData& Data) const;
 	void MaxHealthChanged(const FOnAttributeChangeData& Data) const;
@@ -85,6 +90,11 @@ protected:
 	// T* GetDataTableRowByTag(UDataTable* DataTable, const FGameplayTag& Tag) const;
 	UFUNCTION()
 	void OnSendTipsMessage(const FString& Message);
+
+	UFUNCTION()
+	void OnInventoryChangedCallback(int32 SlotIndex, UItemInstance* NewItemInstance, int32 NewCount,
+	                                UItemInstance* OldItemInstance, int32 OldCount);
+
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<UAbilityUIDataAsset> AbilityUIDataAsset;

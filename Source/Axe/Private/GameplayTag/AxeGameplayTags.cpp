@@ -21,11 +21,14 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(InputTag_Defense, "InputTag.Defense");
 	AddTag(InputTag_Interact, "InputTag.Interact");
 	AddTag(InputTag_Jump, "InputTag.Jump");
+	AddTag(InputTag_Action_UseItem, "InputTag.Action.UseItem");
 
 	AddTag(Ability_Attack_LightAttack, "Ability.Attack.LightAttack");
 	AddTag(Ability_Attack_HeavyAttack, "Ability.Attack.HeavyAttack");
 	AddTag(Ability_Move_Dash, "Ability.Move.Dash");
 	AddTag(Ability_Move_Jump, "Ability.Move.Jump");
+	
+	AddTag(Ability_Action_UseItem, "Ability.Action.UseItem");
 
 	AddTag(Ability_Attack_MeleeCombo_A1, "Ability.Attack.MeleeCombo.A1");
 	AddTag(Ability_Attack_MeleeCombo_A2, "Ability.Attack.MeleeCombo.A2");
@@ -99,6 +102,8 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	 * Item
 	 */
 	AddTag(Inventory_Entry_Bag, "Inventory.Entry.Bag");
+	
+	AddTag(Inventory_Entry_UseBar, "Inventory.Entry.UseBar");
 
 	AddTag(Inventory_Entry_Equipment, "Inventory.Entry.Equipment");
 	AddTag(Inventory_Entry_Equipment_Armor_Helmet, "Inventory.Entry.Equipment.Armor.Helmet");
