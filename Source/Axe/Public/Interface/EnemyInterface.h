@@ -26,4 +26,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual AActor* GetCombatTarget() const = 0;
+
+	UFUNCTION(BlueprintCallable)
+	virtual int32 GetLootXp() const = 0;
 };

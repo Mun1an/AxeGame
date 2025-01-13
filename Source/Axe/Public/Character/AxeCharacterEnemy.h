@@ -28,6 +28,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	AActor* GetCombatTarget() const;
 	//
+	virtual int32 GetLootXp() const override { return LootXp; };
+
+	virtual void OnDead() override;
 
 protected:
 	virtual void BeginPlay() override;
@@ -43,6 +46,11 @@ protected:
 
 	virtual void MulticastDeath_Implementation(FVector InDeathImpulseVector) override;
 
+	void LootXpToAllPlayers();
+	
 	UPROPERTY()
 	AActor* CombatTarget;
+
+	UPROPERTY(EditDefaultsOnly, Category="Loot")
+	int32 LootXp = 0;
 };

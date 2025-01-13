@@ -5,7 +5,9 @@
 
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
 #include "AbilitySystem/AttributeSet/AxeAttributeSet.h"
+#include "Character/AxeCharacterPlayer.h"
 #include "Components/WidgetComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "UI/Widget/AxeUserWidget.h"
 #include "UI/WidgetController/AxeWidgetControllerBase.h"
 #include "UI/WidgetController/MobOverlayWidgetController.h"
@@ -25,6 +27,13 @@ void AAxeCharacterEnemy::SetCombatTarget(AActor* NewCombatTarget)
 AActor* AAxeCharacterEnemy::GetCombatTarget() const
 {
 	return CombatTarget;
+}
+
+void AAxeCharacterEnemy::OnDead()
+{
+	Super::OnDead();
+
+	LootXpToAllPlayers();
 }
 
 void AAxeCharacterEnemy::BeginPlay()
@@ -65,4 +74,28 @@ void AAxeCharacterEnemy::MulticastDeath_Implementation(FVector InDeathImpulseVec
 	Super::MulticastDeath_Implementation(InDeathImpulseVector);
 
 	HealthBar->SetVisibility(false);
+}
+
+void AAxeCharacterEnemy::LootXpToAllPlayers()
+{
+	UWorld* World = GetWorld();
+	if (!World)
+	{
+		return;
+	}
+	// fixme
+	TArray<AActor*> OutPlayers;
+	UGameplayStatics::GetAllActorsOfClass(World, AAxeCharacterPlayer::StaticClass(), OutPlayers);
+
+	for (const AActor* OutPlayer : OutPlayers)
+	{
+		const IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(OutPlayer);
+		if (!AbilitySystemInterface)
+		{
+			continue;
+		}
+		UAbilitySystemComponent* ASC = AbilitySystemInterface->GetAbilitySystemComponent();
+		UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(ASC);
+		AxeASC->ApplyIncomingXpEffect(this, LootXp);
+	}
 }
