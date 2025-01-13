@@ -40,8 +40,6 @@ struct FDamageEffectParams
 	// float DebuffDuration = 0.f;
 	// UPROPERTY(BlueprintReadWrite)
 	// float DebuffFrequency = 0.f;
-	// UPROPERTY(BlueprintReadWrite)
-	// float KnockbackChance = 0.f;
 };
 
 UENUM(BlueprintType)

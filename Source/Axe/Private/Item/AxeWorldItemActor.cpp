@@ -3,11 +3,13 @@
 #include "Item/AxeWorldItemActor.h"
 
 #include "Components/SphereComponent.h"
+#include "Components/WidgetComponent.h"
 #include "Item/Component/ItemComponent.h"
 #include "Item/DisplayItemActor/DisplayItemActor.h"
 #include "Item/Instance/ItemDefinition.h"
 #include "Item/ItemFragment/ItemFragment_World.h"
 #include "Net/UnrealNetwork.h"
+#include "UI/Widget/ItemInfoWidgetComponent.h"
 
 AAxeWorldItemActor::AAxeWorldItemActor()
 {
@@ -25,6 +27,10 @@ AAxeWorldItemActor::AAxeWorldItemActor()
 
 	ItemSkeletalMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>("SkeletalMeshComponent");
 	ItemSkeletalMeshComponent->SetupAttachment(GetRootComponent());
+
+	ItemInfoWidgetComponent = CreateDefaultSubobject<UItemInfoWidgetComponent>("ItemInfoWidgetComponent");
+	ItemInfoWidgetComponent->SetupAttachment(GetRootComponent());
+	ItemInfoWidgetComponent->SetVisibility(false);
 
 	ItemComponent = CreateDefaultSubobject<UItemComponent>("ItemComponent");
 }

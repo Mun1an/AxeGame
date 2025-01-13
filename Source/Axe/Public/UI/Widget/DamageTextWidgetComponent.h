@@ -6,6 +6,7 @@
 #include "Components/WidgetComponent.h"
 #include "DamageTextWidgetComponent.generated.h"
 
+enum class EDamageSpecialExpression : uint8;
 /**
  * 
  */

@@ -11,6 +11,8 @@
 #include "Interface/Pickupable.h"
 #include "AxeWorldItemActor.generated.h"
 
+class UItemInfoWidgetComponent;
+class UWidgetComponent;
 class ADisplayItemActor;
 class USphereComponent;
 class UItemComponent;
@@ -36,6 +38,8 @@ public:
 	// HighLight
 	virtual void HighlightActor() override;
 	virtual void UnHighlightActor() override;
+
+	TObjectPtr<UItemInfoWidgetComponent> GetItemInfoWidgetComponent() { return ItemInfoWidgetComponent; }
 	
 	TObjectPtr<UItemComponent> GetItemComponent() { return ItemComponent; }
 	
@@ -58,7 +62,10 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TObjectPtr<USkeletalMeshComponent> ItemSkeletalMeshComponent;
-
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TObjectPtr<UItemInfoWidgetComponent> ItemInfoWidgetComponent;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TObjectPtr<UItemComponent> ItemComponent;
 
@@ -70,6 +77,8 @@ protected:
 	UPROPERTY(Replicated)
 	ADisplayItemActor* DisplayItemActor = nullptr;
 
+	
+	
 private:
 	float TempRotateYaw = 0;
 	float TempLocateZ = 0;
