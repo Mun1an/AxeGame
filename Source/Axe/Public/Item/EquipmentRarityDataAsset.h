@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
+#include "Instance/EquipmentItemInstance.h"
 #include "EquipmentRarityDataAsset.generated.h"
 
 enum class EEquipmentRarity : uint8;
@@ -16,7 +17,7 @@ struct FEquipmentRarityInfo
 	GENERATED_BODY()
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	EEquipmentRarity EquipmentRarity;
+	EEquipmentRarity EquipmentRarity = EEquipmentRarity::Common;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FName RarityName = FName("");

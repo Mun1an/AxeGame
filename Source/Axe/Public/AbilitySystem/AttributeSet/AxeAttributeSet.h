@@ -151,6 +151,10 @@ public:
 	FGameplayAttributeData IncomingXp;
 	ATTRIBUTE_ACCESSORS(UAxeAttributeSet, IncomingXp);
 
+	UPROPERTY(BlueprintReadOnly, Category = "Meta Attributes")
+	FGameplayAttributeData IncomingGoldCoinCount;
+	ATTRIBUTE_ACCESSORS(UAxeAttributeSet, IncomingGoldCoinCount);
+
 	/**
 	 * @brief OnRep func
 	 */
@@ -199,7 +203,7 @@ private:
 	void SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const;
 	void HandleIncomingDamageEffect(const FEffectProperties& Props);
 	void HandleIncomingXpEffect(const FEffectProperties& Props);
-
+	void HandleIncomingGoldCoinCountEffect(const FEffectProperties& Props);
 
 	void ShowDamageFloatingText(AAxeCharacterBase* SourceCharacter, AAxeCharacterBase* TargetCharacter,
 	                            const float Damage,

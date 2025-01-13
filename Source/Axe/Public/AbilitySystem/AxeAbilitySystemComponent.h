@@ -82,6 +82,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	FActiveGameplayEffectHandle ApplyIncomingXpEffect(AActor* SourceActor, int32 XpValue);
+	UFUNCTION(BlueprintCallable)
+	FActiveGameplayEffectHandle ApplyIncomingGoldCoinCountEffect(AActor* SourceActor, int32 GoldCoinCount);
 	//
 	void ExecuteDelegateToGetAbilitySpec(const FAbilitySpecDataDelegate& Delegate);
 	//

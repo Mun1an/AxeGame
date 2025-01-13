@@ -28,7 +28,7 @@ public:
 
 	virtual UInventoryComponent* GetInventoryComponent() const override;
 
-	//
+	// Level And Xp
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE int32 GetPlayerLevel() const { return PlayerLevel; }
 
@@ -45,6 +45,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void AddToPlayerXp(const float AddXp);
 
+	//
 	UFUNCTION(BlueprintCallable)
 	int32 GetNewLevelByTotalXp(int32 TotalXp) const;
 
@@ -59,8 +60,18 @@ public:
 	UFUNCTION(BlueprintCallable)
 	float GetXpPercent() const;
 
+	//
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE int32 GetGoldCoinCount() const { return GoldCoinCount; }
+
+	UFUNCTION(BlueprintCallable)
+	void SetGoldCoinCount(int32 NewGoldCoin);
+	UFUNCTION(BlueprintCallable)
+	void AddToGoldCoinCount(int32 AddGoldCoin);
+
 	FOnPlayerStateValueChanged OnXpChangedDelegate;
 	FOnPlayerStateValueChanged OnLevelChangedDelegate;
+	FOnPlayerStateValueChanged OnGoldCoinCountChangedDelegate;
 
 protected:
 	UPROPERTY(VisibleAnywhere)
@@ -82,6 +93,9 @@ private:
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_Xp)
 	int32 Xp = 0;
 
+	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_GoldCoinCount)
+	int32 GoldCoinCount = 0;
+
 	// 升级所需总经验列表
 	TArray<int32> LevelXpThresholds;
 
@@ -89,6 +103,8 @@ private:
 	void OnRep_Level(int32 OldValue);
 	UFUNCTION()
 	void OnRep_Xp(int32 OldValue);
+	UFUNCTION()
+	void OnRep_GoldCoinCount(int32 OldValue);
 
 	void InitializeLevelXpThresholds();
 };

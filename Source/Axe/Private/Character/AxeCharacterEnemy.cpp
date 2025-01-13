@@ -33,7 +33,11 @@ void AAxeCharacterEnemy::OnDead()
 {
 	Super::OnDead();
 
-	LootXpToAllPlayers();
+	const UWorld* World = GetWorld();
+	// fixme 优化 GetAllPlayers
+	TArray<AActor*> AllPlayers;
+	UGameplayStatics::GetAllActorsOfClass(World, AAxeCharacterPlayer::StaticClass(), AllPlayers);
+	SendLootToPlayers(AllPlayers);
 }
 
 void AAxeCharacterEnemy::BeginPlay()
@@ -76,18 +80,9 @@ void AAxeCharacterEnemy::MulticastDeath_Implementation(FVector InDeathImpulseVec
 	HealthBar->SetVisibility(false);
 }
 
-void AAxeCharacterEnemy::LootXpToAllPlayers()
+void AAxeCharacterEnemy::SendLootToPlayers(const TArray<AActor*>& Players)
 {
-	UWorld* World = GetWorld();
-	if (!World)
-	{
-		return;
-	}
-	// fixme
-	TArray<AActor*> OutPlayers;
-	UGameplayStatics::GetAllActorsOfClass(World, AAxeCharacterPlayer::StaticClass(), OutPlayers);
-
-	for (const AActor* OutPlayer : OutPlayers)
+	for (const AActor* OutPlayer : Players)
 	{
 		const IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(OutPlayer);
 		if (!AbilitySystemInterface)
@@ -96,6 +91,10 @@ void AAxeCharacterEnemy::LootXpToAllPlayers()
 		}
 		UAbilitySystemComponent* ASC = AbilitySystemInterface->GetAbilitySystemComponent();
 		UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(ASC);
+
+		// Xp
 		AxeASC->ApplyIncomingXpEffect(this, LootXp);
+		// GoldCoin
+		AxeASC->ApplyIncomingGoldCoinCountEffect(this, LootGoldCoinCount);
 	}
 }

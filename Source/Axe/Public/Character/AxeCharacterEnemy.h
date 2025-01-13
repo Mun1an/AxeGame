@@ -46,11 +46,14 @@ protected:
 
 	virtual void MulticastDeath_Implementation(FVector InDeathImpulseVector) override;
 
-	void LootXpToAllPlayers();
-	
+	void SendLootToPlayers(const TArray<AActor*>& Players);
+
 	UPROPERTY()
 	AActor* CombatTarget;
 
 	UPROPERTY(EditDefaultsOnly, Category="Loot")
 	int32 LootXp = 0;
+
+	UPROPERTY(EditDefaultsOnly, Category="Loot")
+	int32 LootGoldCoinCount = 0;
 };

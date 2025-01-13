@@ -30,15 +30,17 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category="GAS|Xp")
 	FOnPlayerStatChangedSignature OnXpChangedDelegate;
-
 	UPROPERTY(BlueprintAssignable, Category="GAS|Level")
 	FOnPlayerStatChangedSignature OnPlayerLevelChangedDelegate;
+	UPROPERTY(BlueprintAssignable, Category="GAS|GoldCoin")
+	FOnPlayerStatChangedSignature OnGoldCoinCountChangedDelegate;
 	
 protected:
 	void BroadcastAttributeInfo(const FGameplayTag& Tag, const FGameplayAttribute& Attribute);
 
-	void OnXpChanged(int32 NewXp);
-	void OnPlayerLevelChanged(int32 NewLevel);
+	void OnXpChanged(int32 NewValue);
+	void OnPlayerLevelChanged(int32 NewValue);
+	void OnGoldCoinCountChanged(int32 NewValue);
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	TObjectPtr<UAttributeUIDataAsset> AttributeDataAsset;

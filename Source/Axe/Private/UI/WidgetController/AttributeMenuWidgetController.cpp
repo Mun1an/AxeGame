@@ -24,8 +24,10 @@ void UAttributeMenuWidgetController::BroadcastInitialValues()
 	}
 
 	const AAxePlayerState* AxePS = GetAxePlayerState();
+	
 	AxePS->OnLevelChangedDelegate.Broadcast(AxePS->GetPlayerLevel());
 	AxePS->OnXpChangedDelegate.Broadcast(AxePS->GetPlayerXp());
+	AxePS->OnGoldCoinCountChangedDelegate.Broadcast(AxePS->GetGoldCoinCount());
 }
 
 void UAttributeMenuWidgetController::BindCallbacksToDependencies()
@@ -47,6 +49,7 @@ void UAttributeMenuWidgetController::BindCallbacksToDependencies()
 	AAxePlayerState* AxePS = GetAxePlayerState();
 	AxePS->OnXpChangedDelegate.AddUObject(this, &UAttributeMenuWidgetController::OnXpChanged);
 	AxePS->OnLevelChangedDelegate.AddUObject(this, &UAttributeMenuWidgetController::OnPlayerLevelChanged);
+	AxePS->OnGoldCoinCountChangedDelegate.AddUObject(this, &UAttributeMenuWidgetController::OnGoldCoinCountChanged);
 }
 
 void UAttributeMenuWidgetController::BroadcastAttributeInfo(const FGameplayTag& Tag,
@@ -61,12 +64,17 @@ void UAttributeMenuWidgetController::BroadcastAttributeInfo(const FGameplayTag& 
 	}
 }
 
-void UAttributeMenuWidgetController::OnXpChanged(int32 NewXp)
+void UAttributeMenuWidgetController::OnXpChanged(int32 NewValue)
 {
-	OnXpChangedDelegate.Broadcast(NewXp);
+	OnXpChangedDelegate.Broadcast(NewValue);
 }
 
-void UAttributeMenuWidgetController::OnPlayerLevelChanged(int32 NewLevel)
+void UAttributeMenuWidgetController::OnPlayerLevelChanged(int32 NewValue)
 {
-	OnPlayerLevelChangedDelegate.Broadcast(NewLevel);
+	OnPlayerLevelChangedDelegate.Broadcast(NewValue);
+}
+
+void UAttributeMenuWidgetController::OnGoldCoinCountChanged(int32 NewValue)
+{
+	OnGoldCoinCountChangedDelegate.Broadcast(NewValue);
 }

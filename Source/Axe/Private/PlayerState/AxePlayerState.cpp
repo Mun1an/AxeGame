@@ -31,6 +31,7 @@ void AAxePlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME_CONDITION_NOTIFY(AAxePlayerState, PlayerLevel, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(AAxePlayerState, Xp, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(AAxePlayerState, GoldCoinCount, COND_None, REPNOTIFY_Always);
 }
 
 UAbilitySystemComponent* AAxePlayerState::GetAbilitySystemComponent() const
@@ -120,6 +121,17 @@ float AAxePlayerState::GetXpPercent() const
 	return Per;
 }
 
+void AAxePlayerState::SetGoldCoinCount(int32 NewGoldCoin)
+{
+	GoldCoinCount = NewGoldCoin;
+	OnGoldCoinCountChangedDelegate.Broadcast(GoldCoinCount);
+}
+
+void AAxePlayerState::AddToGoldCoinCount(int32 AddGoldCoin)
+{
+	SetGoldCoinCount(GoldCoinCount + AddGoldCoin);
+}
+
 void AAxePlayerState::OnRep_Level(int32 OldValue)
 {
 	OnLevelChangedDelegate.Broadcast(OldValue);
@@ -130,6 +142,12 @@ void AAxePlayerState::OnRep_Xp(int32 OldValue)
 	OnXpChangedDelegate.Broadcast(OldValue);
 }
 
+void AAxePlayerState::OnRep_GoldCoinCount(int32 OldValue)
+{
+	OnGoldCoinCountChangedDelegate.Broadcast(OldValue);
+}
+
+//
 void AAxePlayerState::InitializeLevelXpThresholds()
 {
 	LevelXpThresholds.SetNum(MaxPlayerLevel + 1);

@@ -132,6 +132,10 @@ void UAxeAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbac
 	{
 		HandleIncomingXpEffect(EffectProperties);
 	}
+	if (Data.EvaluatedData.Attribute == GetIncomingGoldCoinCountAttribute())
+	{
+		HandleIncomingGoldCoinCountEffect(EffectProperties);
+	}
 }
 
 /*
@@ -323,6 +327,26 @@ void UAxeAttributeSet::HandleIncomingXpEffect(const FEffectProperties& Props)
 		{
 			AAxePlayerState* AxePS = Cast<AAxePlayerState>(PlayerState);
 			AxePS->AddToPlayerXp(LocalIncomingXp);
+		}
+	}
+}
+
+void UAxeAttributeSet::HandleIncomingGoldCoinCountEffect(const FEffectProperties& Props)
+{
+	const float LocalIncomingGoldCoinCount = GetIncomingGoldCoinCount();
+
+	const FAxeGameplayTags AxeGameplayTags = FAxeGameplayTags::Get();
+
+	//
+	SetIncomingGoldCoinCount(0.f);
+
+	//
+	if (Props.TargetCharacter)
+	{
+		if (APlayerState* PlayerState = Props.TargetCharacter->GetPlayerState())
+		{
+			AAxePlayerState* AxePS = Cast<AAxePlayerState>(PlayerState);
+			AxePS->AddToGoldCoinCount(LocalIncomingGoldCoinCount);
 		}
 	}
 }

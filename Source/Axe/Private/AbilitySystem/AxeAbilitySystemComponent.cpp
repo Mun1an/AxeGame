@@ -417,6 +417,25 @@ FActiveGameplayEffectHandle UAxeAbilitySystemComponent::ApplyIncomingXpEffect(AA
 	return GameplayEffectSpecToSelf;
 }
 
+FActiveGameplayEffectHandle UAxeAbilitySystemComponent::ApplyIncomingGoldCoinCountEffect(AActor* SourceActor,
+	int32 GoldCoinCount)
+{
+	FGameplayEffectContextHandle ContextHandle = MakeEffectContext();
+	ContextHandle.AddSourceObject(SourceActor);
+
+	const TSubclassOf<UGameplayEffect> EffectClass = UAxeAssetManager::GetSubclass(
+		UAxeGameData::Get().GE_IncomingGoldCoinCount_SetByCaller);
+
+	const FGameplayEffectSpecHandle SpecHandle = MakeOutgoingSpec(
+		EffectClass, 1, ContextHandle
+	);
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
+		SpecHandle, FAxeGameplayTags::Get().Effect_Magnitude_IncomingGoldCoinCount, GoldCoinCount
+	);
+	FActiveGameplayEffectHandle GameplayEffectSpecToSelf = ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+	return GameplayEffectSpecToSelf;
+}
+
 void UAxeAbilitySystemComponent::ExecuteDelegateToGetAbilitySpec(const FAbilitySpecDataDelegate& Delegate)
 {
 	FScopedAbilityListLock AbilityLock(*this);

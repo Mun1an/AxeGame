@@ -28,9 +28,10 @@ public:
 
 public:
 	// Gameplay effect used to apply damage.  Uses SetByCaller for the damage magnitude.
-	// UPROPERTY(EditDefaultsOnly, Category = "Default Gameplay Effects", meta = (DisplayName = "Damage Gameplay Effect (SetByCaller)"))
-	// TSoftClassPtr<UGameplayEffect> DamageGameplayEffect_SetByCaller;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Default Gameplay Effects")
 	TSoftClassPtr<UGameplayEffect> GE_IncomingXp_SetByCaller;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Default Gameplay Effects")
+	TSoftClassPtr<UGameplayEffect> GE_IncomingGoldCoinCount_SetByCaller;
 };
