@@ -7,6 +7,7 @@
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
 #include "AbilitySystem/AttributeSet/AxeAttributeSet.h"
 #include "Inventory/Component/InventoryComponent.h"
+#include "Net/UnrealNetwork.h"
 
 
 AAxePlayerState::AAxePlayerState()
@@ -28,6 +29,8 @@ AAxePlayerState::AAxePlayerState()
 void AAxePlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME_CONDITION_NOTIFY(AAxePlayerState, PlayerLevel, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(AAxePlayerState, Xp, COND_None, REPNOTIFY_Always);
 }
 
 UAbilitySystemComponent* AAxePlayerState::GetAbilitySystemComponent() const
