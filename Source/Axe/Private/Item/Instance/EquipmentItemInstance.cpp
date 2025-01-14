@@ -91,7 +91,7 @@ void UEquipmentItemInstance::OnEquipped()
 		SpawnEquipmentActors(EquipmentDef->ActorsToSpawn);
 	}
 
-	UAbilitySystemComponent* ASC = GetAbilitySystemComponent();
+	UAbilitySystemComponent* ASC = GetOwnerAbilitySystemComponent();
 	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(ASC);
 
 	const UEquipmentItemDefinition* EquipmentItemDefinition = GetItemDef()->GetDefaultObject<
@@ -118,7 +118,7 @@ void UEquipmentItemInstance::OnUnequipped()
 		DestroyEquipmentActors();
 	}
 
-	UAbilitySystemComponent* ASC = GetAbilitySystemComponent();
+	UAbilitySystemComponent* ASC = GetOwnerAbilitySystemComponent();
 	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(ASC);
 	if (AxeCharacterPlayer->HasAuthority() && AxeASC && EquipmentEffectHandle.IsValid())
 	{
@@ -167,15 +167,4 @@ FString UEquipmentItemInstance::GetItemDescription()
 		FMath::RoundToInt(EquipmentItemInstanceInfo.EquipmentDamage
 		)
 	);
-}
-
-UAbilitySystemComponent* UEquipmentItemInstance::GetAbilitySystemComponent()
-{
-	APawn* Pawn = GetPawn();
-	IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(Pawn);
-	if (AbilitySystemInterface)
-	{
-		return AbilitySystemInterface->GetAbilitySystemComponent();
-	}
-	return nullptr;
 }

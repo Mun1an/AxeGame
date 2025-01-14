@@ -73,7 +73,7 @@ void UAxeAbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& Inpu
 
 			if (!AbilitySpec.IsActive())
 			{
-				TryActivateAbilityAndCheck_Client(AbilitySpec.Handle);
+				TryActivateAbilityAndCheck_Client(AbilitySpec.Handle, InputTag);
 			}
 		}
 	}
@@ -91,7 +91,7 @@ void UAxeAbilitySystemComponent::AbilityInputTagHeld(const FGameplayTag& InputTa
 
 			if (!AbilitySpec.IsActive())
 			{
-				TryActivateAbilityAndCheck_Client(AbilitySpec.Handle);
+				TryActivateAbilityAndCheck_Client(AbilitySpec.Handle, InputTag);
 			}
 		}
 	}
@@ -110,27 +110,12 @@ void UAxeAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag& Inp
 }
 
 void UAxeAbilitySystemComponent::TryActivateAbilityAndCheck_Client(FGameplayAbilitySpecHandle AbilitySpecHandle,
+                                                                   const FGameplayTag InputTag,
                                                                    bool bAllowRemoteActivation)
 {
 	const FGameplayAbilitySpec* AbilitySpec = FindAbilitySpecFromHandle(AbilitySpecHandle);
-	const FGameplayTag InputTag = Cast<UAxeGameplayAbility>(AbilitySpec->Ability)->InputTag;
-
-	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
-	ICombatInterface* CombatInterface = Cast<ICombatInterface>(AxeCharacterOwner);
-	// Combo
-	if (InputTag.IsValid() && CombatInterface)
-	{
-		UComboActionComponent* ComboActionComponent = CombatInterface->GetComboActionComponent_Implementation();
-		const FGameplayTag NextComboAbilityTag = ComboActionComponent->GetNextComboAbilityTagByInputTag(InputTag);
-		if (NextComboAbilityTag.IsValid())
-		{
-			FGameplayAbilitySpecHandle NewSpecHandle = GetAbilityHandleByAbilityTag(NextComboAbilityTag);
-			if (NewSpecHandle.IsValid())
-			{
-				AbilitySpecHandle = NewSpecHandle;
-			}
-		}
-	}
+	UAxeGameplayAbility* AxeGameplayAbilityCDO = Cast<UAxeGameplayAbility>(AbilitySpec->Ability);
+	AxeGameplayAbilityCDO->HandleTryActivateAbilityClientCDO(AbilitySpecHandle, InputTag, GetAxeCharacterOwner());
 
 	TryActivateAbility(AbilitySpecHandle, bAllowRemoteActivation);
 }
@@ -285,8 +270,11 @@ void UAxeAbilitySystemComponent::OnGiveAbility(FGameplayAbilitySpec& AbilitySpec
 		{
 			AbilitySpec.DynamicAbilityTags.AddTag(AxeGameplayAbility->InputTag);
 		}
+		if (AxeGameplayAbility->InputTagContainer.IsValid())
+		{
+			AbilitySpec.DynamicAbilityTags.AppendTags(AxeGameplayAbility->InputTagContainer);
+		}
 	}
-
 	AbilitiesGivenDelegate.Broadcast();
 }
 

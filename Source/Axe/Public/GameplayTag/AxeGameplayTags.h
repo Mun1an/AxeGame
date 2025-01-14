@@ -28,7 +28,10 @@ struct FAxeGameplayTags
 	FGameplayTag InputTag_Defense;
 	FGameplayTag InputTag_Interact;
 	FGameplayTag InputTag_Jump;
-	FGameplayTag InputTag_Action_UseItem;
+	FGameplayTag InputTag_Action_UseItem_1;
+	FGameplayTag InputTag_Action_UseItem_2;
+	FGameplayTag InputTag_Action_UseItem_3;
+	FGameplayTag InputTag_Action_UseItem_4;
 
 	FGameplayTag Ability_Attack_LightAttack;
 	FGameplayTag Ability_Attack_HeavyAttack;
@@ -36,6 +39,7 @@ struct FAxeGameplayTags
 	FGameplayTag Ability_Move_Jump;
 	
 	FGameplayTag Ability_Action_UseItem;
+	FGameplayTag Ability_Action_UseItem_DrinkPotion;
 
 	FGameplayTag Ability_Attack_MeleeCombo_A1;
 	FGameplayTag Ability_Attack_MeleeCombo_A2;

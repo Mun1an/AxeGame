@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "ItemInstance.generated.h"
 
+class UAbilitySystemComponent;
 class UItemDefinition;
 /**
  * 
@@ -20,10 +21,13 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual bool IsSupportedForNetworking() const override { return true; }
 
+	UFUNCTION(BlueprintCallable)
 	APawn* GetPawn() const { return OwningPawn; }
+
 	void SetPawn(APawn* InPawn) { OwningPawn = InPawn; }
 
-	const TSubclassOf<UItemDefinition>& GetItemDef()
+	UFUNCTION(BlueprintCallable)
+	TSubclassOf<UItemDefinition> GetItemDef()
 	{
 		return ItemDef;
 	}
@@ -34,12 +38,16 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Item")
 	virtual FString GetItemDescription();
-	
+
 protected:
+	UFUNCTION(BlueprintCallable)
+	UAbilitySystemComponent* GetOwnerAbilitySystemComponent() const;
+
+private:
 	// The item definition
-	UPROPERTY(Replicated, BlueprintReadOnly)
+	UPROPERTY(Replicated)
 	TSubclassOf<UItemDefinition> ItemDef;
 
-	UPROPERTY(Replicated, BlueprintReadOnly)
+	UPROPERTY(Replicated)
 	TObjectPtr<APawn> OwningPawn = nullptr;
 };

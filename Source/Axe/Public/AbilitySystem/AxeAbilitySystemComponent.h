@@ -46,7 +46,7 @@ public:
 	void AbilityInputTagHeld(const FGameplayTag& InputTag);
 	void AbilityInputTagReleased(const FGameplayTag& InputTag);
 	//
-	void TryActivateAbilityAndCheck_Client(FGameplayAbilitySpecHandle AbilitySpecHandle,
+	void TryActivateAbilityAndCheck_Client(FGameplayAbilitySpecHandle AbilitySpecHandle, FGameplayTag InputTag,
 	                                       bool bAllowRemoteActivation = true);
 	void TryActivateHitReactAbility(const FGameplayTag HitReactTag, const FHitResult& HitResult,
 	                                AActor* SourceActor = nullptr);

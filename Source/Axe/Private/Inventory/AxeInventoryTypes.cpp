@@ -149,15 +149,22 @@ bool FAxeInventoryList::AddItemInternal(UItemInstance* ItemInstance, int32 Stack
 
 bool FAxeInventoryList::RemoveItem(int32 SlotIndex, int32 RemoveCount)
 {
+	if (!Entries.IsValidIndex(SlotIndex))
+	{
+		return false;
+	}
 	FInventoryEntry& Entry = Entries[SlotIndex];
 
 	if (Entry.Instance == nullptr)
 	{
 		return false;
 	}
-	Entry.LastInstance = Entry.Instance;
-	Entry.Instance = nullptr;
 	Entry.StackCount = FMath::Max(0, Entry.StackCount - RemoveCount);
+	if (Entry.StackCount == 0)
+	{
+		Entry.LastInstance = Entry.Instance;
+		Entry.Instance = nullptr;
+	}
 
 	HandleEntryChanged(Entry);
 	return true;

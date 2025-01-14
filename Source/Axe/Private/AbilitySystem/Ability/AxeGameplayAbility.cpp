@@ -203,6 +203,11 @@ void UAxeGameplayAbility::TryActivateAbilityOnSpawn(const FGameplayAbilityActorI
 	}
 }
 
+void UAxeGameplayAbility::HandleTryActivateAbilityClientCDO(FGameplayAbilitySpecHandle& AbilitySpecHandle,
+	const FGameplayTag AbilityInputTag, AActor* AbilityActor)
+{
+}
+
 bool UAxeGameplayAbility::CanActivateAbility_ByNowAbilityReplaceCondition(const FGameplayAbilitySpecHandle Handle,
                                                                           const FGameplayAbilityActorInfo* ActorInfo,
                                                                           const FGameplayTagContainer* SourceTags,
@@ -506,6 +511,10 @@ void UAxeGameplayAbility::ShakeCamera()
 
 void UAxeGameplayAbility::AddMontageNotifyStateTask(UAnimMontage* LocalAnimMontage)
 {
+	if (!LocalAnimMontage)
+	{
+		return;
+	}
 	//AddTask
 
 	//UAbilityTask_MontageNotify

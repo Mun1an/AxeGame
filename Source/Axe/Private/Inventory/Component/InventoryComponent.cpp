@@ -12,6 +12,7 @@
 #include "Item/Instance/EquipmentItemInstance.h"
 #include "Item/Instance/ItemDefinition.h"
 #include "Item/Instance/ItemInstance.h"
+#include "Item/Interface/ItemUseInterface.h"
 #include "Item/ItemFragment/ItemFragment_CommonInfo.h"
 #include "Item/ItemFragment/ItemFragment_UI.h"
 #include "Net/UnrealNetwork.h"
@@ -309,6 +310,28 @@ void UInventoryComponent::RefreshInventoryItemEntryChange()
 bool UInventoryComponent::CheckEntryHasTag(const FGameplayTag CheckTag, FInventoryEntry& Entry)
 {
 	return Entry.EntryTags.HasTag(CheckTag);
+}
+
+bool UInventoryComponent::CheckEntryCanItemUse(const int32 SlotIndex)
+{
+	const FInventoryEntry Entry = GetInventoryEntryByIndex(SlotIndex);
+	if (!Entry.EntryTags.HasTag(FAxeGameplayTags::Get().Inventory_Entry_UseBar))
+	{
+		return false;
+	}
+	if (Entry.StackCount <= 0 || Entry.Instance == nullptr)
+	{
+		return false;
+	}
+
+	if (IItemUseInterface* ItemUseInterface = Cast<IItemUseInterface>(Entry.Instance))
+	{
+		if (!ItemUseInterface->CanUseItem())
+		{
+			return false;
+		}
+	}
+	return true;
 }
 
 

@@ -28,7 +28,9 @@ public:
 	                             const FGameplayAbilityActivationInfo ActivationInfo,
 	                             const FGameplayEventData* TriggerEventData) override;
 
-	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
+	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+	                        const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility,
+	                        bool bWasCancelled) override;
 	// IComboAbilityInterface
 	virtual void Ans_Combo_NotifyBegin(UAnimNotifyState* AnimNotifyState) override;
 	virtual void Ans_Combo_NotifyEnd(UAnimNotifyState* AnimNotifyState) override;
@@ -39,6 +41,10 @@ public:
 	virtual void Ans_HitTrace_NotifyBegin(UAnimNotifyState* AnimNotifyState) override;
 	virtual void Ans_HitTrace_NotifyEnd(UAnimNotifyState* AnimNotifyState) override;
 	AWeaponEquipmentItemActor* GetHitTraceWeaponActorByEnum(EHitTraceWeaponHandIndex HitTraceWeaponHand);
+
+	//
+	virtual void HandleTryActivateAbilityClientCDO(FGameplayAbilitySpecHandle& AbilitySpecHandle,
+	                                               const FGameplayTag AbilityInputTag, AActor* AbilityActor) override;
 
 	//
 	UPROPERTY(EditDefaultsOnly)
@@ -79,5 +85,4 @@ protected:
 	//
 	UPROPERTY()
 	TMap<UAnimNotifyState*, UAbilityTask_HitTrace*> AnimNotifyStateToHitTraceTaskMap;
-
 };

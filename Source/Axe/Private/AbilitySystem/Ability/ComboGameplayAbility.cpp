@@ -3,8 +3,10 @@
 
 #include "AbilitySystem/Ability/ComboGameplayAbility.h"
 
+#include "AbilitySystemComponent.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "AbilitySystem/AxeAbilitySystemComponent.h"
 #include "GameplayTag/AxeGameplayTags.h"
 #include "AbilitySystem/Tasks/AbilityTask_HitTrace.h"
 #include "ActionSystem/ComboActionComponent.h"
@@ -201,6 +203,34 @@ AWeaponEquipmentItemActor* UComboGameplayAbility::GetHitTraceWeaponActorByEnum(
 		break;
 	}
 	return nullptr;
+}
+
+void UComboGameplayAbility::HandleTryActivateAbilityClientCDO(FGameplayAbilitySpecHandle& AbilitySpecHandle,
+                                                              const FGameplayTag AbilityInputTag, AActor* AbilityActor)
+{
+	Super::HandleTryActivateAbilityClientCDO(AbilitySpecHandle, AbilityInputTag, AbilityActor);
+
+	ICombatInterface* CombatInterface = Cast<ICombatInterface>(AbilityActor);
+	IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(AbilityActor);
+	UAbilitySystemComponent* ASC = AbilitySystemInterface->GetAbilitySystemComponent();
+	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(ASC);
+
+	if (CombatInterface == nullptr || AxeASC == nullptr)
+	{
+		return;
+	}
+
+	// Combo
+	UComboActionComponent* ComboActionComponent = CombatInterface->GetComboActionComponent_Implementation();
+	const FGameplayTag NextComboAbilityTag = ComboActionComponent->GetNextComboAbilityTagByInputTag(AbilityInputTag);
+	if (NextComboAbilityTag.IsValid())
+	{
+		FGameplayAbilitySpecHandle NewSpecHandle = AxeASC->GetAbilityHandleByAbilityTag(NextComboAbilityTag);
+		if (NewSpecHandle.IsValid())
+		{
+			AbilitySpecHandle = NewSpecHandle;
+		}
+	}
 }
 
 void UComboGameplayAbility::CreateHitParticle(const FHitResult& HitResult)

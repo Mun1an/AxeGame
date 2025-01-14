@@ -21,7 +21,10 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(InputTag_Defense, "InputTag.Defense");
 	AddTag(InputTag_Interact, "InputTag.Interact");
 	AddTag(InputTag_Jump, "InputTag.Jump");
-	AddTag(InputTag_Action_UseItem, "InputTag.Action.UseItem");
+	AddTag(InputTag_Action_UseItem_1, "InputTag.Action.UseItem.1");
+	AddTag(InputTag_Action_UseItem_2, "InputTag.Action.UseItem.2");
+	AddTag(InputTag_Action_UseItem_3, "InputTag.Action.UseItem.3");
+	AddTag(InputTag_Action_UseItem_4, "InputTag.Action.UseItem.4");
 
 	AddTag(Ability_Attack_LightAttack, "Ability.Attack.LightAttack");
 	AddTag(Ability_Attack_HeavyAttack, "Ability.Attack.HeavyAttack");
@@ -29,6 +32,7 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(Ability_Move_Jump, "Ability.Move.Jump");
 	
 	AddTag(Ability_Action_UseItem, "Ability.Action.UseItem");
+	AddTag(Ability_Action_UseItem_DrinkPotion, "Ability.Action.UseItem.DrinkPotion");
 
 	AddTag(Ability_Attack_MeleeCombo_A1, "Ability.Attack.MeleeCombo.A1");
 	AddTag(Ability_Attack_MeleeCombo_A2, "Ability.Attack.MeleeCombo.A2");

@@ -3,6 +3,7 @@
 
 #include "Item/Instance/ItemInstance.h"
 
+#include "AbilitySystemInterface.h"
 #include "Engine/ActorChannel.h"
 #include "Item/ItemFunctionLibrary.h"
 #include "Item/Instance/ItemDefinition.h"
@@ -39,4 +40,15 @@ FString UItemInstance::GetItemDescription()
 		}
 	}
 	return FString();
+}
+
+UAbilitySystemComponent* UItemInstance::GetOwnerAbilitySystemComponent() const
+{
+	APawn* Pawn = GetPawn();
+	const IAbilitySystemInterface* AbilitySystemInterface = Cast<IAbilitySystemInterface>(Pawn);
+	if (AbilitySystemInterface)
+	{
+		return AbilitySystemInterface->GetAbilitySystemComponent();
+	}
+	return nullptr;
 }

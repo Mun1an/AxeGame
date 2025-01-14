@@ -89,6 +89,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category="Axe Ability | Input")
 	FGameplayTag InputTag;
 
+	UPROPERTY(EditDefaultsOnly, Category="Axe Ability | Input")
+	FGameplayTagContainer InputTagContainer;
+
 	/**
 	 * ActivationGroup
 	 */
@@ -104,6 +107,8 @@ public:
 	bool ChangeActivationGroup(EAxeAbilityActivationGroup NewGroup);
 
 	void TryActivateAbilityOnSpawn(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) const;
+
+	virtual void HandleTryActivateAbilityClientCDO(FGameplayAbilitySpecHandle& AbilitySpecHandle, const FGameplayTag AbilityInputTag, AActor* AbilityActor);
 
 	virtual bool CanActivateAbility_ByNowAbilityReplaceCondition(const FGameplayAbilitySpecHandle Handle,
 	                                                             const FGameplayAbilityActorInfo* ActorInfo,
@@ -135,7 +140,7 @@ public:
 	                       OUT FGameplayTagContainer* OptionalRelevantTags = nullptr) const override;
 
 	FGameplayTagContainer GetCancelAbilitiesTag() const;
-	
+
 protected:
 	/**
 	 * Ability Props

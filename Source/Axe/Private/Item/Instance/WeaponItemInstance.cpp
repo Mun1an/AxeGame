@@ -30,7 +30,7 @@ void UWeaponItemInstance::OnEquipped()
 
 	// Set the weapon equipment actor
 	AAxeCharacterPlayer* AxeCharacterPlayer = Cast<AAxeCharacterPlayer>(GetPawn());
-	UAbilitySystemComponent* ASC = GetAbilitySystemComponent();
+	UAbilitySystemComponent* ASC = GetOwnerAbilitySystemComponent();
 	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(ASC);
 
 	if (AxeCharacterPlayer)
@@ -78,7 +78,7 @@ void UWeaponItemInstance::OnUnequipped()
 	Super::OnUnequipped();
 
 	AAxeCharacterPlayer* AxeCharacterPlayer = Cast<AAxeCharacterPlayer>(GetPawn());
-	UAbilitySystemComponent* ASC = GetAbilitySystemComponent();
+	UAbilitySystemComponent* ASC = GetOwnerAbilitySystemComponent();
 	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(ASC);
 
 	// Set the weapon equipment actor

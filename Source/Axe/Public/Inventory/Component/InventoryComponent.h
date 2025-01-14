@@ -102,6 +102,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category=Inventory)
 	bool CheckEntryHasTag(const FGameplayTag CheckTag, FInventoryEntry& Entry);
 
+	UFUNCTION(BlueprintCallable, Category=Inventory)
+	bool CheckEntryCanItemUse(int32 SlotIndex);
+
 protected:
 	UFUNCTION(Client, Reliable)
 	void ClientSendItemUIMessage(UTexture2D* Texture, const FText& ItemName, int32 StackCount);
