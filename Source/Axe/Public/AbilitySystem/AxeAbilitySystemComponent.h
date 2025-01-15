@@ -7,6 +7,7 @@
 #include "Ability/AxeGameplayAbility.h"
 #include "AxeAbilitySystemComponent.generated.h"
 
+struct FEquipmentInstanceAttributeInfo;
 struct FEquipmentItemInstanceInfo;
 struct FEquipmentAttrInfo;
 struct FEquipmentInfo;
@@ -77,7 +78,7 @@ public:
 	bool ApplyDamageEffect(AActor* SourceActor, AActor* TargetActor, const FDamageEffectParams& Params);
 
 	FActiveGameplayEffectHandle ApplyEquipmentEffectToSelf(const TSubclassOf<UGameplayEffect>& EffectClass,
-	                                                       FEquipmentItemInstanceInfo EquipmentInfo,
+	                                                       const TArray<FEquipmentInstanceAttributeInfo>& EquipmentAttributeInfos,
 	                                                       FGameplayTag ItemTypeTag);
 	UFUNCTION(BlueprintCallable)
 	FActiveGameplayEffectHandle ApplyIncomingXpEffect(AActor* SourceActor, int32 XpValue);

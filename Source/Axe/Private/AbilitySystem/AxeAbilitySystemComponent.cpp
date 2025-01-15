@@ -365,7 +365,7 @@ bool UAxeAbilitySystemComponent::ApplyDamageEffect(AActor* SourceActor, AActor* 
 
 FActiveGameplayEffectHandle UAxeAbilitySystemComponent::ApplyEquipmentEffectToSelf(
 	const TSubclassOf<UGameplayEffect>& EffectClass,
-	const FEquipmentItemInstanceInfo EquipmentInfo,
+	const TArray<FEquipmentInstanceAttributeInfo>& EquipmentAttributeInfos,
 	FGameplayTag ItemTypeTag)
 {
 	FGameplayEffectContextHandle ContextHandle = MakeEffectContext();
@@ -375,15 +375,12 @@ FActiveGameplayEffectHandle UAxeAbilitySystemComponent::ApplyEquipmentEffectToSe
 	const FGameplayEffectSpecHandle SpecHandle = MakeOutgoingSpec(
 		EffectClass, 1, ContextHandle
 	);
-	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
-		SpecHandle, FAxeGameplayTags::Get().Effect_Magnitude_Damage, EquipmentInfo.EquipmentDamage
-	);
-	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
-		SpecHandle, FAxeGameplayTags::Get().Effect_Magnitude_Armor, EquipmentInfo.EquipmentArmor
-	);
-	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
-		SpecHandle, FAxeGameplayTags::Get().Effect_Magnitude_MaxHealth, EquipmentInfo.EquipmentMaxHealth
-	);
+	for (const FEquipmentInstanceAttributeInfo& InstanceAttributeInfo : EquipmentAttributeInfos)
+	{
+		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
+			SpecHandle, InstanceAttributeInfo.AttributeTag, InstanceAttributeInfo.AttributeValue
+		);
+	}
 	FActiveGameplayEffectHandle GameplayEffectSpecToSelf = ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 	return GameplayEffectSpecToSelf;
 }

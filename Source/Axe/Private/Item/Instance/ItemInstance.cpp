@@ -30,16 +30,24 @@ void UItemInstance::OnItemInstanceCreated()
 {
 }
 
-FString UItemInstance::GetItemDescription()
+const FString& UItemInstance::GetItemDescription()
+{
+	if (ItemInstanceDescription.Len() <= 0)
+	{
+		CreateItemDescription();
+	}
+	return ItemInstanceDescription;
+}
+
+void UItemInstance::CreateItemDescription()
 {
 	if (const UItemDefinition* ItemDefinition = ItemDef->GetDefaultObject<UItemDefinition>())
 	{
 		if (const UItemFragment_UI* ItemFragment_UI = ItemDefinition->FindFragment<UItemFragment_UI>())
 		{
-			return ItemFragment_UI->DefaultDescription.ToString();
+			ItemInstanceDescription = ItemFragment_UI->DefaultDescription.ToString();
 		}
 	}
-	return FString();
 }
 
 UAbilitySystemComponent* UItemInstance::GetOwnerAbilitySystemComponent() const

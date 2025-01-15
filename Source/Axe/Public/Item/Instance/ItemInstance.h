@@ -37,11 +37,15 @@ public:
 	virtual void OnItemInstanceCreated();
 
 	UFUNCTION(BlueprintCallable, Category = "Item")
-	virtual FString GetItemDescription();
+	virtual const FString& GetItemDescription();
+	virtual void CreateItemDescription();
 
 protected:
 	UFUNCTION(BlueprintCallable)
 	UAbilitySystemComponent* GetOwnerAbilitySystemComponent() const;
+
+	UPROPERTY()
+	FString ItemInstanceDescription;
 
 private:
 	// The item definition

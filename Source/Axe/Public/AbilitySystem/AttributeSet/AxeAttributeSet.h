@@ -63,10 +63,11 @@ public:
 	virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 
-	TMap<FGameplayTag, TStaticFuncPtr<FGameplayAttribute()>> GetTagsToAttributesFuncPtrMap() const
+	const TMap<FGameplayTag, TStaticFuncPtr<FGameplayAttribute()>>& GetTagsToAttributesFuncPtrMap() const
 	{
 		return TagsToAttributesFuncPtrMap;
 	}
+	FGameplayTag GetAttributeTagByAttributeName(const FString& AttributeName) const;
 
 	/**
 	 * @brief Vital Attributes

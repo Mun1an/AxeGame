@@ -155,6 +155,18 @@ void UAxeAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbac
 	}
 }
 
+FGameplayTag UAxeAttributeSet::GetAttributeTagByAttributeName(const FString& AttributeName) const
+{
+	for (const TTuple<FGameplayTag, FGameplayAttribute(*)()>& Pair : TagsToAttributesFuncPtrMap)
+	{
+		if (AttributeName == Pair.Value().AttributeName)
+		{
+			return Pair.Key;
+		}
+	}
+	return FGameplayTag::EmptyTag;
+}
+
 /*
  * OnRep Functions
  */
@@ -335,8 +347,12 @@ void UAxeAttributeSet::HandleIncomingDamageEffect(const FEffectProperties& Props
 
 	UAxeAbilitySystemComponent* TargetAxeASC = Cast<UAxeAbilitySystemComponent>(Props.TargetASC);
 
-	TargetAxeASC->ApplyToughnessRecoverStopEffect(Props.SourceCharacter);
-	
+	// ToughnessRecover Stop
+	if (LocalIncomingDamage > 0.f)
+	{
+		TargetAxeASC->ApplyToughnessRecoverStopEffect(Props.SourceCharacter);
+	}
+
 	// HitReact
 	if (TargetAxeASC && LocalIncomingDamage > 0.f && (bBreakToughness || GetToughness() <= 0))
 	{

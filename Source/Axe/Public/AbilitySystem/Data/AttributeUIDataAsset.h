@@ -12,6 +12,8 @@ struct FAxeAttributeUIInfo
 {
 	GENERATED_BODY()
 
+	static const FAxeAttributeUIInfo Empty;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FGameplayTag AttributeTag = FGameplayTag();
 
@@ -32,11 +34,15 @@ UCLASS()
 class AXE_API UAttributeUIDataAsset : public UDataAsset
 {
 	GENERATED_BODY()
+
 public:
 	UAttributeUIDataAsset();
 
-	FAxeAttributeUIInfo FindAttributeInfoForTag(const FGameplayTag& AttributeTag, bool bLogWarning=false);
+	const FAxeAttributeUIInfo& FindAttributeInfoForTag(const FGameplayTag& AttributeTag, bool bLogWarning = false);
 
+	const TArray<FAxeAttributeUIInfo>& GetAttributeInfoList() const { return AttributeInfoList; }
+
+protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TArray<FAxeAttributeUIInfo> AttributeInfoList;
 };

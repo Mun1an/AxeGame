@@ -5,6 +5,8 @@
 
 #include "GameplayEffect.h"
 #include "GameplayEffectTypes.h"
+#include "AssetManager/AxeAssetManager.h"
+#include "AssetManager/AxeGameData.h"
 #include "Character/AxeCharacterPlayer.h"
 #include "Enum/AxeTypes.h"
 #include "PlayerController/AxePlayerController.h"
@@ -131,7 +133,7 @@ bool UAxeBlueprintFunctionLibrary::SetHighLight(UMeshComponent* MeshComponent, b
 }
 
 bool UAxeBlueprintFunctionLibrary::SetHighLights(const TArray<UMeshComponent*>& MeshComponents, bool bHighLight,
-	int32 StencilValue)
+                                                 int32 StencilValue)
 {
 	for (UMeshComponent* MeshComponent : MeshComponents)
 	{
@@ -159,4 +161,19 @@ APawn* UAxeBlueprintFunctionLibrary::GetLocalPawn(const UObject* WorldContextObj
 	}
 	APawn* LocalPawn = FirstLocalPlayerController->GetPawn();
 	return LocalPawn;
+}
+
+const FAxeAttributeUIInfo& UAxeBlueprintFunctionLibrary::GetAttributeUIInfoByTag(FGameplayTag AttributeTag)
+{
+	UDataAsset* DataAsset = UAxeAssetManager::GetAsset(
+		UAxeGameData::Get().DA_AttributeUIInfo
+	);
+	if (!DataAsset)
+	{
+		return FAxeAttributeUIInfo::Empty;
+	}
+	UAttributeUIDataAsset* AttributeUIDataAsset = Cast<UAttributeUIDataAsset>(DataAsset);
+
+	const FAxeAttributeUIInfo& FindAttributeInfoForTag = AttributeUIDataAsset->FindAttributeInfoForTag(AttributeTag);
+	return FindAttributeInfoForTag;
 }

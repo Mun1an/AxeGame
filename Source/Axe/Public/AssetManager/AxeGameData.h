@@ -27,8 +27,7 @@ public:
 	static const UAxeGameData& Get();
 
 public:
-	// Gameplay effect used to apply damage.  Uses SetByCaller for the damage magnitude.
-
+	// Gameplay effect
 	UPROPERTY(EditDefaultsOnly, Category = "Default Gameplay Effects")
 	TSoftClassPtr<UGameplayEffect> GE_IncomingXp_SetByCaller;
 
@@ -37,4 +36,8 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Default Gameplay Effects")
 	TSoftClassPtr<UGameplayEffect> GE_ToughnessRecoverStop;
+
+	// DataAsset
+	UPROPERTY(EditDefaultsOnly, Category = "DataAsset")
+	TSoftObjectPtr<UDataAsset> DA_AttributeUIInfo;
 };

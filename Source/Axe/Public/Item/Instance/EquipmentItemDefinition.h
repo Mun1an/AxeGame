@@ -30,18 +30,18 @@ struct FAxeEquipmentActorToSpawn
 };
 
 USTRUCT(BlueprintType)
-struct FEquipmentDefaultLevelInfo
+struct FEquipmentDefaultAttributeInfo
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Appearance)
-	float EquipmentDamage = 0.0f;
+	FGameplayTag AttributeTag;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Appearance)
-	float EquipmentArmor = 0.0f;
+	float AttributeValue = 0.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Appearance)
-	float EquipmentMaxHealth = 0.0f;
+	float GrowthAttributeValueByLevel = 0.0f;
 };
 
 /**
@@ -62,9 +62,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category=Equipment)
 	TArray<FAxeEquipmentActorToSpawn> ActorsToSpawn;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Attr")
-	FEquipmentDefaultLevelInfo EquipmentDefaultLevelInfo;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Equipment|Attr")
+	TArray<FEquipmentDefaultAttributeInfo> EquipmentDefaultAttributeInfos;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Effect")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Equipment|Effect")
 	TSubclassOf<UGameplayEffect> EquipmentEffect;
 };

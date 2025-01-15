@@ -3,9 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Data/AttributeUIDataAsset.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "AxeBlueprintFunctionLibrary.generated.h"
 
+class UAttributeUIDataAsset;
 struct FGameplayAttribute;
 class AAxeCharacterBase;
 class UGameplayEffect;
@@ -50,4 +52,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="AxeBPLibrary|Pawn")
 	static APawn* GetLocalPawn(const UObject* WorldContextObject);
+
+
+	UFUNCTION(BlueprintCallable, Category="AxeBPLibrary|Attribute")
+	static const FAxeAttributeUIInfo& GetAttributeUIInfoByTag(FGameplayTag AttributeTag);
 };

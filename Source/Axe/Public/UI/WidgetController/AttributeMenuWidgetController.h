@@ -34,7 +34,7 @@ public:
 	FOnPlayerStatChangedSignature OnPlayerLevelChangedDelegate;
 	UPROPERTY(BlueprintAssignable, Category="GAS|GoldCoin")
 	FOnPlayerStatChangedSignature OnGoldCoinCountChangedDelegate;
-	
+
 protected:
 	void BroadcastAttributeInfo(const FGameplayTag& Tag, const FGameplayAttribute& Attribute);
 
@@ -44,4 +44,7 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	TObjectPtr<UAttributeUIDataAsset> AttributeDataAsset;
+
+	UPROPERTY(BlueprintReadOnly)
+	TArray<FGameplayTag> ShowingAttributeTags;
 };

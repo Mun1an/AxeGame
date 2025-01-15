@@ -3,6 +3,7 @@
 #include "Item/Instance/EquipmentItemInstance.h"
 
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
+#include "AbilitySystem/AxeBlueprintFunctionLibrary.h"
 #include "Character/AxeCharacterPlayer.h"
 #include "Item/ItemFunctionLibrary.h"
 #include "Item/Instance/EquipmentItemDefinition.h"
@@ -28,7 +29,7 @@ void UEquipmentItemInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ThisClass, SpawnedActors);
-	DOREPLIFETIME(ThisClass, EquipmentItemInstanceInfo);
+	DOREPLIFETIME(ThisClass, EquipmentInstanceAttributeInfos);
 }
 
 // #if UE_WITH_IRIS
@@ -100,7 +101,7 @@ void UEquipmentItemInstance::OnEquipped()
 	if (AxeCharacterPlayer->HasAuthority() && AxeASC && IsValid(EquipmentItemDefinition->EquipmentEffect))
 	{
 		FActiveGameplayEffectHandle EffectHandle = AxeASC->ApplyEquipmentEffectToSelf(
-			EquipmentItemDefinition->EquipmentEffect, EquipmentItemInstanceInfo,
+			EquipmentItemDefinition->EquipmentEffect, EquipmentInstanceAttributeInfos,
 			EquipmentItemDefinition->ItemTypeTag
 		);
 		EquipmentEffectHandle = EffectHandle;
@@ -130,41 +131,58 @@ void UEquipmentItemInstance::OnUnequipped()
 	}
 }
 
-FEquipmentItemInstanceInfo& UEquipmentItemInstance::GetEquipmentItemInstanceInfo()
+void UEquipmentItemInstance::InitEquipmentItemInstanceInfo(int32 ItemLevelValue, EEquipmentRarity ItemRarity)
 {
-	return EquipmentItemInstanceInfo;
-}
+	EquipmentLevel = ItemLevelValue;
+	EquipmentRarity = ItemRarity;
 
-void UEquipmentItemInstance::SetEquipmentItemInstanceInfo(const FEquipmentItemInstanceInfo& InEquipmentItemInstanceInfo)
-{
-	EquipmentItemInstanceInfo = InEquipmentItemInstanceInfo;
-}
+	EquipmentInstanceAttributeInfos.Empty();
 
-void UEquipmentItemInstance::InitEquipmentItemInstanceInfo(int32 EquipmentLevel, EEquipmentRarity EquipmentRarity)
-{
 	const UEquipmentItemDefinition* EquipmentDef = GetDefault<UEquipmentItemDefinition>(GetItemDef());
-	EquipmentItemInstanceInfo.EquipmentLevel = EquipmentLevel;
-	EquipmentItemInstanceInfo.EquipmentRarity = EquipmentRarity;
-	EquipmentItemInstanceInfo.CalDamage(EquipmentDef->EquipmentDefaultLevelInfo.EquipmentDamage);
-	EquipmentItemInstanceInfo.CalArmor(EquipmentDef->EquipmentDefaultLevelInfo.EquipmentArmor);
-	EquipmentItemInstanceInfo.CalMaxHealth(EquipmentDef->EquipmentDefaultLevelInfo.EquipmentMaxHealth);
+	for (const FEquipmentDefaultAttributeInfo& DefaultAttributeInfo : EquipmentDef->EquipmentDefaultAttributeInfos)
+	{
+		FEquipmentInstanceAttributeInfo InstanceInfo = FEquipmentInstanceAttributeInfo();
+		InstanceInfo.AttributeTag = DefaultAttributeInfo.AttributeTag;
+
+		// Value Cal
+		float InstanceValue = DefaultAttributeInfo.AttributeValue + DefaultAttributeInfo.GrowthAttributeValueByLevel * (
+			EquipmentLevel - 1);
+
+		InstanceInfo.AttributeValue = InstanceValue;
+		EquipmentInstanceAttributeInfos.Add(InstanceInfo);
+	}
 }
 
 void UEquipmentItemInstance::OnItemInstanceCreated()
 {
 	Super::OnItemInstanceCreated();
+
+	// Default Init
 	InitEquipmentItemInstanceInfo(1);
 }
 
-FString UEquipmentItemInstance::GetItemDescription()
+void UEquipmentItemInstance::CreateItemDescription()
 {
-	return FString::Printf(
+	FString AttrText = TEXT("");
+	for (const FEquipmentInstanceAttributeInfo& AttributeInfo : EquipmentInstanceAttributeInfos)
+	{
+		const FAxeAttributeUIInfo& AttributeUIInfo = UAxeBlueprintFunctionLibrary::GetAttributeUIInfoByTag(
+			AttributeInfo.AttributeTag);
+		FString AttributeName = AttributeUIInfo.AttributeName.ToString();
+		AttrText += FString::Printf(
+			TEXT("%s: %d \n"),
+			*AttributeName,
+			static_cast<int32>(AttributeInfo.AttributeValue)
+		);
+	}
+	FString LocalItemDescription = FString::Printf(
 		TEXT(
-			"等级：%d \n"
-			"伤害：%d "
+			"等级: %d \n"
+			"%s"
 		),
-		EquipmentItemInstanceInfo.EquipmentLevel,
-		FMath::RoundToInt(EquipmentItemInstanceInfo.EquipmentDamage
-		)
+		EquipmentLevel,
+		*AttrText
 	);
+
+	ItemInstanceDescription = LocalItemDescription;
 }

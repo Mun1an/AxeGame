@@ -5,12 +5,14 @@
 
 #include "Axe/AxeLogChannels.h"
 
+const FAxeAttributeUIInfo FAxeAttributeUIInfo::Empty;
 
 UAttributeUIDataAsset::UAttributeUIDataAsset()
 {
 }
 
-FAxeAttributeUIInfo UAttributeUIDataAsset::FindAttributeInfoForTag(const FGameplayTag& AttributeTag, const bool bLogWarning)
+const FAxeAttributeUIInfo& UAttributeUIDataAsset::FindAttributeInfoForTag(
+	const FGameplayTag& AttributeTag, const bool bLogWarning)
 {
 	for (FAxeAttributeUIInfo& AttributeInfo : AttributeInfoList)
 	{
@@ -29,5 +31,5 @@ FAxeAttributeUIInfo UAttributeUIDataAsset::FindAttributeInfoForTag(const FGamepl
 		);
 	}
 
-	return FAxeAttributeUIInfo();
+	return FAxeAttributeUIInfo::Empty;
 }

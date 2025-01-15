@@ -25,47 +25,16 @@ enum class EEquipmentRarity : uint8
 	Max = 5
 };
 
-
-USTRUCT(Blueprintable)
-struct FEquipmentItemInstanceInfo
+USTRUCT(BlueprintType)
+struct FEquipmentInstanceAttributeInfo
 {
 	GENERATED_BODY()
 
-	UPROPERTY()
-	int32 EquipmentLevel = 1;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Appearance)
+	FGameplayTag AttributeTag;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Appearance)
-	EEquipmentRarity EquipmentRarity = EEquipmentRarity::Common;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Appearance)
-	float EquipmentDamage = 0.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Appearance)
-	float EquipmentArmor = 0.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Appearance)
-	float EquipmentMaxHealth = 0.0f;
-
-	void CalDamage(float DefaultValue)
-	{
-		EquipmentDamage = DefaultValue * (1 + EquipmentLevel * 0.2f);
-		EquipmentDamage += FMath::RoundToFloat(EquipmentDamage * 0.1f) * FMath::RandRange(-1, 1);
-		EquipmentDamage = FMath::Max(0.0f, EquipmentDamage);
-	}
-
-	void CalArmor(float DefaultValue)
-	{
-		EquipmentArmor = DefaultValue * (1 + EquipmentLevel * 0.2f);
-		EquipmentArmor += FMath::RoundToFloat(EquipmentArmor * 0.1f) * FMath::RandRange(-1, 1);
-		EquipmentArmor = FMath::Max(0.0f, EquipmentArmor);
-	}
-
-	void CalMaxHealth(float DefaultValue)
-	{
-		EquipmentMaxHealth = DefaultValue * (1 + EquipmentLevel * 0.2f);
-		EquipmentMaxHealth += FMath::RoundToFloat(EquipmentMaxHealth * 0.1f) * FMath::RandRange(-1, 1);
-		EquipmentMaxHealth = FMath::Max(0.0f, EquipmentMaxHealth);
-	}
+	float AttributeValue = 0.0f;
 };
 
 /**
@@ -89,15 +58,12 @@ public:
 	virtual void OnEquipped();
 	virtual void OnUnequipped();
 
-	FEquipmentItemInstanceInfo& GetEquipmentItemInstanceInfo();
-	void SetEquipmentItemInstanceInfo(const FEquipmentItemInstanceInfo& InEquipmentItemInstanceInfo);
-
-	void InitEquipmentItemInstanceInfo(int32 EquipmentLevel,
-	                                   EEquipmentRarity EquipmentRarity = EEquipmentRarity::Common);
+	void InitEquipmentItemInstanceInfo(int32 ItemLevelValue,
+	                                   EEquipmentRarity ItemRarity = EEquipmentRarity::Common);
 
 	virtual void OnItemInstanceCreated() override;
 
-	virtual FString GetItemDescription() override;
+	virtual void CreateItemDescription() override;
 
 protected:
 	// #if UE_WITH_IRIS
@@ -114,9 +80,15 @@ protected:
 	UPROPERTY(Replicated)
 	TArray<TObjectPtr<AActor>> SpawnedActors;
 
+	UPROPERTY()
+	int32 EquipmentLevel = 1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Appearance)
+	EEquipmentRarity EquipmentRarity = EEquipmentRarity::Common;
+	
 	// Equipment
-	UPROPERTY(Replicated, BlueprintReadWrite, Category=EquipmentInstance)
-	FEquipmentItemInstanceInfo EquipmentItemInstanceInfo;
+	UPROPERTY(BlueprintReadOnly, Category="Equipment|Attr")
+	TArray<FEquipmentInstanceAttributeInfo> EquipmentInstanceAttributeInfos;
 
 private:
 	FActiveGameplayEffectHandle EquipmentEffectHandle;

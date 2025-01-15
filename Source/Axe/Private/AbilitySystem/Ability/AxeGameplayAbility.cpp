@@ -7,6 +7,7 @@
 #include "Abilities/Tasks/AbilityTask_ApplyRootMotionConstantForce.h"
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
 #include "AbilitySystem/AxeBlueprintFunctionLibrary.h"
+#include "AbilitySystem/AttributeSet/AxeAttributeSet.h"
 #include "AbilitySystem/Interaction/ComboAbilityInterface.h"
 #include "AbilitySystem/Interaction/HitTraceAbilityInterface.h"
 #include "AbilitySystem/Tasks/AbilityTask_MontageNotify.h"
@@ -204,7 +205,7 @@ void UAxeGameplayAbility::TryActivateAbilityOnSpawn(const FGameplayAbilityActorI
 }
 
 void UAxeGameplayAbility::HandleTryActivateAbilityClientCDO(FGameplayAbilitySpecHandle& AbilitySpecHandle,
-	const FGameplayTag AbilityInputTag, AActor* AbilityActor)
+                                                            const FGameplayTag AbilityInputTag, AActor* AbilityActor)
 {
 }
 
@@ -389,13 +390,20 @@ bool UAxeGameplayAbility::CheckCost(const FGameplayAbilitySpecHandle Handle, con
 	const bool bResult = Super::CheckCost(Handle, ActorInfo, OptionalRelevantTags);
 
 	UGameplayEffect* CostGE = GetCostGameplayEffect();
-	UAbilitySystemComponent* const ASC = ActorInfo->AbilitySystemComponent.Get();
+	const UAbilitySystemComponent* ASC = ActorInfo->AbilitySystemComponent.Get();
+	const AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner(ActorInfo);
+	if (!AxeCharacterOwner)
+	{
+		return bResult;
+	}
+	const UAttributeSet* AS = AxeCharacterOwner->GetAttributeSet();
+	const UAxeAttributeSet* AxeAS = Cast<UAxeAttributeSet>(AS);
 
 	if (!bResult)
 	{
 		// 某属性不足时 发送提示
 		TArray<FGameplayAttribute> NotApplyAttributes;
-		AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner(ActorInfo);
+
 		UAxeBlueprintFunctionLibrary::CanApplyAttributeModifiers(
 			CostGE,
 			GetAbilityLevel(Handle, ActorInfo),
@@ -405,9 +413,11 @@ bool UAxeGameplayAbility::CheckCost(const FGameplayAbilitySpecHandle Handle, con
 		);
 		for (const FGameplayAttribute& NotApplyAttribute : NotApplyAttributes)
 		{
-			FString String = NotApplyAttribute.GetUProperty()->GetName();
+			FGameplayTag AttributeTag = AxeAS->GetAttributeTagByAttributeName(NotApplyAttribute.AttributeName);
+			FText AttributeName = UAxeBlueprintFunctionLibrary::GetAttributeUIInfoByTag(AttributeTag).AttributeName;
+
 			UTipsMessageFunctionLibrary::SendTipsMessage(
-				AxeCharacterOwner, FString::Printf(TEXT("%s 不足"), *String)
+				AxeCharacterOwner, FString::Printf(TEXT("[%s] 不足"), *AttributeName.ToString())
 			);
 		}
 	}
