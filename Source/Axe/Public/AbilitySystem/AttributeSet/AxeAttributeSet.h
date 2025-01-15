@@ -77,6 +77,9 @@ public:
 	UPROPERTY(ReplicatedUsing=OnRep_Stamina, BlueprintReadOnly, Category = "Vital Attributes")
 	FGameplayAttributeData Stamina;
 	ATTRIBUTE_ACCESSORS(UAxeAttributeSet, Stamina);
+	UPROPERTY(ReplicatedUsing=OnRep_Toughness, BlueprintReadOnly, Category = "Vital Attributes")
+	FGameplayAttributeData Toughness;
+	ATTRIBUTE_ACCESSORS(UAxeAttributeSet, Toughness);
 	/**
 	 * @brief Primary Attributes
 	 */
@@ -100,6 +103,9 @@ public:
 	UPROPERTY(ReplicatedUsing=OnRep_MaxStamina, BlueprintReadOnly, Category = "Secondary Attributes")
 	FGameplayAttributeData MaxStamina;
 	ATTRIBUTE_ACCESSORS(UAxeAttributeSet, MaxStamina);
+	UPROPERTY(ReplicatedUsing=OnRep_MaxToughness, BlueprintReadOnly, Category = "Secondary Attributes")
+	FGameplayAttributeData MaxToughness;
+	ATTRIBUTE_ACCESSORS(UAxeAttributeSet, MaxToughness);
 
 	UPROPERTY(ReplicatedUsing=OnRep_Armor, BlueprintReadOnly, Category = "Secondary Attributes")
 	FGameplayAttributeData Armor;
@@ -133,6 +139,10 @@ public:
 	FGameplayAttributeData StaminaRegeneration;
 	ATTRIBUTE_ACCESSORS(UAxeAttributeSet, StaminaRegeneration);
 
+	UPROPERTY(ReplicatedUsing=OnRep_ToughnessRegeneration, BlueprintReadOnly, Category = "Secondary Attributes")
+	FGameplayAttributeData ToughnessRegeneration;
+	ATTRIBUTE_ACCESSORS(UAxeAttributeSet, ToughnessRegeneration);
+
 	UPROPERTY(ReplicatedUsing=OnRep_MovementSpeed, BlueprintReadOnly, Category = "Secondary Attributes")
 	FGameplayAttributeData MovementSpeed;
 	ATTRIBUTE_ACCESSORS(UAxeAttributeSet, MovementSpeed);
@@ -162,6 +172,8 @@ public:
 	void OnRep_Health(const FGameplayAttributeData& OldValue) const;
 	UFUNCTION()
 	void OnRep_Stamina(const FGameplayAttributeData& OldValue) const;
+	UFUNCTION()
+	void OnRep_Toughness(const FGameplayAttributeData& OldValue) const;
 
 	// Primary
 	UFUNCTION()
@@ -176,6 +188,8 @@ public:
 	void OnRep_MaxHealth(const FGameplayAttributeData& OldValue) const;
 	UFUNCTION()
 	void OnRep_MaxStamina(const FGameplayAttributeData& OldValue) const;
+	UFUNCTION()
+	void OnRep_MaxToughness(const FGameplayAttributeData& OldValue) const;
 	UFUNCTION()
 	void OnRep_Armor(const FGameplayAttributeData& OldValue) const;
 	UFUNCTION()
@@ -192,6 +206,8 @@ public:
 	void OnRep_HealthRegeneration(const FGameplayAttributeData& OldValue) const;
 	UFUNCTION()
 	void OnRep_StaminaRegeneration(const FGameplayAttributeData& OldValue) const;
+	UFUNCTION()
+	void OnRep_ToughnessRegeneration(const FGameplayAttributeData& OldValue) const;
 	UFUNCTION()
 	void OnRep_MovementSpeed(const FGameplayAttributeData& OldValue) const;
 	UFUNCTION()

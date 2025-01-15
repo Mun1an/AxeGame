@@ -66,11 +66,13 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	//
 	AddTag(Attributes_Vital_Health, "Attributes.Vital.Health", "", true);
 	AddTag(Attributes_Vital_Stamina, "Attributes.Vital.Stamina", "", true);
+	AddTag(Attributes_Vital_Toughness, "Attributes.Vital.Toughness", "", true);
 	AddTag(Attributes_Primary_Strength, "Attributes.Primary.Strength", "", true);
 	AddTag(Attributes_Primary_Dexterity, "Attributes.Primary.Dexterity", "", true);
 	AddTag(Attributes_Primary_Intelligence, "Attributes.Primary.Intelligence", "", true);
 	AddTag(Attributes_Secondary_MaxHealth, "Attributes.Secondary.MaxHealth", "", true);
 	AddTag(Attributes_Secondary_MaxStamina, "Attributes.Secondary.MaxStamina", "", true);
+	AddTag(Attributes_Secondary_MaxToughness, "Attributes.Secondary.MaxToughness", "", true);
 	AddTag(Attributes_Secondary_Armor, "Attributes.Secondary.Armor", "", true);
 	AddTag(Attributes_Secondary_Evasive, "Attributes.Secondary.Evasive", "", true);
 	AddTag(Attributes_Secondary_PhysicalResistance, "Attributes.Secondary.PhysicalResistance", "", true);
@@ -79,6 +81,7 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(Attributes_Secondary_CriticalHitDamage, "Attributes.Secondary.CriticalHitDamage", "", true);
 	AddTag(Attributes_Secondary_HealthRegeneration, "Attributes.Secondary.HealthRegeneration", "", true);
 	AddTag(Attributes_Secondary_StaminaRegeneration, "Attributes.Secondary.StaminaRegeneration", "", true);
+	AddTag(Attributes_Secondary_ToughnessRegeneration, "Attributes.Secondary.ToughnessRegeneration", "", true);
 	AddTag(Attributes_Secondary_MovementSpeed, "Attributes.Secondary.MovementSpeed", "", true);
 	AddTag(Attributes_Secondary_BaseDamage, "Attributes.Secondary.BaseDamage", "", true);
 
@@ -97,6 +100,7 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(Effect_Magnitude_1, "Effect.Magnitude.1");
 	AddTag(Effect_Magnitude_Damage, "Effect.Magnitude.Damage");
 	AddTag(Effect_Magnitude_Stamina, "Effect.Magnitude.Stamina");
+	AddTag(Effect_Magnitude_Toughness, "Effect.Magnitude.Toughness");
 	AddTag(Effect_Magnitude_Armor, "Effect.Magnitude.Armor");
 	AddTag(Effect_Magnitude_MaxHealth, "Effect.Magnitude.MaxHealth");
 	AddTag(Effect_Magnitude_IncomingXp, "Effect.Magnitude.IncomingXp");

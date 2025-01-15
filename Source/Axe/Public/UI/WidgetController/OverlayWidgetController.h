@@ -60,6 +60,12 @@ public:
 	UPROPERTY(BlueprintAssignable, Category="GAS|Attributes")
 	FOnAttributeChangedSignature OnMaxStaminaChanged;
 
+	UPROPERTY(BlueprintAssignable, Category="GAS|Attributes")
+	FOnAttributeChangedSignature OnToughnessChanged;
+
+	UPROPERTY(BlueprintAssignable, Category="GAS|Attributes")
+	FOnAttributeChangedSignature OnMaxToughnessChanged;
+	
 	UPROPERTY(BlueprintAssignable, Category="Message|InventoryItem")
 	FOnSendInventoryItemUIMessageSignature OnSendInventoryItemUIMessageSignature;
 
@@ -80,6 +86,8 @@ protected:
 	void MaxHealthChanged(const FOnAttributeChangeData& Data) const;
 	void StaminaChanged(const FOnAttributeChangeData& Data) const;
 	void MaxStaminaChanged(const FOnAttributeChangeData& Data) const;
+	void ToughnessChanged(const FOnAttributeChangeData& Data) const;
+	void MaxToughnessChanged(const FOnAttributeChangeData& Data) const;
 
 	void OnXpChanged(int32 NewXp);
 	void OnPlayerLevelChanged(int32 NewLevel);

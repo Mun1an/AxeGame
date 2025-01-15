@@ -81,13 +81,19 @@ void AAxeCharacterBase::InitDefaultAttributes()
 	UAbilitySystemComponent* ASC = GetAbilitySystemComponent();
 	check(ASC);
 	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(ASC);
+
+	int32 CharacterLevel = GetCharacterLevel();
 	if (DefaultPrimaryAttributesEffect)
 	{
-		AxeASC->ApplyEffectToSelfByClass(DefaultPrimaryAttributesEffect, GetCharacterLevel());
+		AxeASC->ApplyEffectToSelfByClass(DefaultPrimaryAttributesEffect, CharacterLevel);
 	}
 	if (DefaultSecondaryAttributesEffect)
 	{
-		AxeASC->ApplyEffectToSelfByClass(DefaultSecondaryAttributesEffect, GetCharacterLevel());
+		AxeASC->ApplyEffectToSelfByClass(DefaultSecondaryAttributesEffect, CharacterLevel);
+	}
+	if (LevelUpPrimaryAttributesEffect)
+	{
+		AxeASC->ApplyEffectToSelfByClass(LevelUpPrimaryAttributesEffect, FMath::Max(0, CharacterLevel - 1));
 	}
 }
 

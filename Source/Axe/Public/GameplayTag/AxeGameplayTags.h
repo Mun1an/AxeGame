@@ -78,6 +78,7 @@ struct FAxeGameplayTags
 	// Vital
 	FGameplayTag Attributes_Vital_Health;
 	FGameplayTag Attributes_Vital_Stamina;
+	FGameplayTag Attributes_Vital_Toughness;
 	// Primary
 	FGameplayTag Attributes_Primary_Strength;
 	FGameplayTag Attributes_Primary_Dexterity;
@@ -85,6 +86,7 @@ struct FAxeGameplayTags
 	// Secondary
 	FGameplayTag Attributes_Secondary_MaxHealth;
 	FGameplayTag Attributes_Secondary_MaxStamina;
+	FGameplayTag Attributes_Secondary_MaxToughness;
 	FGameplayTag Attributes_Secondary_Armor;
 	FGameplayTag Attributes_Secondary_Evasive;
 	FGameplayTag Attributes_Secondary_PhysicalResistance;
@@ -93,6 +95,7 @@ struct FAxeGameplayTags
 	FGameplayTag Attributes_Secondary_CriticalHitDamage;
 	FGameplayTag Attributes_Secondary_HealthRegeneration;
 	FGameplayTag Attributes_Secondary_StaminaRegeneration;
+	FGameplayTag Attributes_Secondary_ToughnessRegeneration;
 	FGameplayTag Attributes_Secondary_MovementSpeed;
 	FGameplayTag Attributes_Secondary_BaseDamage;
 
@@ -115,6 +118,7 @@ struct FAxeGameplayTags
 	FGameplayTag Effect_Magnitude_1;
 	FGameplayTag Effect_Magnitude_Damage;
 	FGameplayTag Effect_Magnitude_Stamina;
+	FGameplayTag Effect_Magnitude_Toughness;
 	FGameplayTag Effect_Magnitude_Armor;
 	FGameplayTag Effect_Magnitude_MaxHealth;
 	FGameplayTag Effect_Magnitude_IncomingXp;

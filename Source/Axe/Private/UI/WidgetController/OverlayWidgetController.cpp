@@ -30,6 +30,8 @@ void UOverlayWidgetController::BroadcastInitialValues()
 	OnMaxHealthChanged.Broadcast(LocalAxeAttributeSet->GetMaxHealth());
 	OnStaminaChanged.Broadcast(LocalAxeAttributeSet->GetStamina());
 	OnMaxStaminaChanged.Broadcast(LocalAxeAttributeSet->GetMaxStamina());
+	OnToughnessChanged.Broadcast(LocalAxeAttributeSet->GetToughness());
+	OnMaxToughnessChanged.Broadcast(LocalAxeAttributeSet->GetMaxToughness());
 
 	BroadcastAbilityInfo();
 }
@@ -49,13 +51,18 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 	AxeASC->GetGameplayAttributeValueChangeDelegate(
 		LocalAxeAttributeSet->GetMaxHealthAttribute()
 	).AddUObject(this, &UOverlayWidgetController::MaxHealthChanged);
-
 	AxeASC->GetGameplayAttributeValueChangeDelegate(
 		LocalAxeAttributeSet->GetStaminaAttribute()
 	).AddUObject(this, &UOverlayWidgetController::StaminaChanged);
 	AxeASC->GetGameplayAttributeValueChangeDelegate(
 		LocalAxeAttributeSet->GetMaxStaminaAttribute()
 	).AddUObject(this, &UOverlayWidgetController::MaxStaminaChanged);
+	AxeASC->GetGameplayAttributeValueChangeDelegate(
+		LocalAxeAttributeSet->GetToughnessAttribute()
+	).AddUObject(this, &UOverlayWidgetController::ToughnessChanged);
+	AxeASC->GetGameplayAttributeValueChangeDelegate(
+		LocalAxeAttributeSet->GetMaxToughnessAttribute()
+	).AddUObject(this, &UOverlayWidgetController::MaxToughnessChanged);
 
 	//
 	const ULocalPlayer* LocalPlayer = PlayerController->GetLocalPlayer();
@@ -130,6 +137,16 @@ void UOverlayWidgetController::StaminaChanged(const FOnAttributeChangeData& Data
 void UOverlayWidgetController::MaxStaminaChanged(const FOnAttributeChangeData& Data) const
 {
 	OnMaxStaminaChanged.Broadcast(Data.NewValue);
+}
+
+void UOverlayWidgetController::ToughnessChanged(const FOnAttributeChangeData& Data) const
+{
+	OnToughnessChanged.Broadcast(Data.NewValue);
+}
+
+void UOverlayWidgetController::MaxToughnessChanged(const FOnAttributeChangeData& Data) const
+{
+	OnMaxToughnessChanged.Broadcast(Data.NewValue);
 }
 
 void UOverlayWidgetController::OnXpChanged(int32 NewXp)

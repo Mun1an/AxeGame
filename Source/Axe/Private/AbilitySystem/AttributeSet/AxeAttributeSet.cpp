@@ -21,11 +21,13 @@ UAxeAttributeSet::UAxeAttributeSet()
 
 	TagsToAttributesFuncPtrMap.Add(AxeGameplayTags.Attributes_Vital_Health, GetHealthAttribute);
 	TagsToAttributesFuncPtrMap.Add(AxeGameplayTags.Attributes_Vital_Stamina, GetStaminaAttribute);
+	TagsToAttributesFuncPtrMap.Add(AxeGameplayTags.Attributes_Vital_Toughness, GetToughnessAttribute);
 	TagsToAttributesFuncPtrMap.Add(AxeGameplayTags.Attributes_Primary_Strength, GetStrengthAttribute);
 	TagsToAttributesFuncPtrMap.Add(AxeGameplayTags.Attributes_Primary_Dexterity, GetDexterityAttribute);
 	TagsToAttributesFuncPtrMap.Add(AxeGameplayTags.Attributes_Primary_Intelligence, GetIntelligenceAttribute);
 	TagsToAttributesFuncPtrMap.Add(AxeGameplayTags.Attributes_Secondary_MaxHealth, GetMaxHealthAttribute);
 	TagsToAttributesFuncPtrMap.Add(AxeGameplayTags.Attributes_Secondary_MaxStamina, GetMaxStaminaAttribute);
+	TagsToAttributesFuncPtrMap.Add(AxeGameplayTags.Attributes_Secondary_MaxToughness, GetMaxToughnessAttribute);
 	TagsToAttributesFuncPtrMap.Add(AxeGameplayTags.Attributes_Secondary_Armor, GetArmorAttribute);
 	TagsToAttributesFuncPtrMap.Add(AxeGameplayTags.Attributes_Secondary_Evasive, GetEvasiveAttribute);
 	TagsToAttributesFuncPtrMap.Add(AxeGameplayTags.Attributes_Secondary_PhysicalResistance,
@@ -39,6 +41,8 @@ UAxeAttributeSet::UAxeAttributeSet()
 	                               GetHealthRegenerationAttribute);
 	TagsToAttributesFuncPtrMap.Add(AxeGameplayTags.Attributes_Secondary_StaminaRegeneration,
 	                               GetStaminaRegenerationAttribute);
+	TagsToAttributesFuncPtrMap.Add(AxeGameplayTags.Attributes_Secondary_ToughnessRegeneration,
+	                               GetToughnessRegenerationAttribute);
 	TagsToAttributesFuncPtrMap.Add(AxeGameplayTags.Attributes_Secondary_MovementSpeed, GetMovementSpeedAttribute);
 	TagsToAttributesFuncPtrMap.Add(AxeGameplayTags.Attributes_Secondary_BaseDamage, GetBaseDamageAttribute);
 }
@@ -57,6 +61,7 @@ void UAxeAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	// Vital Attributes
 	DOREPLIFETIME_CONDITION_NOTIFY(UAxeAttributeSet, Health, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAxeAttributeSet, Stamina, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAxeAttributeSet, Toughness, COND_None, REPNOTIFY_Always);
 
 	// Primary Attributes
 	DOREPLIFETIME_CONDITION_NOTIFY(UAxeAttributeSet, Strength, COND_None, REPNOTIFY_Always);
@@ -66,6 +71,7 @@ void UAxeAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	// Secondary Attributes
 	DOREPLIFETIME_CONDITION_NOTIFY(UAxeAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAxeAttributeSet, MaxStamina, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAxeAttributeSet, MaxToughness, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAxeAttributeSet, Armor, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAxeAttributeSet, Evasive, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAxeAttributeSet, PhysicalResistance, COND_None, REPNOTIFY_Always);
@@ -74,6 +80,7 @@ void UAxeAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME_CONDITION_NOTIFY(UAxeAttributeSet, CriticalHitDamage, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAxeAttributeSet, HealthRegeneration, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAxeAttributeSet, StaminaRegeneration, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAxeAttributeSet, ToughnessRegeneration, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAxeAttributeSet, MovementSpeed, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAxeAttributeSet, BaseDamage, COND_None, REPNOTIFY_Always);
 }
@@ -108,6 +115,12 @@ void UAxeAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, 
 		const float NewStamina = FMath::Max(GetStamina() + AddedMaxStamina, 1.0f);
 		SetStamina(NewStamina);
 	}
+	if (Attribute == GetMaxToughnessAttribute())
+	{
+		const float AddedMaxToughness = NewValue - OldValue;
+		const float NewToughness = FMath::Max(GetToughness() + AddedMaxToughness, 1.0f);
+		SetToughness(NewToughness);
+	}
 }
 
 void UAxeAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
@@ -123,6 +136,10 @@ void UAxeAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbac
 	if (Data.EvaluatedData.Attribute == GetStaminaAttribute())
 	{
 		SetStamina(FMath::Clamp(GetStamina(), 0.f, GetMaxStamina()));
+	}
+	if (Data.EvaluatedData.Attribute == GetToughnessAttribute())
+	{
+		SetToughness(FMath::Clamp(GetToughness(), 0.f, GetMaxToughness()));
 	}
 	if (Data.EvaluatedData.Attribute == GetIncomingDamageAttribute())
 	{
@@ -150,6 +167,10 @@ void UAxeAttributeSet::OnRep_Stamina(const FGameplayAttributeData& OldValue) con
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAxeAttributeSet, Stamina, OldValue);
 }
+void UAxeAttributeSet::OnRep_Toughness(const FGameplayAttributeData& OldValue) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAxeAttributeSet, Toughness, OldValue);
+}
 
 void UAxeAttributeSet::OnRep_Strength(const FGameplayAttributeData& OldValue) const
 {
@@ -175,6 +196,10 @@ void UAxeAttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& OldValue) c
 void UAxeAttributeSet::OnRep_MaxStamina(const FGameplayAttributeData& OldValue) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAxeAttributeSet, MaxStamina, OldValue);
+}
+void UAxeAttributeSet::OnRep_MaxToughness(const FGameplayAttributeData& OldValue) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAxeAttributeSet, MaxToughness, OldValue);
 }
 
 void UAxeAttributeSet::OnRep_Armor(const FGameplayAttributeData& OldValue) const
@@ -215,6 +240,10 @@ void UAxeAttributeSet::OnRep_HealthRegeneration(const FGameplayAttributeData& Ol
 void UAxeAttributeSet::OnRep_StaminaRegeneration(const FGameplayAttributeData& OldValue) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAxeAttributeSet, StaminaRegeneration, OldValue);
+}
+void UAxeAttributeSet::OnRep_ToughnessRegeneration(const FGameplayAttributeData& OldValue) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAxeAttributeSet, ToughnessRegeneration, OldValue);
 }
 
 void UAxeAttributeSet::OnRep_MovementSpeed(const FGameplayAttributeData& OldValue) const
