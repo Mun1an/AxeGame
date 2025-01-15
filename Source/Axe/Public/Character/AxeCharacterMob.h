@@ -21,6 +21,9 @@ public:
 	AAxeCharacterMob();
 	virtual void PossessedBy(AController* NewController) override;
 
+	virtual int32 GetCharacterLevel() const override;
+	virtual void SetCharacterLevel(int32 NewCharacterLevel) override;
+	
 protected:
 	virtual void BeginPlay() override;
 	virtual void OnAbilityActivated(UGameplayAbility* Ability);
@@ -29,6 +32,9 @@ protected:
 
 	virtual void OnDead() override;
 
+	UPROPERTY(EditAnywhere, Category= "Character|Level")
+	int32 CharacterLevel = 1;
+	
 	UPROPERTY()
 	TObjectPtr<AAxeAIController> AxeAIController;
 

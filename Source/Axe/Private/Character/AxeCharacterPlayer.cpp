@@ -181,6 +181,10 @@ void AAxeCharacterPlayer::PossessedBy(AController* NewController)
 	// server
 	InitAbility();
 	InitInventory();
+
+	APlayerState* PS = GetPlayerState();
+	AAxePlayerState* AxePS = Cast<AAxePlayerState>(PS);
+	AxePS->OnServerLevelUpDelegate.AddUObject(this, &AAxeCharacterPlayer::OnServerLevelUp);
 }
 
 void AAxeCharacterPlayer::OnRep_PlayerState()
@@ -202,9 +206,39 @@ void AAxeCharacterPlayer::OnLinkedAnimLayerClassChanged()
 	GetMesh()->LinkAnimClassLayers(LinkedAnimLayerClass);
 }
 
+void AAxeCharacterPlayer::OnServerLevelUp(int32 NewValue, int32 OldValue)
+{
+	int32 LevelUp = FMath::Max(NewValue - OldValue, 0);
+	if (LevelUpPrimaryAttributesEffect)
+	{
+		UAbilitySystemComponent* ASC = GetAbilitySystemComponent();
+		UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(ASC);
+		AxeASC->ApplyEffectToSelfByClass(LevelUpPrimaryAttributesEffect, LevelUp);
+	}
+}
+
 void AAxeCharacterPlayer::ResetLinkedAnimLayerClass()
 {
 	SetLinkedAnimLayerClass(DefaultLinkedAnimLayerClass);
+}
+
+int32 AAxeCharacterPlayer::GetCharacterLevel() const
+{
+	if (APlayerState* PS = GetPlayerState())
+	{
+		AAxePlayerState* AxePS = Cast<AAxePlayerState>(PS);
+		return AxePS->GetPlayerLevel();
+	}
+	return 1;
+}
+
+void AAxeCharacterPlayer::SetCharacterLevel(int32 NewCharacterLevel)
+{
+	if (APlayerState* PS = GetPlayerState())
+	{
+		AAxePlayerState* AxePS = Cast<AAxePlayerState>(PS);
+		AxePS->SetPlayerLevel(NewCharacterLevel);
+	}
 }
 
 void AAxeCharacterPlayer::BeginPlay()

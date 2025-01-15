@@ -26,7 +26,6 @@ public:
 	AAxeCharacterBase();
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
-
 protected:
 	virtual void BeginPlay() override;
 
@@ -55,7 +54,9 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Attributes")
 	TSubclassOf<UGameplayEffect> DefaultSecondaryAttributesEffect;
-
+	
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Attributes")
+	TSubclassOf<UGameplayEffect> LevelUpPrimaryAttributesEffect;
 	//
 	FOnAbilityInitOverDelegate OnAbilityInitOverDelegate;
 	FOnInventoryInitOverDelegate OnInventoryInitOverDelegate;
@@ -69,22 +70,25 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetWalkSpeed(float NewMaxWalkSpeed);
-	UFUNCTION(BlueprintCallable)
-	void SetRotationRateZ(float NewRotationRateZ);
-	UFUNCTION(BlueprintCallable)
-	void SetRotationRateByWalkSpeed();
-
+	//
 	virtual bool IsDead() const override { return bIsDead; }
 	virtual bool IsAlive() const override { return !bIsDead; }
-
+	//
 	UFUNCTION(BlueprintCallable)
 	void SetDeath();
-	
+
 	virtual void OnDead() override;
 
 	FOnActorDeadDelegate OnActorDeadDelegate;
 
 	void SetDeathImpulseVector(FVector NewDeathImpulseVector) { DeathImpulseVector = NewDeathImpulseVector; }
+
+	UFUNCTION(BlueprintCallable)
+	virtual int32 GetCharacterLevel() const;
+
+	UFUNCTION(BlueprintCallable)
+	virtual void SetCharacterLevel(int32 NewCharacterLevel);
+	//
 
 protected:
 	bool bIsAbilityInitOver = false;
@@ -92,7 +96,6 @@ protected:
 
 	void InitDefaultAttributes();
 	bool GiveStartupAbilities();
-
 
 	UPROPERTY(EditAnywhere, Category= "Axe Movement")
 	float DefaultWalkSpeed = 600.0f;

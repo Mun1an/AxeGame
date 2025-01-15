@@ -53,25 +53,10 @@ void AAxeCharacterBase::SetWalkSpeed(float NewMaxWalkSpeed)
 	GetCharacterMovement()->MaxWalkSpeed = FMath::Clamp(NewMaxWalkSpeed, MinWalkSpeed, MaxWalkSpeed);
 }
 
-void AAxeCharacterBase::SetRotationRateZ(float NewRotationRateZ)
-{
-	GetCharacterMovement()->RotationRate.Yaw = FMath::Clamp(NewRotationRateZ, MinRotationRateZ, MaxRotationRateZ);
-}
-
-void AAxeCharacterBase::SetRotationRateByWalkSpeed()
-{
-	// float NewRotationRateZ = FMath::GetMappedRangeValueClamped(
-	// 	FVector2D(MinWalkSpeed, MaxWalkSpeed),
-	// 	FVector2D(MinRotationRateZ, MaxRotationRateZ),
-	// 	GetCharacterMovement()->MaxWalkSpeed
-	// );
-	// SetRotationRateZ(NewRotationRateZ);
-}
-
 void AAxeCharacterBase::SetDeath()
 {
 	SetLifeSpan(DeadLifeSpan);
-	
+
 	MulticastDeath(DeathImpulseVector);
 
 	OnDead();
@@ -82,6 +67,15 @@ void AAxeCharacterBase::OnDead()
 	OnActorDeadDelegate.Broadcast(this);
 }
 
+int32 AAxeCharacterBase::GetCharacterLevel() const
+{
+	return 1;
+}
+
+void AAxeCharacterBase::SetCharacterLevel(int32 NewCharacterLevel)
+{
+}
+
 void AAxeCharacterBase::InitDefaultAttributes()
 {
 	UAbilitySystemComponent* ASC = GetAbilitySystemComponent();
@@ -89,11 +83,11 @@ void AAxeCharacterBase::InitDefaultAttributes()
 	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(ASC);
 	if (DefaultPrimaryAttributesEffect)
 	{
-		AxeASC->ApplyEffectToSelfByClass(DefaultPrimaryAttributesEffect, 1.f);
+		AxeASC->ApplyEffectToSelfByClass(DefaultPrimaryAttributesEffect, GetCharacterLevel());
 	}
 	if (DefaultSecondaryAttributesEffect)
 	{
-		AxeASC->ApplyEffectToSelfByClass(DefaultSecondaryAttributesEffect, 1.f);
+		AxeASC->ApplyEffectToSelfByClass(DefaultSecondaryAttributesEffect, GetCharacterLevel());
 	}
 }
 

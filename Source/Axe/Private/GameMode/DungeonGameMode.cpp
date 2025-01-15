@@ -5,6 +5,7 @@
 
 #include "Actor/TargetPoint/EnemySpawnerTargetPoint.h"
 #include "Character/AxeCharacterBase.h"
+#include "Character/AxeCharacterEnemy.h"
 #include "GameState/DungeonGameState.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -85,25 +86,24 @@ void ADungeonGameMode::SpawnWaveEnemy(const int32 WaveIndex)
 
 AActor* ADungeonGameMode::SpawnEnemy(TSubclassOf<AActor> EnemyClass, const FTransform& SpawnTransform)
 {
-	AActor* SpawnEnemyDeferred = GetWorld()->SpawnActorDeferred<AActor>(
+	AAxeCharacterEnemy* SpawnEnemy = GetWorld()->SpawnActorDeferred<AAxeCharacterEnemy>(
 		EnemyClass,
 		SpawnTransform,
 		nullptr,
 		nullptr,
 		ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn
 	);
-	SpawnEnemyDeferred->FinishSpawning(SpawnTransform);
-	if (SpawnEnemyDeferred)
+	SpawnEnemy->FinishSpawning(SpawnTransform);
+	if (SpawnEnemy)
 	{
-		SpawnedEnemyList.Add(SpawnEnemyDeferred);
-		AAxeCharacterBase* AxeCharacterBase = Cast<AAxeCharacterBase>(SpawnEnemyDeferred);
+		SpawnedEnemyList.Add(SpawnEnemy);
+		AAxeCharacterBase* AxeCharacterBase = Cast<AAxeCharacterBase>(SpawnEnemy);
 		if (AxeCharacterBase)
 		{
 			AxeCharacterBase->OnActorDeadDelegate.AddDynamic(this, &ADungeonGameMode::OnEnemyDead);
 		}
 	}
-
-	return SpawnEnemyDeferred;
+	return SpawnEnemy;
 }
 
 void ADungeonGameMode::OnEnemyDead(AActor* DeadActor)

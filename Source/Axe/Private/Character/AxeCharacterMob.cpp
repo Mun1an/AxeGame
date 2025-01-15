@@ -31,6 +31,16 @@ void AAxeCharacterMob::PossessedBy(AController* NewController)
 	}
 }
 
+int32 AAxeCharacterMob::GetCharacterLevel() const
+{
+	return CharacterLevel;
+}
+
+void AAxeCharacterMob::SetCharacterLevel(int32 NewCharacterLevel)
+{
+	CharacterLevel = NewCharacterLevel;
+}
+
 void AAxeCharacterMob::BeginPlay()
 {
 	Super::BeginPlay();

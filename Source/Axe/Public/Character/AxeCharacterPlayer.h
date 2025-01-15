@@ -99,6 +99,10 @@ public:
 
 	// Weapon
 
+	// Level
+	virtual int32 GetCharacterLevel() const override;
+	virtual void SetCharacterLevel(int32 NewCharacterLevel) override;
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
@@ -108,6 +112,9 @@ protected:
 
 	UFUNCTION()
 	void OnLinkedAnimLayerClassChanged();
+
+	UFUNCTION()
+	void OnServerLevelUp(int32 NewValue, int32 OldValue);
 
 	// Anim
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animation")

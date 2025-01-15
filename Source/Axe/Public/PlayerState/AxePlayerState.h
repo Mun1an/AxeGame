@@ -12,6 +12,8 @@ class UAttributeSet;
 class UInventoryComponent;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerStateValueChanged, int32)
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnServerLevelUp, int32 /*NewValue*/, int32 /*OldValue*/)
+
 /**
  * 
  */
@@ -73,6 +75,8 @@ public:
 	FOnPlayerStateValueChanged OnLevelChangedDelegate;
 	FOnPlayerStateValueChanged OnGoldCoinCountChangedDelegate;
 
+	FOnServerLevelUp OnServerLevelUpDelegate;
+
 protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
@@ -100,11 +104,11 @@ private:
 	TArray<int32> LevelXpThresholds;
 
 	UFUNCTION()
-	void OnRep_Level(int32 OldValue);
+	void OnRep_Level(int32 NewValue);
 	UFUNCTION()
-	void OnRep_Xp(int32 OldValue);
+	void OnRep_Xp(int32 NewValue);
 	UFUNCTION()
-	void OnRep_GoldCoinCount(int32 OldValue);
+	void OnRep_GoldCoinCount(int32 NewValue);
 
 	void InitializeLevelXpThresholds();
 };

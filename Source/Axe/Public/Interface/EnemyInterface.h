@@ -21,6 +21,7 @@ class AXE_API IEnemyInterface
 	GENERATED_BODY()
 
 public:
+
 	UFUNCTION(BlueprintCallable)
 	virtual void SetCombatTarget(AActor* NewCombatTarget) = 0;
 
