@@ -167,6 +167,7 @@ void UAxeAttributeSet::OnRep_Stamina(const FGameplayAttributeData& OldValue) con
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAxeAttributeSet, Stamina, OldValue);
 }
+
 void UAxeAttributeSet::OnRep_Toughness(const FGameplayAttributeData& OldValue) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAxeAttributeSet, Toughness, OldValue);
@@ -197,6 +198,7 @@ void UAxeAttributeSet::OnRep_MaxStamina(const FGameplayAttributeData& OldValue) 
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAxeAttributeSet, MaxStamina, OldValue);
 }
+
 void UAxeAttributeSet::OnRep_MaxToughness(const FGameplayAttributeData& OldValue) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAxeAttributeSet, MaxToughness, OldValue);
@@ -241,6 +243,7 @@ void UAxeAttributeSet::OnRep_StaminaRegeneration(const FGameplayAttributeData& O
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAxeAttributeSet, StaminaRegeneration, OldValue);
 }
+
 void UAxeAttributeSet::OnRep_ToughnessRegeneration(const FGameplayAttributeData& OldValue) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAxeAttributeSet, ToughnessRegeneration, OldValue);
@@ -291,15 +294,22 @@ void UAxeAttributeSet::HandleIncomingDamageEffect(const FEffectProperties& Props
 	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
 	const FVector KnockbackVector = AxeEffectContext->GetKnockbackVector();
 	const float KnockbackForceMagnitude = AxeEffectContext->GetKnockbackForceMagnitude();
-
+	const float DamageToToughnessValue = AxeEffectContext->GetDamageToToughnessValue();
 	//
 	SetIncomingDamage(0.f);
 	bool bFatal = false;
+	bool bBreakToughness = false;
 	if (LocalIncomingDamage > 0.f)
 	{
+		// SetHealth
 		const float NewHealth = GetHealth() - LocalIncomingDamage;
 		SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
 		bFatal = NewHealth <= 0.f;
+
+		// SetToughness
+		const float NewToughness = GetToughness() - DamageToToughnessValue;
+		SetToughness(FMath::Clamp(NewToughness, 0.f, GetMaxToughness()));
+		bBreakToughness = NewToughness <= 0.f;
 	}
 	// ShowDamageFloatingText
 	if (Props.SourceCharacter && Props.TargetCharacter)
@@ -323,12 +333,17 @@ void UAxeAttributeSet::HandleIncomingDamageEffect(const FEffectProperties& Props
 	}
 	// 死后return
 
+	UAxeAbilitySystemComponent* TargetAxeASC = Cast<UAxeAbilitySystemComponent>(Props.TargetASC);
+
+	TargetAxeASC->ApplyToughnessRecoverStopEffect(Props.SourceCharacter);
+	
 	// HitReact
-	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(Props.TargetASC);
-	if (LocalIncomingDamage > 0.f && AxeASC)
+	if (TargetAxeASC && LocalIncomingDamage > 0.f && (bBreakToughness || GetToughness() <= 0))
 	{
-		AxeASC->TryActivateHitReactAbility(AxeGameplayTags.Ability_HitReact_Light, *HitResult, Props.SourceCharacter);
+		TargetAxeASC->TryActivateHitReactAbility(
+			AxeGameplayTags.Ability_HitReact_Light, *HitResult, Props.SourceCharacter);
 	}
+
 	// KnockBack
 	if (LocalIncomingDamage > 0.f)
 	{

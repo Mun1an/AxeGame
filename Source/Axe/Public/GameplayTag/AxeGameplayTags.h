@@ -111,6 +111,7 @@ struct FAxeGameplayTags
 	FGameplayTag State_HitReact;
 	FGameplayTag State_Blocking;
 	FGameplayTag State_PrepareParry;
+	FGameplayTag State_ToughnessRecoverStop;
 
 	// Effect
 	FGameplayTag Effect_Asset_Damage;

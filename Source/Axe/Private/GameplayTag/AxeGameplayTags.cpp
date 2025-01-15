@@ -94,6 +94,7 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(State_HitReact, "State.HitReact");
 	AddTag(State_Blocking, "State.Blocking");
 	AddTag(State_PrepareParry, "State.PrepareParry");
+	AddTag(State_ToughnessRecoverStop, "State.ToughnessRecoverStop");
 
 	//
 	AddTag(Effect_Asset_Damage, "Effect.Asset.Damage");

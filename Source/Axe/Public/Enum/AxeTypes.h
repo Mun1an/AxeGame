@@ -24,6 +24,8 @@ struct FDamageEffectParams
 	UPROPERTY(BlueprintReadWrite)
 	float DamageValue = 0.f;
 	UPROPERTY(BlueprintReadWrite)
+	float DamageToToughnessValue = 0.f;
+	UPROPERTY(BlueprintReadWrite)
 	float EffectLevel = 1.f;
 	UPROPERTY(BlueprintReadWrite)
 	FHitResult HitResult = FHitResult();
@@ -101,6 +103,9 @@ struct FAxeGameplayEffectContext : public FGameplayEffectContext
 	float GetPreDamageValue() const { return PreDamageValue; }
 	void SetPreDamageValue(const float NewValue) { PreDamageValue = NewValue; }
 
+	float GetDamageToToughnessValue() const { return DamageToToughnessValue; }
+	void SetDamageToToughnessValue(const float NewValue) { DamageToToughnessValue = NewValue; }
+
 	// virtual
 	virtual UScriptStruct* GetScriptStruct() const override
 	{
@@ -139,6 +144,8 @@ protected:
 
 	UPROPERTY()
 	float PreDamageValue = 0.f;
+	UPROPERTY()
+	float DamageToToughnessValue = 0.f;
 };
 
 template <>

@@ -38,6 +38,7 @@ void UAxeDamageGameplayAbility::ApplyDamageToTarget(AAxeCharacterBase* TargetCha
 	}
 	DamageEffectParam.KnockbackForceMagnitude = KnockbackForceMagnitude;
 
+	DamageEffectParam.DamageToToughnessValue = DamageToToughnessValue;
 	DamageEffectParam.DamageValue = GetTotalDamage();
 
 	AxeASC->ApplyDamageEffect(GetAxeCharacterOwner(), TargetCharacter, DamageEffectParam);

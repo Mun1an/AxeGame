@@ -45,6 +45,9 @@ protected:
 	float BaseDamageCoefficient = 1.f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Damage")
+	float DamageToToughnessValue = 0.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Damage")
 	float EffectLevel = 1.f;
 
 	UPROPERTY(BlueprintReadWrite, Category="Damage")

@@ -87,9 +87,13 @@ bool FAxeGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, boo
 		{
 			RepBits |= 1 << 19;
 		}
+		if (DamageToToughnessValue > 0.f)
+		{
+			RepBits |= 1 << 20;
+		}
 	}
 
-	Ar.SerializeBits(&RepBits, 19);
+	Ar.SerializeBits(&RepBits, 20);
 
 	if (RepBits & (1 << 0))
 	{
@@ -191,6 +195,10 @@ bool FAxeGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, boo
 	if (RepBits & (1 << 19))
 	{
 		Ar << PreDamageValue;
+	}
+	if (RepBits & (1 << 20))
+	{
+		Ar << DamageToToughnessValue;
 	}
 
 	//

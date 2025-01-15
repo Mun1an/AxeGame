@@ -34,4 +34,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Default Gameplay Effects")
 	TSoftClassPtr<UGameplayEffect> GE_IncomingGoldCoinCount_SetByCaller;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Default Gameplay Effects")
+	TSoftClassPtr<UGameplayEffect> GE_ToughnessRecoverStop;
 };

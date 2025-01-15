@@ -19,5 +19,5 @@ float UMMC_MaxToughness::CalculateBaseMagnitude_Implementation(const FGameplayEf
 	float Dexterity = 0.f;
 	GetCapturedAttributeMagnitude(AttributeDefStatics().DexterityDef, Spec, EvaluationParameters, Dexterity);
 
-	return 30.f + (Strength * 0.2f) + (Dexterity * 0.2f);
+	return 5.f + (Strength * 0.1f) + (Dexterity * 0.1f);
 }

@@ -79,11 +79,12 @@ public:
 	FActiveGameplayEffectHandle ApplyEquipmentEffectToSelf(const TSubclassOf<UGameplayEffect>& EffectClass,
 	                                                       FEquipmentItemInstanceInfo EquipmentInfo,
 	                                                       FGameplayTag ItemTypeTag);
-
 	UFUNCTION(BlueprintCallable)
 	FActiveGameplayEffectHandle ApplyIncomingXpEffect(AActor* SourceActor, int32 XpValue);
 	UFUNCTION(BlueprintCallable)
 	FActiveGameplayEffectHandle ApplyIncomingGoldCoinCountEffect(AActor* SourceActor, int32 GoldCoinCount);
+	UFUNCTION(BlueprintCallable)
+	FActiveGameplayEffectHandle ApplyToughnessRecoverStopEffect(AActor* SourceActor);
 	//
 	void ExecuteDelegateToGetAbilitySpec(const FAbilitySpecDataDelegate& Delegate);
 	//

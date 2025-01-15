@@ -337,6 +337,7 @@ bool UAxeAbilitySystemComponent::ApplyDamageEffect(AActor* SourceActor, AActor* 
 	);
 	AxeEffectContext.SetKnockbackVector(Params.KnockbackVector);
 	AxeEffectContext.SetKnockbackForceMagnitude(Params.KnockbackForceMagnitude);
+	AxeEffectContext.SetDamageToToughnessValue(Params.DamageToToughnessValue);
 
 	const FGameplayEffectSpecHandle SpecHandle = MakeOutgoingSpec(
 		Params.DamageEffectClass, Params.EffectLevel, ContextHandle
@@ -419,6 +420,20 @@ FActiveGameplayEffectHandle UAxeAbilitySystemComponent::ApplyIncomingGoldCoinCou
 	);
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
 		SpecHandle, FAxeGameplayTags::Get().Effect_Magnitude_IncomingGoldCoinCount, GoldCoinCount
+	);
+	FActiveGameplayEffectHandle GameplayEffectSpecToSelf = ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+	return GameplayEffectSpecToSelf;
+}
+
+FActiveGameplayEffectHandle UAxeAbilitySystemComponent::ApplyToughnessRecoverStopEffect(AActor* SourceActor)
+{
+	FGameplayEffectContextHandle ContextHandle = MakeEffectContext();
+	ContextHandle.AddSourceObject(SourceActor);
+
+	const TSubclassOf<UGameplayEffect> EffectClass = UAxeAssetManager::GetSubclass(
+		UAxeGameData::Get().GE_ToughnessRecoverStop);
+	const FGameplayEffectSpecHandle SpecHandle = MakeOutgoingSpec(
+		EffectClass, 1, ContextHandle
 	);
 	FActiveGameplayEffectHandle GameplayEffectSpecToSelf = ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 	return GameplayEffectSpecToSelf;
