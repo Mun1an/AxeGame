@@ -246,9 +246,41 @@ bool UInventoryComponent::SwapItemBySlots(int32 FromSlot, int32 ToSlot)
 	return InventoryList.SwapItem(FromSlot, ToSlot);
 }
 
+void UInventoryComponent::DropItemBySlot(int32 Slot)
+{
+	if (!CheckEntryHasItem(Slot))
+	{
+		return;
+	}
+	int32 DropCount = 1;
+	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
+	UItemInstance* ItemInstanceByIndex = GetItemInstanceByIndex(Slot);
+	AAxeWorldItemActor* AxeWorldItemActor = UItemFunctionLibrary::CreateWorldItemActor(
+		AxeCharacterOwner,
+		AxeCharacterOwner->GetActorTransform(),
+		ItemInstanceByIndex,
+		DropCount
+	);
+	if (AxeWorldItemActor)
+	{
+		RemoveItemByIndex(Slot, DropCount);
+	}
+}
+
+
 void UInventoryComponent::ServerSwapItemBySlots_Implementation(int32 FromSlot, int32 ToSlot)
 {
 	SwapItemBySlots(FromSlot, ToSlot);
+}
+
+void UInventoryComponent::ServerRemoveItemBySlot_Implementation(int32 Slot)
+{
+	RemoveItemByIndex(Slot);
+}
+
+void UInventoryComponent::ServerDropItemBySlot_Implementation(int32 Slot)
+{
+	DropItemBySlot(Slot);
 }
 
 void UInventoryComponent::AddInventoryEntry()
@@ -312,18 +344,23 @@ bool UInventoryComponent::CheckEntryHasTag(const FGameplayTag CheckTag, FInvento
 	return Entry.EntryTags.HasTag(CheckTag);
 }
 
+bool UInventoryComponent::CheckEntryHasItem(int32 SlotIndex)
+{
+	const FInventoryEntry Entry = GetInventoryEntryByIndex(SlotIndex);
+	return Entry.StackCount > 0 && Entry.Instance != nullptr;
+}
+
 bool UInventoryComponent::CheckEntryCanItemUse(const int32 SlotIndex)
 {
+	if (!CheckEntryHasItem(SlotIndex))
+	{
+		return false;
+	}
 	const FInventoryEntry Entry = GetInventoryEntryByIndex(SlotIndex);
 	if (!Entry.EntryTags.HasTag(FAxeGameplayTags::Get().Inventory_Entry_UseBar))
 	{
 		return false;
 	}
-	if (Entry.StackCount <= 0 || Entry.Instance == nullptr)
-	{
-		return false;
-	}
-
 	if (IItemUseInterface* ItemUseInterface = Cast<IItemUseInterface>(Entry.Instance))
 	{
 		if (!ItemUseInterface->CanUseItem())

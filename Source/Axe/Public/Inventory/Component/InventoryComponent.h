@@ -81,8 +81,17 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category=Inventory)
 	bool SwapItemBySlots(int32 FromSlot, int32 ToSlot);
 
-	UFUNCTION(Server, Reliable)
+	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category=Inventory)
+	void DropItemBySlot(int32 Slot);
+
+	UFUNCTION(Server, Reliable, BlueprintCallable)
 	void ServerSwapItemBySlots(int32 FromSlot, int32 ToSlot);
+
+	UFUNCTION(Server, Reliable, BlueprintCallable)
+	void ServerRemoveItemBySlot(int32 Slot);
+
+	UFUNCTION(Server, Reliable, BlueprintCallable)
+	void ServerDropItemBySlot(int32 Slot);
 
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category=Inventory)
 	void AddInventoryEntry();
@@ -102,6 +111,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category=Inventory)
 	bool CheckEntryHasTag(const FGameplayTag CheckTag, FInventoryEntry& Entry);
 
+	UFUNCTION(BlueprintCallable, Category=Inventory)
+	bool CheckEntryHasItem(int32 SlotIndex);
+	
 	UFUNCTION(BlueprintCallable, Category=Inventory)
 	bool CheckEntryCanItemUse(int32 SlotIndex);
 

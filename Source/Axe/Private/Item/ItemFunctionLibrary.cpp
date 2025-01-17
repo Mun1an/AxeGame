@@ -3,6 +3,8 @@
 
 #include "Item/ItemFunctionLibrary.h"
 
+#include "AssetManager/AxeAssetManager.h"
+#include "AssetManager/AxeGameData.h"
 #include "Item/AxeWorldItemActor.h"
 #include "Item/Component/ItemComponent.h"
 #include "Item/Instance/EquipmentItemInstance.h"
@@ -53,29 +55,36 @@ UEquipmentItemInstance* UItemFunctionLibrary::CreateEquipmentItemInstance(UObjec
                                                                           int32 Level, EEquipmentRarity EquipmentRarity)
 {
 	UItemInstance* ItemInstance = CreateItemInstance(WorldContextObject, EquipmentItemDef);
-	if (UEquipmentItemInstance* EquipmentItemInstance = Cast<UEquipmentItemInstance>(ItemInstance))
+	UEquipmentItemInstance* EquipmentItemInstance = Cast<UEquipmentItemInstance>(ItemInstance);
+	if (!EquipmentItemInstance)
 	{
-		EquipmentItemInstance->InitEquipmentItemInstanceInfo(Level, EquipmentRarity);
-		return EquipmentItemInstance;
+		return nullptr;
 	}
-	return nullptr;
+	EquipmentItemInstance->InitEquipmentItemInstanceInfo(Level, EquipmentRarity);
+	return EquipmentItemInstance;
 }
 
 AAxeWorldItemActor* UItemFunctionLibrary::CreateWorldItemActor(UObject* WorldContextObject,
-                                                               TSubclassOf<AAxeWorldItemActor> ActorClass,
+                                                               const FTransform& Transform,
                                                                UItemInstance* ItemInstance,
-                                                               const FTransform& Transform, int32 StackCount)
+                                                               int32 StackCount)
 {
+	const TSubclassOf<AAxeWorldItemActor> ItemActorClass = UAxeAssetManager::GetSubclass(
+		UAxeGameData::Get().WorldItemActorClass);
+	if (!ItemActorClass)
+	{
+		return nullptr;
+	}
 	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
-
 	AAxeWorldItemActor* ItemActor = World->SpawnActorDeferred<AAxeWorldItemActor>(
-		ActorClass, Transform, nullptr, nullptr,
+		ItemActorClass, Transform, nullptr, nullptr,
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-	ItemActor->FinishSpawning(Transform);
 
 	UItemComponent* ItemActorItemComponent = ItemActor->GetItemComponent();
 	ItemActorItemComponent->SetItemInstance(ItemInstance);
 	ItemActorItemComponent->SetStackCount(StackCount);
+
+	ItemActor->FinishSpawning(Transform);
 
 	ItemActor->InitDisplayItemActor();
 

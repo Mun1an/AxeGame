@@ -6,6 +6,7 @@
 
 #include "AxeGameData.generated.h"
 
+class AAxeWorldItemActor;
 class UGameplayEffect;
 class UObject;
 
@@ -27,6 +28,9 @@ public:
 	static const UAxeGameData& Get();
 
 public:
+	/**
+	 * Class
+	 */
 	// Gameplay effect
 	UPROPERTY(EditDefaultsOnly, Category = "Default Gameplay Effects")
 	TSoftClassPtr<UGameplayEffect> GE_IncomingXp_SetByCaller;
@@ -36,7 +40,14 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Default Gameplay Effects")
 	TSoftClassPtr<UGameplayEffect> GE_ToughnessRecoverStop;
+	
+	//
+	UPROPERTY(EditDefaultsOnly, Category = "Item")
+	TSoftClassPtr<AAxeWorldItemActor> WorldItemActorClass;
 
+	/**
+	 * DataAsset
+	 */
 	// DataAsset
 	UPROPERTY(EditDefaultsOnly, Category = "DataAsset")
 	TSoftObjectPtr<UDataAsset> DA_AttributeUIInfo;

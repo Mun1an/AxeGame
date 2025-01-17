@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "ItemInstance.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FOnItemInstanceInfoUpdated);
+
 class UAbilitySystemComponent;
 class UItemDefinition;
 /**
@@ -40,11 +42,13 @@ public:
 	virtual const FString& GetItemDescription();
 	virtual void CreateItemDescription();
 
+	FOnItemInstanceInfoUpdated OnItemInstanceInfoUpdatedDelegate;
+
 protected:
 	UFUNCTION(BlueprintCallable)
 	UAbilitySystemComponent* GetOwnerAbilitySystemComponent() const;
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	FString ItemInstanceDescription;
 
 private:

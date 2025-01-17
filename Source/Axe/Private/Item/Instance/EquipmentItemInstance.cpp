@@ -30,6 +30,8 @@ void UEquipmentItemInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 
 	DOREPLIFETIME(ThisClass, SpawnedActors);
 	DOREPLIFETIME(ThisClass, EquipmentInstanceAttributeInfos);
+	DOREPLIFETIME(ThisClass, EquipmentLevel);
+	DOREPLIFETIME(ThisClass, EquipmentRarity);
 }
 
 // #if UE_WITH_IRIS
@@ -151,6 +153,8 @@ void UEquipmentItemInstance::InitEquipmentItemInstanceInfo(int32 ItemLevelValue,
 		InstanceInfo.AttributeValue = InstanceValue;
 		EquipmentInstanceAttributeInfos.Add(InstanceInfo);
 	}
+
+	OnItemInstanceInfoUpdatedDelegate.Broadcast();
 }
 
 void UEquipmentItemInstance::OnItemInstanceCreated()

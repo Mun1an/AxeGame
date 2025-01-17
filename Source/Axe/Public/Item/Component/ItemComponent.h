@@ -17,23 +17,33 @@ class AXE_API UItemComponent : public UActorComponent
 public:
 	UItemComponent();
 	//
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+
+	//~UObject interface
+	virtual bool ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags) override;
+	virtual void ReadyForReplication() override;
+	//~End of UObject interface
+	
 	TSubclassOf<UItemDefinition> GetItemDef() const { return ItemDef; }
 
 	int32 GetStackCount() const { return StackCount; }
 	void SetStackCount(int32 InStackCount) { StackCount = InStackCount; }
 
 	UItemInstance* GetItemInstance() const { return ItemInstance; }
+	UFUNCTION(BlueprintCallable)
 	void SetItemInstance(UItemInstance* InItemInstance);
 
 protected:
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Item")
+	UPROPERTY(Replicated, EditInstanceOnly, BlueprintReadOnly, Category = "Item")
 	TSubclassOf<UItemDefinition> ItemDef;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Item")
+	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Item")
 	UItemInstance* ItemInstance = nullptr;
 
-	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Item")
+	UPROPERTY(Replicated, EditInstanceOnly, BlueprintReadOnly, Category = "Item")
 	int32 StackCount = 1;
+
+private:
 };

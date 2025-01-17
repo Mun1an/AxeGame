@@ -18,10 +18,13 @@ class AXE_API UItemInfoWidgetComponent : public UWidgetComponent
 public:
 	UFUNCTION(BlueprintCallable)
 	void SetItemInfoVisibility(bool bIsVisible);
-
-protected:
+	
 	UFUNCTION(BlueprintCallable)
 	void CreateItemInfoWidget();
+
+	UFUNCTION(BlueprintCallable)
+	void UpdateItemInfoWidget();
+protected:
 
 	UPROPERTY()
 	UItemInfoUserWidget* ItemInfoWidget = nullptr;

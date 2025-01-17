@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AxeWorldItemActor.h"
 #include "EquipmentRarityDataAsset.h"
 #include "ItemSubsystem.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
@@ -44,9 +45,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, meta = (HidePin = "WorldContextObject", DefaultToSelf = "WorldContextObject"))
 	static AAxeWorldItemActor* CreateWorldItemActor(UObject* WorldContextObject,
-	                                                TSubclassOf<AAxeWorldItemActor> ActorClass,
+	                                                const FTransform& Transform,
 	                                                UItemInstance* ItemInstance,
-	                                                const FTransform& Transform, int32 StackCount = 1);
+	                                                int32 StackCount = 1);
 
 	UFUNCTION(BlueprintCallable)
 	static FEquipmentRarityInfo GetEquipmentRarityInfo(UObject* WorldContextObject, EEquipmentRarity EquipmentRarity);

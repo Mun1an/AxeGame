@@ -9,12 +9,13 @@
 
 void UItemInfoWidgetComponent::SetItemInfoVisibility(bool bIsVisible)
 {
+	if (ItemInfoWidget == nullptr)
+	{
+		CreateItemInfoWidget();
+	}
 	if (bIsVisible)
 	{
-		if (ItemInfoWidget == nullptr)
-		{
-			CreateItemInfoWidget();
-		}
+		UpdateItemInfoWidget();
 		SetVisibility(true);
 	}
 	else
@@ -25,13 +26,34 @@ void UItemInfoWidgetComponent::SetItemInfoVisibility(bool bIsVisible)
 
 void UItemInfoWidgetComponent::CreateItemInfoWidget()
 {
+	if (!WidgetClass)
+	{
+		return;
+	}
 	AActor* Actor = GetOwner();
 	AAxeWorldItemActor* AxeWorldItemActor = Cast<AAxeWorldItemActor>(Actor);
 	const UItemComponent* ItemComponent = AxeWorldItemActor->GetItemComponent();
 	UItemInstance* ItemInstance = ItemComponent->GetItemInstance();
-
+	if (!ItemInstance)
+	{
+		return;
+	}
 	ItemInfoWidget = CreateWidget<UItemInfoUserWidget>(GetWorld(), WidgetClass);
 	ItemInfoWidget->InitItemInfoWidget(ItemInstance);
 
 	SetWidget(ItemInfoWidget);
+}
+
+void UItemInfoWidgetComponent::UpdateItemInfoWidget()
+{
+	if (!ItemInfoWidget)
+	{
+		CreateItemInfoWidget();
+		return;
+	}
+	AActor* Actor = GetOwner();
+	AAxeWorldItemActor* AxeWorldItemActor = Cast<AAxeWorldItemActor>(Actor);
+	const UItemComponent* ItemComponent = AxeWorldItemActor->GetItemComponent();
+	UItemInstance* ItemInstance = ItemComponent->GetItemInstance();
+	ItemInfoWidget->InitItemInfoWidget(ItemInstance);
 }

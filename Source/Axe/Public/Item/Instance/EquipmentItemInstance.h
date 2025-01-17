@@ -6,6 +6,7 @@
 #include "EquipmentItemDefinition.h"
 #include "ItemInstance.h"
 #include "Engine/World.h"
+#include "Net/Serialization/FastArraySerializer.h"
 
 #include "EquipmentItemInstance.generated.h"
 
@@ -62,7 +63,6 @@ public:
 	                                   EEquipmentRarity ItemRarity = EEquipmentRarity::Common);
 
 	virtual void OnItemInstanceCreated() override;
-
 	virtual void CreateItemDescription() override;
 
 protected:
@@ -80,14 +80,14 @@ protected:
 	UPROPERTY(Replicated)
 	TArray<TObjectPtr<AActor>> SpawnedActors;
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	int32 EquipmentLevel = 1;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Appearance)
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadOnly, Category=Appearance)
 	EEquipmentRarity EquipmentRarity = EEquipmentRarity::Common;
-	
+
 	// Equipment
-	UPROPERTY(BlueprintReadOnly, Category="Equipment|Attr")
+	UPROPERTY(Replicated, BlueprintReadOnly, Category="Equipment|Attr")
 	TArray<FEquipmentInstanceAttributeInfo> EquipmentInstanceAttributeInfos;
 
 private:
