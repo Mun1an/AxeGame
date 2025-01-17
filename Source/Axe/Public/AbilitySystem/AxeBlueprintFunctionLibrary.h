@@ -39,6 +39,9 @@ public:
 	UFUNCTION(BlueprintPure, Category="AxeBPLibrary|Family")
 	static bool IsFriend(const AActor* ActorA, const AActor* ActorB);
 
+	UFUNCTION(BlueprintPure, Category="AxeBPLibrary|Dead")
+	static bool IsDead(const AActor* Actor);
+	
 	UFUNCTION(BlueprintCallable, Category="AxeBPLibrary|GameplayEffect Attribute")
 	static bool CanApplyAttributeModifiers(const UGameplayEffect* GameplayEffect, float Level,
 	                                       const FGameplayEffectContextHandle& EffectContext,

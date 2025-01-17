@@ -9,14 +9,16 @@
 #include "Components/WidgetComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/Widget/AxeUserWidget.h"
+#include "UI/Widget/EnemyInfoBarWidgetComponent.h"
 #include "UI/WidgetController/AxeWidgetControllerBase.h"
 #include "UI/WidgetController/MobOverlayWidgetController.h"
 
 AAxeCharacterEnemy::AAxeCharacterEnemy()
 {
 	// HealthBar
-	HealthBar = CreateDefaultSubobject<UWidgetComponent>("HealthBar");
-	HealthBar->SetupAttachment(GetRootComponent());
+	EnemyInfoBar = CreateDefaultSubobject<UEnemyInfoBarWidgetComponent>("HealthBar");
+	EnemyInfoBar->SetupAttachment(GetRootComponent());
+	EnemyInfoBar->SetVisibility(false);
 }
 
 void AAxeCharacterEnemy::SetCombatTarget(AActor* NewCombatTarget)
@@ -44,7 +46,7 @@ void AAxeCharacterEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 	// HealthBar
-	if (UAxeUserWidget* AxeUserWidget = Cast<UAxeUserWidget>(HealthBar->GetUserWidgetObject()))
+	if (UAxeUserWidget* AxeUserWidget = Cast<UAxeUserWidget>(EnemyInfoBar->GetUserWidgetObject()))
 	{
 		if (AbilitySystemComponent && AttributeSet)
 		{
@@ -77,7 +79,7 @@ void AAxeCharacterEnemy::MulticastDeath_Implementation(FVector InDeathImpulseVec
 {
 	Super::MulticastDeath_Implementation(InDeathImpulseVector);
 
-	HealthBar->SetVisibility(false);
+	EnemyInfoBar->SetVisibility(false);
 }
 
 void AAxeCharacterEnemy::SendLootToPlayers(const TArray<AActor*>& Players)

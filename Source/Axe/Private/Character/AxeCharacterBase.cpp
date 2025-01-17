@@ -65,6 +65,16 @@ void AAxeCharacterBase::SetDeath()
 void AAxeCharacterBase::OnDead()
 {
 	OnActorDeadDelegate.Broadcast(this);
+
+	const TArray<FGameplayAbilitySpec>& GameplayAbilitySpecs = AbilitySystemComponent->GetActivatableAbilities();
+	for (const FGameplayAbilitySpec& GameplayAbilitySpec : GameplayAbilitySpecs)
+	{
+		if (!GameplayAbilitySpec.IsActive())
+		{
+			continue;
+		}
+		AbilitySystemComponent->CancelAbilityHandle(GameplayAbilitySpec.Handle);
+	}
 }
 
 int32 AAxeCharacterBase::GetCharacterLevel() const

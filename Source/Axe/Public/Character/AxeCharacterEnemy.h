@@ -7,6 +7,7 @@
 #include "Interface/EnemyInterface.h"
 #include "AxeCharacterEnemy.generated.h"
 
+class UEnemyInfoBarWidgetComponent;
 class UMobOverlayWidgetController;
 struct FWidgetControllerParams;
 class UWidgetComponent;
@@ -25,6 +26,7 @@ public:
 	virtual void SetCombatTarget(AActor* NewCombatTarget);
 	virtual AActor* GetCombatTarget() const;
 	virtual int32 GetLootXp() const override { return LootXp; };
+	virtual UEnemyInfoBarWidgetComponent* GetEnemyInfoBarWidgetComponent() const override { return EnemyInfoBar; }
 	//
 	virtual void OnDead() override;
 
@@ -38,7 +40,7 @@ protected:
 	void SendLootToPlayers(const TArray<AActor*>& Players);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<UWidgetComponent> HealthBar;
+	TObjectPtr<UEnemyInfoBarWidgetComponent> EnemyInfoBar;
 
 	UPROPERTY()
 	TObjectPtr<UMobOverlayWidgetController> MobOverlayWidgetController;

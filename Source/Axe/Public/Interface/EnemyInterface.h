@@ -6,6 +6,7 @@
 #include "UObject/Interface.h"
 #include "EnemyInterface.generated.h"
 
+class UEnemyInfoBarWidgetComponent;
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI, NotBlueprintable, BlueprintType)
 class UEnemyInterface : public UInterface
@@ -21,7 +22,6 @@ class AXE_API IEnemyInterface
 	GENERATED_BODY()
 
 public:
-
 	UFUNCTION(BlueprintCallable)
 	virtual void SetCombatTarget(AActor* NewCombatTarget) = 0;
 
@@ -30,4 +30,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual int32 GetLootXp() const = 0;
+
+	UFUNCTION(BlueprintCallable)
+	virtual UEnemyInfoBarWidgetComponent* GetEnemyInfoBarWidgetComponent() const = 0;
 };

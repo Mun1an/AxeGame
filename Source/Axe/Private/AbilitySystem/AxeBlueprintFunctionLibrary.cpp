@@ -82,6 +82,15 @@ bool UAxeBlueprintFunctionLibrary::IsFriend(const AActor* ActorA, const AActor* 
 	return (bIsPlayerA && bIsPlayerB) || (bIsEnemyA && bIsEnemyB);
 }
 
+bool UAxeBlueprintFunctionLibrary::IsDead(const AActor* Actor)
+{
+	if (const IDeadInterface* DeadInterface = Cast<IDeadInterface>(Actor))
+	{
+		return DeadInterface->IsDead();
+	}
+	return false;
+}
+
 bool UAxeBlueprintFunctionLibrary::CanApplyAttributeModifiers(const UGameplayEffect* GameplayEffect, float Level,
                                                               const FGameplayEffectContextHandle& EffectContext,
                                                               const AAxeCharacterBase* ToTarget,
