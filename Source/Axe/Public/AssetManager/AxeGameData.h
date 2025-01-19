@@ -33,6 +33,9 @@ public:
 	 */
 	// Gameplay effect
 	UPROPERTY(EditDefaultsOnly, Category = "Default Gameplay Effects")
+	TSoftClassPtr<UGameplayEffect> GE_AddAttr_Duration_SetByCaller;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Default Gameplay Effects")
 	TSoftClassPtr<UGameplayEffect> GE_IncomingXp_SetByCaller;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Default Gameplay Effects")

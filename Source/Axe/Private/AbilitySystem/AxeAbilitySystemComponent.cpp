@@ -325,6 +325,51 @@ FActiveGameplayEffectHandle UAxeAbilitySystemComponent::ApplyEffectToSelfByClass
 	return ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), this);
 }
 
+FActiveGameplayEffectHandle UAxeAbilitySystemComponent::ApplyAddAttrDurationEffect(AActor* SourceActor,
+	const TArray<FAxeAttributeTagAndValue>& AttributeTagAndValues, float Duration)
+{
+	const TSubclassOf<UGameplayEffect> EffectClass = UAxeAssetManager::GetSubclass(
+		UAxeGameData::Get().GE_AddAttr_Duration_SetByCaller);
+	FGameplayEffectContextHandle ContextHandle = MakeEffectContext();
+	ContextHandle.AddSourceObject(SourceActor);
+	const FGameplayEffectSpecHandle SpecHandle = MakeOutgoingSpec(
+		EffectClass, 1, ContextHandle
+	);
+	for (const FAxeAttributeTagAndValue& AttributeTagAndValue : AttributeTagAndValues)
+	{
+		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
+			SpecHandle, AttributeTagAndValue.AttributeTag, AttributeTagAndValue.AttributeValue
+		);
+	}
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
+		SpecHandle, FAxeGameplayTags::Get().Effect_Magnitude_Duration,
+		Duration
+	);
+	FActiveGameplayEffectHandle GameplayEffectSpecToSelf = ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+	return GameplayEffectSpecToSelf;
+}
+
+FActiveGameplayEffectHandle UAxeAbilitySystemComponent::ApplyAddAttrDurationEffectByTag(AActor* SourceActor,
+	FGameplayTag AttributeTag, float AttributeValue, float Duration)
+{
+	const TSubclassOf<UGameplayEffect> EffectClass = UAxeAssetManager::GetSubclass(
+		UAxeGameData::Get().GE_AddAttr_Duration_SetByCaller);
+	FGameplayEffectContextHandle ContextHandle = MakeEffectContext();
+	ContextHandle.AddSourceObject(SourceActor);
+	const FGameplayEffectSpecHandle SpecHandle = MakeOutgoingSpec(
+		EffectClass, 1, ContextHandle
+	);
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
+		SpecHandle, AttributeTag, AttributeValue
+	);
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
+		SpecHandle, FAxeGameplayTags::Get().Effect_Magnitude_Duration,
+		Duration
+	);
+	FActiveGameplayEffectHandle GameplayEffectSpecToSelf = ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+	return GameplayEffectSpecToSelf;
+}
+
 bool UAxeAbilitySystemComponent::ApplyDamageEffect(AActor* SourceActor, AActor* TargetActor,
                                                    const FDamageEffectParams& Params)
 {

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
 #include "Ability/AxeGameplayAbility.h"
+#include "Enum/AxeTypes.h"
 #include "AxeAbilitySystemComponent.generated.h"
 
 struct FEquipmentInstanceAttributeInfo;
@@ -75,10 +76,21 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FActiveGameplayEffectHandle ApplyEffectToSelfByClass(const TSubclassOf<UGameplayEffect>& EffectClass,
 	                                                     const float Level);
+	UFUNCTION(BlueprintCallable)
+	FActiveGameplayEffectHandle ApplyAddAttrDurationEffect(AActor* SourceActor,
+	                                                       const TArray<FAxeAttributeTagAndValue>& AttributeTagAndValues,
+	                                                       float Duration);
+	UFUNCTION(BlueprintCallable)
+	FActiveGameplayEffectHandle ApplyAddAttrDurationEffectByTag(AActor* SourceActor,
+														   FGameplayTag AttributeTag,
+														   float AttributeValue,
+														   float Duration);
+
 	bool ApplyDamageEffect(AActor* SourceActor, AActor* TargetActor, const FDamageEffectParams& Params);
 
 	FActiveGameplayEffectHandle ApplyEquipmentEffectToSelf(const TSubclassOf<UGameplayEffect>& EffectClass,
-	                                                       const TArray<FEquipmentInstanceAttributeInfo>& EquipmentAttributeInfos,
+	                                                       const TArray<FEquipmentInstanceAttributeInfo>&
+	                                                       EquipmentAttributeInfos,
 	                                                       FGameplayTag ItemTypeTag);
 	UFUNCTION(BlueprintCallable)
 	FActiveGameplayEffectHandle ApplyIncomingXpEffect(AActor* SourceActor, int32 XpValue);

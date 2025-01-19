@@ -157,3 +157,16 @@ struct TStructOpsTypeTraits<FAxeGameplayEffectContext> : public TStructOpsTypeTr
 		WithCopy = true // Necessary so that TSharedPtr<FHitResult> Data is copied around
 	};
 };
+
+
+USTRUCT(BlueprintType)
+struct FAxeAttributeTagAndValue
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FGameplayTag AttributeTag = FGameplayTag();
+
+	UPROPERTY(BlueprintReadOnly)
+	float AttributeValue = 0.f;
+};
