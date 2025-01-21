@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "AxeUserWidget.generated.h"
 
+class UUITipsMessageUserWidget;
 /**
  * 
  */
@@ -23,6 +24,7 @@ public:
 protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnWidgetControllerSet();
-
-	//
+	
+	UFUNCTION(BlueprintCallable)
+	void SendUITipsMessage(const FText& TipsMessage, float ShowTime = 5.f);
 };

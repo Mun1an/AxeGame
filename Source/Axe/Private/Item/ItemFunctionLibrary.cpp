@@ -45,7 +45,7 @@ UItemInstance* UItemFunctionLibrary::CreateItemInstance(UObject* WorldContextObj
 	const UClass* InstanceClass = ItemDefinition->ItemInstanceClass;
 	UItemInstance* ItemInstance = NewObject<UItemInstance>(World, InstanceClass);
 	ItemInstance->SetItemDef(ItemDef);
-	ItemInstance->OnItemInstanceCreated();
+	// ItemInstance->FinishItemInstanceCreated();
 	return ItemInstance;
 }
 
@@ -60,7 +60,8 @@ UEquipmentItemInstance* UItemFunctionLibrary::CreateEquipmentItemInstance(UObjec
 	{
 		return nullptr;
 	}
-	EquipmentItemInstance->InitEquipmentItemInstanceInfo(Level, EquipmentRarity);
+	EquipmentItemInstance->SetEquipmentLevel(Level);
+	EquipmentItemInstance->SetEquipmentRarity(EquipmentRarity);
 	return EquipmentItemInstance;
 }
 

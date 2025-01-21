@@ -13,7 +13,9 @@ UCLASS()
 class AXE_API UTipsMessageFunctionLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
+
 public:
 	UFUNCTION(BlueprintCallable, Category="TipsMessageFunctionLibrary|SendTipsMessage")
-	static void SendTipsMessage(const UObject* WorldContextObject,const FString& Message);
+	static void SendTipsMessage(const UObject* WorldContextObject, const FString& Message, float ShowTime = 5.f,
+	                            FName Key = "");
 };

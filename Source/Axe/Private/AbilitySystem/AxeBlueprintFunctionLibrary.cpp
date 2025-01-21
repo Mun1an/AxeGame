@@ -186,3 +186,4 @@ const FAxeAttributeUIInfo& UAxeBlueprintFunctionLibrary::GetAttributeUIInfoByTag
 	const FAxeAttributeUIInfo& FindAttributeInfoForTag = AttributeUIDataAsset->FindAttributeInfoForTag(AttributeTag);
 	return FindAttributeInfoForTag;
 }
+

@@ -26,7 +26,7 @@ void UItemComponent::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>&
 }
 
 bool UItemComponent::ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch,
-	FReplicationFlags* RepFlags)
+                                         FReplicationFlags* RepFlags)
 {
 	bool WroteSomething = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
 
@@ -70,5 +70,6 @@ void UItemComponent::BeginPlay()
 	if (GetOwner()->HasAuthority() && !ItemInstance && ItemDef)
 	{
 		ItemInstance = UItemFunctionLibrary::CreateItemInstance(GetWorld(), ItemDef);
+		ItemInstance->FinishItemInstanceCreated();
 	}
 }

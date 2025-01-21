@@ -3,15 +3,21 @@
 
 #include "TipsMessage/TipsMessageFunctionLibrary.h"
 
-#include "TipsMessage/TipsMessageSubsystem.h"
+#include "UI/HUD/AxeHUD.h"
+#include "UI/WidgetController/TipsMessageWidgetController.h"
 
-void UTipsMessageFunctionLibrary::SendTipsMessage(const UObject* WorldContextObject, const FString& Message)
+void UTipsMessageFunctionLibrary::SendTipsMessage(const UObject* WorldContextObject, const FString& Message, float ShowTime, FName Key)
 {
 	const UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
 	if (!World)
 	{
 		return;
 	}
-	UTipsMessageSubsystem* TipsMessageSubsystem = World->GetGameInstance()->GetSubsystem<UTipsMessageSubsystem>();
-	TipsMessageSubsystem->SendTipsMessage(Message);
+	AHUD* HUD = World->GetFirstPlayerController()->GetHUD();
+	if (HUD)
+	{
+		AAxeHUD* AxeHUD = Cast<AAxeHUD>(HUD);
+		UTipsMessageWidgetController* TipsMessageWidgetController = AxeHUD->GetTipsMessageWidgetController();
+		TipsMessageWidgetController->CreateTipsMessage(FText::FromString(Message), ShowTime, Key);
+	}
 }

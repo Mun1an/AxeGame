@@ -1,5 +1,6 @@
 #include "Inventory/AxeInventoryTypes.h"
 
+#include "Inventory/Component/EntryBaseComponent.h"
 #include "Inventory/Component/InventoryComponent.h"
 #include "Item/Instance/ItemDefinition.h"
 #include "Item/Instance/ItemInstance.h"
@@ -95,7 +96,7 @@ void FAxeInventoryList::AddEntry(const FGameplayTagContainer& EntryTags)
 	HandleEntryChanged(NewEntry);
 }
 
-bool FAxeInventoryList::AddItem(UItemInstance* ItemInstance, int32 StackCount, int32 SlotIndex)
+bool FAxeInventoryList::AddItem(UItemInstance* ItemInstance, int32 StackCount, int32 SlotIndex, FGameplayTag SlotTag)
 {
 	check(OwnerComponent);
 	check(OwnerComponent->GetOwner()->HasAuthority());
@@ -103,7 +104,7 @@ bool FAxeInventoryList::AddItem(UItemInstance* ItemInstance, int32 StackCount, i
 	TMap<int32, int32> SlotCountMap;
 	if (SlotIndex == INDEX_NONE)
 	{
-		bool bGet = GetStackOrEmptySlotIndex(ItemInstance, SlotCountMap, StackCount);
+		bool bGet = GetStackOrEmptySlotIndex(ItemInstance, SlotCountMap, StackCount, SlotTag);
 		if (!bGet)
 		{
 			return false;
@@ -240,7 +241,7 @@ bool FAxeInventoryList::ChangeItemStackCount(FInventoryEntry& Entry, int32 NewCo
 }
 
 bool FAxeInventoryList::GetStackOrEmptySlotIndex(UItemInstance* ItemInstance, TMap<int32, int32>& SlotCountMap,
-                                                 int32 NeedCount)
+                                                 int32 NeedCount, FGameplayTag SlotTag)
 {
 	const UItemDefinition* ItemDef = GetDefault<UItemDefinition>(ItemInstance->GetItemDef());
 	const int32 ItemMaxStackSize = ItemDef->GetItemMaxStackSize();
@@ -254,6 +255,10 @@ bool FAxeInventoryList::GetStackOrEmptySlotIndex(UItemInstance* ItemInstance, TM
 		{
 			continue;
 		}
+		if (!Entry.EntryTags.HasTag(SlotTag))
+		{
+			continue;
+		};
 		if (Entry.Instance->GetItemDef() == ItemInstance->GetItemDef() && Entry.StackCount < ItemMaxStackSize)
 		{
 			//

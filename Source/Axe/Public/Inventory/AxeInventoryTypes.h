@@ -1,8 +1,10 @@
 #pragma once
 #include "GameplayTagContainer.h"
+#include "GameplayTag/AxeGameplayTags.h"
 #include "Net/Serialization/FastArraySerializer.h"
 #include "AxeInventoryTypes.generated.h"
 
+class UEntryBaseComponent;
 class UItemDefinition;
 class FInventoryList;
 struct FAxeInventoryList;
@@ -53,7 +55,7 @@ struct FAxeInventoryList : public FFastArraySerializer
 	{
 	}
 
-	FAxeInventoryList(UInventoryComponent* InOwner)
+	FAxeInventoryList(UEntryBaseComponent* InOwner)
 		: OwnerComponent(InOwner)
 	{
 	}
@@ -62,7 +64,7 @@ struct FAxeInventoryList : public FFastArraySerializer
 	TArray<FInventoryEntry> Entries;
 
 	UPROPERTY(NotReplicated)
-	UInventoryComponent* OwnerComponent;
+	UEntryBaseComponent* OwnerComponent;
 
 	//~FFastArraySerializer contract
 	void PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize);
@@ -83,7 +85,8 @@ struct FAxeInventoryList : public FFastArraySerializer
 
 	void AddEntry(const FGameplayTagContainer& EntryTags);
 	//
-	bool AddItem(UItemInstance* ItemInstance, int32 StackCount = 1, int32 SlotIndex = INDEX_NONE);
+	bool AddItem(UItemInstance* ItemInstance, int32 StackCount = 1, int32 SlotIndex = INDEX_NONE,
+	             FGameplayTag SlotTag = FAxeGameplayTags::Get().Inventory_Entry_Bag);
 
 	bool RemoveItem(int32 SlotIndex, int32 RemoveCount = 1);
 
@@ -91,7 +94,8 @@ struct FAxeInventoryList : public FFastArraySerializer
 
 	bool ChangeItemStackCount(FInventoryEntry& Entry, int32 NewCount);
 
-	bool GetStackOrEmptySlotIndex(UItemInstance* ItemInstance, TMap<int32, int32>& SlotCountMap, int32 NeedCount);
+	bool GetStackOrEmptySlotIndex(UItemInstance* ItemInstance, TMap<int32, int32>& SlotCountMap, int32 NeedCount,
+	                              FGameplayTag SlotTag);
 
 	void HandleEntryChanged(FInventoryEntry& Entry);
 

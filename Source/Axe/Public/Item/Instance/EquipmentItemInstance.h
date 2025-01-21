@@ -59,11 +59,21 @@ public:
 	virtual void OnEquipped();
 	virtual void OnUnequipped();
 
-	void InitEquipmentItemInstanceInfo(int32 ItemLevelValue,
-	                                   EEquipmentRarity ItemRarity = EEquipmentRarity::Common);
+	UFUNCTION(BlueprintCallable, Category=Equipment)
+	int32 GetEquipmentLevel() const { return EquipmentLevel; }
+	UFUNCTION(BlueprintCallable, Category=Equipment)
+	void SetEquipmentLevel(int32 InLevel) { EquipmentLevel = InLevel; }
+	UFUNCTION(BlueprintCallable, Category=Equipment)
+	EEquipmentRarity GetEquipmentRarity() const { return EquipmentRarity; }
+	UFUNCTION(BlueprintCallable, Category=Equipment)
+	void SetEquipmentRarity(EEquipmentRarity InRarity) { EquipmentRarity = InRarity; }
 
-	virtual void OnItemInstanceCreated() override;
-	virtual void CreateItemDescription() override;
+	void InitEquipmentItemAttributeInfo();
+
+	virtual void FinishItemInstanceCreated() override;
+	virtual FString CreateItemDescription() override;
+
+	virtual int32 GetItemInstanceDefaultPrice() const override;
 
 protected:
 	// #if UE_WITH_IRIS

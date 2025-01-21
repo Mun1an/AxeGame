@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "AxeWidgetControllerBase.generated.h"
 
+class UAxeUserWidget;
 class UAbilityUIDataAsset;
 class UAxeAttributeSet;
 class UAxeAbilitySystemComponent;
@@ -56,8 +57,6 @@ public:
 	virtual void BroadcastInitialValues();
 	virtual void BindCallbacksToDependencies();
 
-	
-
 protected:
 	UPROPERTY(BlueprintReadOnly, Category="WidgetController")
 	TObjectPtr<APlayerController> PlayerController;
@@ -83,10 +82,10 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category="WidgetController")
 	TObjectPtr<UAxeAttributeSet> AxeAttributeSet;
 
-	
-
 	AAxePlayerController* GetAxePlayerController();
 	AAxePlayerState* GetAxePlayerState();
 	UAxeAbilitySystemComponent* GetAxeAbilitySystemComponent();
 	UAxeAttributeSet* GetAxeAttributeSet();
+
+
 };

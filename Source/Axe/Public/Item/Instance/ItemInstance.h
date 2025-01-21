@@ -36,11 +36,24 @@ public:
 
 	void SetItemDef(TSubclassOf<UItemDefinition> InDef);
 
-	virtual void OnItemInstanceCreated();
+	UFUNCTION(BlueprintCallable, Category = "Item")
+	virtual void FinishItemInstanceCreated();
+	UFUNCTION(BlueprintCallable, Category = "Item")
+	virtual void UpdateItemInstance();
 
 	UFUNCTION(BlueprintCallable, Category = "Item")
 	virtual const FString& GetItemDescription();
-	virtual void CreateItemDescription();
+	virtual FString CreateItemDescription();
+
+	UFUNCTION(BlueprintCallable, Category = "Item")
+	int32 GetItemInstancePrice() const { return ItemInstancePrice; }
+
+	UFUNCTION(BlueprintCallable, Category = "Item")
+	void SetItemInstancePrice(int32 InPrice) { ItemInstancePrice = InPrice; }
+
+	UFUNCTION(BlueprintCallable, Category = "Item")
+	virtual int32 GetItemInstanceDefaultPrice() const;
+	virtual void InitItemInstancePrice();
 
 	FOnItemInstanceInfoUpdated OnItemInstanceInfoUpdatedDelegate;
 
@@ -50,6 +63,9 @@ protected:
 
 	UPROPERTY(Replicated)
 	FString ItemInstanceDescription;
+
+	UPROPERTY(Replicated)
+	int32 ItemInstancePrice = -1;
 
 private:
 	// The item definition

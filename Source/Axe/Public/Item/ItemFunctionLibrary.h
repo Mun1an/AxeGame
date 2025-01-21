@@ -34,9 +34,11 @@ public:
 	static const UItemFragment* FindItemDefinitionFragment(TSubclassOf<UItemDefinition> ItemDef,
 	                                                       TSubclassOf<UItemFragment> FragmentClass);
 
+	// 使用后需要调用FinishItemInstanceCreated
 	UFUNCTION(BlueprintCallable, meta = (HidePin = "WorldContextObject", DefaultToSelf = "WorldContextObject"))
 	static UItemInstance* CreateItemInstance(UObject* WorldContextObject, TSubclassOf<UItemDefinition> ItemDef);
-
+	
+	// 使用后需要调用FinishItemInstanceCreated
 	UFUNCTION(BlueprintCallable, meta = (HidePin = "WorldContextObject", DefaultToSelf = "WorldContextObject"))
 	static UEquipmentItemInstance* CreateEquipmentItemInstance(UObject* WorldContextObject,
 	                                                           TSubclassOf<UEquipmentItemDefinition>

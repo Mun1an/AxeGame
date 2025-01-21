@@ -24,6 +24,7 @@ class AXE_API UInventoryWidgetController : public UAxeWidgetControllerBase
 
 public:
 	virtual void SetWidgetControllerParams(const FWidgetControllerParams& Params) override;
+	virtual void BindCallbacksToDependencies() override;
 
 	UPROPERTY(BlueprintAssignable, Category="Inventory")
 	FOnInventoryChangedInWidgetController OnInventoryChangedInWidgetController;

@@ -417,7 +417,7 @@ bool UAxeGameplayAbility::CheckCost(const FGameplayAbilitySpecHandle Handle, con
 			FText AttributeName = UAxeBlueprintFunctionLibrary::GetAttributeUIInfoByTag(AttributeTag).AttributeName;
 
 			UTipsMessageFunctionLibrary::SendTipsMessage(
-				AxeCharacterOwner, FString::Printf(TEXT("[%s] 不足"), *AttributeName.ToString())
+				AxeCharacterOwner, FString::Printf(TEXT("[ %s ] 不足"), *AttributeName.ToString())
 			);
 		}
 	}

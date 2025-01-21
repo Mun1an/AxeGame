@@ -21,13 +21,14 @@ AAxeCharacterMob::AAxeCharacterMob()
 void AAxeCharacterMob::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
-	if (HasAuthority())
+	if (HasAuthority() && NewController)
 	{
-		check(BehaviorTree)
-
 		AxeAIController = Cast<AAxeAIController>(NewController);
-		AxeAIController->GetBlackboardComponent()->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
-		AxeAIController->RunBehaviorTree(BehaviorTree);
+		if (AxeAIController && BehaviorTree)
+		{
+			AxeAIController->GetBlackboardComponent()->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
+			AxeAIController->RunBehaviorTree(BehaviorTree);	
+		}
 	}
 }
 

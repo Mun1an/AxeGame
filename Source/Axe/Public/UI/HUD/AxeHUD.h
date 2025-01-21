@@ -7,6 +7,10 @@
 #include "UI/WidgetController/AxeWidgetControllerBase.h"
 #include "AxeHUD.generated.h"
 
+class UTipsMessageWidgetController;
+class UUITipsMessageUserWidget;
+class UShopComponent;
+class UShopWidgetController;
 class UAttributeMenuWidgetController;
 class UInventoryWidgetController;
 class UOverlayWidgetController;
@@ -36,6 +40,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 	UAttributeMenuWidgetController* GetAttributeMenuWidgetController();
 	UAttributeMenuWidgetController* GetAttributeMenuWidgetController(const FWidgetControllerParams& Params);
+
+	UFUNCTION(BlueprintCallable)
+	UShopWidgetController* GetShopWidgetController(UShopComponent* TargetShopComponent);
+	UShopWidgetController* GetShopWidgetController(UShopComponent* TargetShopComponent,
+	                                               const FWidgetControllerParams& Params);
+
+	UFUNCTION(BlueprintCallable)
+	UTipsMessageWidgetController* GetTipsMessageWidgetController();
+	UTipsMessageWidgetController* GetTipsMessageWidgetController(const FWidgetControllerParams& Params);
 	
 protected:
 	virtual void BeginPlay() override;
@@ -66,4 +79,14 @@ private:
 	TObjectPtr<UAttributeMenuWidgetController> AttributeMenuWidgetController;
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UAttributeMenuWidgetController> AttributeMenuWidgetControllerClass;
+
+	UPROPERTY()
+	TObjectPtr<UShopWidgetController> ShopWidgetController;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UShopWidgetController> ShopWidgetControllerClass;
+
+	UPROPERTY()
+	TObjectPtr<UTipsMessageWidgetController> TipsMessageWidgetController;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UTipsMessageWidgetController> TipsMessageWidgetControllerClass;
 };

@@ -7,6 +7,7 @@
 #include "Engine/ActorChannel.h"
 #include "Item/ItemFunctionLibrary.h"
 #include "Item/Instance/ItemDefinition.h"
+#include "Item/ItemFragment/ItemFragment_Shop.h"
 #include "Item/ItemFragment/ItemFragment_UI.h"
 #include "Net/UnrealNetwork.h"
 
@@ -20,6 +21,7 @@ void UItemInstance::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& 
 	DOREPLIFETIME(UItemInstance, ItemDef);
 	DOREPLIFETIME(UItemInstance, OwningPawn);
 	DOREPLIFETIME(UItemInstance, ItemInstanceDescription);
+	DOREPLIFETIME(UItemInstance, ItemInstancePrice);
 }
 
 void UItemInstance::SetItemDef(TSubclassOf<UItemDefinition> InDef)
@@ -27,27 +29,63 @@ void UItemInstance::SetItemDef(TSubclassOf<UItemDefinition> InDef)
 	ItemDef = InDef;
 }
 
-void UItemInstance::OnItemInstanceCreated()
+void UItemInstance::FinishItemInstanceCreated()
 {
+	InitItemInstancePrice();
+
+	CreateItemDescription();
+}
+
+void UItemInstance::UpdateItemInstance()
+{
+	InitItemInstancePrice();
+	CreateItemDescription();
 }
 
 const FString& UItemInstance::GetItemDescription()
 {
 	if (ItemInstanceDescription.Len() <= 0)
 	{
-		CreateItemDescription();
+		ItemInstanceDescription = CreateItemDescription();
 	}
 	return ItemInstanceDescription;
 }
 
-void UItemInstance::CreateItemDescription()
+FString UItemInstance::CreateItemDescription()
 {
+	FString Description;
+
+	int32 Price = GetItemInstancePrice();
+	Description += FString::Printf(TEXT("价格: %d\n"), Price);
+	Description += "\n";
+
 	if (const UItemDefinition* ItemDefinition = ItemDef->GetDefaultObject<UItemDefinition>())
 	{
 		if (const UItemFragment_UI* ItemFragment_UI = ItemDefinition->FindFragment<UItemFragment_UI>())
 		{
-			ItemInstanceDescription = ItemFragment_UI->DefaultDescription.ToString();
+			Description += ItemFragment_UI->DefaultDescription.ToString();
+			Description += "\n";
 		}
+	}
+	return Description;
+}
+
+int32 UItemInstance::GetItemInstanceDefaultPrice() const
+{
+	const UItemDefinition* ItemDefinition = ItemDef->GetDefaultObject<UItemDefinition>();
+	const UItemFragment_Shop* ItemFragment_Shop = ItemDefinition->FindFragment<UItemFragment_Shop>();
+	if (ItemFragment_Shop)
+	{
+		return ItemFragment_Shop->DefaultPrice;
+	}
+	return 0;
+}
+
+void UItemInstance::InitItemInstancePrice()
+{
+	if (ItemInstancePrice < 0)
+	{
+		SetItemInstancePrice(GetItemInstanceDefaultPrice());
 	}
 }
 

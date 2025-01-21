@@ -6,10 +6,13 @@
 #include "Blueprint/UserWidget.h"
 #include "PlayerState/AxePlayerState.h"
 #include "UI/Widget/AxeUserWidget.h"
+#include "UI/Widget/UITipsMessageUserWidget.h"
 #include "UI/WidgetController/AttributeMenuWidgetController.h"
 #include "UI/WidgetController/AxeWidgetControllerBase.h"
 #include "UI/WidgetController/InventoryWidgetController.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
+#include "UI/WidgetController/ShopWidgetController.h"
+#include "UI/WidgetController/TipsMessageWidgetController.h"
 
 void AAxeHUD::InitOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS)
 {
@@ -84,11 +87,55 @@ UAttributeMenuWidgetController* AAxeHUD::GetAttributeMenuWidgetController(const 
 {
 	if (AttributeMenuWidgetController == nullptr)
 	{
-		AttributeMenuWidgetController = NewObject<UAttributeMenuWidgetController>(this, AttributeMenuWidgetControllerClass);
+		AttributeMenuWidgetController = NewObject<UAttributeMenuWidgetController>(
+			this, AttributeMenuWidgetControllerClass);
 		AttributeMenuWidgetController->SetWidgetControllerParams(Params);
 		AttributeMenuWidgetController->BindCallbacksToDependencies();
 	}
 	return AttributeMenuWidgetController;
+}
+
+UShopWidgetController* AAxeHUD::GetShopWidgetController(UShopComponent* TargetShopComponent)
+{
+	const FWidgetControllerParams Params = GetWidgetControllerParams();
+	return GetShopWidgetController(TargetShopComponent, Params);
+}
+
+UShopWidgetController* AAxeHUD::GetShopWidgetController(UShopComponent* TargetShopComponent,
+                                                        const FWidgetControllerParams& Params)
+{
+	if (ShopWidgetController == nullptr)
+	{
+		ShopWidgetController = NewObject<UShopWidgetController>(this, ShopWidgetControllerClass);
+		ShopWidgetController->SetWidgetControllerParams(Params);
+		ShopWidgetController->SetShopComponent(TargetShopComponent);
+
+		ShopWidgetController->BindCallbacksToDependencies();
+	}
+	else if (ShopWidgetController->GetShopComponent() != TargetShopComponent)
+	{
+		// Fixme 解除上一次的绑定等等
+		ShopWidgetController->SetShopComponent(TargetShopComponent);
+	}
+	return ShopWidgetController;
+}
+
+UTipsMessageWidgetController* AAxeHUD::GetTipsMessageWidgetController()
+{
+	const FWidgetControllerParams Params = GetWidgetControllerParams();
+	return GetTipsMessageWidgetController(Params);
+}
+
+UTipsMessageWidgetController* AAxeHUD::GetTipsMessageWidgetController(const FWidgetControllerParams& Params)
+{
+	if (TipsMessageWidgetController == nullptr)
+	{
+		TipsMessageWidgetController = NewObject<UTipsMessageWidgetController>(
+			this, TipsMessageWidgetControllerClass);
+		TipsMessageWidgetController->SetWidgetControllerParams(Params);
+		TipsMessageWidgetController->BindCallbacksToDependencies();
+	}
+	return TipsMessageWidgetController;
 }
 
 

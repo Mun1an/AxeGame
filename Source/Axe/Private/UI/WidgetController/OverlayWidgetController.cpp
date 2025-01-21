@@ -5,11 +5,9 @@
 
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
 #include "AbilitySystem/AttributeSet/AxeAttributeSet.h"
-#include "Character/AxeCharacterPlayer.h"
 #include "GameplayTag/AxeGameplayTags.h"
 #include "Inventory/Component/InventoryComponent.h"
 #include "PlayerState/AxePlayerState.h"
-#include "TipsMessage/TipsMessageSubsystem.h"
 #include "UI/WidgetController/InventoryWidgetController.h"
 
 void UOverlayWidgetController::SetWidgetControllerParams(const FWidgetControllerParams& Params)
@@ -71,11 +69,6 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 	// item
 	InventoryComponent->OnSendInventoryItemUIMessage.AddDynamic(
 		this, &UOverlayWidgetController::SendInventoryItemUIMessage);
-
-
-	// TipsMessage
-	UTipsMessageSubsystem* TipsMessageSubsystem = LocalPlayer->GetGameInstance()->GetSubsystem<UTipsMessageSubsystem>();
-	TipsMessageSubsystem->OnSendTipsMessageSignature.AddDynamic(this, &UOverlayWidgetController::OnSendTipsMessage);
 
 	// PlayerStateValue
 	AAxePlayerState* AxePS = GetAxePlayerState();

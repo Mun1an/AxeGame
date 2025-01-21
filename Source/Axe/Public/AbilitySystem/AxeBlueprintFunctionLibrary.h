@@ -56,7 +56,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category="AxeBPLibrary|Pawn")
 	static APawn* GetLocalPawn(const UObject* WorldContextObject);
 
-
 	UFUNCTION(BlueprintCallable, Category="AxeBPLibrary|Attribute")
 	static const FAxeAttributeUIInfo& GetAttributeUIInfoByTag(FGameplayTag AttributeTag);
+
 };

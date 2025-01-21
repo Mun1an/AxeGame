@@ -14,6 +14,11 @@ void UInventoryWidgetController::SetWidgetControllerParams(const FWidgetControll
 
 	check(AxePlayerState)
 	InventoryComponent = AxePlayerState->GetInventoryComponent();
+}
+
+void UInventoryWidgetController::BindCallbacksToDependencies()
+{
+	Super::BindCallbacksToDependencies();
 
 	// bind
 	InventoryComponent->OnInventoryChangedDelegate.AddDynamic(

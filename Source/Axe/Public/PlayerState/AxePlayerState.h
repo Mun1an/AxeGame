@@ -97,8 +97,8 @@ private:
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_Xp)
 	int32 Xp = 0;
 
-	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_GoldCoinCount)
-	int32 GoldCoinCount = 0;
+	UPROPERTY(EditDefaultsOnly, ReplicatedUsing = OnRep_GoldCoinCount)
+	int32 GoldCoinCount = 100;
 
 	// 升级所需总经验列表
 	TArray<int32> LevelXpThresholds;

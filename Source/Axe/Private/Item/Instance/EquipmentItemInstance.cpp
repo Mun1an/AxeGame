@@ -133,11 +133,8 @@ void UEquipmentItemInstance::OnUnequipped()
 	}
 }
 
-void UEquipmentItemInstance::InitEquipmentItemInstanceInfo(int32 ItemLevelValue, EEquipmentRarity ItemRarity)
+void UEquipmentItemInstance::InitEquipmentItemAttributeInfo()
 {
-	EquipmentLevel = ItemLevelValue;
-	EquipmentRarity = ItemRarity;
-
 	EquipmentInstanceAttributeInfos.Empty();
 
 	const UEquipmentItemDefinition* EquipmentDef = GetDefault<UEquipmentItemDefinition>(GetItemDef());
@@ -157,17 +154,18 @@ void UEquipmentItemInstance::InitEquipmentItemInstanceInfo(int32 ItemLevelValue,
 	OnItemInstanceInfoUpdatedDelegate.Broadcast();
 }
 
-void UEquipmentItemInstance::OnItemInstanceCreated()
+void UEquipmentItemInstance::FinishItemInstanceCreated()
 {
-	Super::OnItemInstanceCreated();
+	InitEquipmentItemAttributeInfo();
 
-	// Default Init
-	InitEquipmentItemInstanceInfo(1);
+	Super::FinishItemInstanceCreated();
 }
 
-void UEquipmentItemInstance::CreateItemDescription()
+FString UEquipmentItemInstance::CreateItemDescription()
 {
-	FString AttrText = TEXT("");
+	FString SuperItemDescription = Super::CreateItemDescription();
+	FString Description;
+	FString AttrText;
 	for (const FEquipmentInstanceAttributeInfo& AttributeInfo : EquipmentInstanceAttributeInfos)
 	{
 		const FAxeAttributeUIInfo& AttributeUIInfo = UAxeBlueprintFunctionLibrary::GetAttributeUIInfoByTag(
@@ -179,14 +177,26 @@ void UEquipmentItemInstance::CreateItemDescription()
 			static_cast<int32>(AttributeInfo.AttributeValue)
 		);
 	}
-	FString LocalItemDescription = FString::Printf(
+	Description += FString::Printf(
 		TEXT(
 			"等级: %d \n"
 			"%s"
+			"\n"
 		),
 		EquipmentLevel,
 		*AttrText
 	);
+	Description += SuperItemDescription;
 
-	ItemInstanceDescription = LocalItemDescription;
+	return Description;
+}
+
+
+int32 UEquipmentItemInstance::GetItemInstanceDefaultPrice() const
+{
+	float DefaultPrice = Super::GetItemInstanceDefaultPrice();
+	DefaultPrice = DefaultPrice * (1 + (EquipmentLevel - 1) * 0.2f);
+	const int32 RarityLevel = static_cast<int32>(EquipmentRarity);
+	DefaultPrice = DefaultPrice * (1 + RarityLevel * 0.5f);
+	return static_cast<int32>(DefaultPrice);
 }
