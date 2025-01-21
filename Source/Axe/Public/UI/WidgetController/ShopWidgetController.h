@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "InventoryWidgetController.h"
+#include "OverlayWidgetController.h"
 #include "UI/WidgetController/AxeWidgetControllerBase.h"
 #include "ShopWidgetController.generated.h"
 
@@ -18,7 +19,11 @@ class AXE_API UShopWidgetController : public UInventoryWidgetController
 	GENERATED_BODY()
 
 public:
+	UShopWidgetController();
+
 	virtual void SetWidgetControllerParams(const FWidgetControllerParams& Params) override;
+
+	virtual void BroadcastInitialValues() override;
 	virtual void BindCallbacksToDependencies() override;
 
 	UShopComponent* GetShopComponent() const { return ShopComponent; }
@@ -33,11 +38,16 @@ public:
 	UPROPERTY(BlueprintAssignable, Category="Shop")
 	FOnInventoryChangedInWidgetController OnShopChangedInWidgetController;
 
+	UPROPERTY(BlueprintAssignable, Category="GAS|GoldCoin")
+	FOnPlayerStatChangedSignature OnGoldCoinCountChangedDelegate;
+
 protected:
 	UFUNCTION()
 	void OnShopChangedCallback(int32 SlotIndex, UItemInstance* NewItemInstance, int32 NewCount,
 	                           UItemInstance* OldItemInstance, int32 OldCount);
 
+	void OnGoldCoinCountChanged(int32 NewValue, int32 OldValue);
+
 	UPROPERTY(BlueprintReadOnly)
-	UShopComponent* ShopComponent;
+	UShopComponent* ShopComponent = nullptr;
 };

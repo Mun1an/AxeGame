@@ -8,6 +8,14 @@
 #include "Item/Instance/ItemInstance.h"
 #include "PlayerState/AxePlayerState.h"
 
+UInventoryWidgetController::UInventoryWidgetController()
+{
+	InventoryBoxOptionSelections = {
+		EInventoryBoxOptionSelection::Drop,
+		EInventoryBoxOptionSelection::Destroy,
+	};
+}
+
 void UInventoryWidgetController::SetWidgetControllerParams(const FWidgetControllerParams& Params)
 {
 	Super::SetWidgetControllerParams(Params);

@@ -50,7 +50,7 @@ void AAxePlayerState::SetPlayerLevel(const float NewLevel, bool bCheckXp)
 	const int32 OldLevel = PlayerLevel;
 	PlayerLevel = FMath::Clamp(NewLevel, 0, MaxPlayerLevel);
 
-	OnLevelChangedDelegate.Broadcast(PlayerLevel);
+	OnLevelChangedDelegate.Broadcast(PlayerLevel, OldLevel);
 
 	OnServerLevelUpDelegate.Broadcast(PlayerLevel, OldLevel);
 	//
@@ -72,8 +72,9 @@ void AAxePlayerState::AddToPlayerLevel(const float AddLevel)
 // Xp
 void AAxePlayerState::SetPlayerXp(const float NewXp)
 {
+	int32 OldXp = Xp;
 	Xp = FMath::Max(NewXp, 0);
-	OnXpChangedDelegate.Broadcast(Xp);
+	OnXpChangedDelegate.Broadcast(Xp, OldXp);
 
 	// fixme 优化
 	const int32 NewLevel = GetNewLevelByTotalXp(Xp);
@@ -126,8 +127,9 @@ float AAxePlayerState::GetXpPercent() const
 
 void AAxePlayerState::SetGoldCoinCount(int32 NewGoldCoin)
 {
+	int32 OldGoldCoin = GoldCoinCount;
 	GoldCoinCount = NewGoldCoin;
-	OnGoldCoinCountChangedDelegate.Broadcast(GoldCoinCount);
+	OnGoldCoinCountChangedDelegate.Broadcast(GoldCoinCount, OldGoldCoin);
 }
 
 void AAxePlayerState::AddToGoldCoinCount(int32 AddGoldCoin)
@@ -135,19 +137,19 @@ void AAxePlayerState::AddToGoldCoinCount(int32 AddGoldCoin)
 	SetGoldCoinCount(GoldCoinCount + AddGoldCoin);
 }
 
-void AAxePlayerState::OnRep_Level(int32 NewValue)
+void AAxePlayerState::OnRep_Level(int32 OldValue)
 {
-	OnLevelChangedDelegate.Broadcast(NewValue);
+	OnLevelChangedDelegate.Broadcast(PlayerLevel, OldValue);
 }
 
-void AAxePlayerState::OnRep_Xp(int32 NewValue)
+void AAxePlayerState::OnRep_Xp(int32 OldValue)
 {
-	OnXpChangedDelegate.Broadcast(NewValue);
+	OnXpChangedDelegate.Broadcast(Xp, OldValue);
 }
 
 void AAxePlayerState::OnRep_GoldCoinCount(int32 OldValue)
 {
-	OnGoldCoinCountChangedDelegate.Broadcast(OldValue);
+	OnGoldCoinCountChangedDelegate.Broadcast(GoldCoinCount, OldValue);
 }
 
 //

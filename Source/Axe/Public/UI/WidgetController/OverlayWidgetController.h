@@ -89,8 +89,8 @@ protected:
 	void ToughnessChanged(const FOnAttributeChangeData& Data) const;
 	void MaxToughnessChanged(const FOnAttributeChangeData& Data) const;
 
-	void OnXpChanged(int32 NewXp);
-	void OnPlayerLevelChanged(int32 NewLevel);
+	void OnXpChanged(int32 NewValue, int32 OldValue);
+	void OnPlayerLevelChanged(int32 NewValue, int32 OldValue);
 
 	UFUNCTION()
 	void SendInventoryItemUIMessage(UTexture2D* Texture, FText ItemName, int32 StackCount);

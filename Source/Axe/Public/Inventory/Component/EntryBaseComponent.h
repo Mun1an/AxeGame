@@ -80,6 +80,9 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category=Inventory)
 	void DropItemBySlot(int32 Slot);
 
+	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category=Inventory)
+	bool SellItemBySlot(int32 Slot);
+
 	UFUNCTION(Server, Reliable, BlueprintCallable)
 	void ServerSwapItemBySlots(int32 FromSlot, int32 ToSlot);
 
@@ -89,6 +92,9 @@ public:
 	UFUNCTION(Server, Reliable, BlueprintCallable)
 	void ServerDropItemBySlot(int32 Slot);
 
+	UFUNCTION(Server, Reliable, BlueprintCallable)
+	void ServerSellItemBySlot(int32 Slot);
+	
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category=Inventory)
 	void AddInventoryEntry();
 

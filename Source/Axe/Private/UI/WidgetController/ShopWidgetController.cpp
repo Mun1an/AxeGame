@@ -5,10 +5,28 @@
 
 #include "Inventory/Component/InventoryComponent.h"
 #include "Inventory/Component/ShopComponent.h"
+#include "PlayerState/AxePlayerState.h"
+
+UShopWidgetController::UShopWidgetController()
+{
+	InventoryBoxOptionSelections = {
+		EInventoryBoxOptionSelection::Drop,
+		EInventoryBoxOptionSelection::Sell,
+	};
+}
 
 void UShopWidgetController::SetWidgetControllerParams(const FWidgetControllerParams& Params)
 {
 	Super::SetWidgetControllerParams(Params);
+}
+
+void UShopWidgetController::BroadcastInitialValues()
+{
+	Super::BroadcastInitialValues();
+
+	const AAxePlayerState* AxePS = GetAxePlayerState();
+
+	OnGoldCoinCountChanged(AxePS->GetGoldCoinCount(), 0);
 }
 
 void UShopWidgetController::BindCallbacksToDependencies()
@@ -17,6 +35,9 @@ void UShopWidgetController::BindCallbacksToDependencies()
 	// bind
 	ShopComponent->OnInventoryChangedDelegate.AddDynamic(
 		this, &UShopWidgetController::OnShopChangedCallback);
+
+	AAxePlayerState* AxePS = GetAxePlayerState();
+	AxePS->OnGoldCoinCountChangedDelegate.AddUObject(this, &UShopWidgetController::OnGoldCoinCountChanged);
 }
 
 void UShopWidgetController::TryBuyShopItem(int32 ShopSlot)
@@ -41,4 +62,9 @@ void UShopWidgetController::OnShopChangedCallback(int32 SlotIndex, UItemInstance
                                                   UItemInstance* OldItemInstance, int32 OldCount)
 {
 	OnShopChangedInWidgetController.Broadcast(SlotIndex, NewItemInstance, NewCount, OldCount);
+}
+
+void UShopWidgetController::OnGoldCoinCountChanged(int32 NewValue, int32 OldValue)
+{
+	OnGoldCoinCountChangedDelegate.Broadcast(NewValue);
 }

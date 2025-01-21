@@ -142,14 +142,14 @@ void UOverlayWidgetController::MaxToughnessChanged(const FOnAttributeChangeData&
 	OnMaxToughnessChanged.Broadcast(Data.NewValue);
 }
 
-void UOverlayWidgetController::OnXpChanged(int32 NewXp)
+void UOverlayWidgetController::OnXpChanged(int32 NewValue, int32 OldValue)
 {
-	OnXpChangedDelegate.Broadcast(NewXp);
+	OnXpChangedDelegate.Broadcast(NewValue);
 }
 
-void UOverlayWidgetController::OnPlayerLevelChanged(int32 NewLevel)
+void UOverlayWidgetController::OnPlayerLevelChanged(int32 NewValue, int32 OldValue)
 {
-	OnPlayerLevelChangedDelegate.Broadcast(NewLevel);
+	OnPlayerLevelChangedDelegate.Broadcast(NewValue);
 }
 
 void UOverlayWidgetController::SendInventoryItemUIMessage(UTexture2D* Texture, FText ItemName, int32 StackCount)

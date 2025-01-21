@@ -29,7 +29,7 @@ public:
 	int32 GetShopItemPrice(UItemInstance* ItemInstance, float PriceRate);
 
 	UFUNCTION(BlueprintCallable, Category = Shop)
-	int32 GetShopItemTotalPriceBySlot(int32 Slot);
+	int32 GetShopItemPriceWithCount(int32 Slot);
 
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = Shop)
 	bool BuyShopItem(int32 ShopSlot, UEntryBaseComponent* BuyerInventory);

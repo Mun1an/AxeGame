@@ -73,7 +73,7 @@ int32 UShopComponent::GetShopItemPrice(UItemInstance* ItemInstance, float PriceR
 	return ItemInstanceDefaultPrice * PriceRate;
 }
 
-int32 UShopComponent::GetShopItemTotalPriceBySlot(int32 Slot)
+int32 UShopComponent::GetShopItemPriceWithCount(int32 Slot)
 {
 	const UItemInstance* ItemInstance = GetItemInstanceByIndex(Slot);
 	if (!ItemInstance)
@@ -94,7 +94,7 @@ bool UShopComponent::BuyShopItem(int32 ShopSlot, UEntryBaseComponent* BuyerInven
 	{
 		return false;
 	}
-	const int32 ShopTotalItemPrice = GetShopItemTotalPriceBySlot(ShopSlot);
+	const int32 ShopTotalItemPrice = GetShopItemPriceWithCount(ShopSlot);
 	AAxeCharacterBase* BuyerAxeCharacter = BuyerInventory->GetAxeCharacterOwner();
 	APlayerState* PS = BuyerAxeCharacter->GetPlayerState();
 	if (!PS)
@@ -109,6 +109,8 @@ bool UShopComponent::BuyShopItem(int32 ShopSlot, UEntryBaseComponent* BuyerInven
 		return false;
 	}
 	// Add Item
+
+	// Update ItemInstance Price
 	ShopItemInstance->SetItemInstancePrice(ShopItemInstance->GetItemInstanceDefaultPrice());
 	ShopItemInstance->UpdateItemInstance();
 	bool bAddBuyerItem = BuyerInventory->AddItemInstance(ShopItemInstance, ShopEntry.StackCount);
@@ -117,9 +119,8 @@ bool UShopComponent::BuyShopItem(int32 ShopSlot, UEntryBaseComponent* BuyerInven
 		return false;
 	}
 	bool bRemoveItemByIndex = RemoveItemByIndex(ShopSlot, ShopEntry.StackCount);
-	UAbilitySystemComponent* ASC = AxePS->GetAbilitySystemComponent();
-	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(ASC);
-	AxeASC->ApplyIncomingGoldCoinCountEffect(BuyerAxeCharacter, -ShopTotalItemPrice);
+
+	AxePS->AddToGoldCoinCount(-ShopTotalItemPrice);
 
 	return bRemoveItemByIndex;
 }
@@ -132,7 +133,7 @@ bool UShopComponent::CheckCanBuyShopItemByClient(int32 ShopSlot, UEntryBaseCompo
 	{
 		return false;
 	}
-	const int32 ShopTotalItemPrice = GetShopItemTotalPriceBySlot(ShopSlot);
+	const int32 ShopTotalItemPrice = GetShopItemPriceWithCount(ShopSlot);
 	AAxeCharacterBase* BuyerAxeCharacter = BuyerInventory->GetAxeCharacterOwner();
 	APlayerState* PS = BuyerAxeCharacter->GetPlayerState();
 	if (!PS)
@@ -148,8 +149,6 @@ bool UShopComponent::CheckCanBuyShopItemByClient(int32 ShopSlot, UEntryBaseCompo
 		return false;
 	}
 	// Add Item
-	ShopItemInstance->SetItemInstancePrice(ShopItemInstance->GetItemInstanceDefaultPrice());
-	ShopItemInstance->UpdateItemInstance();
 	bool bCanAddItemInstance = BuyerInventory->CheckCanAddItemInstance(ShopItemInstance, ShopEntry.StackCount,
 	                                                                   FAxeGameplayTags::Get().Inventory_Entry_Bag);
 	if (!bCanAddItemInstance)
@@ -175,9 +174,7 @@ bool UShopComponent::RefreshShopItem(UEntryBaseComponent* BuyerInventory)
 	{
 		return false;
 	}
-	UAbilitySystemComponent* ASC = AxePS->GetAbilitySystemComponent();
-	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(ASC);
-	AxeASC->ApplyIncomingGoldCoinCountEffect(BuyerAxeCharacter, -RefreshShopItemCost);
+	AxePS->AddToGoldCoinCount(-RefreshShopItemCost);
 
 	bool bRandomSpawnShopItem = RandomSpawnShopItem();
 	return bRandomSpawnShopItem;

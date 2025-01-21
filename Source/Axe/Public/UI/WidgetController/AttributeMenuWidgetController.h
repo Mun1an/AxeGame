@@ -38,9 +38,9 @@ public:
 protected:
 	void BroadcastAttributeInfo(const FGameplayTag& Tag, const FGameplayAttribute& Attribute);
 
-	void OnXpChanged(int32 NewValue);
-	void OnPlayerLevelChanged(int32 NewValue);
-	void OnGoldCoinCountChanged(int32 NewValue);
+	void OnXpChanged(int32 NewValue, int32 OldValue);
+	void OnPlayerLevelChanged(int32 NewValue, int32 OldValue);
+	void OnGoldCoinCountChanged(int32 NewValue, int32 OldValue);
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	TObjectPtr<UAttributeUIDataAsset> AttributeDataAsset;

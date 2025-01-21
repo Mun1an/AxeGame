@@ -14,6 +14,7 @@
 #include "Item/ItemFragment/ItemFragment_CommonInfo.h"
 #include "Item/ItemFragment/ItemFragment_UI.h"
 #include "Net/UnrealNetwork.h"
+#include "PlayerState/AxePlayerState.h"
 
 UEntryBaseComponent::UEntryBaseComponent(const FObjectInitializer& ObjectInitializer): Super(ObjectInitializer),
 	InventoryList(this)
@@ -213,6 +214,27 @@ void UEntryBaseComponent::DropItemBySlot(int32 Slot)
 	}
 }
 
+bool UEntryBaseComponent::SellItemBySlot(int32 Slot)
+{
+	const FInventoryEntry& InventoryEntryByIndex = GetInventoryEntryByIndex(Slot);
+	int32 SellPrice = 0;
+	if (InventoryEntryByIndex.Instance)
+	{
+		int32 ItemInstancePrice = InventoryEntryByIndex.Instance->GetItemInstancePrice();
+		SellPrice = ItemInstancePrice * InventoryEntryByIndex.StackCount;
+	}
+	bool bRemoveItem = RemoveItemByIndex(Slot, InventoryEntryByIndex.StackCount);
+	if (!bRemoveItem)
+	{
+		return false;
+	}
+	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
+	APlayerState* PS = AxeCharacterOwner->GetPlayerState();
+	AAxePlayerState* AxePS = Cast<AAxePlayerState>(PS);
+	AxePS->AddToGoldCoinCount(SellPrice);
+	return true;
+}
+
 
 void UEntryBaseComponent::ServerSwapItemBySlots_Implementation(int32 FromSlot, int32 ToSlot)
 {
@@ -227,6 +249,11 @@ void UEntryBaseComponent::ServerRemoveItemBySlot_Implementation(int32 Slot)
 void UEntryBaseComponent::ServerDropItemBySlot_Implementation(int32 Slot)
 {
 	DropItemBySlot(Slot);
+}
+
+void UEntryBaseComponent::ServerSellItemBySlot_Implementation(int32 Slot)
+{
+	SellItemBySlot(Slot);
 }
 
 void UEntryBaseComponent::AddInventoryEntry()
