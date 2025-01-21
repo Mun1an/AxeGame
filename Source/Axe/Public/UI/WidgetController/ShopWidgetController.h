@@ -27,6 +27,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Shop")
 	void TryBuyShopItem(int32 ShopSlot);
 
+	UFUNCTION(BlueprintCallable, Category="Shop")
+	void TryRefreshShopItem();
+
 	UPROPERTY(BlueprintAssignable, Category="Shop")
 	FOnInventoryChangedInWidgetController OnShopChangedInWidgetController;
 

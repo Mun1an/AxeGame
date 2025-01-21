@@ -82,19 +82,20 @@ void UAxeAbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& Inpu
 
 void UAxeAbilitySystemComponent::AbilityInputTagHeld(const FGameplayTag& InputTag)
 {
-	TArray<FGameplayAbilitySpec>& GameplayAbilitySpecList = GetActivatableAbilities();
-	for (FGameplayAbilitySpec& AbilitySpec : GameplayAbilitySpecList)
-	{
-		if (AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag))
-		{
-			AbilitySpecInputPressed(AbilitySpec);
-
-			if (!AbilitySpec.IsActive())
-			{
-				TryActivateAbilityAndCheck_Client(AbilitySpec.Handle, InputTag);
-			}
-		}
-	}
+	// TODO
+	// TArray<FGameplayAbilitySpec>& GameplayAbilitySpecList = GetActivatableAbilities();
+	// for (FGameplayAbilitySpec& AbilitySpec : GameplayAbilitySpecList)
+	// {
+	// 	if (AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag))
+	// 	{
+	// 		AbilitySpecInputPressed(AbilitySpec);
+	//
+	// 		if (!AbilitySpec.IsActive())
+	// 		{
+	// 			TryActivateAbilityAndCheck_Client(AbilitySpec.Handle, InputTag);
+	// 		}
+	// 	}
+	// }
 }
 
 void UAxeAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag& InputTag)

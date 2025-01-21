@@ -42,8 +42,11 @@ public:
 	void GetUseItemEntryArray(TArray<FInventoryEntry>& OutEntries) const;
 
 	//
-	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "Inventory|Shop")
+	UFUNCTION(Server, Reliable, BlueprintCallable, Category = Shop)
 	void ServerBuyShopItem(UShopComponent* ShopComponent, int32 ShopSlot);
+	
+	UFUNCTION(Server, Reliable, BlueprintCallable, Category = Shop)
+	void ServerRefreshShopItem(UShopComponent* ShopComponent);
 
 protected:
 	virtual void BeginPlay() override;

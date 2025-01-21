@@ -29,6 +29,12 @@ bool UShopComponent::RandomSpawnShopItem()
 
 	for (int i = 0; i < InventoryEntryInitSize; ++i)
 	{
+		const FInventoryEntry& InventoryEntryByIndex = GetInventoryEntryByIndex(i);
+		RemoveItemByIndex(i, InventoryEntryByIndex.StackCount);
+	}
+
+	for (int i = 0; i < InventoryEntryInitSize; ++i)
+	{
 		const int32 RandRange = FMath::RandRange(0, ShopItemDataInfos.Num() - 1);
 		const FShopItemDataInfo ShopItemDataInfo = ShopItemDataInfos[RandRange];
 		UItemInstance* ShopItemInstance = CreateShopItemInstance(ShopItemDataInfo);
@@ -118,7 +124,7 @@ bool UShopComponent::BuyShopItem(int32 ShopSlot, UEntryBaseComponent* BuyerInven
 	return bRemoveItemByIndex;
 }
 
-bool UShopComponent::CheckCanBuyShopItemClient(int32 ShopSlot, UEntryBaseComponent* BuyerInventory)
+bool UShopComponent::CheckCanBuyShopItemByClient(int32 ShopSlot, UEntryBaseComponent* BuyerInventory)
 {
 	const FInventoryEntry& ShopEntry = GetInventoryEntryByIndex(ShopSlot);
 	UItemInstance* ShopItemInstance = ShopEntry.Instance;
@@ -149,6 +155,48 @@ bool UShopComponent::CheckCanBuyShopItemClient(int32 ShopSlot, UEntryBaseCompone
 	if (!bCanAddItemInstance)
 	{
 		UTipsMessageFunctionLibrary::SendTipsMessage(BuyerAxeCharacter, TEXT("背包已满"), 3.0f);
+		return false;
+	}
+	return true;
+}
+
+bool UShopComponent::RefreshShopItem(UEntryBaseComponent* BuyerInventory)
+{
+	AAxeCharacterBase* BuyerAxeCharacter = BuyerInventory->GetAxeCharacterOwner();
+	APlayerState* PS = BuyerAxeCharacter->GetPlayerState();
+	if (!PS)
+	{
+		return false;
+	}
+	AAxePlayerState* AxePS = Cast<AAxePlayerState>(PS);
+	// GoldCoin
+	const int32 OwnerGoldCoinCount = AxePS->GetGoldCoinCount();
+	if (OwnerGoldCoinCount < RefreshShopItemCost)
+	{
+		return false;
+	}
+	UAbilitySystemComponent* ASC = AxePS->GetAbilitySystemComponent();
+	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(ASC);
+	AxeASC->ApplyIncomingGoldCoinCountEffect(BuyerAxeCharacter, -RefreshShopItemCost);
+
+	bool bRandomSpawnShopItem = RandomSpawnShopItem();
+	return bRandomSpawnShopItem;
+}
+
+bool UShopComponent::CheckCanRefreshShopItemByClient(UEntryBaseComponent* BuyerInventory)
+{
+	AAxeCharacterBase* BuyerAxeCharacter = BuyerInventory->GetAxeCharacterOwner();
+	APlayerState* PS = BuyerAxeCharacter->GetPlayerState();
+	if (!PS)
+	{
+		return false;
+	}
+	AAxePlayerState* AxePS = Cast<AAxePlayerState>(PS);
+	// GoldCoin
+	const int32 OwnerGoldCoinCount = AxePS->GetGoldCoinCount();
+	if (OwnerGoldCoinCount < RefreshShopItemCost)
+	{
+		UTipsMessageFunctionLibrary::SendTipsMessage(BuyerAxeCharacter, TEXT("金币不足"), 3.0f);
 		return false;
 	}
 	return true;

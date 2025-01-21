@@ -35,11 +35,20 @@ public:
 	bool BuyShopItem(int32 ShopSlot, UEntryBaseComponent* BuyerInventory);
 
 	UFUNCTION(BlueprintCallable, Category = Shop)
-	bool CheckCanBuyShopItemClient(int32 ShopSlot, UEntryBaseComponent* BuyerInventory);
-	
+	bool CheckCanBuyShopItemByClient(int32 ShopSlot, UEntryBaseComponent* BuyerInventory);
+
+	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = Shop)
+	bool RefreshShopItem(UEntryBaseComponent* BuyerInventory);
+
+	UFUNCTION(BlueprintCallable, Category = Shop)
+	bool CheckCanRefreshShopItemByClient(UEntryBaseComponent* BuyerInventory);
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 RefreshShopItemCost = 10;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UShopItemDataAsset> ShopItemDataAsset;

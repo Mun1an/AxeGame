@@ -21,10 +21,19 @@ void UShopWidgetController::BindCallbacksToDependencies()
 
 void UShopWidgetController::TryBuyShopItem(int32 ShopSlot)
 {
-	bool bCheckCanBuyShopItemClient = ShopComponent->CheckCanBuyShopItemClient(ShopSlot, InventoryComponent);
+	bool bCheckCanBuyShopItemClient = ShopComponent->CheckCanBuyShopItemByClient(ShopSlot, InventoryComponent);
 	if (bCheckCanBuyShopItemClient)
 	{
 		InventoryComponent->ServerBuyShopItem(ShopComponent, ShopSlot);
+	}
+}
+
+void UShopWidgetController::TryRefreshShopItem()
+{
+	bool bCheck = ShopComponent->CheckCanRefreshShopItemByClient(InventoryComponent);
+	if (bCheck)
+	{
+		InventoryComponent->ServerRefreshShopItem(ShopComponent);
 	}
 }
 

@@ -59,6 +59,7 @@ void UInventoryComponent::OnEquipmentItemChanged(int32 SlotIndex, UItemInstance*
 	}
 }
 
+
 void UInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -70,10 +71,10 @@ void UInventoryComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 }
 
 void UInventoryComponent::OnInventoryItemChanged(int32 SlotIndex, UItemInstance* NewItemInstance, int32 NewCount,
-	UItemInstance* OldItemInstance, int32 OldCount)
+                                                 UItemInstance* OldItemInstance, int32 OldCount)
 {
 	Super::OnInventoryItemChanged(SlotIndex, NewItemInstance, NewCount, OldItemInstance, OldCount);
-	
+
 	//
 	const FInventoryEntry& Entry = GetInventoryEntryByIndex(SlotIndex);
 	if (Entry.EntryTags.HasTag(FAxeGameplayTags::Get().Inventory_Entry_Equipment))
@@ -148,3 +149,7 @@ void UInventoryComponent::ServerBuyShopItem_Implementation(UShopComponent* ShopC
 	ShopComponent->BuyShopItem(ShopSlot, this);
 }
 
+void UInventoryComponent::ServerRefreshShopItem_Implementation(UShopComponent* ShopComponent)
+{
+	ShopComponent->RefreshShopItem(this);
+}
