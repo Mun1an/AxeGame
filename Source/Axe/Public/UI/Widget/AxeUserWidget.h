@@ -10,10 +10,11 @@ class UUITipsMessageUserWidget;
 /**
  * 
  */
-UCLASS()
+UCLASS(BlueprintType)
 class AXE_API UAxeUserWidget : public UUserWidget
 {
 	GENERATED_BODY()
+
 public:
 	UFUNCTION(BlueprintCallable)
 	void SetWidgetController(UObject* Controller);
@@ -24,7 +25,7 @@ public:
 protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnWidgetControllerSet();
-	
+
 	UFUNCTION(BlueprintCallable)
 	void SendUITipsMessage(const FText& TipsMessage, float ShowTime = 5.f);
 };

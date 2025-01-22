@@ -29,10 +29,6 @@ void UPreInteract::TriggerInteraction()
 	{
 		return;
 	}
-	if (!HasAuthority(&CurrentActivationInfo))
-	{
-		return;
-	}
 	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
 
 	UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
@@ -94,7 +90,6 @@ void UPreInteract::FindTargetInteractable()
 	AAxeCharacterPlayer* AxeCharacterPlayer = Cast<AAxeCharacterPlayer>(AxeCharacterOwner);
 	UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
 
-
 	AActor* GoodTarget = GetGoodTarget();
 
 	CurrentTarget = GoodTarget;
@@ -109,6 +104,7 @@ void UPreInteract::FindTargetInteractable()
 	{
 		CurrentInteractionOption = FInteractionOption::Empty;
 	}
+	
 	// 添加一下玩家新交互技能
 	if (CurrentInteractionOption.InteractionAbilityToGrant && HasAuthority(&CurrentActivationInfo))
 	{
