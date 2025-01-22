@@ -16,6 +16,7 @@ class UWidgetComponent;
 class ADisplayItemActor;
 class USphereComponent;
 class UItemComponent;
+class AAxeCharacterPlayer;
 
 UCLASS(Blueprintable)
 class AXE_API AAxeWorldItemActor : public AActor, public IInteractableInterface, public IPickupable,
@@ -29,7 +30,9 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void OnConstruction(const FTransform& Transform) override;
 	// IInteractableInterface
-	virtual void GetInteractionOptions(FInteractionOption& OutOptions) override;
+	virtual TObjectPtr<UInteractableComponent> GetInteractableComponent() override;
+	virtual void OnStartBePreInteracting(AAxeCharacterPlayer* InteractPlayer) override;
+	virtual void OnEndBePreInteracting(AAxeCharacterPlayer* InteractPlayer) override;
 
 	// IPickupable
 	virtual UItemInstance* GetPickupableItemInstance() override;
@@ -40,12 +43,12 @@ public:
 	virtual void UnHighlightActor() override;
 
 	TObjectPtr<UItemInfoWidgetComponent> GetItemInfoWidgetComponent() { return ItemInfoWidgetComponent; }
-	
+
 	TObjectPtr<UItemComponent> GetItemComponent() { return ItemComponent; }
-	
+
 	UFUNCTION(BlueprintCallable)
 	void InitDisplayItemActor();
-	
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
@@ -53,21 +56,24 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TObjectPtr<UBoxComponent> BoxCollisionComponent;
-	
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TObjectPtr<USceneComponent> SceneComponent;
-	
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TObjectPtr<UStaticMeshComponent> ItemStaticMeshComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TObjectPtr<USkeletalMeshComponent> ItemSkeletalMeshComponent;
-	
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TObjectPtr<UItemInfoWidgetComponent> ItemInfoWidgetComponent;
-	
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TObjectPtr<UItemComponent> ItemComponent;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TObjectPtr<UInteractableComponent> InteractableComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FInteractionOption InteractionOption;
@@ -77,9 +83,9 @@ protected:
 	UPROPERTY(Replicated)
 	ADisplayItemActor* DisplayItemActor = nullptr;
 
-	
-	
 private:
+	FTimerHandle ShowItemInfoHandle;
+	
 	float TempRotateYaw = 0;
 	float TempLocateZ = 0;
 };

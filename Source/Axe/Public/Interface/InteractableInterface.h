@@ -6,6 +6,7 @@
 #include "UObject/Interface.h"
 #include "InteractableInterface.generated.h"
 
+class AAxeCharacterPlayer;
 struct FInteractionOption;
 class UInteractableComponent;
 
@@ -24,5 +25,8 @@ class AXE_API IInteractableInterface
 	GENERATED_BODY()
 
 public:
-	virtual void GetInteractionOptions(FInteractionOption& OutOptions);
+	virtual TObjectPtr<UInteractableComponent> GetInteractableComponent() = 0;
+
+	virtual void OnStartBePreInteracting(AAxeCharacterPlayer* InteractPlayer) = 0;
+	virtual void OnEndBePreInteracting(AAxeCharacterPlayer* InteractPlayer) = 0;
 };

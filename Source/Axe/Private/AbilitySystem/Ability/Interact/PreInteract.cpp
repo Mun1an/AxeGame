@@ -4,8 +4,11 @@
 #include "AbilitySystem/Ability/Interact/PreInteract.h"
 
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/AxeAbilitySystemComponent.h"
 #include "Axe/Axe.h"
 #include "Character/AxeCharacterBase.h"
+#include "Character/AxeCharacterPlayer.h"
+#include "Character/InteractableComponent.h"
 #include "GameplayTag/AxeGameplayTags.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Interface/InteractableInterface.h"
@@ -14,7 +17,10 @@ UPreInteract::UPreInteract(const FObjectInitializer& ObjectInitializer): Super(O
 {
 	ActivationPolicy = EAxeAbilityActivationPolicy::OnSpawn;
 
-	OverlapObjectTypes.AddUnique(UEngineTypes::ConvertToObjectType(ECC_Interact));
+	OverlapObjectTypes = {
+		UEngineTypes::ConvertToObjectType(ECC_WorldDynamic),
+		UEngineTypes::ConvertToObjectType(ECC_Pawn),
+	};
 }
 
 void UPreInteract::TriggerInteraction()
@@ -23,18 +29,27 @@ void UPreInteract::TriggerInteraction()
 	{
 		return;
 	}
+	if (!HasAuthority(&CurrentActivationInfo))
+	{
+		return;
+	}
 	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
 
 	UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
+	UAxeAbilitySystemComponent* AxeASC = Cast<UAxeAbilitySystemComponent>(ASC);
+
 	FAxeGameplayTags AxeGameplayTags = FAxeGameplayTags::Get();
 	FGameplayEventData Payload;
 	Payload.EventTag = AxeGameplayTags.Ability_Interaction_Activate;
 	Payload.Instigator = AxeCharacterOwner;
 	Payload.Target = CurrentTarget;
 
-	FGameplayAbilitySpec* AbilitySpec = ASC->FindAbilitySpecFromClass(
+	const FGameplayAbilitySpec* AbilitySpec = ASC->FindAbilitySpecFromClass(
 		CurrentInteractionOption.InteractionAbilityToGrant);
-
+	if (AbilitySpec == nullptr)
+	{
+		return;
+	}
 	FGameplayAbilityActorInfo ActorInfo;
 	ActorInfo.InitFromActor(CurrentActorInfo->OwnerActor.Get(), CurrentActorInfo->AvatarActor.Get(), ASC);
 	const bool bSuccess = ASC->TriggerAbilityFromGameplayEvent(
@@ -54,6 +69,9 @@ void UPreInteract::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
 	UWorld* World = GetWorld();
+
+	ActorsToIgnore.AddUnique(GetAxeCharacterOwner());
+
 	World->GetTimerManager().SetTimer(
 		ScanTimerHandle, this, &ThisClass::FindTargetInteractable, ScanRate, true);
 }
@@ -73,23 +91,51 @@ void UPreInteract::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGa
 void UPreInteract::FindTargetInteractable()
 {
 	AAxeCharacterBase* AxeCharacterOwner = GetAxeCharacterOwner();
-	ActorsToIgnore.AddUnique(AxeCharacterOwner);
+	AAxeCharacterPlayer* AxeCharacterPlayer = Cast<AAxeCharacterPlayer>(AxeCharacterOwner);
+	UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
+
 
 	AActor* GoodTarget = GetGoodTarget();
 
 	CurrentTarget = GoodTarget;
-	if (Cast<IInteractableInterface>(CurrentTarget))
+	IInteractableInterface* CurrentInteractableInterface = Cast<IInteractableInterface>(CurrentTarget);
+	if (CurrentInteractableInterface)
 	{
-		Cast<IInteractableInterface>(CurrentTarget)->GetInteractionOptions(CurrentInteractionOption);
+		UInteractableComponent* InteractableComponent = CurrentInteractableInterface->GetInteractableComponent();
+		CurrentInteractionOption = InteractableComponent->GetInteractionOptions();
 		CurrentInteractionOption.InteractableTarget = CurrentTarget;
 	}
 	else
 	{
 		CurrentInteractionOption = FInteractionOption::Empty;
 	}
+	// 添加一下玩家新交互技能
+	if (CurrentInteractionOption.InteractionAbilityToGrant && HasAuthority(&CurrentActivationInfo))
+	{
+		// Fixme 可优化
+		const FGameplayAbilitySpec* AbilitySpec = ASC->FindAbilitySpecFromClass(
+			CurrentInteractionOption.InteractionAbilityToGrant);
+		if (AbilitySpec == nullptr)
+		{
+			const FGameplayAbilitySpec NewAbilitySpec = FGameplayAbilitySpec(
+				CurrentInteractionOption.InteractionAbilityToGrant, 1);
+			ASC->GiveAbility(NewAbilitySpec);
+		}
+	}
 
 	if (LastCurrentTarget != CurrentTarget)
 	{
+		if (CurrentInteractableInterface)
+		{
+			CurrentInteractableInterface->OnStartBePreInteracting(AxeCharacterPlayer);
+		}
+		if (LastCurrentTarget)
+		{
+			if (IInteractableInterface* LastInteractableInterface = Cast<IInteractableInterface>(LastCurrentTarget))
+			{
+				LastInteractableInterface->OnEndBePreInteracting(AxeCharacterPlayer);
+			}
+		}
 		LastCurrentTarget = CurrentTarget;
 		OnTargetInteractableChange();
 	}

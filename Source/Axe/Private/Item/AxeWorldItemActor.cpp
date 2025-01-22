@@ -2,6 +2,8 @@
 
 #include "Item/AxeWorldItemActor.h"
 
+#include "Character/AxeCharacterPlayer.h"
+#include "Character/InteractableComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Item/Component/ItemComponent.h"
@@ -33,6 +35,8 @@ AAxeWorldItemActor::AAxeWorldItemActor()
 	ItemInfoWidgetComponent->SetVisibility(false);
 
 	ItemComponent = CreateDefaultSubobject<UItemComponent>("ItemComponent");
+
+	InteractableComponent = CreateDefaultSubobject<UInteractableComponent>("InteractableComponent");
 }
 
 void AAxeWorldItemActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -49,9 +53,41 @@ void AAxeWorldItemActor::OnConstruction(const FTransform& Transform)
 }
 
 
-void AAxeWorldItemActor::GetInteractionOptions(FInteractionOption& OutOptions)
+TObjectPtr<UInteractableComponent> AAxeWorldItemActor::GetInteractableComponent()
 {
-	OutOptions = InteractionOption;
+	return InteractableComponent;
+}
+
+void AAxeWorldItemActor::OnStartBePreInteracting(AAxeCharacterPlayer* InteractPlayer)
+{
+	if (InteractPlayer->IsLocallyControlled())
+	{
+		HighlightActor();
+
+		GetWorld()->GetTimerManager().SetTimer(ShowItemInfoHandle, [this]()
+		{
+			this->ItemInfoWidgetComponent->SetItemInfoVisibility(true);
+			this->InteractableComponent->SetInteractTextVisibility(false);
+		}, 0.7f, false);
+
+		InteractableComponent->SetInteractTextVisibility(true);
+	}
+}
+
+void AAxeWorldItemActor::OnEndBePreInteracting(AAxeCharacterPlayer* InteractPlayer)
+{
+	if (InteractPlayer->IsLocallyControlled())
+	{
+		UnHighlightActor();
+
+		if (ShowItemInfoHandle.IsValid())
+		{
+			GetWorld()->GetTimerManager().ClearTimer(ShowItemInfoHandle);
+		}
+		ItemInfoWidgetComponent->SetItemInfoVisibility(false);
+
+		InteractableComponent->SetInteractTextVisibility(false);
+	}
 }
 
 UItemInstance* AAxeWorldItemActor::GetPickupableItemInstance()
