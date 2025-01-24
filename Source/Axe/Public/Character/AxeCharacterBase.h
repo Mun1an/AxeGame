@@ -7,6 +7,8 @@
 #include "Interface/DeadInterface.h"
 #include "AxeCharacterBase.generated.h"
 
+class UEffectManagerComponent;
+class UEffectNiagaraComponent;
 class UGameplayEffect;
 class UAttributeSet;
 enum class ELaunchCharacterDirection : uint8;
@@ -54,7 +56,7 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Attributes")
 	TSubclassOf<UGameplayEffect> DefaultSecondaryAttributesEffect;
-	
+
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Attributes")
 	TSubclassOf<UGameplayEffect> LevelUpPrimaryAttributesEffect;
 	//
@@ -81,6 +83,8 @@ public:
 
 	FOnActorDeadDelegate OnActorDeadDelegate;
 
+	virtual FORCEINLINE FOnActorDeadDelegate& GetOnActorDeadDelegate() { return OnActorDeadDelegate; }
+
 	void SetDeathImpulseVector(FVector NewDeathImpulseVector) { DeathImpulseVector = NewDeathImpulseVector; }
 
 	UFUNCTION(BlueprintCallable)
@@ -89,8 +93,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void SetCharacterLevel(int32 NewCharacterLevel);
 	//
+	UEffectManagerComponent* GetEffectManagerComponent() const { return EffectManagerComponent; }
 
 protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Effect")
+	UEffectManagerComponent* EffectManagerComponent;
+
 	bool bIsAbilityInitOver = false;
 	bool bIsInventoryInitOver = false;
 

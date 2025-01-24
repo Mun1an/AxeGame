@@ -12,5 +12,4 @@ AAxeAIController::AAxeAIController()
 	check(Blackboard);
 	BehaviorTreeComponent = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorTreeComponent"));
 	check(BehaviorTreeComponent);
-	
 }

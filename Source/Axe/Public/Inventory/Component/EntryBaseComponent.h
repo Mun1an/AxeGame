@@ -78,6 +78,10 @@ public:
 	bool SwapItemBySlots(int32 FromSlot, int32 ToSlot);
 
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category=Inventory)
+	bool SwapItemToOtherComponent(int32 FromSlot, UEntryBaseComponent* ToComponent,
+	                            int32 ToSlot);
+
+	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category=Inventory)
 	void DropItemBySlot(int32 Slot);
 
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category=Inventory)
@@ -94,7 +98,7 @@ public:
 
 	UFUNCTION(Server, Reliable, BlueprintCallable)
 	void ServerSellItemBySlot(int32 Slot);
-	
+
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category=Inventory)
 	void AddInventoryEntry();
 

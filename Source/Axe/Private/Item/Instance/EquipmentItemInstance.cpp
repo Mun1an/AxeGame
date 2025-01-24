@@ -84,7 +84,7 @@ void UEquipmentItemInstance::DestroyEquipmentActors()
 
 void UEquipmentItemInstance::OnEquipped()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("OnEquipped"));
+	// GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("OnEquipped"));
 	K2_OnEquipped();
 	AAxeCharacterPlayer* AxeCharacterPlayer = Cast<AAxeCharacterPlayer>(GetPawn());
 
@@ -112,7 +112,7 @@ void UEquipmentItemInstance::OnEquipped()
 
 void UEquipmentItemInstance::OnUnequipped()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("OnUnequipped"));
+	// GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("OnUnequipped"));
 	K2_OnUnequipped();
 	AAxeCharacterPlayer* AxeCharacterPlayer = Cast<AAxeCharacterPlayer>(GetPawn());
 

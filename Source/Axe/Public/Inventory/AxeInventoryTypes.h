@@ -91,7 +91,7 @@ struct FAxeInventoryList : public FFastArraySerializer
 	bool RemoveItem(int32 SlotIndex, int32 RemoveCount = 1);
 
 	bool SwapItem(int32 FromSlot, int32 ToSlot);
-
+	bool SwapItemByEntry(FInventoryEntry& FromEntry, FInventoryEntry& ToEntry);
 	bool ChangeItemStackCount(FInventoryEntry& Entry, int32 NewCount);
 
 	bool GetStackOrEmptySlotIndex(UItemInstance* ItemInstance, TMap<int32, int32>& SlotCountMap, int32 NeedCount,

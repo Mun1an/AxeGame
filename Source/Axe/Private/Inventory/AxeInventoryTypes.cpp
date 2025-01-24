@@ -175,12 +175,15 @@ bool FAxeInventoryList::SwapItem(int32 FromSlot, int32 ToSlot)
 {
 	FInventoryEntry& FromEntry = Entries[FromSlot];
 	FInventoryEntry& ToEntry = Entries[ToSlot];
+	return SwapItemByEntry(FromEntry, ToEntry);
+}
 
+bool FAxeInventoryList::SwapItemByEntry(FInventoryEntry& FromEntry, FInventoryEntry& ToEntry)
+{
 	if (FromEntry.Instance == nullptr && ToEntry.Instance == nullptr)
 	{
 		return false;
 	}
-
 	const bool bCanPutInEntry = CheckCanPutInEntry(FromEntry, ToEntry.Instance);
 	const bool bCanPutInEntry_1 = CheckCanPutInEntry(ToEntry, FromEntry.Instance);
 	if (!bCanPutInEntry || !bCanPutInEntry_1)

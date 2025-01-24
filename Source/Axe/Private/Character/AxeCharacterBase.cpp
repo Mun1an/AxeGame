@@ -6,8 +6,11 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/AxeAbilitySystemComponent.h"
 #include "Axe/Axe.h"
+#include "Character/EffectManagerComponent.h"
+#include "Character/EffectNiagaraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameplayTag/AxeGameplayTags.h"
 #include "Net/UnrealNetwork.h"
 
 // Sets default values
@@ -17,6 +20,9 @@ AAxeCharacterBase::AAxeCharacterBase()
 	PrimaryActorTick.bCanEverTick = true;
 
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Projectile, ECR_Overlap);
+
+	EffectManagerComponent = CreateDefaultSubobject<UEffectManagerComponent>(TEXT("EffectManagerComponent"));
+	EffectManagerComponent->SetupAttachment(GetRootComponent());
 }
 
 void AAxeCharacterBase::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const

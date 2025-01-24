@@ -193,6 +193,14 @@ bool UEntryBaseComponent::SwapItemBySlots(int32 FromSlot, int32 ToSlot)
 	return InventoryList.SwapItem(FromSlot, ToSlot);
 }
 
+bool UEntryBaseComponent::SwapItemToOtherComponent(int32 FromSlot, UEntryBaseComponent* ToComponent, int32 ToSlot)
+{
+	FInventoryEntry& FromEntry = GetInventoryEntryByIndex(FromSlot);
+	FInventoryEntry& ToEntry = ToComponent->GetInventoryEntryByIndex(ToSlot);
+	return InventoryList.SwapItemByEntry(FromEntry, ToEntry);
+}
+
+
 void UEntryBaseComponent::DropItemBySlot(int32 Slot)
 {
 	if (!CheckEntryHasItem(Slot))

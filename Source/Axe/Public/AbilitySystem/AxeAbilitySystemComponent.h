@@ -76,15 +76,21 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FActiveGameplayEffectHandle ApplyEffectToSelfByClass(const TSubclassOf<UGameplayEffect>& EffectClass,
 	                                                     const float Level);
-	UFUNCTION(BlueprintCallable)
-	FActiveGameplayEffectHandle ApplyAddAttrDurationEffect(AActor* SourceActor,
-	                                                       const TArray<FAxeAttributeTagAndValue>& AttributeTagAndValues,
-	                                                       float Duration);
+
 	UFUNCTION(BlueprintCallable)
 	FActiveGameplayEffectHandle ApplyAddAttrDurationEffectByTag(AActor* SourceActor,
-														   FGameplayTag AttributeTag,
-														   float AttributeValue,
-														   float Duration);
+	                                                            FGameplayTag AttributeTag,
+	                                                            float AttributeValue,
+	                                                            float Duration);
+	UFUNCTION(BlueprintCallable)
+	FActiveGameplayEffectHandle ApplyEffect(TSubclassOf<UGameplayEffect> EffectClass, AActor* SourceActor,
+													   AActor* TargetActor, float Level,
+													   float Duration);
+	UFUNCTION(BlueprintCallable)
+	FActiveGameplayEffectHandle ApplyEffectSetByCaller(TSubclassOf<UGameplayEffect> EffectClass, AActor* SourceActor,
+	                                                   AActor* TargetActor, float Level,
+	                                                   float Duration,
+	                                                   const TMap<FGameplayTag, float>& SetByCallerMap);
 
 	bool ApplyDamageEffect(AActor* SourceActor, AActor* TargetActor, const FDamageEffectParams& Params);
 

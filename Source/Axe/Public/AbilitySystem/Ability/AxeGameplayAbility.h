@@ -86,12 +86,14 @@ public:
 	/**
 	 * InputTag
 	 */
+	UFUNCTION(BlueprintCallable)
+	bool GetCanActiveByInputHeld() const { return bCanActiveByInputHeld; }
+
 	UPROPERTY(EditDefaultsOnly, Category="Axe Ability | Input")
 	FGameplayTag InputTag;
 
 	UPROPERTY(EditDefaultsOnly, Category="Axe Ability | Input")
 	FGameplayTagContainer InputTagContainer;
-
 	/**
 	 * ActivationGroup
 	 */
@@ -108,7 +110,8 @@ public:
 
 	void TryActivateAbilityOnSpawn(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) const;
 
-	virtual void HandleTryActivateAbilityClientCDO(FGameplayAbilitySpecHandle& AbilitySpecHandle, const FGameplayTag AbilityInputTag, AActor* AbilityActor);
+	virtual void HandleTryActivateAbilityClientCDO(FGameplayAbilitySpecHandle& AbilitySpecHandle,
+	                                               const FGameplayTag AbilityInputTag, AActor* AbilityActor);
 
 	virtual bool CanActivateAbility_ByNowAbilityReplaceCondition(const FGameplayAbilitySpecHandle Handle,
 	                                                             const FGameplayAbilityActorInfo* ActorInfo,
@@ -153,6 +156,10 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Axe Ability | Activation")
 	EAxeAbilityActivationPolicy ActivationPolicy;
+
+	// CanActiveByInputHeld
+	UPROPERTY(EditDefaultsOnly, Category="Axe Ability | Input")
+	bool bCanActiveByInputHeld = false;
 
 	// ClientMovement 
 	UPROPERTY(EditDefaultsOnly, Category = "Axe Ability | Client")

@@ -60,6 +60,8 @@ struct FAxeGameplayTags
 
 	FGameplayTag Ability_HitReact_Light;
 	FGameplayTag Ability_HitReact_Heavy;
+	
+	FGameplayTag Ability_Stun;
 	//
 	FGameplayTag GameplayCue_WeaponWave_Axe;
 	FGameplayTag GameplayCue_WeaponHit_Axe;
@@ -115,6 +117,7 @@ struct FAxeGameplayTags
 
 	// Effect
 	FGameplayTag Effect_Asset_Damage;
+	FGameplayTag Effect_Asset_Stun;
 	// Effect_Magnitude
 	FGameplayTag Effect_Magnitude_1;
 	FGameplayTag Effect_Magnitude_Duration;

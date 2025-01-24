@@ -83,19 +83,21 @@ void UAxeAbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& Inpu
 void UAxeAbilitySystemComponent::AbilityInputTagHeld(const FGameplayTag& InputTag)
 {
 	// TODO
-	// TArray<FGameplayAbilitySpec>& GameplayAbilitySpecList = GetActivatableAbilities();
-	// for (FGameplayAbilitySpec& AbilitySpec : GameplayAbilitySpecList)
-	// {
-	// 	if (AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag))
-	// 	{
-	// 		AbilitySpecInputPressed(AbilitySpec);
-	//
-	// 		if (!AbilitySpec.IsActive())
-	// 		{
-	// 			TryActivateAbilityAndCheck_Client(AbilitySpec.Handle, InputTag);
-	// 		}
-	// 	}
-	// }
+	TArray<FGameplayAbilitySpec>& GameplayAbilitySpecList = GetActivatableAbilities();
+	for (FGameplayAbilitySpec& AbilitySpec : GameplayAbilitySpecList)
+	{
+		if (AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag))
+		{
+			if (!AbilitySpec.IsActive())
+			{
+				if (Cast<UAxeGameplayAbility>(AbilitySpec.Ability)->GetCanActiveByInputHeld())
+				{
+					AbilitySpecInputPressed(AbilitySpec);
+					TryActivateAbilityAndCheck_Client(AbilitySpec.Handle, InputTag);
+				}
+			}
+		}
+	}
 }
 
 void UAxeAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag& InputTag)
@@ -326,30 +328,6 @@ FActiveGameplayEffectHandle UAxeAbilitySystemComponent::ApplyEffectToSelfByClass
 	return ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), this);
 }
 
-FActiveGameplayEffectHandle UAxeAbilitySystemComponent::ApplyAddAttrDurationEffect(AActor* SourceActor,
-	const TArray<FAxeAttributeTagAndValue>& AttributeTagAndValues, float Duration)
-{
-	const TSubclassOf<UGameplayEffect> EffectClass = UAxeAssetManager::GetSubclass(
-		UAxeGameData::Get().GE_AddAttr_Duration_SetByCaller);
-	FGameplayEffectContextHandle ContextHandle = MakeEffectContext();
-	ContextHandle.AddSourceObject(SourceActor);
-	const FGameplayEffectSpecHandle SpecHandle = MakeOutgoingSpec(
-		EffectClass, 1, ContextHandle
-	);
-	for (const FAxeAttributeTagAndValue& AttributeTagAndValue : AttributeTagAndValues)
-	{
-		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
-			SpecHandle, AttributeTagAndValue.AttributeTag, AttributeTagAndValue.AttributeValue
-		);
-	}
-	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
-		SpecHandle, FAxeGameplayTags::Get().Effect_Magnitude_Duration,
-		Duration
-	);
-	FActiveGameplayEffectHandle GameplayEffectSpecToSelf = ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
-	return GameplayEffectSpecToSelf;
-}
-
 FActiveGameplayEffectHandle UAxeAbilitySystemComponent::ApplyAddAttrDurationEffectByTag(AActor* SourceActor,
 	FGameplayTag AttributeTag, float AttributeValue, float Duration)
 {
@@ -369,6 +347,71 @@ FActiveGameplayEffectHandle UAxeAbilitySystemComponent::ApplyAddAttrDurationEffe
 	);
 	FActiveGameplayEffectHandle GameplayEffectSpecToSelf = ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 	return GameplayEffectSpecToSelf;
+}
+
+FActiveGameplayEffectHandle UAxeAbilitySystemComponent::ApplyEffect(TSubclassOf<UGameplayEffect> EffectClass,
+	AActor* SourceActor, AActor* TargetActor, float Level, float Duration)
+{
+	FGameplayEffectContextHandle ContextHandle = MakeEffectContext();
+	ContextHandle.AddSourceObject(SourceActor);
+	const FGameplayEffectSpecHandle SpecHandle = MakeOutgoingSpec(
+		EffectClass, Level, ContextHandle
+	);
+	FGameplayEffectSpec* Spec = SpecHandle.Data.Get();
+	if (Spec)
+	{
+		Spec->SetSetByCallerMagnitude(FAxeGameplayTags::Get().Effect_Magnitude_Duration, Duration);
+	}
+	FActiveGameplayEffectHandle EffectHandle;
+	if (GetAxeCharacterOwner() == TargetActor)
+	{
+		EffectHandle = ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+	}
+	else
+	{
+		EffectHandle = ApplyGameplayEffectSpecToTarget(
+			*SpecHandle.Data.Get(),
+			UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor)
+		);
+	}
+	return EffectHandle;
+}
+
+FActiveGameplayEffectHandle UAxeAbilitySystemComponent::ApplyEffectSetByCaller(TSubclassOf<UGameplayEffect> EffectClass,
+                                                                               AActor* SourceActor, AActor* TargetActor,
+                                                                               float Level, float Duration,
+                                                                               const TMap<FGameplayTag, float>&
+                                                                               SetByCallerMap)
+
+{
+	FGameplayEffectContextHandle ContextHandle = MakeEffectContext();
+	ContextHandle.AddSourceObject(SourceActor);
+	const FGameplayEffectSpecHandle SpecHandle = MakeOutgoingSpec(
+		EffectClass, Level, ContextHandle
+	);
+	FGameplayEffectSpec* Spec = SpecHandle.Data.Get();
+	if (Spec)
+	{
+		Spec->SetSetByCallerMagnitude(FAxeGameplayTags::Get().Effect_Magnitude_Duration, Duration);
+		for (const TTuple<FGameplayTag, float>& Pair : SetByCallerMap)
+		{
+			Spec->SetSetByCallerMagnitude(Pair.Key, Pair.Value);	
+		}
+	}
+	
+	FActiveGameplayEffectHandle EffectHandle;
+	if (GetAxeCharacterOwner() == TargetActor)
+	{
+		EffectHandle = ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+	}
+	else
+	{
+		EffectHandle = ApplyGameplayEffectSpecToTarget(
+			*SpecHandle.Data.Get(),
+			UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor)
+		);
+	}
+	return EffectHandle;
 }
 
 bool UAxeAbilitySystemComponent::ApplyDamageEffect(AActor* SourceActor, AActor* TargetActor,
@@ -562,7 +605,7 @@ UGameplayAbility* UAxeAbilitySystemComponent::GetActiveAbilityByTag(const FGamep
 	const TArray<FGameplayAbilitySpec>& GameplayAbilitySpecs = GetActivatableAbilities();
 	for (const FGameplayAbilitySpec& AbilitySpec : GameplayAbilitySpecs)
 	{
-		if (AbilitySpec.Ability->AbilityTags.HasTagExact(Tag))
+		if (AbilitySpec.Ability->AbilityTags.HasTagExact(Tag) && AbilitySpec.Ability->IsActive())
 		{
 			return AbilitySpec.Ability;
 		}

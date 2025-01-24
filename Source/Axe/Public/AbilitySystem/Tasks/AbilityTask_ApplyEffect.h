@@ -29,7 +29,9 @@ public:
 	virtual void OnDestroy(bool bInOwnerFinished) override;
 
 protected:
+	UFUNCTION()
 	void ApplyEffect();
+	UFUNCTION(BlueprintCallable)
 	void RemoveEffect();
 
 	UPROPERTY()
@@ -43,6 +45,6 @@ protected:
 	UPROPERTY()
 	float Duration;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	FActiveGameplayEffectHandle EffectHandle;
 };

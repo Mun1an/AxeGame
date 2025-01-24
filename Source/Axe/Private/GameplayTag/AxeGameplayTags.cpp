@@ -52,6 +52,8 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 
 	AddTag(Ability_HitReact_Light, "Ability.HitReact.Light");
 	AddTag(Ability_HitReact_Heavy, "Ability.HitReact.Heavy");
+	
+	AddTag(Ability_Stun, "Ability.Stun");
 
 	AddTag(GameplayCue_WeaponWave_Axe, "GameplayCue.WeaponWave.Axe");
 	AddTag(GameplayCue_WeaponHit_Axe, "GameplayCue.WeaponHit.Axe");
@@ -98,6 +100,7 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 
 	//
 	AddTag(Effect_Asset_Damage, "Effect.Asset.Damage");
+	AddTag(Effect_Asset_Stun, "Effect.Asset.Stun");
 	
 	AddTag(Effect_Magnitude_1, "Effect.Magnitude.1");
 	AddTag(Effect_Magnitude_Duration, "Effect.Magnitude.Duration");

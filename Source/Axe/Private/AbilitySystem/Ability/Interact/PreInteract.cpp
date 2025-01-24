@@ -17,10 +17,8 @@ UPreInteract::UPreInteract(const FObjectInitializer& ObjectInitializer): Super(O
 {
 	ActivationPolicy = EAxeAbilityActivationPolicy::OnSpawn;
 
-	OverlapObjectTypes = {
-		UEngineTypes::ConvertToObjectType(ECC_WorldDynamic),
-		UEngineTypes::ConvertToObjectType(ECC_Pawn),
-	};
+	OverlapObjectTypes.AddUnique(UEngineTypes::ConvertToObjectType(ECC_WorldDynamic));
+	OverlapObjectTypes.AddUnique(UEngineTypes::ConvertToObjectType(ECC_Pawn));
 }
 
 void UPreInteract::TriggerInteraction()
@@ -104,7 +102,7 @@ void UPreInteract::FindTargetInteractable()
 	{
 		CurrentInteractionOption = FInteractionOption::Empty;
 	}
-	
+
 	// 添加一下玩家新交互技能
 	if (CurrentInteractionOption.InteractionAbilityToGrant && HasAuthority(&CurrentActivationInfo))
 	{

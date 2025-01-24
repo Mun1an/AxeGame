@@ -26,12 +26,6 @@ void UAbilityTask_ApplyEffect::Activate()
 {
 	Super::Activate();
 
-	if (IsLocallyControlled())
-	{
-	}
-	else
-	{
-	}
 	ApplyEffect();
 }
 

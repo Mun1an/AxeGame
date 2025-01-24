@@ -6,6 +6,7 @@
 #include "UObject/Interface.h"
 #include "DeadInterface.generated.h"
 
+class FOnActorDeadDelegate;
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI, BlueprintType, meta = (CannotImplementInterfaceInBlueprint))
 class UDeadInterface : public UInterface
@@ -30,4 +31,6 @@ public:
 
 	UFUNCTION()
 	virtual void OnDead() = 0;
+
+	virtual FOnActorDeadDelegate& GetOnActorDeadDelegate() = 0;
 };
