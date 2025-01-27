@@ -13,6 +13,9 @@ UEffectManagerComponent::UEffectManagerComponent()
 	FAxeGameplayTags AxeGameplayTags = FAxeGameplayTags::Get();
 	StunEffectComponent = CreateDefaultSubobject<UEffectNiagaraComponent>(TEXT("StunEffectComponent"));
 	StunEffectComponent->SetEffectTag(AxeGameplayTags.Effect_Asset_Stun);
+
+	FireBurnEffectComponent = CreateDefaultSubobject<UEffectNiagaraComponent>(TEXT("FireBurnEffectComponent"));
+	FireBurnEffectComponent->SetEffectTag(AxeGameplayTags.Effect_Asset_FireBurn);
 }
 
 void UEffectManagerComponent::InitializeComponent()
@@ -24,4 +27,5 @@ void UEffectManagerComponent::OnComponentCreated()
 {
 	Super::OnComponentCreated();
 	StunEffectComponent->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
+	FireBurnEffectComponent->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
 }

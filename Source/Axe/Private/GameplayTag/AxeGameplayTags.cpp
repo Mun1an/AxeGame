@@ -101,6 +101,7 @@ void FAxeGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	//
 	AddTag(Effect_Asset_Damage, "Effect.Asset.Damage");
 	AddTag(Effect_Asset_Stun, "Effect.Asset.Stun");
+	AddTag(Effect_Asset_FireBurn, "Effect.Asset.FireBurn");
 	
 	AddTag(Effect_Magnitude_1, "Effect.Magnitude.1");
 	AddTag(Effect_Magnitude_Duration, "Effect.Magnitude.Duration");

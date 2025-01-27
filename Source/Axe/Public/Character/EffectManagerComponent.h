@@ -22,4 +22,7 @@ public:
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Effect")
 	UEffectNiagaraComponent* StunEffectComponent;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Effect")
+	UEffectNiagaraComponent* FireBurnEffectComponent;
 };

@@ -16,4 +16,8 @@ class AXE_API UAxeGameplayEffect : public UGameplayEffect
 {
 	GENERATED_BODY()
 
+public:
+	void OnBeforeEffectApplied(FGameplayEffectSpec& Spec) const;
+	UFUNCTION(BlueprintImplementableEvent)
+	void BP_OnBeforeEffectApplied(FGameplayEffectSpec& Spec) const;
 };

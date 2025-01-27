@@ -37,7 +37,7 @@ struct FAxeGameplayTags
 	FGameplayTag Ability_Attack_HeavyAttack;
 	FGameplayTag Ability_Move_Dash;
 	FGameplayTag Ability_Move_Jump;
-	
+
 	FGameplayTag Ability_Action_UseItem;
 	FGameplayTag Ability_Action_UseItem_DrinkPotion;
 
@@ -53,14 +53,14 @@ struct FAxeGameplayTags
 	FGameplayTag Ability_Skill_Defense_Block;
 	FGameplayTag Ability_Skill_Defense_Parry;
 	FGameplayTag Ability_Skill_Defense_Stagger;
-	
+
 	FGameplayTag Ability_Skill_LeapAttack;
 	FGameplayTag Ability_Skill_ThrowAxe;
 	FGameplayTag Ability_Skill_Roar;
 
 	FGameplayTag Ability_HitReact_Light;
 	FGameplayTag Ability_HitReact_Heavy;
-	
+
 	FGameplayTag Ability_Stun;
 	//
 	FGameplayTag GameplayCue_WeaponWave_Axe;
@@ -118,6 +118,8 @@ struct FAxeGameplayTags
 	// Effect
 	FGameplayTag Effect_Asset_Damage;
 	FGameplayTag Effect_Asset_Stun;
+	FGameplayTag Effect_Asset_FireBurn;
+	
 	// Effect_Magnitude
 	FGameplayTag Effect_Magnitude_1;
 	FGameplayTag Effect_Magnitude_Duration;

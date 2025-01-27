@@ -416,10 +416,10 @@ void UAxeAttributeSet::ShowDamageFloatingText(AAxeCharacterBase* SourceCharacter
                                               const float Damage,
                                               const FAxeGameplayEffectContext* AxeEffectContext) const
 {
-	if (SourceCharacter == TargetCharacter)
-	{
-		return;
-	}
+	// if (SourceCharacter == TargetCharacter)
+	// {
+	// 	return;
+	// }
 
 	const FHitResult* HitResult = AxeEffectContext->GetHitResult();
 	const FVector ShowLocation = HitResult->ImpactPoint;

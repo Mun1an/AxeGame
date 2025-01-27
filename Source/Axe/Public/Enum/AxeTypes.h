@@ -15,23 +15,23 @@ struct FDamageEffectParams
 	{
 	}
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TSubclassOf<UGameplayEffect> DamageEffectClass = nullptr;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FGameplayTag DamageType = FGameplayTag();
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float DamageValue = 0.f;
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float DamageToToughnessValue = 0.f;
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float EffectLevel = 1.f;
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FHitResult HitResult = FHitResult();
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	FVector KnockbackVector = FVector::ZeroVector;
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float KnockbackForceMagnitude = 0.f;
 
 	// UPROPERTY(BlueprintReadWrite)

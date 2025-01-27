@@ -84,16 +84,19 @@ public:
 	                                                            float Duration);
 	UFUNCTION(BlueprintCallable)
 	FActiveGameplayEffectHandle ApplyEffect(TSubclassOf<UGameplayEffect> EffectClass, AActor* SourceActor,
-													   AActor* TargetActor, float Level,
-													   float Duration);
+	                                        AActor* TargetActor, float Level,
+	                                        float Duration);
 	UFUNCTION(BlueprintCallable)
 	FActiveGameplayEffectHandle ApplyEffectSetByCaller(TSubclassOf<UGameplayEffect> EffectClass, AActor* SourceActor,
 	                                                   AActor* TargetActor, float Level,
 	                                                   float Duration,
 	                                                   const TMap<FGameplayTag, float>& SetByCallerMap);
-
+	UFUNCTION(BlueprintCallable)
 	bool ApplyDamageEffect(AActor* SourceActor, AActor* TargetActor, const FDamageEffectParams& Params);
+	UFUNCTION(BlueprintCallable)
+	FGameplayEffectContextHandle CreateDamageEffectContext(AActor* SourceActor, const FDamageEffectParams& Params);
 
+	UFUNCTION(BlueprintCallable)
 	FActiveGameplayEffectHandle ApplyEquipmentEffectToSelf(const TSubclassOf<UGameplayEffect>& EffectClass,
 	                                                       const TArray<FEquipmentInstanceAttributeInfo>&
 	                                                       EquipmentAttributeInfos,
@@ -104,6 +107,9 @@ public:
 	FActiveGameplayEffectHandle ApplyIncomingGoldCoinCountEffect(AActor* SourceActor, int32 GoldCoinCount);
 	UFUNCTION(BlueprintCallable)
 	FActiveGameplayEffectHandle ApplyToughnessRecoverStopEffect(AActor* SourceActor);
+
+	FActiveGameplayEffectHandle ApplyEffectSpecWithTarget(const FGameplayEffectSpec& GameplayEffectSpec,
+	                                                      AActor* TargetActor);
 	//
 	void ExecuteDelegateToGetAbilitySpec(const FAbilitySpecDataDelegate& Delegate);
 	//
